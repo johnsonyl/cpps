@@ -47,6 +47,83 @@ namespace cpps
 		}
 		return _result;
 	}
+	cpps_value cpps_add2(cpps_value a, cpps_value b)
+	{
+		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+		}
+		cpps_value _result;
+		_result.tt = CPPS_TNIL;
+		switch (a.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) & cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_integer(a) & cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_integer(a) & cpps_to_integer(b);
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			_result.tt = CPPS_TNUMBER;
+			_result.value.number = cpps_to_integer(a) & cpps_to_integer(b);
+			break;
+		default:
+			_result.tt = CPPS_TNIL;
+			break;
+		}
+		return _result;
+	}
+
+	cpps_value cpps_add3(cpps_value a, cpps_value b)
+	{
+		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+		}
+		cpps_value _result;
+		_result.tt = CPPS_TNIL;
+		switch (a.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) | cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_integer(a) | cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_integer(a) | cpps_to_integer(b);
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			_result.tt = CPPS_TNUMBER;
+			_result.value.number = cpps_to_integer(a) | cpps_to_integer(b);
+			break;
+		default:
+			_result.tt = CPPS_TNIL;
+			break;
+		}
+		return _result;
+	}
 
 	cpps_value cpps_subtract(cpps_value a, cpps_value b)
 	{
@@ -177,13 +254,15 @@ namespace cpps
 		return _result;
 	}
 
-	cpps_value cpps_strcat(cpps_value a, cpps_value b)
+	cpps_value cpps_strcat(C*c,cpps_value a, cpps_value b)
 	{
-		cpps_value _result;
-		_result.tt = CPPS_TSTRING;
-		_result.str = cpps_to_string(a) + cpps_to_string(b);
+		std::string *str;
+		cpps_value ret = newClassPtr<std::string>(c, &str);
+		ret.tt = CPPS_TSTRING;
+		str->append(cpps_to_string(a));
+		str->append(cpps_to_string(b));
 
-		return _result;
+		return ret;
 	}
 
 	cpps_value cpps_strcatassignment(cpps_value a, cpps_value b)
@@ -195,10 +274,16 @@ namespace cpps
 
 		a.value.value->tt = CPPS_TSTRING;
 
+		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.value->value.domain;
+		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		if (b.tt == CPPS_TREGVAR)
-			a.value.value->str = cpps_to_string(*(a.value.value)) + cpps_to_string(*(b.value.value));
+		{
+			tmpStr->append(cpps_to_string(*(b.value.value)));
+		}
 		else
-			a.value.value->str = cpps_to_string(*(a.value.value)) + cpps_to_string(b);
+		{
+			tmpStr->append(cpps_to_string(b));
+		}
 
 		return *(a.value.value);
 
@@ -324,7 +409,7 @@ namespace cpps
 		return _result;
 	}
 
-	cpps_value cpps_assignment(cpps_value a,cpps_value b)
+	cpps_value cpps_assignment(C*c,cpps_value a,cpps_value b)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -332,9 +417,42 @@ namespace cpps
 		}
 
 		if (b.tt == CPPS_TREGVAR)
-			*(a.value.value) = *(b.value.value);
-		else
-			*(a.value.value) = b;
+		{
+			if (b.value.value->tt == CPPS_TSTRING)
+			{
+
+				std::string *str;
+				cpps_value ret = newClassPtr<std::string>(c, &str);
+				ret.tt = CPPS_TSTRING;
+
+
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)b.value.value->value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				str->append(tmpStr->c_str());
+				*(a.value.value) = ret;
+
+			}
+			else
+				*(a.value.value) = *(b.value.value);
+		}
+		else {
+
+			if (b.tt == CPPS_TSTRING)
+			{
+				std::string *str;
+				cpps_value ret = newClassPtr<std::string>(c, &str);
+				ret.tt = CPPS_TSTRING;
+
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)b.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				str->append(tmpStr->begin(),tmpStr->end());
+				*(a.value.value) = ret;
+			}
+			else
+				*(a.value.value) = b;
+		}
 
 		return *(a.value.value);
 // 		a.value.var->setValue(b);
@@ -442,7 +560,12 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				ret.value.b = a.str > b.str;
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				ret.value.b = *(tmpStr) > *(tmpStr2);
 			}
 			else
 			{
@@ -493,7 +616,12 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				ret.value.b = a.str < b.str;
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				ret.value.b = *(tmpStr) < *(tmpStr2);
 			}
 			else
 			{
@@ -544,7 +672,12 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				ret.value.b = a.str >= b.str;
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				ret.value.b = *(tmpStr) >= *(tmpStr2);
 			}
 			else
 			{
@@ -595,7 +728,12 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				ret.value.b = a.str <= b.str;
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				ret.value.b = *(tmpStr) <= *(tmpStr2);
 			}
 			else
 			{
@@ -630,6 +768,11 @@ namespace cpps
 			{
 				ret.value.b = a.value.number == b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				cpps_number t = cpps_to_number(b);
+				ret.value.b = a.value.number == t;
+			}
 			
 			break;
 		case CPPS_TINTEGER:
@@ -641,14 +784,39 @@ namespace cpps
 			{
 				ret.value.b = a.value.integer == b.value.integer;
 			}
-		
+			else if (b.tt == CPPS_TSTRING)
+			{
+				cpps_integer t = cpps_to_integer(b);
+				ret.value.b = a.value.integer == t;
+			}
 			break;
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				ret.value.b = a.str == b.str;
+
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				ret.value.b = *(tmpStr) == *(tmpStr2);
 			}
-			
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				std::string t = cpps_to_string(b);
+
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+				ret.value.b = *(tmpStr) == t;
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				std::string t = cpps_to_string(b);
+
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+				ret.value.b = *(tmpStr) == t;
+			}
 			break; 
 		case CPPS_TBOOLEAN:
 			if (b.tt == CPPS_TBOOLEAN)
@@ -676,63 +844,8 @@ namespace cpps
 
 	cpps_value cpps_notequel(cpps_value a, cpps_value b)
 	{
-		cpps_value ret;
-		ret.tt = CPPS_TBOOLEAN;
-		ret.value.b = true;
-		switch (a.tt)
-		{
-		case CPPS_TNIL:
-			ret.value.b = b.tt != CPPS_TNIL;
-			break;
-		case CPPS_TNUMBER:
-			if (b.tt == CPPS_TNUMBER)
-			{
-				ret.value.b = a.value.number != b.value.number;
-			}
-			else if (b.tt == CPPS_TINTEGER)
-			{
-				ret.value.b = a.value.number != b.value.integer;
-			}
-			
-			break;
-		case CPPS_TINTEGER:
-			if (b.tt == CPPS_TNUMBER)
-			{
-				ret.value.b = a.value.integer != b.value.number;
-			}
-			else if (b.tt == CPPS_TINTEGER)
-			{
-				ret.value.b = a.value.integer != b.value.integer;
-			}
-			
-			break;
-		case CPPS_TSTRING:
-			if (b.tt == CPPS_TSTRING)
-			{
-				ret.value.b = a.str != b.str;
-			}
-			
-			break;
-		case CPPS_TBOOLEAN:
-			if (b.tt == CPPS_TBOOLEAN)
-			{
-				if (a.value.b == 0 && b.value.b != 0)
-				{
-					ret.value.b = 1;
-				}
-				else if (a.value.b != 0 && b.value.b == 0)
-				{
-					ret.value.b = 1;
-				}
-				else
-				{
-					ret.value.b = 0;
-				}
-			}
-			break;
-		default:
-			break;
-		}
+		cpps_value ret = cpps_equel(a, b);
+		ret.value.b = !ret.value.b;
 		return ret;
 	}
 
@@ -756,9 +869,7 @@ namespace cpps
 
 		typedef cpps_converter<bool> converter;
 
-		bool b0 = converter::apply(a);
-		bool b1 = converter::apply(b);
-		ret.value.b = b0 && b1;
+		ret.value.b = converter::apply(a) && converter::apply(b);
 
 		return ret;
 
@@ -771,13 +882,18 @@ namespace cpps
 
 		typedef cpps_converter<bool> converter;
 
-		bool b0 = converter::apply(a);
-		bool b1 = converter::apply(b);
-		ret.value.b = b0 || b1;
+		ret.value.b = converter::apply(a) || converter::apply(b);
 
 		return ret;
 	}
+	cpps_value cpps_ternaryoperator(cpps_value a, cpps_value b,cpps_value c)
+	{
+		typedef cpps_converter<bool> converter;
 
+		bool b0 = converter::apply(a);
+
+		return b0 ? b : c;
+	}
 	void cpps_regsymbols(C * c)
 	{
 		module(c)[
@@ -792,22 +908,25 @@ namespace cpps
 			def("/", cpps_divide),
 			def("%", cpps_quyu),
 			def("+", cpps_add),
+			def("&", cpps_add2),
+			def("|", cpps_add3),
 			def("-", cpps_subtract),
-			def("..", cpps_strcat),
+			def_inside("..", cpps_strcat),
 			def(">", cpps_bigger),
 			def(">=", cpps_biggerorequel),
 			def("<", cpps_less),
 			def("<=", cpps_lessorequel),
 			def("==", cpps_equel),
 			def("!=", cpps_notequel),
-			def("=", cpps_assignment),
+			def_inside("=", cpps_assignment),
 			def("+=", cpps_addandassignment),
 			def("-=", cpps_subtractandassignment),
 			def("*=", cpps_mulandassignment),
 			def("/=", cpps_divideandassignment),
 			def("&&", cpps_and),
 			def("||", cpps_or),
-			def("..=", cpps_strcatassignment)
+			def("..=", cpps_strcatassignment),
+			def("?", cpps_ternaryoperator)
 		];
 
 		leftsymbolmap["++"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	"++a");
@@ -821,6 +940,8 @@ namespace cpps
 		symbolmap["/"]		= new cpps_symbol(1, 2, NOLIMIT,		"/");
 		symbolmap["%"]		= new cpps_symbol(1, 2, NOLIMIT,		"%");
 		symbolmap["+"]		= new cpps_symbol(2, 2, NOLIMIT,		"+");
+		symbolmap["&"]		= new cpps_symbol(2, 2, NOLIMIT,		"&");
+		symbolmap["|"]		= new cpps_symbol(2, 2, NOLIMIT,		"|");
 		symbolmap["-"]		= new cpps_symbol(2, 2, NOLIMIT,		"-");
 		symbolmap[".."]		= new cpps_symbol(3, 2, NOLIMIT,		"..");
 		symbolmap[">"]		= new cpps_symbol(4, 2, NOLIMIT,		">");
@@ -831,12 +952,13 @@ namespace cpps
 		symbolmap["!="]		= new cpps_symbol(5, 2, NOLIMIT,		"!=");
 		symbolmap["&&"]		= new cpps_symbol(6, 2, NOLIMIT,		"&&");
 		symbolmap["||"]		= new cpps_symbol(7, 2, NOLIMIT,		"||");
-		symbolmap["="]		= new cpps_symbol(8, 2, LEFTMUSTVAR,	"=");
-		symbolmap["+="]		= new cpps_symbol(8, 2, LEFTMUSTVAR,	"+=");
-		symbolmap["-="]		= new cpps_symbol(8, 2, LEFTMUSTVAR,	"-=");
-		symbolmap["*="]		= new cpps_symbol(8, 2, LEFTMUSTVAR,	"*=");
-		symbolmap["/="]		= new cpps_symbol(8, 2, LEFTMUSTVAR,	"/=");
-		symbolmap["..="]	= new cpps_symbol(8, 2, LEFTMUSTVAR,	"..=");
+		symbolmap["?"]		= new cpps_symbol(8, 3, NOLIMIT,		"?");
+		symbolmap["="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"=");
+		symbolmap["+="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"+=");
+		symbolmap["-="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"-=");
+		symbolmap["*="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"*=");
+		symbolmap["/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"/=");
+		symbolmap["..="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..=");
 
 		symbolleftasso[0] = false;
 		symbolleftasso[1] = true;

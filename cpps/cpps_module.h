@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_MODULE
@@ -27,6 +28,12 @@ namespace cpps
 			f->isneedC = false;
 		}
 		RegxModule( cpps_regfunction* f,bool b )
+			:f(f)
+		{
+			f->isneedC = b;
+		}
+
+		RegxModule(cpps_reggvar* f, bool b)
 			:f(f)
 		{
 			f->isneedC = b;
@@ -67,6 +74,16 @@ namespace cpps
 			_cls->regFunc( r );
 			return *this;
 		}
+
+		template<class F>
+		_class<C>&  defvar(C *c, std::string name, F v)
+		{
+			cpps_reg* r = make_regvar(name, cpps_cpp_to_cpps_converter<F>::apply(c, v));
+			r->isneedC = false;
+			_cls->regFunc(r);
+			return *this;
+		}
+
 		template<class F>
 		_class<C>& 	def_inside(std::string func, F _f)
 		{
@@ -90,6 +107,16 @@ namespace cpps
 		return RegxModule(make_regfunction(func, f),false);
 	}
 
+
+	template<class F>
+	RegxModule defvar(C *c,std::string name, F v)
+	{
+		return RegxModule(make_regvar(name, cpps_cpp_to_cpps_converter<F>::apply(c,v)), false);
+	}
+
+
+
+
 	template<class F>
 	RegxModule def_inside(std::string func, F f)
 	{
@@ -106,7 +133,9 @@ namespace cpps
 			domain = cState->_G;//默认是根节点
 			if (!_domain.empty())//如果定义名字了 那就是自己的一个。。。
 			{
-				cpps_regvar * v = domain->getVar(_domain);
+				cpps_domain* leftdomain = NULL;
+
+				cpps_regvar * v = domain->getVar(_domain,leftdomain);
 				if (!v)
 				{
 					cpps_domain *temp_domain = new cpps_domain(NULL, cpps_domain_type_root,"root");//创建根节点域

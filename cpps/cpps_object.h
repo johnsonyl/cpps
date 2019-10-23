@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/24 (yy/mm/dd)
 //@Module		:	CPPS_OBJECT
@@ -28,14 +29,14 @@ namespace cpps
 
 
 		template<class Type>
-		object(Type v)
+		object(C*c,Type v)
 		{
-			if (!cpps_cpp_to_cpps_converter<Type>::match(NULL,v))
+			if (!cpps_cpp_to_cpps_converter<Type>::match(c,v))
 			{
 				throw("×ª»»Ê§°Ü¡£¡£¡£¡£");
 			}
 
-			value = cpps_cpp_to_cpps_converter<Type>::apply(NULL,v);
+			value = cpps_cpp_to_cpps_converter<Type>::apply(c,v);
 		}
 	
 		object		operator [] (std::string k)
@@ -43,7 +44,9 @@ namespace cpps
 			cpps_value ret;
 			if (value.tt == CPPS_TCLASSVAR || value.tt == CPPS_TDOMAIN)
 			{
-				cpps_regvar* var = value.value.domain->getVar(k);
+				cpps_domain* leftdomain = NULL;
+
+				cpps_regvar* var = value.value.domain->getVar(k,leftdomain);
 				if (var)
 				{
 					ret = var->getValue();

@@ -13,9 +13,9 @@ CC  = gcc
 
 CPP = g++
 
-CPPFLAGS = -Wall -ansi -fexceptions -w -msse -fpermissive
+CPPFLAGS = -std=c++11 -Wno-format-y2k -fpermissive
 
-OBJFLAGS = -c
+OBJFLAGS = -c -fpermissive
 
 AR = ar rcs
 
@@ -72,8 +72,8 @@ OBJ_FILES = $(addsuffix .o, $(basename $(SRC_FILES)))
 GEN_OBJS  = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(SRC_FILES))))
 
 
-INC_DIRS = -I. -I/home/mrzz/lib/libpthread -I/home/mrzz/lib/mysql/include/ -I/usr/include
-LIB_DIRS = -L. -L/home/mrzz/lib -I/home/mrzz/lib/libpthread -L/home/mrzz/lib/mysql -L/lib -L/usr/lib 
+INC_DIRS = -I. -I/usr/include
+LIB_DIRS = -L. -L/lib -L/usr/lib 
 LNK_LIBS = -lrt -ldl -lm -lpthread
 
 

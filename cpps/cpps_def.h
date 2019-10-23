@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/24 (yy/mm/dd)
 //@Module		:	CPPS_DEF
@@ -10,13 +11,14 @@
 //@website		:	http://cpps.wiki
 //==================================
 
-#define CPPS_VER		"1.0 Beta"
+#define CPPS_VER		"1.0 Aphla"
 #define CPPS_NAME		"CPPS"
-
-#define CPPS_GEN1_CHECKSIZE			1024 * 5  // 512 M
-#define CPPS_GEN0_CHECKSIZE			CPPS_GEN1_CHECKSIZE / 8 * 3
-#define CPPS_GEN0_CHECKCOUNT		10
-#define CPPS_BARRIER_CHECKCOUNT		10
+#define M_PI				3.14159265358979323846
+#define CPPS_GEN1_CHECKSIZE			(1024 * 1024 * 128)  // 128 M
+#define CPPS_GEN0_CHECKSIZE			(CPPS_GEN1_CHECKSIZE / 8 * 3)
+#define CPPS_GEN0_CHECKCOUNT		512
+#define CPPS_BARRIER_CHECKCOUNT		64
+#define CPPS_ENCODE_CPPS_KEY	0x1f
 
 #define CPPS_TNIL		0
 #define CPPS_TINTEGER	1	
@@ -76,7 +78,12 @@
 #define CPPS_QUOTEGETCHIILD		38  //引用变量名字
 #define	CPPS_OINCLUDE			39	//include
 #define CPPS_VARNAME_LAMBDA		40	//lambda变量名
-#define CPPS_OARRAY				41	//括号
+#define CPPS_OARRAY				41	//数组{}
+#define	CPPS_ONAMESPACE			42	//名空间
+#define CPPS_OINTEGER16			43 //数字（整数）
+#define CPPS_OTRYCATCH			44 //trycatch
+#define CPPS_OTHROW			45	//执行if else
+#define CPPS_OOBJECT				46	//数组{}
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 
@@ -100,6 +107,8 @@ enum
 	cpps_domain_type_exec,		//执行域（临时域）
 	cpps_domain_type_class,		//类的域
 	cpps_domain_type_classvar,		//类的域
+	cpps_domain_type_namespace,		//名空间
+	cpps_domain_type_trycatch,		//trycatch
 	//cpps_domain_type_
 
 };
@@ -127,24 +136,24 @@ typedef long long __int64;
 #define _CPPS_CATCH } catch (cpps_error e)\
 {\
 	printf("错误: %d : %s file:%s line:%d \n错误堆栈信息：\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
-	std::vector<cpps_stack*> &stacklist = c->getcallstack(); \
-for (std::vector<cpps_stack*>::reverse_iterator it = stacklist.rbegin(); it != stacklist.rend(); ++it)\
+	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
+for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
 	std::cout << " " << stack->f.c_str() << "	第" << stack->l << "行	函数：" << stack->func.c_str() << std::endl; \
 }\
-	\
+	c->resume();\
 }\
 	catch (const char* s)\
 {\
 	printf("错误: %s \n错误堆栈信息：\n", s); \
-	std::vector<cpps_stack*> &stacklist = c->getcallstack(); \
-for (std::vector<cpps_stack*>::reverse_iterator it = stacklist.rbegin(); it != stacklist.rend(); ++it)\
+	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
+for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
 	std::cout << " " << stack->f.c_str() << "	第" << stack->l << "行	函数：" << stack->func.c_str() << std::endl; \
 }\
-	\
+	c->resume();\
 }
 
 
@@ -175,7 +184,8 @@ namespace cpps
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/mman.h>
-
+#include <sys/stat.h> 
+#include<unistd.h>
 #ifndef FALSE  
 	#define FALSE   0
 #endif
@@ -185,6 +195,12 @@ namespace cpps
 #ifndef NULL  
 	#define NULL    0
 #endif
+
+#define MAXUINT64   ((usint64)~((int64)0))
+#define MAXINT64    ((cpps_integer)(MAXUINT64 >> 1))
+#define MININT64    ((cpps_integer)~MAXINT64)
+
+#define _mkdir(p) mkdir(p,S_IRWXU)
 #else
 
 #pragma warning(disable:4996)
@@ -192,7 +208,9 @@ namespace cpps
 #define WIN32_LEAN_AND_MEAN	
 #include <windows.h>
 #include <time.h>
-
+#include <direct.h>
+#include <Process.h>
+#include <corecrt_io.h>
 #endif
 
 
@@ -206,7 +224,17 @@ namespace cpps
 #include <sstream>
 #include <unordered_set>
 #include <unordered_map>
-#include <direct.h>
+#include<math.h>
+#include <regex>
+
+//lib
+namespace cpps
+{
+	struct C;
+}
+typedef void(__stdcall*cpps_attach_func)(cpps::C *c);
+typedef void(__stdcall*cpps_detach_func)(cpps::C *c);
+
 
 //////////////////////////////////////////////////////////////////////////
 

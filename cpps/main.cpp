@@ -23,11 +23,13 @@ int32 main(int argc,char **argv)
 
 	C* c = cpps::create();
 
-	printf("[Cpps 0.1.0 Copyright (C) 2015-2016 By Johnson, Pri-test]\n");
+	printf("[Cpps 1.0.0 Copyright (C) 2015-2017 By Johnson, Pub-test]\n");
 
 	cpps_try
 	cpps::dofile(c, path.c_str());
 	cpps_catch
+
+
 
 	while (true)
 	{

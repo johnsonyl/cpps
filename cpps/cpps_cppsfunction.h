@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/26 (yy/mm/dd)
 //@Module		:	CPPS_CPPSFUNCTION
@@ -25,9 +26,12 @@ namespace cpps
 	//内部
 	cpps_value				cpps_calculate_expression(C *c, cpps_domain *domain, Node *o, cpps_domain *&leftdomain);
 	void					cpps_step(C * c, cpps_domain *domain, Node* d);
-	void					cpps_step_all(C * c, int32 retType, cpps_domain* domain, Node *o, bool isCheckGen1 );
+	void					cpps_step_all(C * c, int32 retType, cpps_domain* domain, Node *o );
 
-	void					make_values(C *c, cpps_domain *domain, Node *d, std::vector<cpps_value> &params);
+	void					make_values(C *c, cpps_domain *domain, Node *d, std::vector<cpps_value> &params, std::vector<cpps_regvar *>&varlist);
+	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
+
+	
 
 	
 
@@ -49,7 +53,7 @@ namespace cpps
 
 
 
-		virtual void  callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, std::vector<cpps_value> *o, cpps_stack *stack, bool isCheckGen1 )
+		virtual void  callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, std::vector<cpps_value> *o, cpps_stack *stack )
 		{
 #ifdef CPPS_JIT_COMPILER
 
@@ -92,12 +96,20 @@ namespace cpps
 							cpps_domain *leftdomain = NULL;
 							cpps_value value = cpps_calculate_expression(c, prevdomain, var, leftdomain);
 							v->setValue(value);
+							//if (value.tt == CPPS_TCLASS)
+							//{
+							//	cpps_gc_add_barrier(c, v);
+							//}
 						}
 					}
 					else
 					{
 						cpps_value value = (*o)[i];
 						v->setValue(value);
+						//if (value.tt == CPPS_TCLASS)
+						//{
+						//	cpps_gc_add_barrier(c, v);
+						//}
 					}
 					funcdomain->regVar(v);
 				}
@@ -111,7 +123,7 @@ namespace cpps
 
 #else
 
-			cpps_step_all(c,CPPS_SINGLERET,funcdomain, context,isCheckGen1);
+			cpps_step_all(c,CPPS_SINGLERET,funcdomain, context);
 			
  			if (ret)
  				*ret = funcdomain->funcRet;//return的值反馈回去

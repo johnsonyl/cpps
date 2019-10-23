@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/12/16 (yy/mm/dd)
 //@Module		:	CPPS_DOFUNCTION
@@ -13,6 +14,7 @@
 
 namespace cpps
 {
+	void					cpps_gc_check_step(C * c);
 	object					dofunction(C *c, object func);
 }
 
@@ -66,10 +68,22 @@ namespace cpps
 				cpps_domain *execdomain = c->_G;
 				if (func.value.parentLambdaVar)
 					execdomain = func.value.parentLambdaVar;
+				
 
-				bool isCheckGen1 = !c->isCheckGen1;
+				cpps_stack *stack = new cpps_stack("", 0, f->funcname);
+				c->push_stack(stack);
 
-				f->callfunction(c, &ret, execdomain, &paramlist, NULL, isCheckGen1);
+				f->callfunction(c, &ret, execdomain, &paramlist, NULL);
+
+
+				c->pop_stack();
+				delete stack;
+
+				//¼ì²âgc
+				if (!c->getcallstack() || c->getcallstack()->size() == 0)
+				{
+					cpps_gc_check_step(c);
+				}
 			}
 		}
 		return ret;

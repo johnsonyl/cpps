@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/25 (yy/mm/dd)
 //@Module		:	CPPS_CONVERTER
@@ -58,6 +59,11 @@ namespace cpps
 	def_cpps_number_cast(unsigned long, integer);
 
 	def_cpps_number_cast(cpps_integer, integer);
+#ifdef WIN32
+#ifdef _M_X64
+	def_cpps_number_cast(size_t, integer);
+#endif
+#endif
 
 	def_cpps_number_cast(float, number);
 	def_cpps_number_cast(double, number);
@@ -142,7 +148,7 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TBOOLEAN;
+			return true;
 		}
 		static bool		apply(cpps_value obj)
 		{
@@ -170,7 +176,7 @@ namespace cpps
 				}
 				break;
 			case CPPS_TSTRING:
-				if (!obj.str.empty())
+				if (!((std::string*)obj.value.domain)->empty())
 				{
 					return true;
 				}
@@ -183,8 +189,18 @@ namespace cpps
 				return obj.value.b != 0;
 			case CPPS_TCLASSVAR:
 				return obj.value.domain != NULL;
+			case CPPS_TNIL:
+				return false;
+			case CPPS_TFUNCTION:
+				return true;
+			case CPPS_TDOMAIN:
+				return true;
+			case CPPS_TREGVAR:
+				return true;
+			case CPPS_TCLASS:
+				return true;
 			default:
-				throw("有错！！！！");
+				return false;
 				break;
 			}
 
@@ -227,6 +243,11 @@ namespace cpps
 			cpps_cppsclassvar *var = cpps_class_singleton<Type>::getSingletonPtr()->getcls()->create(false);
 			ret.value.domain = var;
 			var->setclsptr((void *)v);
+
+		//	cpps_regvar* v2 = new cpps_regvar;
+		//	v2->setValue(var);
+
+		//	cpps_gc_add_barrier(c, v2);
 
 			//将新创建出来的添加到新生区稍后检测要不要干掉
 			cpps_gc_add_gen0(c, var);
@@ -310,7 +331,11 @@ namespace cpps
 	def_cpps_cpp_to_cpps_number_cast(unsigned long, integer);
 
 	def_cpps_cpp_to_cpps_number_cast(cpps_integer, integer);
-
+#ifdef WIN32
+#ifdef _M_X64
+	def_cpps_cpp_to_cpps_number_cast(size_t, integer);
+#endif
+#endif
 	def_cpps_cpp_to_cpps_number_cast(float, number);
 	def_cpps_cpp_to_cpps_number_cast(double, number);
 	def_cpps_cpp_to_cpps_number_cast(long double, number);
@@ -326,7 +351,7 @@ namespace cpps
 		}
 		static cpps_value		apply(C *c, std::string obj)
 		{
-			return cpps_value(obj);
+			return cpps_value(c,obj);
 		}
 	};
 	template<>
@@ -338,7 +363,7 @@ namespace cpps
 		}
 		static cpps_value		apply(C *c, const char * obj)
 		{
-			return cpps_value(obj);
+			return cpps_value(c,obj);
 		}
 	};
 

@@ -43,7 +43,8 @@ namespace cpps
 	void cpps_jit_compiler::compiler_dofunction(C * c,cpps_domain * domain, Node * o)
 	{
 		//检测编译异常
-		cpps_regvar *reg = domain->getVar(o->s);
+		cpps_domain* leftdomain = NULL;
+		cpps_regvar *reg = domain->getVar(o->s, leftdomain);
 		if (!reg)
 		{
 			throw("JIT ERROR：要执行的函数变量不存在");
@@ -113,7 +114,9 @@ namespace cpps
 	cpps_value* cpps_jit_string_to_value(cpps_value* value, const char* s)
 	{
 		value->tt = CPPS_TSTRING;
-		value->str = s;
+		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)value->value.domain;
+		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+		*(tmpStr) = s;
 		return value;
 	}
 	cpps_value* cpps_jit_bool_to_value(cpps_value* value, bool b)
@@ -156,7 +159,7 @@ namespace cpps
 		cpps_cppsclassvar *cppsclassvar = cppsclass->create();
 			
 		if (cppsclass->o)
-			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar, cppsclass->o->getright(),false);
+			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar, cppsclass->o->getright());
 
 		cpps_regvar * v = new cpps_regvar();//_G 为根节点
 		v->setVarName("this");
@@ -203,7 +206,8 @@ namespace cpps
 		}
 		else if (v->type == CPPS_ONEWVAR)
 		{
-			cpps_regvar *var = domain->getVar(v->s);
+			cpps_domain* leftdomain = NULL;
+			cpps_regvar *var = domain->getVar(v->s,leftdomain);
 			if (!var || var->getValue().tt != CPPS_TCLASS)
 			{
 				throw(cpps_error(v->filename, v->line, cpps_error_classerror, " 【%s】 new 出的对象必须为类对象", v->s.c_str()));
@@ -253,7 +257,8 @@ namespace cpps
 		}
 		else if (v->type == CPPS_VARNAME)
 		{
-			cpps_regvar *var = domain->getVar(v->s);
+			cpps_domain* leftdomain = NULL;
+			cpps_regvar *var = domain->getVar(v->s,leftdomain);
 			if (!var)
 			{
 				return;

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,31 +22,32 @@
     <ProjectGuid>{76F5BE5C-50E9-4007-84D2-0F619A4CDB4D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>cpps</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -155,12 +156,17 @@
     <ClCompile Include="cpps_gc.cpp" />
     <ClCompile Include="cpps_jit_compiler.cpp" />
     <ClCompile Include="cpps_io.cpp" />
+    <ClCompile Include="cpps_lock.cpp" />
     <ClCompile Include="cpps_map.cpp" />
     <ClCompile Include="cpps_math.cpp" />
+    <ClCompile Include="cpps_module.cpp" />
+    <ClCompile Include="cpps_regfunction.cpp" />
     <ClCompile Include="cpps_regvar.cpp" />
     <ClCompile Include="cpps_string.cpp" />
     <ClCompile Include="cpps_symbol.cpp" />
+    <ClCompile Include="cpps_thread.cpp" />
     <ClCompile Include="cpps_time.cpp" />
+    <ClCompile Include="cpps_trycatch_error.cpp" />
     <ClCompile Include="cpps_value.cpp" />
     <ClCompile Include="libcpps.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -201,6 +207,7 @@
     <ClInclude Include="cpps_io.h" />
     <ClInclude Include="cpps_is_void.h" />
     <ClInclude Include="cpps_jit_compiler.h" />
+    <ClInclude Include="cpps_lock.h" />
     <ClInclude Include="cpps_make_function.h" />
     <ClInclude Include="cpps_make_vector.h" />
     <ClInclude Include="cpps_map.h" />
@@ -210,10 +217,13 @@
     <ClInclude Include="cpps_node.h" />
     <ClInclude Include="cpps_object.h" />
     <ClInclude Include="cpps_regfunction.h" />
+    <ClInclude Include="cpps_regfunctionfmt.h" />
     <ClInclude Include="cpps_regvar.h" />
     <ClInclude Include="cpps_string.h" />
     <ClInclude Include="cpps_symbol.h" />
+    <ClInclude Include="cpps_thread.h" />
     <ClInclude Include="cpps_time.h" />
+    <ClInclude Include="cpps_trycatch_error.h" />
     <ClInclude Include="cpps_value.h" />
     <ClInclude Include="cpps_vector.h" />
     <ClInclude Include="libcpps.h" />

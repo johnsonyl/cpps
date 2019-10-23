@@ -66,6 +66,21 @@
     <ClCompile Include="cpps_debug.cpp">
       <Filter>头文件</Filter>
     </ClCompile>
+    <ClCompile Include="cpps_regfunction.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cpps_module.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cpps_trycatch_error.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cpps_lock.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="cpps_thread.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cpps.h">
@@ -186,6 +201,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="cpps_newptr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cpps_regfunctionfmt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cpps_trycatch_error.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cpps_lock.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cpps_thread.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

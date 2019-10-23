@@ -15,7 +15,11 @@ namespace cpps
 		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
-			cpps_str2d(obj.str.c_str(), &ret);
+
+			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)obj.value.domain;
+			std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+			cpps_str2d(tmpStr->c_str(), &ret);
 		}
 		return ret;
 	}
@@ -33,7 +37,9 @@ namespace cpps
 		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
-			cpps_str2i64(obj.str.c_str(), &ret);
+			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)obj.value.domain;
+			std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+			cpps_str2i64(tmpStr->c_str(), &ret);
 		}
 		return ret;
 	}
@@ -51,7 +57,9 @@ namespace cpps
 		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
-			strStream << obj.str;
+			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)obj.value.domain;
+			std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+			return std::string(tmpStr->begin(),tmpStr->end());
 		}
 		else if (obj.tt == CPPS_TBOOLEAN)
 		{
@@ -59,6 +67,98 @@ namespace cpps
 		}
 
 		return strStream.str();
+	}
+
+	bool cpps_value::operator<(const cpps_value &right) const
+	{
+		if (tt == right.tt)
+		{
+			switch (tt)
+			{
+			case CPPS_TNUMBER: return value.number < right.value.number;
+			case CPPS_TINTEGER: return value.integer < right.value.integer;
+			case CPPS_TSTRING: {
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)right.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+
+				return *(tmpStr) < *(tmpStr2);
+			}
+			default:
+				throw(cpps_error("unknow file", 0, 0, "<   ... 不可以当key用！type: %d", right.tt));
+			}
+		}
+		return tt < right.tt;
+	}
+
+	bool cpps_value::operator>(const cpps_value &right) const
+	{
+		if (tt == right.tt)
+		{
+			switch (tt)
+			{
+			case CPPS_TNUMBER: return value.number > right.value.number;
+			case CPPS_TINTEGER: return value.integer > right.value.integer;
+			case CPPS_TSTRING: {
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)right.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+
+				return *(tmpStr) > *(tmpStr2);
+			}
+			default:
+				throw(cpps_error("unknow file", 0, 0, ">   ... 不可以当key用！ type: %d", right.tt));
+			}
+		}
+		return tt > right.tt;
+	}
+
+	bool cpps_value::operator==(const cpps_value &right) const
+	{
+		if (tt == right.tt)
+		{
+			switch (tt)
+			{
+			case CPPS_TNUMBER: return value.number == right.value.number;
+			case CPPS_TINTEGER: return value.integer == right.value.integer;
+			case CPPS_TSTRING: {
+				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)value.domain;
+				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)right.value.domain;
+				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+
+				return *(tmpStr) == *(tmpStr2);
+			}
+			default:
+				throw(cpps_error("unknow file", 0, 0, "==   ... 不可以当key用！ type: %d", right.tt));
+			}
+		}
+		return false;
+	}
+
+	size_t cpps_value::hash::operator()(const cpps_value& _Keyval) const
+	{
+
+		switch (_Keyval.tt)
+		{
+		case CPPS_TNUMBER: return std::hash<cpps_number>()(_Keyval.value.number);
+		case CPPS_TINTEGER: return std::hash<cpps_integer>()(_Keyval.value.integer);
+		case CPPS_TSTRING: {
+
+			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)_Keyval.value.domain;
+			std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+
+			return std::hash<std::string>()(*(tmpStr));
+		}
+		default:
+			throw(cpps_error("unknow file", 0, 0, "==   ... 不可以当hash用！ type: %d", _Keyval.tt));
+		}
+		return _Keyval.tt;
 	}
 
 }

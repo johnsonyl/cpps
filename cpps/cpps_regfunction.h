@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_CALL_FUNCTION
@@ -21,13 +22,16 @@ namespace cpps
 	template <class C>
 	struct cpps_class;
 	struct cpps_cppsclass;
+	struct cpps_cpps_value;
+	struct Buffer;
 #define cpps_def_regfunction	1
 #define cpps_def_regclass		2
+#define cpps_def_regvar			3
 
 
 	struct cpps_function
 	{
-		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL,bool isCheckGen1 = false)
+		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
 		{}
 		void			setfuncname(std::string name){
 			funcname = name;
@@ -61,6 +65,7 @@ namespace cpps
 		cpps_reg* next;
 		int8	type;
 		std::string varname;
+		cpps_value value;
 		bool		isneedC;
 	};
 
@@ -74,6 +79,15 @@ namespace cpps
 			func->setfuncname(f);
 		}
 		cpps_function* func;
+	};
+	struct cpps_reggvar : public cpps_reg
+	{
+		cpps_reggvar(std::string n, cpps_value v)
+		{
+			type = cpps_def_regvar;
+			varname = n;
+			value = v;
+		}
 	};
 	struct cpps_regclass : public cpps_reg
 	{
@@ -107,7 +121,8 @@ namespace cpps
 			param = make_vector(f);
 		}
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, bool isCheckGen1 = false)
+
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
 		{
 			dofunc< vector1<R> > func = make_function(param);
 
@@ -116,6 +131,8 @@ namespace cpps
 		R(*f)();
 		vector1<R> param;
 	};
+
+	
 
 	template<class R>
 	cpps_regfunction* make_regfunction(std::string func, R(*f)())
@@ -132,7 +149,7 @@ namespace cpps
 			param = make_vector(f);
 		}
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, bool isCheckGen1 = false)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
 		{
 			dofunc< vector1<R> > func = make_function(param);
 
@@ -147,6 +164,13 @@ namespace cpps
 	{
 		return new cpps_regfunction(func, new cpps_cpp_function1<R,C>(f));
 	}
+
+	template<class F>
+	cpps_reggvar* make_regvar(std::string name, F v)
+	{
+		return new cpps_reggvar(name, v);
+	}
+	
 }
 
 
@@ -197,7 +221,7 @@ namespace cpps
 			param = make_vector(f);
 		}
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, bool isCheckGen1 = false)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
 		{
 			dofunc<CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > > func = make_function(param);
 
@@ -222,7 +246,7 @@ namespace cpps
 			param = make_vector(f);
 		}
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, bool isCheckGen1 = false)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
 		{
 			dofunc<CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > > func = make_function(param);
 

@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/18 (yy/mm/dd)
 //@Module		:	CPPS
@@ -12,6 +13,8 @@
 
 
 #include "cpps_def.h"
+#include "cpps_lock.h"
+#include "cpps_thread.h"
 #include "cpps_cat.h"
 #include "cpps_enum_param.h"
 #include "cpps_error.h"
@@ -22,8 +25,8 @@
 #include "cpps_gcobject.h"
 #include "cpps_vector.h"
 #include "libcpps.h"
-#include "cpps_regfunction.h"
 #include "cpps_value.h"
+#include "cpps_regfunction.h"
 #include "cpps_regvar.h"
 #include "cpps_domain.h"
 #include "cpps_function.h"
@@ -42,6 +45,8 @@
 #include "cpps_dofunction.h"
 #include "cpps_gc.h"
 #include "cpps_newptr.h"
+#include "cpps_regfunctionfmt.h"
+#include "cpps_trycatch_error.h"
 
 #include "cpps_base.h"
 #include "cpps_math.h"

@@ -1,193 +1,28 @@
 #include "cpps.h"
 namespace cpps
 {
-	std::string	cpps_string_replace(std::string v, std::string v2, std::string v3);
-	cpps_value cpps_io_getc()
+	std::string	cpps_io_string_replace(std::string v, std::string v2, std::string v3)
+	{
+		std::string::size_type pos = 0;
+
+		while ((pos = v.find(v2, pos)) != std::string::npos)
+		{
+			v.replace(pos, v2.length(), v3);
+			pos += v3.length();
+		}
+
+		return v;
+	}
+	cpps_value cpps_io_getc(C *c)
 	{
 		std::string ret;
 
 		std::cin >> ret;
 
-		return ret;
+		return cpps_value(c,ret);
 	}
 
-	struct Buffer
-	{
-		Buffer()
-		{
-			buff = NULL;
-			offset = 0;
-			buffsize = 0;
-		}
-		~Buffer()
-		{
-			if (buff) delete[] buff; 
-			buff = NULL;
-			buffsize = 0;
-			offset = 0;
-		}
-		void			read(Buffer *out, cpps_integer len)
-		{
-			_write(_read(NULL, len),len);
-		}
-		Buffer			*write(Buffer *buf, cpps_integer len)
-		{
-			_write(_read(NULL,len),len);
-			return this;
-		}
-		char *			_read(char *out, cpps_integer len)
-		{
-			char *ret = getbuffer() + length();
-			if (out)
-			{
-				memcpy(ret, out, (size_t)len);
-			}
-			seek(length() + len);
-			return ret;
-		}
-		void			_write(const char *buf, cpps_integer len)
-		{
-			realloc(length() + len);
-			memcpy(getbuffer() + length(), buf, (size_t)len);
-			seek(length() + len);
-		}
-		std::string		tostring()
-		{
-			std::string ret;
-			ret = getbuffer();
-			return ret;
-		}
-		cpps_integer	tointeger()
-		{
-			std::string str = tostring();
-			cpps_integer ret;
-			cpps_str2i64(str.c_str(), &ret);
-			return ret;
-		}
-		cpps_number		tonumber()
-		{
-			std::string str = tostring();
-			cpps_number ret;
-			cpps_str2d(str.c_str(), &ret);
-			return ret;
-		}
-		cpps_integer	readInt8()
-		{
-			signed char ret = 0;
-			_read((char *)&ret, sizeof(signed char));
-			return ret;
-		}
-		cpps_integer	readInt16()
-		{
-			short ret = 0;
-			_read((char *)&ret, sizeof(short));
-			return ret;
-		}
-		cpps_integer	readInt32()
-		{
-			int32 ret = 0;
-			_read((char *)&ret, sizeof(int32));
-			return ret;
-		}
-		cpps_integer	readInt()
-		{
-			cpps_integer ret = 0;
-			_read((char *)&ret, sizeof(cpps_integer));
-			return ret;
-		}
-		cpps_number		readNumber()
-		{
-			cpps_number ret = 0;
-			_read((char *)&ret, sizeof(cpps_number));
-			return ret;
-		}
-		std::string		readString(cpps_integer len)
-		{
-			std::string ret;
-			ret.append(_read(NULL, len),(usint32) len);
-			return ret;
-		}
-		bool			readBool()
-		{
-			bool ret = false;
-			_read((char *)&ret, sizeof(bool));
-			return ret;
-		}
-		Buffer*			writeInt8(signed char i)
-		{
-			_write((char *)&i, sizeof(signed char));
-			return this;
-		}
-		Buffer*			writeInt16(short i)
-		{
-			_write((char *)&i, sizeof(short));
-			return this;
-		}
-		Buffer*			writeInt32(int32 i)
-		{
-			_write((char *)&i, sizeof(int32));
-			return this;
-		}
-		Buffer*			writeInt(cpps_integer i)
-		{
-			_write((char *)&i, sizeof(cpps_integer));
-			return this;
-		}
-		Buffer*			writeNumber(cpps_number i)
-		{
-			_write((char *)&i, sizeof(cpps_number));
-			return this;
-		}
-		Buffer*			writeString(std::string s)
-		{
-			_write(s.c_str(), s.size());
-			return this;
-		}
-		Buffer*			writeBool(bool b)
-		{
-			_write((char *)&b, sizeof(bool));
-			return this;
-		}
-		void			seek(cpps_integer s)
-		{
-			if (s == -1)
-				offset = buffsize;
-			else
-				offset = s;
-		}
-		cpps_integer	length()
-		{
-			return offset;
-		}
-		char *			getbuffer()
-		{
-			return buff;
-		}
-		void			realloc(cpps_integer s)
-		{
-			if (buffsize >= s)
-			{
-				buffsize = s;
-				return;
-			}
-			usint32 newsize = static_cast<usint32>(s);
-			char *newbuff = new char[newsize+1];
-			memset(newbuff, 0, (size_t)s+1);
-
-			if (buff)
-			{
-				memcpy(newbuff, buff, (size_t)buffsize);
-				delete[] buff;
-			}
-
-			buff = newbuff;
-			buffsize = s;
-		}
-	public:
-		cpps_integer	offset;
-		char*			buff;
-		cpps_integer	buffsize; //×î´ósize
-	};
+	
 	FILE *		cpps_io_open(std::string filepath, std::string mode)
 	{
 		FILE *ret = NULL;
@@ -211,10 +46,29 @@ namespace cpps
 		buf->realloc(buf->length() + len);
 		fread(buf->getbuffer() + buf->length(), (size_t)len, 1, file);
 	}
+	std::string cpps_io_getlines(FILE *file)
+	{
+		std::string ret = "";
+		char s[100];
+		while (true)
+		{
+			memset(s, 0, 100);
+			size_t result = fread(s, 1, 1, file);
+			if (result != 1) break;
+			if (s[0] == '\n') break;
+			if (s[0] != '\r') ret += s;
+		}
+		return ret;
+	}
 	void		cpps_io_write(FILE *file, Buffer *buf)
 	{
 		fwrite(buf->getbuffer(), (size_t)buf->length(), 1, file);
 	}
+	void		cpps_io_writes(FILE *file, std::string buf)
+	{
+		fwrite(buf.c_str(), buf.size(), 1, file);
+	}
+		
 	void		cpps_io_seek(FILE *file, cpps_integer sk)
 	{
 		if (sk == -1)
@@ -242,7 +96,7 @@ namespace cpps
 	}
 	std::string cpps_io_getfilepath(std::string str)
 	{
-		str = cpps_string_replace(str, "\\", "/");
+		str = cpps_io_string_replace(str, "\\", "/");
 
 		size_t pos = str.find_last_of("/");
 		if (pos != std::string::npos)
@@ -254,7 +108,7 @@ namespace cpps
 	}
 	std::string cpps_io_getfilename(std::string str)
 	{
-		str = cpps_string_replace(str, "\\", "/");
+		str = cpps_io_string_replace(str, "\\", "/");
 
 		size_t pos = str.find_last_of("/");
 		if (pos != std::string::npos)
@@ -282,14 +136,37 @@ namespace cpps
 	{
 		return rename(o.c_str(),n.c_str());
 	}
+	cpps_integer cpps_io_mkdir(std::string p)
+	{
+		return _mkdir(p.c_str());
+	}
+	bool cpps_io_file_exists(std::string path)
+	{
+#ifdef WIN32
+		if (_access(path.c_str(), 0) == -1)
+#else
+		if (access(path.c_str(), 0) == -1)
+#endif
+			return false;
+		else
+			return true;
+	}
+	std::string cpps_getcwd()
+	{
+		char buffer[32768];
+		_getcwd(buffer, 32768);
+		return buffer;
+	}
 	void cpps_regio(C *c)
 	{
 		module(c,"io")[
-			def("getc",cpps_io_getc),
+			def_inside("getc",cpps_io_getc),
 			def("fopen",cpps_io_open),
 			def("fsize", cpps_io_size),
 			def("fread", cpps_io_read),
+			def("getlines", cpps_io_getlines),
 			def("fwrite", cpps_io_write),
+			def("fwrites", cpps_io_writes),
 			def("fseek", cpps_io_seek),
 			def("fclose", cpps_io_close),
 			def("fflush", cpps_io_fflush),
@@ -298,7 +175,10 @@ namespace cpps
 			def("getfileext", cpps_io_getfileext),
 			def("getfilepath", cpps_io_getfilepath),
 			def("getfilename", cpps_io_getfilename),
-			def("getfilenamenotext", getfilenamenotext)
+			def("getfilenamenotext", getfilenamenotext),
+			def("_getcwd", cpps_getcwd),
+			def("mkdir",cpps_io_mkdir),
+			def("file_exists",cpps_io_file_exists)
 		];
 
 		module(c)[

@@ -3,6 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
+//@QQ			:	88481106
 //@Email		:	jiang_4177@163.com
 //@Date			:	2015/11/23 (yy/mm/dd)
 //@Module		:	CPPS_ERROR
@@ -26,6 +27,7 @@ enum
 	cpps_error_forerror = 10,
 	cpps_error_whileerror = 11,
 	cpps_error_arrayeerror = 12,
+	cpps_error_trycatherror = 13,
 };
 
 
@@ -48,6 +50,7 @@ struct cpps_error
 		line = l;
 		s = szString;
 	}
+
 	int erron;
 	std::string file;
 	int line;
