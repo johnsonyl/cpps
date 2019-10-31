@@ -14,10 +14,14 @@ namespace cpps
 				std::vector<cpps_value> paramlist;
 
 
+				cpps_domain *execdomain = c->_G;
+				if (func.value.parentLambdaVar)
+					execdomain = func.value.parentLambdaVar;
+
 				cpps_stack *stack = new cpps_stack("", 0, f->funcname);
 				c->push_stack(stack);
 
-				f->callfunction(c, &ret, c->_G, &paramlist);
+				f->callfunction(c, &ret, execdomain, &paramlist);
 
 				c->pop_stack();
 				delete stack;

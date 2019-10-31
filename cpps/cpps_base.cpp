@@ -238,7 +238,13 @@ namespace cpps
 				{
 					for (v->begin(); v->end();)
 					{
-						object r = dofunction(c, func, v->it());
+						object func_object = func;
+						func_object.value.parentLambdaVar = func.parentLambdaVar;
+						object r = dofunction(c, func_object, v->it());
+
+						if (func.parentLambdaVar->isbreak == true)
+							break;
+
 						if (type(r) == CPPS_TBOOLEAN)
 						{
 							bool ret = object_cast<bool>(r);
@@ -257,7 +263,13 @@ namespace cpps
 				{
 					for (v->begin(); v->end(); )
 					{
-						object r = dofunction(c, func, v->key(),v->it());
+						object func_object = func;
+						func_object.value.parentLambdaVar = func.parentLambdaVar;
+						object r = dofunction(c, func_object, v->key(),v->it());
+
+						if (func.parentLambdaVar->isbreak == true)
+							break;
+
 						if (type(r) == CPPS_TBOOLEAN)
 						{
 							bool ret = object_cast<bool>(r);
@@ -276,7 +288,14 @@ namespace cpps
 				{
 					for (v->begin(); v->end(); )
 					{
-						object r = dofunction(c, func, v->key(), v->it());
+						object func_object = func;
+						func_object.value.parentLambdaVar = func.parentLambdaVar;
+						object r = dofunction(c, func_object, v->key(), v->it());
+
+
+						if (func.parentLambdaVar->isbreak == true)
+							break;
+
 						if (type(r) == CPPS_TBOOLEAN)
 						{
 							bool ret = object_cast<bool>(r);

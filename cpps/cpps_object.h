@@ -25,6 +25,7 @@ namespace cpps
 		object(cpps_value v)
 		{
 			value = v;
+			value.parentLambdaVar = NULL;
 		}
 
 
@@ -88,7 +89,6 @@ namespace cpps
 		}
 		return "unknow";
 	}
-
 }
 
 #endif // CPPS_OBJECT_CPPS_HEAD_

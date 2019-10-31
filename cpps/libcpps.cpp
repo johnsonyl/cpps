@@ -212,7 +212,7 @@ namespace cpps
 	void cpps_parse_def_function(cpps_domain *domain, Node* right, Node *root, cppsbuffer& buffer)
 	{
 		//定义了一个函数
-		cpps_domain *funcdomain = new cpps_domain(domain, cpps_domain_type_func,"func");
+		cpps_domain *funcdomain = new cpps_domain(domain, cpps_domain_type_func, right->parent->s);
 		right->setdomain(funcdomain);
 
 		Node *params = new Node(right, right->filename, buffer.line());
@@ -739,7 +739,10 @@ namespace cpps
 					//获取里面 参数
 					geto->type = CPPS_ODOFUNCTION;
 					child = new Node(o->filename, buffer.line());
-					cpps_parse_dofunction(domain, child,root, buffer);
+					cpps_domain *funcdomain = new cpps_domain(domain, cpps_domain_type_func, o->s);//为这个集创建一个自己的域空间
+					child->setdomain(funcdomain);
+
+					cpps_parse_dofunction(funcdomain, child,root, buffer);
 				}
 				else if (symblo == ':')
 				{
@@ -1349,6 +1352,13 @@ namespace cpps
 	}
 	bool cpps_parse_canbreak(cpps_domain *domain)
 	{
+		if (domain->domainType == cpps_domain_type_func)
+		{
+			if (domain->domainName == "foreach")
+			{
+				return true;
+			}
+		}
 		if (domain->domainType == cpps_domain_type_for || domain->domainType == cpps_domain_type_while)
 		{
 			return true;
@@ -2152,13 +2162,13 @@ namespace cpps
 
 			cpps_domain *cpps_func_domain = domain;
 
-			while (cpps_func_domain && cpps_func_domain->parent[0]->domainType != cpps_domain_type_func)
+			while (cpps_func_domain && cpps_func_domain != c->_G && cpps_func_domain->parent[0]->domainType != cpps_domain_type_func)
 			{
 				cpps_func_domain->isbreak = true;
 				cpps_func_domain = cpps_func_domain->parent[1];
 			}
 
-			if (cpps_func_domain && cpps_func_domain->parent[0]->domainType == cpps_domain_type_func)
+			if (cpps_func_domain && cpps_func_domain != c->_G && cpps_func_domain->parent[0]->domainType == cpps_domain_type_func)
 			{
 				//设置回去
 				cpps_func_domain->isbreak = true;
@@ -2175,18 +2185,37 @@ namespace cpps
 			//暂时不支持多个参数
 		}
 	}
+	bool cpps_step_can_break(C*c, cpps_domain *domain)
+	{
+		if (domain == c->_G)
+			return false;
+		
+		if (domain->parent[0]->domainType == cpps_domain_type_while)
+			return true;
+		if (domain->parent[0]->domainType == cpps_domain_type_for)
+			return true;
 
+
+		if (domain->domainType == cpps_domain_type_func)
+		{
+			if (domain->domainName == "foreach")
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 	void cpps_step_break(C * c, cpps_domain * domain, Node* d)
 	{
 		cpps_domain *cpps_func_domain = domain;
-
-		while (cpps_func_domain && (cpps_func_domain->parent[0]->domainType != cpps_domain_type_while && cpps_func_domain->parent[0]->domainType != cpps_domain_type_for))
+		while (cpps_func_domain && !cpps_step_can_break(c,cpps_func_domain))
 		{
 			cpps_func_domain->isbreak = true;
 			cpps_func_domain = cpps_func_domain->parent[1];
 		}
 
-		if (cpps_func_domain && (cpps_func_domain->parent[0]->domainType == cpps_domain_type_while || cpps_func_domain->parent[0]->domainType == cpps_domain_type_for))
+		if (cpps_func_domain && cpps_step_can_break(c, cpps_func_domain))
 		{
 			//设置回去
 			cpps_func_domain->isbreak = true;
@@ -2408,7 +2437,7 @@ namespace cpps
 					Node *var = varName->l[0];
 					if (var && var->type == CPPS_ODEFVAR_FUNC)
 					{
-						cpps_domain *funcdomain = new cpps_domain(cppsclass, cpps_domain_type_func,"func");
+						cpps_domain *funcdomain = new cpps_domain(cppsclass, cpps_domain_type_func, d->s+"::"+var->s);
 						cpps_regfunction regfunc = cpps_regfunction(varName->s, new cpps_cppsfunction(funcdomain, var->l[0], var->l[1]));
 						cppsclass->regFunc(&regfunc);
 						it = vars->l.erase(it);
@@ -2695,8 +2724,15 @@ namespace cpps
 		{
 			cpps_value var = cpps_calculate_expression(c, domain, d->getleft(), leftdomain);
 
-			ret = cpps_step_callfunction(c, domain, var, d, leftdomain);
-		
+
+			cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, d->getleft()->s.c_str());
+			execdomain->setexecdomain(domain);
+
+			//cpps_step_for(c, execdomain, d);
+			ret = cpps_step_callfunction(c, execdomain, var, d, leftdomain);
+
+			execdomain->destory(c);
+			delete execdomain;
 		}
 		else if (d->type == CPPS_OSTR)
 		{
@@ -2836,6 +2872,7 @@ namespace cpps
 			cpps_regvar *v = domain->getVar(d->s,leftdomain);
 			if (v)
 			{
+				//printf(domain->domainName.c_str());
 				ret = v->getValue();
 				ret.parentLambdaVar = domain;
 			}

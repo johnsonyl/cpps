@@ -435,6 +435,9 @@ namespace cpps
 			}
 			else
 				*(a.value.value) = *(b.value.value);
+
+			(*(a.value.value)).parentLambdaVar = NULL;
+
 		}
 		else {
 
@@ -452,6 +455,8 @@ namespace cpps
 			}
 			else
 				*(a.value.value) = b;
+
+			(*(a.value.value)).parentLambdaVar = NULL;
 		}
 
 		return *(a.value.value);
