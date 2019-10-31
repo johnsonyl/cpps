@@ -243,7 +243,11 @@ namespace cpps
 						object r = dofunction(c, func_object, v->it());
 
 						if (func.parentLambdaVar->isbreak == true)
+						{
+							func.parentLambdaVar->isbreak = false;
 							break;
+						}
+
 
 						if (type(r) == CPPS_TBOOLEAN)
 						{
@@ -268,7 +272,10 @@ namespace cpps
 						object r = dofunction(c, func_object, v->key(),v->it());
 
 						if (func.parentLambdaVar->isbreak == true)
+						{
+							func.parentLambdaVar->isbreak = false;
 							break;
+						}
 
 						if (type(r) == CPPS_TBOOLEAN)
 						{
@@ -294,7 +301,10 @@ namespace cpps
 
 
 						if (func.parentLambdaVar->isbreak == true)
+						{
+							func.parentLambdaVar->isbreak = false;
 							break;
+						}
 
 						if (type(r) == CPPS_TBOOLEAN)
 						{
