@@ -132,7 +132,7 @@ namespace cpps
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
-		if (tmpStr->size() <= pos) return "";
+		if (tmpStr->size() <= size_t(pos)) return "";
 		if (tmpStr->size() <= size_t(pos + n) && n != std::string::npos) n = std::string::npos;
 		return tmpStr->substr((unsigned int) pos, (unsigned int)n);
 	}
@@ -239,7 +239,7 @@ namespace cpps
 	cpps_value cpps_string_chr(C*c,cpps_integer ch)
 	{
 		std::string ret;
-		ret.push_back(ch);
+		ret.push_back(static_cast<char>(ch));
 		return cpps_value(c,ret);
 	}
 	cpps_value cpps_string_push_back(cpps_value src, cpps_integer c)
@@ -247,7 +247,7 @@ namespace cpps
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
-		tmpStr->push_back(c);
+		tmpStr->push_back(static_cast<char>(c));
 		return src;
 	}
 	cpps_integer cpps_string_unicode_charCodeAt(cpps_value src, cpps_integer pos)
@@ -256,14 +256,14 @@ namespace cpps
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
 		if (tmpStr->size() % 2 != 0) return 0;
-		if (tmpStr->size() / 2 <= pos) return 0;
+		if (tmpStr->size() / 2 <= size_t(pos)) return 0;
 		unsigned short ret = *((unsigned short*)(tmpStr->c_str() + pos * 2));
 		return static_cast<cpps_integer>(ret);
 	}
 	cpps_value cpps_string_unicode_fromCodeAt(C*c,cpps_vector* vec)
 	{
 		std::string ret = "";
-		for (size_t i = 0; i < vec->size(); i++)
+		for (size_t i = 0; i < size_t(vec->size()); i++)
 		{
 			unsigned short code = static_cast<unsigned short>(vec->at(i).value.integer);
 			ret.append((char *)&code,2);
@@ -276,7 +276,7 @@ namespace cpps
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
-		if (tmpStr->size() <= pos) return 0;
+		if (tmpStr->size() <= size_t(pos)) return 0;
 
 		unsigned char ret = *((char*)(tmpStr->c_str() + pos));
 		return static_cast<cpps_integer>(ret);
@@ -284,7 +284,7 @@ namespace cpps
 	cpps_value cpps_string_fromCodeAt(C*c,cpps_vector* vec)
 	{
 		std::string ret = "";
-		for (size_t i = 0; i < vec->size(); i++)
+		for (size_t i = 0; i < size_t(vec->size()); i++)
 		{
 			char code = static_cast<char>(vec->at(i).value.integer);
 			ret.push_back(code);

@@ -533,28 +533,3 @@ namespace cpps
 
 	}
 }
-
-/*
-//解密数据
-void	__cdecl Socket_Client::CrevasseKey(BYTE *pcbDataBuffer, DWORD dwDataSize)
-{
-	CMD_Head *pHead = (CMD_Head *)pcbDataBuffer;
-	BYTE *pRecvBuffer = (BYTE *)(pHead + 1);
-	//如果是心跳检测，刷新sendKey即可。
-	if (pHead->cbMessageType == TYPE_DETECT_SOCKET)
-	{
-		sendKey = pHead->cbCheckCode;
-		return;
-	}
-	BYTE newKey = sendKey;
-	//解密数据
-	for (DWORD i = 0; i < pHead->wDataSize - sizeof(CMD_Head); i++)
-	{
-		pRecvBuffer[i] -= sendKey;
-		newKey += pRecvBuffer[i];
-	}
-	if (newKey != pHead->cbCheckCode) throw("数据包效验码错误");
-	//更新下一个key
-	sendKey = pHead->cbCheckCode;
-}
-*/

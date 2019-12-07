@@ -20,6 +20,7 @@ namespace cpps
 		cpps_regvar()
 		{
 			isJoinBarrier = false;
+			join_barrier_count = 0;
 		}
 		~cpps_regvar();
 		void	setVarName(std::string n)
@@ -40,10 +41,23 @@ namespace cpps
 		{
 			return isJoinBarrier;
 		}
+		void join_barrier_onec()
+		{
+			join_barrier_count++;
+		}
+		void remove_barrier_onec()
+		{
+			join_barrier_count--;
+		}
+		int get_barrier_count()
+		{
+			return join_barrier_count;
+		}
 	private:
 		cpps_value			value;
 	public:
 		std::string			varName;
+		int					join_barrier_count;
 		bool				isJoinBarrier;
 	};
 

@@ -26,10 +26,10 @@ namespace cpps
 				c->pop_stack();
 				delete stack;
 				//¼ì²âgc
-				if ( c->getcallstack()->size() == 0)
-				{
+				//if ( c->getcallstack()->size() == 0)
+			/*	{
 					cpps_gc_check_step(c);
-				}
+				}*/
 
 			}
 		}

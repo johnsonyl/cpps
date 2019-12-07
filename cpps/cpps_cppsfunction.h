@@ -30,7 +30,8 @@ namespace cpps
 
 	void					make_values(C *c, cpps_domain *domain, Node *d, std::vector<cpps_value> &params, std::vector<cpps_regvar *>&varlist);
 	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
-
+	void					cpps_gc_remove_barrier(C*c, cpps_regvar *v);
+	void					cpps_gc_check_step(C * c);
 	
 
 	
@@ -111,7 +112,7 @@ namespace cpps
 						//	cpps_gc_add_barrier(c, v);
 						//}
 					}
-					funcdomain->regVar(v);
+					funcdomain->regVar(c,v);
 				}
 			}
 		
@@ -129,8 +130,20 @@ namespace cpps
  				*ret = funcdomain->funcRet;//return的值反馈回去
 #endif
 
+
+
 			funcdomain->destory(c);
 			delete funcdomain;
+
+
+			cpps_regvar v;
+			v.setVarName("ret");
+			v.setValue(*ret);
+			cpps_gc_add_barrier(c, &v);
+
+			cpps_gc_check_step(c);
+
+			cpps_gc_remove_barrier(c, &v);
 		}
 	public:
 		Node		*params;

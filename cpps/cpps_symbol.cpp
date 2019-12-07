@@ -65,19 +65,19 @@ namespace cpps
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
-				_result.tt = CPPS_TNUMBER;
-				_result.value.number = cpps_to_integer(a) & cpps_to_integer(b);
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) & cpps_to_integer(b);
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
-				_result.tt = CPPS_TNUMBER;
-				_result.value.number = cpps_to_integer(a) & cpps_to_integer(b);
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) & cpps_to_integer(b);
 			}
 			break;
 		case CPPS_TNUMBER:
 		case CPPS_TSTRING:
-			_result.tt = CPPS_TNUMBER;
-			_result.value.number = cpps_to_integer(a) & cpps_to_integer(b);
+			_result.tt = CPPS_TINTEGER;
+			_result.value.integer = cpps_to_integer(a) & cpps_to_integer(b);
 			break;
 		default:
 			_result.tt = CPPS_TNIL;
@@ -104,19 +104,19 @@ namespace cpps
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
-				_result.tt = CPPS_TNUMBER;
-				_result.value.number = cpps_to_integer(a) | cpps_to_integer(b);
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) | cpps_to_integer(b);
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
-				_result.tt = CPPS_TNUMBER;
-				_result.value.number = cpps_to_integer(a) | cpps_to_integer(b);
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) | cpps_to_integer(b);
 			}
 			break;
 		case CPPS_TNUMBER:
 		case CPPS_TSTRING:
-			_result.tt = CPPS_TNUMBER;
-			_result.value.number = cpps_to_integer(a) | cpps_to_integer(b);
+			_result.tt = CPPS_TINTEGER;
+			_result.value.integer = cpps_to_integer(a) | cpps_to_integer(b);
 			break;
 		default:
 			_result.tt = CPPS_TNIL;

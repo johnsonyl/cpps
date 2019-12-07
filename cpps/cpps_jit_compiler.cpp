@@ -164,7 +164,7 @@ namespace cpps
 		cpps_regvar * v = new cpps_regvar();//_G 为根节点
 		v->setVarName("this");
 		v->setValue(cpps_value(cppsclassvar)); //域列表会copy进去
-		cppsclassvar->regVar(v);
+		cppsclassvar->regVar(c,v);
 
 		return cppsclassvar;
 	}

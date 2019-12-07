@@ -39,13 +39,13 @@ namespace cpps
 		{
 			cpps_gc_check_gen1(c);
 		}
-		else if ((c->getGen0size() > CPPS_GEN0_CHECKSIZE || c->getGen0()->size() > CPPS_GEN0_CHECKCOUNT || c->getBarrierList()->size() > CPPS_BARRIER_CHECKCOUNT))
+		else if (  (c->getGen0size() > CPPS_GEN0_CHECKSIZE || c->getGen0()->size() > CPPS_GEN0_CHECKCOUNT ))
 		{
 			if (c->debug)
 			{
-				printf("gen0内存 %d b\n", c->getGen0size());
-				printf("gen1内存 %d b\n", c->getGen1size());	//测试 200字节进行清理年轻代
-				printf("当前内存 %d b\n", c->getGen0size() + c->getGen1size());
+				printf("gen0内存 %I64d b\n", c->getGen0size());
+				printf("gen1内存 %I64d b\n", c->getGen1size());	//测试 200字节进行清理年轻代
+				printf("当前内存 %I64d b\n", c->getGen0size() + c->getGen1size());
 			}
 
 			cpps_gc_check_gen0(c);
@@ -743,6 +743,7 @@ namespace cpps
 					child->setdomain(funcdomain);
 
 					cpps_parse_dofunction(funcdomain, child,root, buffer);
+
 				}
 				else if (symblo == ':')
 				{
@@ -1906,7 +1907,7 @@ namespace cpps
 		cpps_regvar * v = new cpps_regvar();//_G 为根节点
 		v->setVarName("_G");
 		v->setValue(cpps_value(c->_G)); //域列表会copy进去
-		c->_G->regVar(v); //将自己注册成_G..
+		c->_G->regVar(NULL,v); //将自己注册成_G..
 	}
 
 	cpps::C* create()
@@ -1938,10 +1939,10 @@ namespace cpps
 		_CPPS_CATCH
 
 		//检测gc
-		if (!c->getcallstack() || c->getcallstack()->size() == 0)
-		{
+		////if (!c->getcallstack() || c->getcallstack()->size() == 0)
+		//{
 			cpps_gc_check_step(c);
-		}
+		//}
 		return CPPS_NOERROR;
 	}
 	int32 loadfile(cpps::C *c, const char* path)
@@ -2020,10 +2021,10 @@ namespace cpps
 		_CPPS_CATCH
 
 		//检测gc
-		if (!c->getcallstack() || c->getcallstack()->size() == 0)
-		{
+		//if (!c->getcallstack() || c->getcallstack()->size() == 0)
+		//{
 			cpps_gc_check_step(c);
-		}
+		//}
 
 		return 0;
 	}
@@ -2045,6 +2046,7 @@ namespace cpps
 			cpps_step(c,domain, d);
 		}
 		//domain->lock.unlock();
+
 
 
 	}
@@ -2082,7 +2084,7 @@ namespace cpps
 
 						if (v->getValue().tt == CPPS_TCLASSVAR || v->getValue().tt == CPPS_TSTRING)
 						{
-							cpps_gc_add_barrier(c, v);
+							//cpps_gc_add_barrier(c, v);
 						}
 
 
@@ -2096,12 +2098,12 @@ namespace cpps
 					cpps_regvar *old = domain->getVar(v->varName, leftdomain, false);
 					if (old)
 					{
-						cpps_gc_remove_barrier(c, old);
-						domain->unregVar(old);
+						//cpps_gc_remove_barrier(c, old);
+						domain->unregVar(c,old);
 						delete old;
 					}
 					//注册新的
-					domain->regVar(v);
+					domain->regVar(c,v);
 					//c->gclock.unlock();
 
 				}
@@ -2112,8 +2114,8 @@ namespace cpps
 					cpps_regvar *old = domain->getVar(varName->s, leftdomain, false);
 					if (old)
 					{
-						cpps_gc_remove_barrier(c, old);
-						domain->unregVar(old);
+						//cpps_gc_remove_barrier(c, old);
+						domain->unregVar(c,old);
 						delete old;
 					}
 
@@ -2173,6 +2175,11 @@ namespace cpps
 				//设置回去
 				cpps_func_domain->isbreak = true;
 				cpps_func_domain->funcRet = ret_value;
+
+				cpps_regvar *v = new cpps_regvar();
+				v->setVarName("return");
+				v->setValue(ret_value);
+				cpps_func_domain->regVar(c, v);
 			}
 			else
 			{
@@ -2254,6 +2261,8 @@ namespace cpps
 
 		execdomain->destory(c);
 		delete execdomain;
+
+		cpps_gc_check_step(c);
 	}
 	void cpps_step_for(C * c, cpps_domain * domain, Node* d)
 	{
@@ -2273,12 +2282,22 @@ namespace cpps
 			bool b = cpps_converter<bool>::apply(canwhile);
 			if (b == false)
 				break;
-			cpps_step_all(c, CPPS_SINGLERET, domain, for4);
+
+			cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_exec,"");
+			execdomain->setexecdomain(domain);
+			cpps_step_all(c, CPPS_SINGLERET, execdomain, for4);
+
+			execdomain->destory(c);
+			delete execdomain;
+
+			cpps_gc_check_step(c);
 
 			if (domain->isbreak) break; //需要跳出循环
 
 			cpps_step_all(c, CPPS_SINGLERET, domain, for3);
 		}
+
+
 	}
 	void cpps_step_while(C * c, cpps_domain * domain, Node* d)
 	{
@@ -2294,7 +2313,16 @@ namespace cpps
 			if (b == false)
 				break;
 
-			cpps_step_all(c, CPPS_SINGLERET, domain, while2);
+
+			cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_exec, "");
+			execdomain->setexecdomain(domain);
+
+			cpps_step_all(c, CPPS_SINGLERET, execdomain, while2);
+
+			execdomain->destory(c);
+			delete execdomain;
+
+			cpps_gc_check_step(c);
 
 			if (domain->isbreak) break; //需要跳出循环
 		}
@@ -2311,7 +2339,7 @@ namespace cpps
 			v = new cpps_regvar();
 			v->setVarName(d->s);
 			v->setValue(cpps_value(ns));
-			domain->regVar(v);
+			domain->regVar(c,v);
 
 		}
 		else
@@ -2340,12 +2368,15 @@ namespace cpps
 		cpps_regvar * v = new cpps_regvar();
 		v->setVarName(varName->s);
 		v->setValue(cpps_cpp_to_cpps_converter<cpps_trycatch_error*>::apply(c, &e));
-		execdomain2->regVar(v);
+		execdomain2->regVar(c,v);
 
 		cpps_step_all(c, CPPS_SINGLERET, execdomain2, catchfun->l[1]);
 
 		execdomain2->destory(c);
 		delete execdomain2;
+
+		cpps_gc_check_step(c);
+
 
 	}
 	void cpps_step_trycath(C * c, cpps_domain *domain, Node* d)
@@ -2395,7 +2426,7 @@ namespace cpps
 		cpps_regvar * v = new cpps_regvar();
 		v->setVarName(d->s);
 		v->setValue(cpps_value(cppsclass));
-		domain->regVar(v);
+		domain->regVar(NULL,v);
 
 		Node *parent = d->getleft();
 		Node *vars = d->getright();
@@ -2504,6 +2535,9 @@ namespace cpps
 			cpps_step_all(c, CPPS_MUNITRET, domain, o);
 			c->pop_stack();
 
+
+			cpps_gc_check_step(c);
+
 			delete stack;
 		}
 		_CPPS_CATCH
@@ -2523,6 +2557,9 @@ namespace cpps
 		cpps_step_all(c, CPPS_MUNITRET, domain, o);
 		c->pop_stack();
 		delete stack;
+
+		cpps_gc_check_step(c);
+
 		_CPPS_CATCH
 	}
 	void cpps_step(C * c, cpps_domain *domain, Node* d)
@@ -2540,6 +2577,8 @@ namespace cpps
 
 			execdomain->destory(c);
 			delete execdomain;
+
+			cpps_gc_check_step(c);
 		}
 		else if (d->type == CPPS_OEXPRESSION)
 		{
@@ -2576,6 +2615,8 @@ namespace cpps
 
 			execdomain->destory(c);
 			delete execdomain;
+
+			cpps_gc_check_step(c);
 		}
 		else if (d->type == CPPS_OWHILE)
 		{
@@ -2585,6 +2626,8 @@ namespace cpps
 			cpps_step_while(c,execdomain, d);
 
 			delete execdomain;
+
+			cpps_gc_check_step(c);
 		}
 		else if (d->type == CPPS_OCLASS)
 		{
@@ -2643,21 +2686,26 @@ namespace cpps
 		return v;
 	}
 
-	void make_values(C *c, cpps_domain *domain,Node *d, std::vector<cpps_value> &params, std::vector<cpps_regvar *>&varlist)
+	void make_values(C *c, cpps_domain *domain,Node *d, std::vector<cpps_value> &params, std::vector<cpps_regvar *>&varlist, cpps_domain *execdomain)
 	{
+
+		
+		int index = 0;
 		for (std::vector<Node*>::iterator it = d->l.begin(); it != d->l.end(); ++it)
 		{
+			index++;
 			cpps_domain *leftdomain = NULL;
-			//cpps_regvar *v = new cpps_regvar;
 			cpps_value value = cpps_calculate_expression(c, domain, *it, leftdomain);
-			//v->setValue(value);
 			params.push_back(value);
-			//varlist.push_back(v);
-			//if (value.tt == CPPS_TCLASSVAR)
-			//{
-			//	cpps_gc_add_barrier(c, v);
-			//}
+			
+			cpps_regvar *v = new cpps_regvar;
+			v->setValue(value);
+			std::stringstream strStream;
+			strStream << "p" << index;
+			v->setVarName(strStream.str());
+			execdomain->regVar(c, v);
 		}
+
 	}
 	cpps_regvar* cpps_node_to_regver(cpps_domain* domain, Node *d,bool isgetRight = true)
 	{
@@ -2795,7 +2843,7 @@ namespace cpps
 				cpps_regvar * v = new cpps_regvar();//_G 为根节点
 				v->setVarName("this");
 				v->setValue(ret); //域列表会copy进去
-				cppsclassvar->regVar(v);
+				cppsclassvar->regVar(NULL,v);
 
 				//数组特殊处理。
 				if (d->s == "vector" && d->getleft())
@@ -2820,8 +2868,16 @@ namespace cpps
 		}
 		else if (d->type == CPPS_OARRAY)
 		{
+
+
 			cpps_vector *vec = NULL;
 			ret = newClassPtr<cpps_vector>(c, &vec);
+
+
+			cpps_regvar v;
+			v.setVarName("ret");
+			v.setValue(ret);
+			cpps_gc_add_barrier(c, &v);
 
 			for (size_t i = 0; i < d->l.size();i++)
 			{
@@ -2831,11 +2887,19 @@ namespace cpps
 				vec->push_back(v);
 				leftdomain = takedomain;
 			}
+
+			cpps_gc_remove_barrier(c, &v);
 		}
 		else if (d->type == CPPS_OOBJECT)
 		{
 			cpps_map *m = NULL;
 			ret = newClassPtr<cpps_map>(c, &m);
+
+			cpps_regvar v;
+			v.setVarName("ret");
+			v.setValue(ret);
+			cpps_gc_add_barrier(c, &v);
+
 
 			for (size_t i = 0; i < d->l.size(); i++)
 			{
@@ -2847,6 +2911,7 @@ namespace cpps
 				leftdomain = takedomain;
 			}
 
+			cpps_gc_remove_barrier(c, &v);
 
 		}
 		else if (d->type == CPPS_OBOOL)
@@ -2888,24 +2953,39 @@ namespace cpps
 				std::vector<cpps_value> params;
 				std::vector<cpps_regvar *> params_var;
 
+
+				cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, "");
+				execdomain->setexecdomain(domain);
+
 				cpps_value isNeedC;
 				if (f->getIsNeedC())
 				{
 					isNeedC = cpps_cpp_to_cpps_converter<C*>::apply(c,c);
 					params.push_back(isNeedC);
+
+					cpps_regvar *v = new cpps_regvar;
+					v->setValue(isNeedC);
+					std::stringstream strStream;
+					strStream << "pc";
+					v->setVarName(strStream.str());
+					execdomain->regVar(c, v);
 				}
+
+
 				//c->gclock.lock();
-				make_values(c, domain, d, params, params_var);
+				make_values(c, domain, d, params, params_var, execdomain);
+
+
 
 				//特殊处理
 				//合适的话加入到gc检测列表
 				if (v->varName == "=" && params[1].tt == CPPS_TCLASSVAR )
 				{
-					cpps_regvar *v = cpps_node_to_regver(domain,d->getleft());
-					if (v)
-					{
-						cpps_gc_add_barrier(c, v);
-					}
+					//cpps_regvar *v = cpps_node_to_regver(domain,d->getleft());
+					//if (v)
+					//{
+						//cpps_gc_add_barrier(c, v);
+					//}
 				}
 				//c->gclock.unlock();
 
@@ -2917,6 +2997,9 @@ namespace cpps
 				//	cpps_regvar *v = params_var[i];
 				//	cpps_gc_remove_barrier(c, v);
 				//}
+
+				execdomain->destory(c);
+				delete execdomain;
 
 				c->pop_stack();
 				delete stack;
@@ -3173,17 +3256,33 @@ namespace cpps
 		{
 			cpps_function *f = func.value.func;
 
+
+			cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, "");
+			execdomain->setexecdomain(domain);
+
+
 			std::vector<cpps_value> params;
 			cpps_value isNeedC;
 			if (f->getIsNeedC())
 			{
 				isNeedC = cpps_cpp_to_cpps_converter<C*>::apply(c,c);
 				params.push_back(isNeedC);
+
+
+				cpps_regvar *v = new cpps_regvar;
+				v->setValue(isNeedC);
+				std::stringstream strStream;
+				strStream << "pc";
+				v->setVarName(strStream.str());
+				execdomain->regVar(c, v);
+
 			}
 			std::vector<cpps_regvar *> params_var;
 
 			//c->gclock.lock();
-			make_values(c, domain, d->getright(), params, params_var);
+			make_values(c, domain, d->getright(), params, params_var, execdomain);
+
+
 			//c->gclock.unlock();
 
 			std::string filename = d->getright()->filename;
@@ -3200,6 +3299,10 @@ namespace cpps
 
 				ret = cpps_execute_callfunction(c, f, execdomain, filename, line, funcname, params);
 			}
+
+
+
+
 			/*
 			for (size_t i = 0; i < params_var.size(); i++)
 			{
@@ -3211,29 +3314,35 @@ namespace cpps
 			//检测是否需要GC
 			cpps_regvar *v = cpps_node_to_regver(domain, d->getleft(), false);
 
-			if (v && v->getValue().tt == CPPS_TCLASSVAR )
-			{
-				cpps_cppsclassvar *a = (cpps_cppsclassvar*)v->getValue().value.domain;
-				//if (c->debug) printf("%s.%s\n", a->getDomainName().c_str(), d->getleft()->getright()->s.c_str());
-				if (a->getDomainName() == "vector" && (d->getleft()->getright()->s == "push_back" || d->getleft()->getright()->s == "push_front" || d->getleft()->getright()->s == "insert"))
-				{
-					if (params.size() == 1 && params[0].tt == CPPS_TCLASSVAR)
-					{
-						cpps_gc_add_barrier(c, v);
-					}
-				}
-				else if ((a->getDomainName() == "map" || a->getDomainName() == "unordered_map") && d->getleft()->getright()->s == "insert")
-				{
-					if (params.size() == 2 &&( params[0].tt == CPPS_TCLASSVAR || params[1].tt == CPPS_TCLASSVAR))
-					{
-						cpps_gc_add_barrier(c, v);
-					}
-				}
-			}
+			//if (v && v->getValue().tt == CPPS_TCLASSVAR )
+			//{
+			//	cpps_cppsclassvar *a = (cpps_cppsclassvar*)v->getValue().value.domain;
+			//	//if (c->debug) printf("%s.%s\n", a->getDomainName().c_str(), d->getleft()->getright()->s.c_str());
+			//	if (a->getDomainName() == "vector" && (d->getleft()->getright()->s == "push_back" || d->getleft()->getright()->s == "push_front" || d->getleft()->getright()->s == "insert"))
+			//	{
+			//		if (params.size() == 1 && params[0].tt == CPPS_TCLASSVAR)
+			//		{
+			//			//cpps_gc_add_barrier(c, v);
+			//		}
+			//	}
+			//	else if ((a->getDomainName() == "map" || a->getDomainName() == "unordered_map") && d->getleft()->getright()->s == "insert")
+			//	{
+			//		if (params.size() == 2 &&( params[0].tt == CPPS_TCLASSVAR || params[1].tt == CPPS_TCLASSVAR))
+			//		{
+			//			//cpps_gc_add_barrier(c, v);
+			//		}
+			//	}
+			//}
 			if (v && v->varName == "debug" && d->getleft()->getright()->s == "breakpoint")
 			{
 				cpps_debug_breakpoint(c, domain, d);
 			}
+
+
+			execdomain->destory(c);
+			delete execdomain;
+
+
 			//c->gclock.unlock();
 		}
 		else

@@ -17,7 +17,7 @@ namespace cpps
 {
 
 	void					cpps_gc_remove_barrier(C*c, cpps_regvar *v);
-
+	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
 	
 
 	struct cpps_domain : public cpps_gcobject
@@ -103,15 +103,15 @@ namespace cpps
 			return ret;
 		}
 
-		void									regVar(cpps_regvar * v)
+		void									regVar(C *c,cpps_regvar * v)
 		{
-			
 			varList.insert(std::unordered_map<std::string, cpps_regvar*>::value_type(v->varName, v));
+			if(c != NULL && this != c->_G) cpps_gc_add_barrier(c, v);
 		}
-		void									unregVar(cpps_regvar * v)
+		void									unregVar(C *c, cpps_regvar * v)
 		{
-
 			varList.erase(v->varName);
+			cpps_gc_remove_barrier(c, v);
 		}
 		void									setexecdomain(cpps_domain *exec)
 		{

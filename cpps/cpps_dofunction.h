@@ -65,24 +65,45 @@ namespace cpps
 				std::vector<cpps_value> paramlist;
 				CPPS_PP_ENUM_VARS_PARAMS_PUSHBACK(CPPS_DOFUNCTION_ITER_C, paramlist, A, p, c);
 
-				cpps_domain *execdomain = c->_G;
+				cpps_domain *execdomain2 = func.value.parentLambdaVar ? func.value.parentLambdaVar : c->_G;
+				cpps_domain *execdomain = new cpps_domain(execdomain2, cpps_domain_type_func, "");
+				execdomain->setexecdomain(execdomain2);
+
+				for (size_t i = 0; i < paramlist.size(); i++)
+				{
+					cpps_value &value = paramlist[i];
+
+					cpps_regvar *v = new cpps_regvar;
+					v->setValue(value);
+					std::stringstream strStream;
+					strStream << "p" << i;
+					v->setVarName(strStream.str());
+					execdomain->regVar(c, v);
+
+				}
+
+				/*cpps_domain *execdomain = c->_G;
 				if (func.value.parentLambdaVar)
 					execdomain = func.value.parentLambdaVar;
+					*/
 
 				cpps_stack *stack = new cpps_stack("", 0, f->funcname);
 				c->push_stack(stack);
 
-				f->callfunction(c, &ret, execdomain, &paramlist, NULL);
+				f->callfunction(c, &ret, execdomain2, &paramlist, NULL);
 
 
 				c->pop_stack();
 				delete stack;
 
+				execdomain->destory(c);
+				delete execdomain;
+
 				//¼ì²âgc
-				if (!c->getcallstack() || c->getcallstack()->size() == 0)
-				{
+				//if (!c->getcallstack() || c->getcallstack()->size() == 0)
+				/*{
 					cpps_gc_check_step(c);
-				}
+				}*/
 			}
 		}
 		return ret;
