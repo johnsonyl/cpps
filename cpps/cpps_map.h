@@ -105,6 +105,10 @@ namespace cpps
 		{
 			return _map[k];
 		}
+		std::map<cpps_value, cpps_value>& realmap()
+		{
+			return _map;
+		}
 	private:
 		std::map<cpps_value, cpps_value> _map;
 		std::map<cpps_value, cpps_value>::iterator _begin;
@@ -131,6 +135,10 @@ namespace cpps
 		cpps_value&		operator [] (cpps_value k)
 		{
 			return _map[k];
+		}
+		std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap()
+		{
+			return _map;
 		}
 	private:
 		std::unordered_map<cpps_value, cpps_value, cpps_value::hash> _map;

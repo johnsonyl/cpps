@@ -3,6 +3,10 @@
 
 using namespace cpps;
 using namespace std;
+namespace cpps{
+void					cpps_gc_check_gen1(C *c);
+std::string gcinfo(C *c);
+}
 
 int32 getline_(char s[], int32 lim){
 	int32 c, i;
@@ -42,6 +46,7 @@ int32 main(int argc,char **argv)
 		{
 			break;
 		}
+
 		cpps_try
 		cpps::dostring(c, s);
 		cpps_catch

@@ -101,6 +101,10 @@ namespace cpps
 		{
 			_vec.resize((size_t)s);
 		}
+		std::vector<cpps_value>&	realvector()
+		{
+			return _vec;
+		}
 	private:
 		std::vector<cpps_value>				_vec;
 		std::vector<cpps_value>::iterator	_begin;

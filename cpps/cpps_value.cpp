@@ -84,7 +84,7 @@ namespace cpps
 				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)right.value.domain;
 				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
 
-				return *(tmpStr) < *(tmpStr2);
+				return (*(tmpStr)) < (*(tmpStr2));
 			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, "<   ... 不可以当key用！type: %d", right.tt));
@@ -108,7 +108,7 @@ namespace cpps
 				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)right.value.domain;
 				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
 
-				return *(tmpStr) > *(tmpStr2);
+				return (*(tmpStr)) > (*(tmpStr2));
 			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, ">   ... 不可以当key用！ type: %d", right.tt));
@@ -132,7 +132,7 @@ namespace cpps
 				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)right.value.domain;
 				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
 
-				return *(tmpStr) == *(tmpStr2);
+				return (*(tmpStr)) == (*(tmpStr2));
 			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, "==   ... 不可以当key用！ type: %d", right.tt));

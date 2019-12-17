@@ -60,9 +60,10 @@ namespace cpps
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_vector *pVector = (cpps_vector*)pClsVar->getclsptr();
-				for (pVector->begin(); pVector->end(); pVector->next())
+				std::vector<cpps_value>& realvector = pVector->realvector();//2019-12-14 防止外部正在调用begin 导致数据错乱
+				for (std::vector<cpps_value>::iterator it = realvector.begin(); it != realvector.end(); ++it)
 				{
-					cpps_value value = pVector->it();
+					cpps_value value = *it;
 					cpps_gc_check_gen_value(c, value, checkchild, oldgen, newgen, size, isCheck);
 				}
 				std::unordered_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
@@ -79,10 +80,11 @@ namespace cpps
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_map *pMap = (cpps_map*)pClsVar->getclsptr();
-				for (pMap->begin(); pMap->end(); pMap->next())
+				std::map<cpps_value, cpps_value>& realmap = pMap->realmap();
+				for (std::map<cpps_value, cpps_value>::iterator it = realmap.begin(); it != realmap.end(); ++it)
 				{
-					cpps_value value0 = pMap->key();
-					cpps_value value1 = pMap->it();
+					cpps_value value0 = it->first;
+					cpps_value value1 = it->second;
 
 					cpps_gc_check_gen_value(c, value0, checkchild, oldgen, newgen, size, isCheck);
 					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);
@@ -101,10 +103,11 @@ namespace cpps
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_unordered_map *pMap = (cpps_unordered_map*)pClsVar->getclsptr();
-				for (pMap->begin(); pMap->end(); pMap->next())
+				std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap = pMap->realmap();
+				for (std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator it = realmap.begin(); it != realmap.end(); ++it)
 				{
-					cpps_value value0 = pMap->key();
-					cpps_value value1 = pMap->it();
+					cpps_value value0 = it->first;
+					cpps_value value1 = it->second;
 
 					cpps_gc_check_gen_value(c, value0, checkchild, oldgen, newgen, size, isCheck);
 					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);
