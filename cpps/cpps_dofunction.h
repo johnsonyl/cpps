@@ -44,6 +44,31 @@ namespace cpps
 #undef CPPS_DOFUNCTION_ITER_C
 
 
+#define CPPS_DOFUNCTION_ITER_C 7
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 8
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 9
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 10
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 11
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
 #endif // CPPS_DOFUNCTION_CPPS_HEAD_
 
 

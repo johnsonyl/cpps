@@ -331,7 +331,7 @@ namespace cpps
 			str->s = cpps_parse_varname(buffer);
 			if (cpps_is_not_use_var_name(str->s))
 			{
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "变量名不可以实用关键字!"));
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "变量名不可以使用关键字!"));
 			}
 			cpps_parse_var_right(domain, str, root, buffer, limit);
 
@@ -484,6 +484,7 @@ namespace cpps
 
 					Node *child = new Node(lastNode, o->filename, buffer.line());
 					child->s = cpps_parse_varname(buffer);
+					child->type = CPPS_ONAMESPANCE_CHILD;
 					lastNode = child;
 				}
 				else
@@ -491,7 +492,7 @@ namespace cpps
 					break;
 				}
 			}
-
+			cpps_parse_rmspaceandenter(buffer);
 			if (param->s == "vector" && buffer.cur() == '[')
 			{
 				buffer.pop();
@@ -504,6 +505,17 @@ namespace cpps
 					throw(cpps_error(param->filename, buffer.line(), cpps_error_varnotnumber, "定义数组的时候未检测到 ']'!"));
 				}
 				buffer.pop();
+			}
+			else if (buffer.cur() == '(')
+			{
+				buffer.pop();
+				Node *child = new Node( param->filename, buffer.line());
+				child->type = CPPS_OCLASS_CONSTRUCTOR;
+				cpps_domain *funcdomain = new cpps_domain(domain, cpps_domain_type_func, o->s);//为这个集创建一个自己的域空间
+				child->setdomain(funcdomain);
+
+				cpps_parse_dofunction(funcdomain, child, root, buffer);
+				param->addtoright(child);
 			}
 		}
 		else if (param->s == "true" || param->s == "false")
@@ -680,6 +692,70 @@ namespace cpps
 		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "定义数组未检测到 '}'"));
 		return bracket;
 	}
+
+	Node * cpps_parse_last_func(cppsbuffer &buffer, Node * o, Node * p, cpps_domain * domain, Node * root)
+	{
+		//有后续
+		while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || buffer.cur() == ':')
+		{
+			//
+			if (buffer.cur() == '.')
+				if (cpps_parse_isnotvarname(buffer.at(buffer.offset() + 1))) break;
+
+			char symblo = buffer.pop();
+
+			Node *geto = new Node(o->filename, buffer.line());
+
+			geto->addtoleft(p);
+			Node *child = NULL;
+
+			if (symblo == '[')
+			{
+				geto->type = CPPS_OGETCHIILD;
+				child = new Node(o->filename, buffer.line());
+				cpps_parse_expression(domain, child, root, buffer);
+				if (!child) throw("[' 后续必须有参数...");
+				if (buffer.cur() != ']')  throw("'.' 未找到 ']'...");
+				buffer.pop();
+			}
+			else if (symblo == '.')
+			{
+				geto->type = CPPS_OGETOBJECT;
+				child = cpps_parse_var_param(domain, geto, root, buffer);
+				if (!child) throw("'.' 后续必须有参数...");
+			}
+			else if (symblo == '(') //是调用函数
+			{
+
+				//获取里面 参数
+				geto->type = CPPS_ODOFUNCTION;
+				child = new Node(o->filename, buffer.line());
+				cpps_domain *funcdomain = new cpps_domain(domain, cpps_domain_type_func, o->s);//为这个集创建一个自己的域空间
+				child->setdomain(funcdomain);
+
+				cpps_parse_dofunction(funcdomain, child, root, buffer);
+
+			}
+			else if (symblo == ':')
+			{
+				if (buffer.cur() != ':')
+					throw("名空间引用需要用'::' 但只检测到一个:");
+
+				buffer.pop();
+
+				geto->type = CPPS_OGETOBJECT;
+				child = cpps_parse_var_param(domain, geto, root, buffer);
+				if (!child) throw("'::' 后续必须有参数...");
+
+			}
+
+			geto->addtoright(child); //放到后续。
+
+			p = geto;
+		}	
+		return p;
+	}
+
 	Node * cpps_parse_param(cpps_domain *domain, Node * o, Node * root, cppsbuffer &buffer)
 	{
 
@@ -687,6 +763,10 @@ namespace cpps
 		if (ch == '"')
 		{
 			return cpps_parse_string(domain, o, buffer,'"');
+		}
+		else if (ch == '\'')
+		{
+			return cpps_parse_string(domain, o, buffer, '\'');
 		}
 		else if (ch == '{')
 		{
@@ -704,64 +784,8 @@ namespace cpps
 		{
 			Node *p = cpps_parse_var_param(domain, o,root, buffer);
 			
-			//有后续
-			while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || buffer.cur() == ':')
-			{
-				//
-				if (buffer.cur() == '.')
-					if (cpps_parse_isnotvarname(buffer.at(buffer.offset() + 1))) break;
+			p = cpps_parse_last_func(buffer, o, p, domain, root);
 
-				char symblo = buffer.pop();
-
-				Node *geto = new Node(o->filename, buffer.line());
-
-				geto->addtoleft(p);
-				Node *child = NULL;
-
-				if (symblo == '[')
-				{
-					geto->type = CPPS_OGETCHIILD;
-					child = new Node(o->filename, buffer.line());
-					cpps_parse_expression(domain, child, root, buffer);
-					if (!child) throw("[' 后续必须有参数...");
-					if (buffer.cur() != ']')  throw("'.' 未找到 ']'...");
-					buffer.pop();
-				}
-				else if (symblo == '.')
-				{
-					geto->type = CPPS_OGETOBJECT;
-					child = cpps_parse_var_param(domain, geto, root,buffer);
-					if (!child) throw("'.' 后续必须有参数...");
-				}
-				else if (symblo == '(') //是调用函数
-				{
-					
-					//获取里面 参数
-					geto->type = CPPS_ODOFUNCTION;
-					child = new Node(o->filename, buffer.line());
-					cpps_domain *funcdomain = new cpps_domain(domain, cpps_domain_type_func, o->s);//为这个集创建一个自己的域空间
-					child->setdomain(funcdomain);
-
-					cpps_parse_dofunction(funcdomain, child,root, buffer);
-
-				}
-				else if (symblo == ':')
-				{
-					if (buffer.cur() != ':')
-						throw("名空间引用需要用'::' 但只检测到一个:");
-
-					buffer.pop();
-
-					geto->type = CPPS_OGETOBJECT;
-					child = cpps_parse_var_param(domain, geto, root, buffer);
-					if (!child) throw("'::' 后续必须有参数...");
-
-				}
-
-				geto->addtoright(child); //放到后续。
-
-				p = geto;
-			}
 			return p;
 		}
 		else if (ch == '(')
@@ -861,7 +885,11 @@ namespace cpps
 				lambdaparam->type = CPPS_VARNAME_LAMBDA;
 				lambdaparam->s = str->s;
 				lambdaparam->setParent(lastOpNode);
+
+				lambdaparam = cpps_parse_last_func(buffer, lastOpNode, lambdaparam, domain, root);
+
 				lastOpNode->l.push_back(lambdaparam);
+
 
 				return 1;
 		}
@@ -1843,6 +1871,22 @@ namespace cpps
 
 				cpps_parse_builtin(domain, child,root, buffer,limit);
 			}
+			else if (o->parent && child->s == o->parent->s)//构造函数
+			{
+				//剔除空格
+				child->type = CPPS_ODEFVAR;
+
+				cpps_parse_rmspaceandenter(buffer);
+
+				Node* str = new Node(child, child->filename, buffer.line());
+				str->type = CPPS_VARNAME;
+
+				//先找名字
+				str->s = "constructor";
+				
+				cpps_parse_var_right(domain, str, root, buffer, CPPS_NOT_DEFVAR);
+
+			}
 			else 
 			{
 				//如果是表达式的话
@@ -2709,6 +2753,8 @@ namespace cpps
 	}
 	cpps_regvar* cpps_node_to_regver(cpps_domain* domain, Node *d,bool isgetRight = true)
 	{
+		if (d == NULL) return NULL; /*d is null when it is a constructor*/
+
 		cpps_regvar* v = NULL;
 
 
@@ -2815,14 +2861,21 @@ namespace cpps
 			cpps_regvar *v = domain->getVar(d->s, leftdomain);
 
 			//看看有没有使用名空间
-			for (size_t i = 0; i < d->l.size(); ++i)
+			Node *lastNamespace = d;
+			while (lastNamespace && lastNamespace->getleft() && lastNamespace->getleft()->type == CPPS_ONAMESPANCE_CHILD)
 			{
-				if (v->getValue().isDomain())
-				{
-					v = v->getValue().value.domain->getVar(d->l[i]->s, leftdomain);
-				}
+				v = v->getValue().value.domain->getVar(lastNamespace->getleft()->s,leftdomain);
+				lastNamespace = lastNamespace->getleft();
 			}
-
+			/*	for (size_t i = 0; i < lastNamespace->l.size(); ++i)
+				{
+					if (v->getValue().isDomain() && lastNamespace->l[i] && lastNamespace->l[i]->type == CPPS_ONAMESPANCE_CHILD)
+					{
+						v = v->getValue().value.domain->getVar(lastNamespace->l[i]->s, leftdomain);
+						lastNamespace = d->l[i];
+					}
+				}
+	*/
 
 
 			if (v && v->getValue().tt == CPPS_TCLASS)
@@ -2852,6 +2905,20 @@ namespace cpps
 					cpps_integer result;
 					cpps_str2i64(d->getleft()->s.c_str(), &result);
 					array->resize(result);
+				}
+				else if (d->getright() && d->getright()->type == CPPS_OCLASS_CONSTRUCTOR) //构造函数
+				{
+					cpps_regvar* var = cppsclassvar->getVar("constructor", leftdomain);
+					if (var->getValue().tt == CPPS_TFUNCTION) {
+
+						cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, "constructor");
+						execdomain->setexecdomain(domain);
+
+						cpps_step_callfunction(c, execdomain, var->getValue(), d, leftdomain);
+
+						execdomain->destory(c);
+						delete execdomain;
+					}
 				}
 			}
 			else

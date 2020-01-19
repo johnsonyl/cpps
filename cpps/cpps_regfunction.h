@@ -206,6 +206,26 @@ namespace cpps
 #include "cpps_regfunction.h"
 #undef  CPPS_MAKE_REGFUNCTION_ITER_C
 
+#define CPPS_MAKE_REGFUNCTION_ITER_C 7
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 8
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 9
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 10
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 11
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
 #endif //CPPS_REG_FUNCTION_CPPS_HEAD_
 
 #ifdef CPPS_MAKE_REGFUNCTION_ITER_C

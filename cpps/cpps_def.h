@@ -82,8 +82,10 @@
 #define	CPPS_ONAMESPACE			42	//名空间
 #define CPPS_OINTEGER16			43 //数字（整数）
 #define CPPS_OTRYCATCH			44 //trycatch
-#define CPPS_OTHROW			45	//执行if else
-#define CPPS_OOBJECT				46	//数组{}
+#define CPPS_OTHROW				45	//执行if else
+#define CPPS_OOBJECT			46	//数组{}
+#define CPPS_ONAMESPANCE_CHILD	47	//namespace::class
+#define CPPS_OCLASS_CONSTRUCTOR	48	//new class(XX)
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 
@@ -203,7 +205,6 @@ namespace cpps
 #define _mkdir(p) mkdir(p,S_IRWXU)
 #else
 
-#pragma warning(disable:4996)
 #define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN	
 #include <windows.h>

@@ -3,10 +3,7 @@
 
 using namespace cpps;
 using namespace std;
-namespace cpps{
-void					cpps_gc_check_gen1(C *c);
-std::string gcinfo(C *c);
-}
+
 
 int32 getline_(char s[], int32 lim){
 	int32 c, i;
@@ -27,7 +24,7 @@ int32 main(int argc,char **argv)
 
 	C* c = cpps::create();
 
-	printf("[Cpps 1.0.0 Copyright (C) 2015-2017 By Johnson, Pub-test]\n");
+	printf("[Cpps 1.2.0 Copyright (C) 2015-2020 By Johnson, Pub-test]\n");
 
 	cpps_try
 	cpps::dofile(c, path.c_str());

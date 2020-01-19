@@ -48,6 +48,26 @@ vector1<R> make_vector(R(C::*)())
 #include "cpps_make_vector.h"
 #undef CPPS_MAKE_VECTOR_ITER_C
 
+#define CPPS_MAKE_VECTOR_ITER_C 7
+#include "cpps_make_vector.h"
+#undef CPPS_MAKE_VECTOR_ITER_C
+
+#define CPPS_MAKE_VECTOR_ITER_C 8
+#include "cpps_make_vector.h"
+#undef CPPS_MAKE_VECTOR_ITER_C
+
+#define CPPS_MAKE_VECTOR_ITER_C 9
+#include "cpps_make_vector.h"
+#undef CPPS_MAKE_VECTOR_ITER_C
+
+#define CPPS_MAKE_VECTOR_ITER_C 10
+#include "cpps_make_vector.h"
+#undef CPPS_MAKE_VECTOR_ITER_C
+
+#define CPPS_MAKE_VECTOR_ITER_C 11
+#include "cpps_make_vector.h"
+#undef CPPS_MAKE_VECTOR_ITER_C
+
 
 
 #endif // CPPS_MAKE_VECTOR_CPPS_HEAD_
