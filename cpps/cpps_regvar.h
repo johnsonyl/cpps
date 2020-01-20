@@ -19,8 +19,6 @@ namespace cpps
 	{
 		cpps_regvar()
 		{
-			isJoinBarrier = false;
-			join_barrier_count = 0;
 		}
 		~cpps_regvar();
 		void	setVarName(std::string n)
@@ -33,32 +31,20 @@ namespace cpps
 		{
 			return value;
 		}
-		void setIsJoinBarrier(bool b)
+	
+		int8 isConst()
 		{
-			isJoinBarrier = b;
+			return n8isConst;
 		}
-		bool getIsJoinBarrier()
+		void setIsConst(int8 c)
 		{
-			return isJoinBarrier;
-		}
-		void join_barrier_onec()
-		{
-			join_barrier_count++;
-		}
-		void remove_barrier_onec()
-		{
-			join_barrier_count--;
-		}
-		int get_barrier_count()
-		{
-			return join_barrier_count;
+			n8isConst = c;
 		}
 	private:
 		cpps_value			value;
 	public:
 		std::string			varName;
-		int					join_barrier_count;
-		bool				isJoinBarrier;
+		int8				n8isConst;
 	};
 
 	

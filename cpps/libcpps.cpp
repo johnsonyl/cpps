@@ -21,7 +21,7 @@ namespace cpps
 	Node*					cpps_parse_param(cpps_domain *domain, Node * o, Node * root, cppsbuffer &buffer);
 	Node*					cpps_parse_symbol(cpps_domain *domain, Node * o, cppsbuffer& buffer, bool leftsymbol = false);
 	Node*					cpps_parse_string(cpps_domain *domain, Node * o, cppsbuffer &buffer, int8 endch);
-	void					cpps_parse_var(cpps_domain *domain, Node * child, Node * root, cppsbuffer& buffer, int32 limit);
+	void					cpps_parse_var(cpps_domain *domain, Node * child, Node * root, cppsbuffer& buffer, int32 limit,int8 isconst);
 	Node*					cpps_parse_var_param(cpps_domain *domain, Node * o, Node * root, cppsbuffer& buffer);
 	Node*					cpps_parse_number(cpps_domain *domain, Node * o, cppsbuffer & buffer);
 	void					cpps_parse_def_function(cpps_domain *domain, Node* right, Node *root, cppsbuffer& buffer);
@@ -106,7 +106,7 @@ namespace cpps
 	}
 	bool cpps_parse_isbuiltinname(std::string s)
 	{
-		return s == "if" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "do" || s == "while" || s == "class" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "include" || s == "dostring";
+		return s == "if" || s == "const" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "do" || s == "while" || s == "class" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "include" || s == "dostring";
 	}
 	bool cpps_is_not_use_var_name(std::string s)
 	{
@@ -312,10 +312,10 @@ namespace cpps
 		}
 	}
 
-	void cpps_parse_var(cpps_domain *domain, Node * child, Node * root, cppsbuffer& buffer, int32 limit)
+	void cpps_parse_var(cpps_domain *domain, Node * child, Node * root, cppsbuffer& buffer, int32 limit,int8 isconst)
 	{
 		//剔除空格
-		child->type = CPPS_ODEFVAR;
+		child->type = isconst ? CPPS_ODEFCONSTVAR : CPPS_ODEFVAR;
 
 		while (true)
 		{
@@ -1291,7 +1291,7 @@ namespace cpps
 				child->type = CPPS_ODEFVAR;
 			}
 
-			cpps_parse_var(domain, child,root, buffer,limit);
+			cpps_parse_var(domain, child,root, buffer,limit,false);
 
 			//其他类型的变量
 
@@ -1814,9 +1814,19 @@ namespace cpps
 		{
 			cpps_parse_continue(domain, child, buffer);
 		}
+		else if (child->s == "const")
+		{
+			child->s = cpps_parse_varname(buffer);
+			cpps_parse_rmspaceandenter(buffer);
+			if (child->s == "var")
+				cpps_parse_var(domain, child, root, buffer, limit, true);
+			else
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_normalerror, "const needs to use var later.", buffer.cur()));
+
+		}
 		else if (child->s == "var")
 		{
-			cpps_parse_var(domain, child,root, buffer, limit);
+			cpps_parse_var(domain, child,root, buffer, limit,false);
 		}
 		else if (child->s == "namespace")
 		{
@@ -1864,7 +1874,7 @@ namespace cpps
 			
 			if (cpps_parse_isbuiltinname(child->s) )
 			{
-				if (limit & CPPS_NOT_USEBUILTIN && child->s != "var")
+				if (limit & CPPS_NOT_USEBUILTIN && child->s != "var" && child->s != "const")
 				{
 					throw("不允许使用关键字！！！！！");
 				}
@@ -2094,7 +2104,7 @@ namespace cpps
 
 
 	}
-	void cpps_step_def_var(C *c,cpps_domain *domain, Node* d)
+	void cpps_step_def_var(C *c,cpps_domain *domain, Node* d,int8 isconst = false)
 	{
 		//d->s //变量名字
 		for (size_t i = 0; i < d->l.size(); ++i)
@@ -2108,6 +2118,7 @@ namespace cpps
 				{
 					cpps_regvar * v = new cpps_regvar();
 					v->setVarName(varName->s);
+					v->setIsConst(isconst);
 					//c->gclock.lock();
 
 					if (var->type == CPPS_ODEFVAR_VAR)
@@ -2504,7 +2515,7 @@ namespace cpps
 		for (std::vector<Node*>::iterator it = vars->l.begin(); it != vars->l.end();)
 		{
 			Node* o = *it;
-			if (o->type == CPPS_ODEFVAR)
+			if (o->type == CPPS_ODEFVAR || o->type == CPPS_ODEFCONSTVAR)
 			{
 				Node* varName = o->l[0];
 				if (varName->type == CPPS_VARNAME)
@@ -2611,6 +2622,10 @@ namespace cpps
 		if (d->type == CPPS_ODEFVAR)
 		{
 			cpps_step_def_var(c, domain, d);
+		}
+		else if (d->type == CPPS_ODEFCONSTVAR)
+		{
+			cpps_step_def_var(c, domain, d,true);
 		}
 		else if (d->type == CPPS_OASSEMBLE)
 		{
@@ -2896,6 +2911,7 @@ namespace cpps
 				cpps_regvar * v = new cpps_regvar();//_G 为根节点
 				v->setVarName("this");
 				v->setValue(ret); //域列表会copy进去
+				v->setIsConst(true);
 				cppsclassvar->regVar(NULL,v);
 
 				//数组特殊处理。
@@ -2909,7 +2925,7 @@ namespace cpps
 				else if (d->getright() && d->getright()->type == CPPS_OCLASS_CONSTRUCTOR) //构造函数
 				{
 					cpps_regvar* var = cppsclassvar->getVar("constructor", leftdomain);
-					if (var->getValue().tt == CPPS_TFUNCTION) {
+					if (var && var->getValue().tt == CPPS_TFUNCTION) {
 
 						cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, "constructor");
 						execdomain->setexecdomain(domain);
@@ -3179,7 +3195,9 @@ namespace cpps
 			cpps_regvar *v = getregvar(domain, d);
 			if (v)
 			{
-				ret = cpps_value(&v->getValue());
+				cpps_value tmp = v->getValue();
+
+				ret = cpps_value(v->isConst() ? (&tmp) : (&v->getValue()));
 			}
 			else
 			{
@@ -3237,7 +3255,9 @@ namespace cpps
 						cpps_regvar *v = getregvar(left.value.domain, d->getright()->getleft());
 						if (v)
 						{
-							ret = cpps_value(&v->getValue());
+							cpps_value tmp = v->getValue();
+							
+							ret = cpps_value(v->isConst() ? (&tmp) : (&v->getValue()));
 						}
 					}
 				}
@@ -3258,7 +3278,9 @@ namespace cpps
 					cpps_regvar *v = getregvar(left.value.domain, d->getright());
 					if (v)
 					{
-						ret = cpps_value(&v->getValue());
+						cpps_value tmp = v->getValue();
+
+						ret = cpps_value(v->isConst() ? (&tmp) : (&v->getValue()));
 					}
 					else
 					{

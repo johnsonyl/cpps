@@ -86,6 +86,8 @@
 #define CPPS_OOBJECT			46	//数组{}
 #define CPPS_ONAMESPANCE_CHILD	47	//namespace::class
 #define CPPS_OCLASS_CONSTRUCTOR	48	//new class(XX)
+#define CPPS_ODEFCONSTVAR		49 //变量名字const
+
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 

@@ -46,6 +46,7 @@ namespace cpps
 			{
 				cpps_regvar* var = new cpps_regvar();
 				var->setVarName(f->varname);
+				var->setIsConst(true);
 				if (f->type == cpps_def_regfunction)
 				{
 					cpps_regfunction *func = (cpps_regfunction *)f;
@@ -74,7 +75,6 @@ namespace cpps
 			std::unordered_map<std::string, cpps_regvar*>::iterator it = varList.find(s);
 			if (it != varList.end())
 			{
-
 				ret = it->second;
 			}
 			else if (findparent)

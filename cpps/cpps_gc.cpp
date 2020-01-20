@@ -6,20 +6,12 @@ namespace cpps
 
 	void cpps_gc_add_barrier(C*c, cpps_regvar *v)
 	{
-		if (!v->getIsJoinBarrier())
-		{
-			v->setIsJoinBarrier(true);
-			c->getBarrierList()->insert(v);
-		}
+		c->getBarrierList()->insert(v);
 	}
 
 	void cpps_gc_remove_barrier(C*c, cpps_regvar *v)
 	{
-		if (v->getIsJoinBarrier())
-		{
-			v->setIsJoinBarrier(false);
 			c->getBarrierList()->erase(v);
-		}
 	}
 
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p)
