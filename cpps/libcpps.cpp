@@ -26,7 +26,7 @@ namespace cpps
 	Node*					cpps_parse_number(cpps_domain *domain, Node * o, cppsbuffer & buffer);
 	void					cpps_parse_def_function(cpps_domain *domain, Node* right, Node *root, cppsbuffer& buffer);
 	Node*					cpps_parse_line(cpps_domain *domain, Node *o, Node *root, cppsbuffer& buffer, int32 limit = 0);
-	void					cpps_parse_builtin(cpps_domain *domain, Node * child, cppsbuffer& buffer);
+	void					cpps_parse_builtin(cpps_domain *domain, Node * child, Node * root, cppsbuffer& buffer, int32 limit);
 	void					cpps_parse_def(cpps_domain *domain, Node * child, Node * root, cppsbuffer &buffer, int32 limit);
 	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
 	void					cpps_gc_check_gen0(C *c);
@@ -3030,62 +3030,54 @@ namespace cpps
 			cpps_regvar *v = domain->getVar(d->s,leftdomain);
 			if (v && v->getValue().tt == CPPS_TFUNCTION)
 			{
-				cpps_function *f = v->getValue().value.func;
-				cpps_stack *stack = new cpps_stack(d->filename, d->line, d->s);
-				c->push_stack(stack);
-				std::vector<cpps_value> params;
-				std::vector<cpps_regvar *> params_var;
-
-
-				cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, "");
-				execdomain->setexecdomain(domain);
-
-				cpps_value isNeedC;
-				if (f->getIsNeedC())
+				if (d->s == "&&")
 				{
-					isNeedC = cpps_cpp_to_cpps_converter<C*>::apply(c,c);
-					params.push_back(isNeedC);
-
-					cpps_regvar *v = new cpps_regvar;
-					v->setValue(isNeedC);
-					std::stringstream strStream;
-					strStream << "pc";
-					v->setVarName(strStream.str());
-					execdomain->regVar(c, v);
+					if (d->l.size() == 2)//必须是2个参数才对
+					{
+						typedef cpps_converter<bool> converter;
+						ret.tt = CPPS_TBOOLEAN;
+						cpps_domain *leftdomain = NULL;
+						ret.value.b = converter::apply(cpps_calculate_expression(c, domain, d->l[0], leftdomain)) && converter::apply(cpps_calculate_expression(c, domain, d->l[1], leftdomain));
+					}
 				}
-
-
-				//c->gclock.lock();
-				make_values(c, domain, d, params, params_var, execdomain);
-
-
-
-				//特殊处理
-				//合适的话加入到gc检测列表
-				if (v->varName == "=" && params[1].tt == CPPS_TCLASSVAR )
+				else if (d->s == "||")
 				{
-					//cpps_regvar *v = cpps_node_to_regver(domain,d->getleft());
-					//if (v)
-					//{
-						//cpps_gc_add_barrier(c, v);
-					//}
+					if (d->l.size() == 2)//必须是2个参数才对
+					{
+						typedef cpps_converter<bool> converter;
+						ret.tt = CPPS_TBOOLEAN;
+						cpps_domain *leftdomain = NULL;
+						ret.value.b = converter::apply(cpps_calculate_expression(c, domain, d->l[0], leftdomain)) || converter::apply(cpps_calculate_expression(c, domain, d->l[1], leftdomain));
+					}
 				}
-				//c->gclock.unlock();
-
-
-				f->callfunction(c, &ret, domain, &params);
-
-				//for (size_t i = 0; i < params_var.size(); i++)
-				//{
-				//	cpps_regvar *v = params_var[i];
-				//	cpps_gc_remove_barrier(c, v);
-				//}
-
-				execdomain->destory(c);
-				delete execdomain;
-
-				c->pop_stack();
-				delete stack;
+				else
+				{
+					cpps_function *f = v->getValue().value.func;
+					cpps_stack *stack = new cpps_stack(d->filename, d->line, d->s);
+					c->push_stack(stack);
+					std::vector<cpps_value> params;
+					std::vector<cpps_regvar *> params_var;
+					cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, "");
+					execdomain->setexecdomain(domain);
+					cpps_value isNeedC;
+					if (f->getIsNeedC())
+					{
+						isNeedC = cpps_cpp_to_cpps_converter<C*>::apply(c, c);
+						params.push_back(isNeedC);
+						cpps_regvar *v = new cpps_regvar;
+						v->setValue(isNeedC);
+						std::stringstream strStream;
+						strStream << "pc";
+						v->setVarName(strStream.str());
+						execdomain->regVar(c, v);
+					}
+					make_values(c, domain, d, params, params_var, execdomain);
+					f->callfunction(c, &ret, domain, &params);
+					execdomain->destory(c);
+					delete execdomain;
+					c->pop_stack();
+					delete stack;
+				}
 			}
 			else
 			{
