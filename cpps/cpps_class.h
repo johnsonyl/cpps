@@ -50,7 +50,7 @@ namespace cpps
 		}
 	};
 
-	template <class C>
+	template <class T>
 	struct cpps_class_singleton
 	{
 		cpps_class_singleton()
@@ -66,9 +66,9 @@ namespace cpps
 			return v;
 		}
 
-		static cpps_class_singleton<C>* getSingletonPtr()
+		static cpps_class_singleton<T>* getSingletonPtr()
 		{
-			static cpps_class_singleton<C> t;
+			static cpps_class_singleton<T> t;
 			return &t;
 		}
 		cpps_cppsclass	*v;

@@ -204,7 +204,16 @@ namespace cpps
 #define MAXINT64    ((cpps_integer)(MAXUINT64 >> 1))
 #define MININT64    ((cpps_integer)~MAXINT64)
 
+typedef cpps::usint64 HMODULE;
+
 #define _mkdir(p) mkdir(p,S_IRWXU)
+
+#include <pthread.h>
+inline unsigned int GetCurrentThreadId()
+{
+	return pthread_self();
+}
+
 #else
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -235,10 +244,13 @@ namespace cpps
 {
 	struct C;
 }
+#ifdef WIN32
 typedef void(__stdcall*cpps_attach_func)(cpps::C *c);
 typedef void(__stdcall*cpps_detach_func)(cpps::C *c);
-
-
+#else
+typedef void(*cpps_attach_func)(cpps::C *c);
+typedef void(*cpps_detach_func)(cpps::C *c);
+#endif
 //////////////////////////////////////////////////////////////////////////
 
 

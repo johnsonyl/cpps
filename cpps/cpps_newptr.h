@@ -14,6 +14,8 @@
 
 namespace cpps
 {
+	template <class T>
+	struct cpps_class_singleton;
 	//可以增加到GC的PTR
 	template<class T>
 	cpps_cppsclassvar*		newClassPtr(C *c, T ** ret)

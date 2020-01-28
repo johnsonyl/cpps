@@ -154,7 +154,11 @@ namespace cpps
 	std::string cpps_getcwd()
 	{
 		char buffer[32768];
+#ifdef WIN32
 		_getcwd(buffer, 32768);
+#else
+		getcwd(buffer, 32768);
+#endif
 		return buffer;
 	}
 	void cpps_regio(C *c)

@@ -403,14 +403,16 @@ namespace cpps
 
 	};
 	void		gc_cleanup(C *c, int tid);
-	static unsigned int threadFunction(VOID *p)
+	static unsigned int threadFunction(void *p)
 	{
 		ThreadParameter*param = (ThreadParameter*)p;
 		C*c = param->c;
 		cpps_value func = param->func;
 		cpps_value value = param->value;
 		func.parentLambdaVar = NULL;
+#ifdef WIN32
 		SetEvent(param->eventFinish);
+#endif
 		cpps_try
 		object ret = dofunction(c, func, value);
 		cpps_catch
@@ -472,6 +474,8 @@ namespace cpps
 	}
 	bool	cpps_freelibrary(C*c, std::string libname)
 	{
+#ifdef WIN32
+
 		bool ret = false;
 		std::unordered_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
 		if (it != c->modulelist.end())
@@ -496,6 +500,7 @@ namespace cpps
 			ret = true;
 		}
 		return ret;
+#endif
 	}
 	void cpps_regbase(C *c)
 	{

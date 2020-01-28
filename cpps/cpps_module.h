@@ -14,6 +14,8 @@
 
 namespace cpps
 {
+	template<class R>
+	cpps_regfunction* make_regfunction(std::string func, R(*f)(const char* fmt, ...));
 	struct cpps_reg_class
 	{
 		cpps_reg* f;
