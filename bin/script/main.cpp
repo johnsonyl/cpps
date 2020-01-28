@@ -1,8 +1,3 @@
-loadlibrary("demo");
-
-demotest();
-
-freelibrary("demo");
 
 namespace std
 {
@@ -12,14 +7,21 @@ namespace std
 	}
 	class A
 	{
+		A()
+		{
+			user = "johnson";
+		}
 		var add(var a,var b)
 		{
 			return a + b;
 		}
+		var user;
+		const var age = 30;
 	}
 }
 
 println(std::add(100,200));
 
-var aaa = new std::A;
+var aaa = new std::A();
+
 println(aaa.add(300,400));
