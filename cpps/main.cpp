@@ -14,13 +14,21 @@ int32 getline_(char s[], int32 lim){
 	return i;
 }
 
+namespace cpps { std::string cpps_io_getfilepath(std::string str); }
 
 int32 main(int argc,char **argv)
 {
 	std::string path = "script/main.cpp";
 
-	if (argc == 2)
+	if (argc == 2) {
 		path = argv[1];
+#ifdef WIN32
+		SetCurrentDirectoryA(cpps_io_getfilepath(path).c_str());
+#else
+		chdir(cpps_io_getfilepath(path).c_str());
+#endif
+
+	}
 
 	C* c = cpps::create();
 
