@@ -124,7 +124,6 @@ namespace cpps
 			{
 				cpps_regvar* v = it->second;
 				cpps_gc_remove_barrier(c, v);
-				if(c->debug) printf("destory %s \n", v->varName.c_str());
 				delete v;
 			}
 			varList.clear();

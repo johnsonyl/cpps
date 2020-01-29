@@ -43,7 +43,7 @@ namespace cpps
 		object		operator [] (std::string k)
 		{
 			cpps_value ret;
-			if (value.tt == CPPS_TCLASSVAR || value.tt == CPPS_TDOMAIN)
+			if(value.tt == CPPS_TDOMAIN)
 			{
 				cpps_domain* leftdomain = NULL;
 
@@ -54,11 +54,6 @@ namespace cpps
 				}
 			}
 			return static_cast<object>(ret);
-		}
-		//arrayø…“‘”√
-		object		operator [] (int32 k)
-		{
-
 		}
 
 		cpps_value	value;

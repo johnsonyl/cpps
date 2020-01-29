@@ -14,6 +14,8 @@
 
 namespace cpps
 {
+	typedef std::vector<cpps_value> std_vector;
+
 	struct cpps_vector
 	{
 		cpps_vector()
@@ -111,6 +113,26 @@ namespace cpps
 
 	};
 	void	cpps_regarray(C *c);
+
+	template<>
+	struct cpps_converter<std::vector<cpps_value>*>
+	{
+		static bool	match(cpps_value obj)
+		{
+			if (obj.tt != CPPS_TCLASSVAR) return false;
+			cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.domain->parent[0];
+			if (cls->getClassName() != "vector") return false;
+
+			return true;
+		}
+		static std::vector<cpps_value>*		apply(cpps_value obj)
+		{
+			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
+			cpps::cpps_vector *m = static_cast<cpps::cpps_vector*>(clsvar->getclsptr());
+
+			return &m->realvector();
+		}
+	};
 }
 
 #endif // CPPS_ARRAY_CPPS_HEAD_

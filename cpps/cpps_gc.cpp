@@ -35,7 +35,6 @@ namespace cpps
 			cpps_regvar *var = it->second;
 			if (var->getValue().tt == CPPS_TCLASSVAR|| var->getValue().tt == CPPS_TSTRING)
 			{
-				if(c->debug) printf("%s\n", var->varName.c_str());
 				cpps_gc_check_gen_value(c, var->getValue(), checkchild, oldgen, newgen,size, isCheck);
 			}
 		}
@@ -148,7 +147,6 @@ namespace cpps
 	//检测新生代
 	void cpps_gc_check_gen0(C *c)
 	{
-		if (c->debug) printf("gc gen0\n");
 
 		std::unordered_set<cpps_cppsclassvar *> isCheck;
 	
@@ -160,15 +158,12 @@ namespace cpps
 
 		std::unordered_set<cpps_cppsclassvar *> tempoldgen;
 		size_t tempoldgensize = 0;
-		//c->gclock.lock();
 
 		for (std::unordered_set<cpps_regvar*>::iterator it = c->getBarrierList()->begin();
 			it != c->getBarrierList()->end(); ++it)
 		{
 			cpps_regvar *v = *it;
-			//size_t tmp = 0;
 			cpps_gc_check_gen_value(c, v->getValue(), true, c->getGen0(), &tempoldgen, tempoldgensize, isCheck);
-			//c->setGen1size(tmp);
 		}
 
 
@@ -179,21 +174,17 @@ namespace cpps
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
-			if (c->debug) printf("=======================================================gc to %s\n", pClsVar->getDomainName().c_str());
-			//cpps_base_printf(cpps_value(pClsVar));
 			delete pClsVar;
 		}
 		c->getGen0()->clear();
 		*(c->getGen0()) = tempoldgen;
 		c->setGen0size(tempoldgensize);
 
-		//c->gclock.unlock();
 	}
 
 	//检测老生代  这样检测估计后面就卡死了。  还得想办法优化！！！
 	void cpps_gc_check_gen1(C *c)
 	{
-		if (c->debug) printf("=======================================================gc all\n");
 
 		std::unordered_set<cpps_cppsclassvar *> newgen;
 		size_t newgensize = 0;
@@ -226,7 +217,6 @@ namespace cpps
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
-			if (c->debug) printf("=======================================================gc to %s\n", pClsVar->getDomainName().c_str());
 			delete pClsVar;
 		}
 		c->getGen0()->clear();
@@ -240,7 +230,6 @@ namespace cpps
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
-			if (c->debug) printf("=======================================================gc to %s\n", pClsVar->getDomainName().c_str());
 			delete pClsVar;
 		}
 		c->getGen1()->clear();
@@ -259,7 +248,6 @@ namespace cpps
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
-			if (c->debug) printf("=======================================================gc to %s\n", pClsVar->getDomainName().c_str());
 			delete pClsVar;
 		}
 		c->getGen0(tid)->clear();
@@ -271,7 +259,6 @@ namespace cpps
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
-			if (c->debug) printf("=======================================================gc to %s\n", pClsVar->getDomainName().c_str());
 			delete pClsVar;
 		}
 
@@ -320,7 +307,6 @@ namespace cpps
 				printf("%s\r\n", tmpStr->c_str());
 			}
 		}
-		//c->gclock.unlock();
 		return ret;
 	}
 	void cpps_reggc(C *c)

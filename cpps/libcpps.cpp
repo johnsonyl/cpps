@@ -41,13 +41,6 @@ namespace cpps
 		}
 		else if (  (c->getGen0size() > CPPS_GEN0_CHECKSIZE || c->getGen0()->size() > CPPS_GEN0_CHECKCOUNT ))
 		{
-			if (c->debug)
-			{
-				printf("gen0内存 %I64d b\n", c->getGen0size());
-				printf("gen1内存 %I64d b\n", c->getGen1size());	//测试 200字节进行清理年轻代
-				printf("当前内存 %I64d b\n", c->getGen0size() + c->getGen1size());
-			}
-
 			cpps_gc_check_gen0(c);
 		}
 		
@@ -534,25 +527,13 @@ namespace cpps
 		}
 		else
 		{
-
 			if (o->type == CPPS_ONIL)
 				o->type = CPPS_OVARPARAM;
 
 			//剔除空格
 			cpps_parse_rmspaceandenter(buffer);
-
-// 			if (buffer.cur() == '(') //是调用函数
-// 			{
-// 				buffer.pop();
-// 				//获取里面 参数
-// 				param->type = CPPS_FUNCNAME;
-// 				cpps_parse_dofunction(domain, param, buffer);
-// 			}
-			
 		}
-
 		return param;
-
 	}
 
 	Node* cpps_parse_number(cpps_domain *domain, Node * o, cppsbuffer & buffer)
@@ -792,7 +773,7 @@ namespace cpps
 		{
 			return cpps_parse_bracket(domain, o,root, buffer);
 		}
-		else //暂时还不支持的 其实可以填写 - 代表负数 （ 括号什么的 还在实现中。。。
+		else
 		{
 			//throw(cpps_error(o->filename, buffer.line(), cpps_error_paramerror, "参数错误，读取错误！！"));
 		}
@@ -863,35 +844,34 @@ namespace cpps
 		//新增函数参数
 		if (buffer.cur() == '[' && buffer.at(buffer.offset() + 1) == ']' && buffer.at(buffer.offset() + 2) == '(')
 		{
-				buffer.seek(buffer.offset() + 3);
+			buffer.seek(buffer.offset() + 3);
 
 
-				Node* lamdbavar = new Node(param->filename, buffer.line());
-				lamdbavar->type = CPPS_ODEFVAR;
-				lamdbavar->setParent(root);
-				root->l.insert(root->l.begin(), lamdbavar);
+			Node* lamdbavar = new Node(param->filename, buffer.line());
+			lamdbavar->type = CPPS_ODEFVAR;
+			lamdbavar->setParent(root);
+			root->l.insert(root->l.begin(), lamdbavar);
 
-				Node* str = new Node(lamdbavar, param->filename, buffer.line());
-				str->s = buildlambda();
-				str->type = CPPS_VARNAME;
-
-
-				Node* lambda = new Node(str, param->filename, buffer.line());
-				lambda->type = CPPS_ODEFVAR_FUNC;
-				cpps_parse_def_function(domain, lambda,root, buffer);//定义了一个函数
+			Node* str = new Node(lamdbavar, param->filename, buffer.line());
+			str->s = buildlambda();
+			str->type = CPPS_VARNAME;
 
 
-				Node *lambdaparam = new Node( param->filename, buffer.line());
-				lambdaparam->type = CPPS_VARNAME_LAMBDA;
-				lambdaparam->s = str->s;
-				lambdaparam->setParent(lastOpNode);
-
-				lambdaparam = cpps_parse_last_func(buffer, lastOpNode, lambdaparam, domain, root);
-
-				lastOpNode->l.push_back(lambdaparam);
+			Node* lambda = new Node(str, param->filename, buffer.line());
+			lambda->type = CPPS_ODEFVAR_FUNC;
+			cpps_parse_def_function(domain, lambda,root, buffer);//定义了一个函数
 
 
-				return 1;
+			Node *lambdaparam = new Node( param->filename, buffer.line());
+			lambdaparam->type = CPPS_VARNAME_LAMBDA;
+			lambdaparam->s = str->s;
+			lambdaparam->setParent(lastOpNode);
+
+			lambdaparam = cpps_parse_last_func(buffer, lastOpNode, lambdaparam, domain, root);
+
+			lastOpNode->l.push_back(lambdaparam);
+
+			return 1;
 		}
 
 
@@ -1067,12 +1047,8 @@ namespace cpps
 
 			}
 
-			//p->type = CPPS_QUOTEVARNAME;
 			op->addtoleft(p);
-// 			if (op->symbol->getparamleftlimit() && p->type != CPPS_QUOTEVARNAME)
-// 			{
-// 				throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "不能对非变量进行自增操作！"));
-// 			}
+
 			p = op;
 
 			op = cpps_parse_symbol(domain, param, buffer);
@@ -1274,16 +1250,7 @@ namespace cpps
 	void cpps_parse_def(cpps_domain *domain, Node * child, Node * root, cppsbuffer &buffer, int32 limit)
 	{
 		char ch = buffer.cur();
-// 		if (ch == '(')
-// 		{
-// 			buffer.pop();
-// 
-// 			//这应该是要执行函数了
-// 			child->type = CPPS_ODOFUNCTION;
-// 			cpps_parse_dofunction(domain, child, buffer);
-// 
-// 		}
-// 		else
+
 		if (!cpps_parse_isnotvarname(ch)) //又是个名字. 那应该是定义变量
 		{
 			if (child->s == "var")
@@ -1905,10 +1872,7 @@ namespace cpps
 				cpps_parse_expression(domain, child, root,buffer);
 
 			}
-// 			else
-// 			{
-// 				cpps_parse_def(domain, child, buffer,limit);
-// 			}
+
 
 			//剔除空格
 			cpps_parse_rmspaceandenter(buffer);
@@ -1991,12 +1955,7 @@ namespace cpps
 		Node *o = loadbuffer(c,c->_G, str, "");
 		if(o) cpps_step_all(c, CPPS_SINGLERET, 0, o ); //dostring 后pcall
 		_CPPS_CATCH
-
-		//检测gc
-		////if (!c->getcallstack() || c->getcallstack()->size() == 0)
-		//{
-			cpps_gc_check_step(c);
-		//}
+        cpps_gc_check_step(c);
 		return CPPS_NOERROR;
 	}
 	int32 loadfile(cpps::C *c, const char* path)
@@ -2068,29 +2027,19 @@ namespace cpps
 	}
 	int32		pcall(C * c, int32 retType, cpps_domain* domain, Node *o)
 	{
-	
-
 		_CPPS_TRY
 		cpps_step_all(c, retType, domain, o );
 		_CPPS_CATCH
-
-		//检测gc
-		//if (!c->getcallstack() || c->getcallstack()->size() == 0)
-		//{
-			cpps_gc_check_step(c);
-		//}
-
+		cpps_gc_check_step(c);
 		return 0;
 	}
 
 	void  cpps_step_all(C * c, int32 retType, cpps_domain* domain, Node *o )
 	{
-
 		if (domain == NULL)
 			domain = c->_G;
 		if (o == NULL)
 			o = c->o;
-		//domain->lock.lock();
 
 		domain->isbreak = false; //有可能里面的让我退出
 
@@ -2099,10 +2048,6 @@ namespace cpps
 			Node* d = *it;
 			cpps_step(c,domain, d);
 		}
-		//domain->lock.unlock();
-
-
-
 	}
 	void cpps_step_def_var(C *c,cpps_domain *domain, Node* d,int8 isconst = false)
 	{
@@ -2136,30 +2081,17 @@ namespace cpps
 						{
 							v->setValue(value);
 						}
-
-						if (v->getValue().tt == CPPS_TCLASSVAR || v->getValue().tt == CPPS_TSTRING)
-						{
-							//cpps_gc_add_barrier(c, v);
-						}
-
-
-
-						//如果是classvar
-						//加入到GC检测中
-					
 					}
 					//释放老的
 					cpps_domain* leftdomain = NULL;
 					cpps_regvar *old = domain->getVar(v->varName, leftdomain, false);
 					if (old)
 					{
-						//cpps_gc_remove_barrier(c, old);
 						domain->unregVar(c,old);
 						delete old;
 					}
 					//注册新的
 					domain->regVar(c,v);
-					//c->gclock.unlock();
 
 				}
 				else if (var && var->type == CPPS_ODEFVAR_FUNC)
@@ -2169,7 +2101,6 @@ namespace cpps
 					cpps_regvar *old = domain->getVar(varName->s, leftdomain, false);
 					if (old)
 					{
-						//cpps_gc_remove_barrier(c, old);
 						domain->unregVar(c,old);
 						delete old;
 					}
@@ -2351,8 +2282,6 @@ namespace cpps
 
 			cpps_step_all(c, CPPS_SINGLERET, domain, for3);
 		}
-
-
 	}
 	void cpps_step_while(C * c, cpps_domain * domain, Node* d)
 	{
@@ -2882,16 +2811,6 @@ namespace cpps
 				v = v->getValue().value.domain->getVar(lastNamespace->getleft()->s,leftdomain);
 				lastNamespace = lastNamespace->getleft();
 			}
-			/*	for (size_t i = 0; i < lastNamespace->l.size(); ++i)
-				{
-					if (v->getValue().isDomain() && lastNamespace->l[i] && lastNamespace->l[i]->type == CPPS_ONAMESPANCE_CHILD)
-					{
-						v = v->getValue().value.domain->getVar(lastNamespace->l[i]->s, leftdomain);
-						lastNamespace = d->l[i];
-					}
-				}
-	*/
-
 
 			if (v && v->getValue().tt == CPPS_TCLASS)
 			{
@@ -3336,11 +3255,8 @@ namespace cpps
 		if (func.tt == CPPS_TFUNCTION)
 		{
 			cpps_function *f = func.value.func;
-
-
 			cpps_domain *execdomain = new cpps_domain(domain, cpps_domain_type_func, "");
 			execdomain->setexecdomain(domain);
-
 
 			std::vector<cpps_value> params;
 			cpps_value isNeedC;
@@ -3349,23 +3265,15 @@ namespace cpps
 				isNeedC = cpps_cpp_to_cpps_converter<C*>::apply(c,c);
 				params.push_back(isNeedC);
 
-
 				cpps_regvar *v = new cpps_regvar;
 				v->setValue(isNeedC);
 				std::stringstream strStream;
 				strStream << "pc";
 				v->setVarName(strStream.str());
 				execdomain->regVar(c, v);
-
 			}
 			std::vector<cpps_regvar *> params_var;
-
-			//c->gclock.lock();
 			make_values(c, domain, d->getright(), params, params_var, execdomain);
-
-
-			//c->gclock.unlock();
-
 			std::string filename = d->getright()->filename;
 			std::string funcname = f->getfuncname();
 			int32 line = d->getright()->line;
@@ -3381,50 +3289,14 @@ namespace cpps
 				ret = cpps_execute_callfunction(c, f, execdomain, filename, line, funcname, params);
 			}
 
-
-
-
-			/*
-			for (size_t i = 0; i < params_var.size(); i++)
-			{
-				cpps_regvar *v = params_var[i];
-				cpps_gc_remove_barrier(c, v);
-			}
-			c->gclock.lock();
-			*/
-			//检测是否需要GC
 			cpps_regvar *v = cpps_node_to_regver(domain, d->getleft(), false);
-
-			//if (v && v->getValue().tt == CPPS_TCLASSVAR )
-			//{
-			//	cpps_cppsclassvar *a = (cpps_cppsclassvar*)v->getValue().value.domain;
-			//	//if (c->debug) printf("%s.%s\n", a->getDomainName().c_str(), d->getleft()->getright()->s.c_str());
-			//	if (a->getDomainName() == "vector" && (d->getleft()->getright()->s == "push_back" || d->getleft()->getright()->s == "push_front" || d->getleft()->getright()->s == "insert"))
-			//	{
-			//		if (params.size() == 1 && params[0].tt == CPPS_TCLASSVAR)
-			//		{
-			//			//cpps_gc_add_barrier(c, v);
-			//		}
-			//	}
-			//	else if ((a->getDomainName() == "map" || a->getDomainName() == "unordered_map") && d->getleft()->getright()->s == "insert")
-			//	{
-			//		if (params.size() == 2 &&( params[0].tt == CPPS_TCLASSVAR || params[1].tt == CPPS_TCLASSVAR))
-			//		{
-			//			//cpps_gc_add_barrier(c, v);
-			//		}
-			//	}
-			//}
+		
 			if (v && v->varName == "debug" && d->getleft()->getright()->s == "breakpoint")
 			{
 				cpps_debug_breakpoint(c, domain, d);
 			}
-
-
 			execdomain->destory(c);
 			delete execdomain;
-
-
-			//c->gclock.unlock();
 		}
 		else
 		{
@@ -3436,28 +3308,20 @@ namespace cpps
 		}
 		return ret;
 	}
-	
-
 	cpps::object _G(C *c)
 	{
 		return cpps_value(c->_G);
 	}
-
 	void collect(C* c)
 	{
 		cpps_gc_check_gen0(c);
 	}
-
 	void collectall(C*c)
 	{
 		cpps_gc_check_gen1(c);
 	}
-
 	void setchartrans(C *c, std::string(*func)(std::string &))
 	{
 		c->func = func;
 	}
-
-
-
 }

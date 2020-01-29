@@ -82,6 +82,7 @@ namespace cpps
 			return cpps_to_string(obj);
 		}
 	};
+	
 	template<>
 	struct cpps_converter < const char * >
 	{
@@ -244,14 +245,8 @@ namespace cpps
 			ret.value.domain = var;
 			var->setclsptr((void *)v);
 
-		//	cpps_regvar* v2 = new cpps_regvar;
-		//	v2->setValue(var);
-
-		//	cpps_gc_add_barrier(c, v2);
-
 			//将新创建出来的添加到新生区稍后检测要不要干掉
 			cpps_gc_add_gen0(c, var);
-
 
 			return ret;
 		}

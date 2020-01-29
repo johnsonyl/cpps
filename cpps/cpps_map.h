@@ -16,6 +16,8 @@ namespace cpps
 {
 	void cpps_base_printf(object b);
 
+	typedef std::map<cpps_value, cpps_value> std_map;
+
 	struct cpps_map
 	{
 		void			insert(cpps_value k, cpps_value v)
@@ -115,7 +117,7 @@ namespace cpps
 	};
 
 	
-	
+	typedef std::unordered_map<cpps_value, cpps_value, cpps_value::hash> std_unordered_map;
 
 	struct cpps_unordered_map
 	{
@@ -146,6 +148,46 @@ namespace cpps
 	};
 
 	void	cpps_regmap(C *c);
+
+	template<>
+	struct cpps_converter<std::map<cpps_value, cpps_value>*>
+	{
+		static bool	match(cpps_value obj)
+		{
+			if (obj.tt != CPPS_TCLASSVAR) return false;
+			cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.domain->parent[0];
+			if (cls->getClassName() != "map") return false;
+
+			return true;
+		}
+		static std::map<cpps_value, cpps_value>*		apply(cpps_value obj)
+		{
+			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
+			cpps::cpps_map *m = static_cast<cpps::cpps_map*>(clsvar->getclsptr());
+
+			return &m->realmap();
+		}
+	};
+
+	template<>
+	struct cpps_converter<std::unordered_map<cpps_value, cpps_value, cpps_value::hash>*>
+	{
+		static bool	match(cpps_value obj)
+		{
+			if (obj.tt != CPPS_TCLASSVAR) return false;
+			cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.domain->parent[0];
+			if (cls->getClassName() != "unordered_map") return false;
+
+			return true;
+		}
+		static std::unordered_map<cpps_value, cpps_value, cpps_value::hash>*		apply(cpps_value obj)
+		{
+			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
+			cpps::cpps_unordered_map *m = static_cast<cpps::cpps_unordered_map*>(clsvar->getclsptr());
+
+			return &m->realmap();
+		}
+	};
 }
 
 #endif
