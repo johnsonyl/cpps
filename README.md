@@ -34,6 +34,14 @@ foreach(var item : {a:1,b:"2"})
 	println(item.second());
 }
 
+var b = {a:1,b:"2"};
+
+foreach(var item : b)
+{
+	println(item.first());
+	println(item.second());
+}
+
 ```
 
 ```
@@ -109,7 +117,7 @@ C->test()
 
 修改成 
 ```
-var a = [1,2];
+~~var a = [1,2];
 
 foreach(var item in a)
 {
@@ -126,7 +134,7 @@ foreach(var item in b)
 {
 	println(item.first());
 	println(item.second());
-}
+}~~
 ```
 
 增加 new 时设置变量功能类似c#
