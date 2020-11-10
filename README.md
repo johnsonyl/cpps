@@ -116,7 +116,6 @@ C->test()
 老版本使用lambda 方式，很不好。
 
 修改成 
-```
 ~~var a = [1,2];
 
 foreach(var item in a)
@@ -135,7 +134,6 @@ foreach(var item in b)
 	println(item.first());
 	println(item.second());
 }~~
-```
 
 增加 new 时设置变量功能类似c#
 
