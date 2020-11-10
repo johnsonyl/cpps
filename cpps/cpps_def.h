@@ -87,6 +87,8 @@
 #define CPPS_ONAMESPANCE_CHILD	47	//namespace::class
 #define CPPS_OCLASS_CONSTRUCTOR	48	//new class(XX)
 #define CPPS_ODEFCONSTVAR		49 //变量名字const
+#define CPPS_ONEW_SETV			50	//new Class(){ this }
+#define CPPS_OFOREACH			51	//foreach循环
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误
@@ -95,7 +97,7 @@
 #define CPPS_NOT_DEFASSEMBLE	1 //不可以定义集
 #define CPPS_NOT_DEFFUNCTION	2 //不可以定义函数
 #define CPPS_NOT_USEBUILTIN		4	//不可以使用关键字
-#define CPPS_NOT_DEFVAR			8 //不可以定义变量
+#define CPPS_NOT_DEFVAR			8 //不可以给变量设置值
 #define CPPS_NOT_DONTDELETEEND	16 //不需要移除;
 #define CPPS_NOT_DEFCLASS		32 //不要定义类
 
@@ -113,6 +115,7 @@ enum
 	cpps_domain_type_classvar,		//类的域
 	cpps_domain_type_namespace,		//名空间
 	cpps_domain_type_trycatch,		//trycatch
+	cpps_domain_type_foreach,		//foreach
 	//cpps_domain_type_
 
 };

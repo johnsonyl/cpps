@@ -523,7 +523,6 @@ namespace cpps
 			def("isnumber", cpps_base_isnumber),
 			def("isfunction", cpps_base_isfunction),
 			def("objtype", cpps_base_objtype),
-			def_inside("foreach", cpps_base_foreach),
 			def("system", cpps_base_system),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
 			def("assert", cpps_assert),

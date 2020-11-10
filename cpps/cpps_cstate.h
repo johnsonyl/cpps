@@ -65,6 +65,7 @@ namespace cpps
 		std::string																	(*func)(std::string &);
 		std::unordered_map<std::string, HMODULE>									modulelist;
 		bool																		debug;
+		cpps_lock																	stacklock;
 		//cpps_lock							gclock;
 	};
 }

@@ -8,6 +8,9 @@ namespace cpps
 	void cpps_regmap(C *c)
 	{
 		module(c)[
+			_class<cpps_map_node>("cpps_map_node")
+				.def("first", &cpps_map_node::first)
+				.def("second", &cpps_map_node::second),
 			_class<cpps_map>("map")
 				.def("insert", &cpps_map::insert)
 				.def("find", &cpps_map::find)

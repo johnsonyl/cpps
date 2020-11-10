@@ -149,6 +149,20 @@ namespace cpps
 
 	void	cpps_regmap(C *c);
 
+	class cpps_map_node
+	{
+	public:
+		cpps_map_node(){}
+		cpps_value first() {
+			return _first;
+		}
+		cpps_value second() {
+			return _second;
+		}
+		cpps_value _first;
+		cpps_value _second;
+	};
+
 	template<>
 	struct cpps_converter<std::map<cpps_value, cpps_value>*>
 	{

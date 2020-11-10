@@ -1,7 +1,52 @@
 # cpps script
 cpps脚本是一个基于c++的脚本语言。
 
-其代码风格更像c++， 给那些跟我一样不喜欢py,lua,js做脚本的朋友一个很好的脚本语言
+项目没有投资，没人使用，所以佛系更新，希望有哪家大企业看中可以投资我呀！！
+
+其代码风格更像c++， 给那些跟我一样不喜欢py,lua,js做脚本的朋友一个很好的脚本语言。
+
+
+2020-11-10 更新
+
+重写foreach 
+
+老版本使用lambda 方式，很不好。
+
+修改成 
+```
+var a = [1,2];
+
+foreach(var item in a)
+{
+	println(item);
+	foreach(var item2 in a)
+	{
+		println(item2);
+	}
+}
+
+var b = {a:1,b:"2"};
+
+foreach(var item in b)
+{
+	println(item.first());
+	println(item.second());
+}
+```
+
+增加 new 时设置变量功能类似c#
+
+```
+class A
+{
+    var name;
+    var age;
+}
+var a = new A(){
+    name = "john",
+    age = 32
+}
+```
 
 2020-1-28 更新
 
