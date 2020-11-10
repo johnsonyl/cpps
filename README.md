@@ -49,7 +49,7 @@ class B:A
 {
 	var age;
 	B(){
-		A::constructor(10);
+		A::constructor(10); //如果构造函数非0参数时，需要手动调用，否则不会调用
 		println("B class");
 	}
 	var test()
