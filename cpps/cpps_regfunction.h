@@ -48,7 +48,7 @@ namespace cpps
 		{
 			return isNeesC;
 		}
-
+		virtual int8 getparamcount() { return 0; }
 		bool			isNeesC;
 		std::string		funcname;
 	};
@@ -247,6 +247,7 @@ namespace cpps
 
 			call_function<R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
+		virtual int8 getparamcount() { return CPPS_MAKE_REGFUNCTION_ITER_C; }
 		R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A));
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
 	};
@@ -272,6 +273,7 @@ namespace cpps
 
 			call_function<R>(c,*ret, domain, *o, func, f, cpps_is_void<R>());
 		}
+		virtual int8 getparamcount() { return CPPS_MAKE_REGFUNCTION_ITER_C; }
 		R(CLS::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A));
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
 	};

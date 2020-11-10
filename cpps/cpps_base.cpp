@@ -505,7 +505,7 @@ namespace cpps
 	void cpps_regbase(C *c)
 	{
 		module(c)[
-			_class<C>("C"),
+			_class<C>("C_STATE"),
 			def("printf", cpps_base_printf),
 			def("print", cpps_base_printf),
 			def("printfln", cpps_base_printfln),

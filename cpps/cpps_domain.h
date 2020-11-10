@@ -64,6 +64,7 @@ namespace cpps
 				{
 					var->setValue(f->value);
 				}
+				varList.erase(var->varName);
 				varList.insert(std::unordered_map<std::string, cpps_regvar*>::value_type(var->varName, var));
 				f = f->next;
 			} while (f);

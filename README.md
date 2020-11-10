@@ -6,6 +6,72 @@ cpps脚本是一个基于c++的脚本语言。
 其代码风格更像c++， 给那些跟我一样不喜欢py,lua,js做脚本的朋友一个很好的脚本语言。
 
 
+2020-11-10 更新2
+
+修复父类构造函数执行顺序，以及增加调用父类虚函数的功能
+
+```
+class C
+{
+	C()
+	{
+		println("C class");
+	}
+	var test()
+	{
+		println("C->test()");
+		
+	}
+}
+class A : C
+{
+	var name;
+	A(int a){
+		println("A class:"..name);
+	}
+	
+	var test()
+	{
+		println("A->test()");
+				
+		println(name);
+	}
+}
+
+class B:A
+{
+	var age;
+	B(){
+		A::constructor(10); //在构造函数非0参数时需要手动调用，否则不会调用
+		println("B class");
+	}
+	var test()
+	{
+		println("B->test()");
+		println(age);
+		C::test();
+	}
+}
+
+
+var b = new B(){
+	name = "john",
+	age = 32
+};
+
+b.test();
+
+输出：
+[Cpps 1.2.0 Copyright (C) 2015-2020 By Johnson, Pub-test]
+C class
+A class:john
+B class
+B->test()
+32
+C->test()
+>
+```
+
 2020-11-10 更新
 
 重写foreach 

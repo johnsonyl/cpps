@@ -40,6 +40,7 @@ namespace cpps
 		{
 		}
 
+		virtual int8 getparamcount() { return 1; }
 
 		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
 		{

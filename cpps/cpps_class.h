@@ -33,8 +33,10 @@ namespace cpps
 		{
 			return classname;
 		}
+		std::vector<cpps_cppsclass*>& parentClassList() { return _parentClassList; }
 		Node		*o; //定义的变量
 		std::string classname;
+		std::vector<cpps_cppsclass*> _parentClassList;
 	};
 
 	template <class C>

@@ -505,7 +505,6 @@ namespace cpps
 				buffer.pop();
 
 
-				Node *n = new Node( param->filename, buffer.line());
 
 
 				Node *child = new Node( param->filename, buffer.line());
@@ -514,16 +513,15 @@ namespace cpps
 				child->setdomain(funcdomain);
 
 				cpps_parse_dofunction(funcdomain, child, root, buffer);
-				param->addtoright(n);
+				param->addtoright(child);
 
-				n->addtoleft(child);
 
 
 				// var a = new A(){}
 				cpps_parse_rmspaceandenter(buffer);
 				if (buffer.cur() == '{') {
-					Node* setv = cpps_parse_new_setv(domain, n, root, buffer);
-					n->addtoright(setv);
+					Node* setv = cpps_parse_new_setv(domain, param, root, buffer);
+					param->add(setv);
 				}
 			}
 		}
@@ -2622,6 +2620,7 @@ namespace cpps
 		delete execdomain;
 
 	}
+	
 	void cpps_step_class(C * c, cpps_domain *domain, Node* d)
 	{
 		cpps_cppsclass *cppsclass = new cpps_cppsclass(d->s,d, domain, cpps_domain_type_class);
@@ -2644,18 +2643,23 @@ namespace cpps
 				throw("父类必须为类。不能为其他类型。");
 			}
 			cpps_cppsclass *parentclass = (cpps_cppsclass *)regvar->getValue().value.domain;
-
+			cppsclass->parentClassList().push_back(parentclass); //添加父类
 			//复制父类所有的函数哟。
 			for (std::unordered_map<std::string, cpps_regvar*>::iterator it2 = parentclass->varList.begin(); it2 != parentclass->varList.end(); ++it2)
 			{
-				cppsclass->varList.insert(std::unordered_map<std::string, cpps_regvar*>::value_type(it2->first, it2->second));
+				if(it2->first != "constructor") //不复制构造函数。。
+					cppsclass->varList.insert(std::unordered_map<std::string, cpps_regvar*>::value_type(it2->first, it2->second));
+				
 			}
 
-			//复制类里面的变量
-			for (std::vector<Node*>::iterator it3 = parentclass->o->getright()->l.begin(); it3 != parentclass->o->getright()->l.end(); ++it3)
+			if (parentclass->o != NULL)
 			{
-				(*it3)->setParent(cppsclass->o->getright());
-				cppsclass->o->getright()->l.push_back(*it3);
+				//复制类里面的变量
+				for (std::vector<Node*>::iterator it3 = parentclass->o->getright()->l.begin(); it3 != parentclass->o->getright()->l.end(); ++it3)
+				{
+					(*it3)->setParent(cppsclass->o->getright());
+					cppsclass->o->getright()->l.push_back(*it3);
+				}
 			}
 		}
 
@@ -2961,7 +2965,7 @@ namespace cpps
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getValue().tt == CPPS_TDOMAIN || v->getValue().tt == CPPS_TCLASSVAR)) && isgetRight)
 			{
-				if (v->getValue().tt == CPPS_TCLASSVAR && v->getValue().value.domain->getDomainName() != "map" && v->getValue().value.domain->getDomainName() != "unordered_map" && v->getValue().value.domain->getDomainName() != "vector")
+				if ((v->getValue().tt == CPPS_TDOMAIN || v->getValue().tt == CPPS_TCLASSVAR) && v->getValue().value.domain->getDomainName() != "map" && v->getValue().value.domain->getDomainName() != "unordered_map" && v->getValue().value.domain->getDomainName() != "vector")
 				{
 					v = getregvar(v->getValue().value.domain, d->getright());
 				}
@@ -2986,7 +2990,55 @@ namespace cpps
 
 		return v;
 	}
+	bool cpps_check_parent_class(cpps_cppsclass* a, cpps_cppsclass* b)
+	{
+		if (a == NULL) return false;
+		if (b == NULL) return false;
+		for (size_t i = 0; i < a->parentClassList().size(); i++)
+		{
+			cpps_cppsclass* c = a->parentClassList()[i];
+			if (c == b)
+				return true;
+		}
+		for (size_t i = 0; i < a->parentClassList().size(); i++)
+		{
+			cpps_cppsclass* c = a->parentClassList()[i];
+			bool ret = cpps_check_parent_class(c, b);
+			if (ret) return true;
+		}
+		return false;
+	}
+	void cpps_call_parent_class_default_constructor(C*c,Node* n,cpps_cppsclass * parent_cppsclass, cpps_domain* domain,cpps_domain *leftdomain)
+	{
+		cpps_domain* tmpdomain = NULL;
+		cpps_regvar* var = parent_cppsclass->getVar("constructor", tmpdomain, false);
 
+		if (var && var->getValue().tt == CPPS_TFUNCTION) {
+
+
+			//在执行父类的父类的构造函数
+			for (size_t i = 0; i < parent_cppsclass->parentClassList().size(); i++)
+			{
+				cpps_cppsclass* tmp_parent_cppsclass = parent_cppsclass->parentClassList()[i];
+				cpps_call_parent_class_default_constructor(c, n, tmp_parent_cppsclass, domain, leftdomain);
+			}
+
+			cpps_function* f = var->getValue().value.func;
+			if (f->getparamcount() == 0)
+			{
+				cpps_domain* execdomain = new cpps_domain(domain, cpps_domain_type_func, "constructor");
+				execdomain->setexecdomain(domain);
+
+				Node tmp(n->filename, n->line);
+				Node params(n->filename, n->line);
+				tmp.addtoright(&params); //
+				cpps_step_callfunction(c, execdomain, var->getValue(), &tmp, leftdomain);
+
+				execdomain->destory(c);
+				delete execdomain;
+			}
+		}
+	}
 	cpps_value cpps_calculate_expression(C *c, cpps_domain* domain, Node *d, cpps_domain *&leftdomain)
 	{
 		cpps_value ret;
@@ -3065,6 +3117,10 @@ namespace cpps
 				v->setIsConst(true);
 				cppsclassvar->regVar(NULL,v);
 
+				
+				cpps_domain* takedomain2 = leftdomain;
+				leftdomain = cppsclassvar;
+
 				//数组特殊处理。
 				if (d->s == "vector" && d->getleft())
 				{
@@ -3075,9 +3131,37 @@ namespace cpps
 				}
 				else if (d->getright() ) //构造函数
 				{
-					Node* n = d->getright();
-					if (n->getleft() && n->getleft()->type == CPPS_OCLASS_CONSTRUCTOR)
+					if (d->l.size() == 3)
 					{
+						Node* n = d->l[2];
+
+						if (n && n->type == CPPS_ONEW_SETV)
+						{
+							Node* rr = n;
+							for (size_t i = 0; i < rr->l.size(); i++)
+							{
+								Node* k = rr->l[i]->getleft();
+								cpps_domain* takedomain = leftdomain;
+								leftdomain = NULL;
+								cpps_value v = cpps_calculate_expression(c, domain, rr->l[i]->getright()->getleft(), leftdomain);
+								//m->insert(cpps_value(c, k->s), v);
+								cpps_regvar* var = cppsclassvar->getVar(k->s, leftdomain);
+								if (var)
+									var->setValue(v);
+								leftdomain = takedomain;
+							}
+						}
+					}
+
+					Node* n = d->getright();
+					if (n && n->type == CPPS_OCLASS_CONSTRUCTOR)
+					{
+						//执行父类的默认构造函数（有参数就不执行）
+						for (size_t i = 0; i < cppsclass->parentClassList().size(); ++i)
+						{
+							cpps_cppsclass* parent_cppsclass = cppsclass->parentClassList()[i];
+							cpps_call_parent_class_default_constructor(c,n,parent_cppsclass,domain, leftdomain);
+						}
 
 						cpps_regvar* var = cppsclassvar->getVar("constructor", leftdomain);
 						if (var && var->getValue().tt == CPPS_TFUNCTION) {
@@ -3091,23 +3175,9 @@ namespace cpps
 							delete execdomain;
 						}
 					}
-					if (n->getright() && n->getright()->type == CPPS_ONEW_SETV)
-					{
-						Node* rr = n->getright();
-						for (size_t i = 0; i < rr->l.size(); i++)
-						{
-							Node* k = rr->l[i]->getleft();
-							cpps_domain* takedomain = leftdomain;
-							leftdomain = NULL;
-							cpps_value v = cpps_calculate_expression(c, domain, rr->l[i]->getright()->getleft(), leftdomain);
-							//m->insert(cpps_value(c, k->s), v);
-							cpps_regvar* var = cppsclassvar->getVar(k->s, leftdomain);
-							if (var)
-								var->setValue(v);
-							leftdomain = takedomain;
-						}
-					}
+					
 				}
+				leftdomain = takedomain2;
 			}
 			else
 			{
@@ -3340,6 +3410,21 @@ namespace cpps
 					execdomain->destory(c);
 					delete execdomain;
 
+				}
+				else if ( left.tt == CPPS_TCLASS && leftdomain && leftdomain->domainType == cpps_domain_type_classvar)
+				{
+					cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain;
+					cpps_domain* takedomain = NULL;
+
+					//check this class is parent class..
+					bool is_parent_class = cpps_check_parent_class((cpps_cppsclass*)leftdomain->parent[0], cppsclass);
+					if (!is_parent_class) throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "执行了非父类的函数[%s::%s].", d->getleft()->s.c_str(), d->getright()->s.c_str()));
+
+					cpps_regvar* var = cppsclass->getVar(d->getright()->s, takedomain,false);
+					if (var && var->getValue().tt == CPPS_TFUNCTION)
+					{
+						ret = var->getValue();
+					}
 				}
 				else if (left.tt == CPPS_TDOMAIN)
 				{
