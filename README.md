@@ -8,22 +8,29 @@ cpps脚本是一个基于c++的脚本语言。
 
 2020-11-10 更新2
 
-修复父类构造函数执行顺序，以及增加调用父类虚函数的功能
+1.修复父类构造函数执行顺序
+
+2.增加调用父类虚函数的功能
+
+3.增加父类对名空间的支持
 
 ```
-class C
+namespace cpps
 {
-	C()
+	class C
 	{
-		println("C class");
-	}
-	var test()
-	{
-		println("C->test()");
-		
+		C()
+		{
+			println("C class");
+		}
+		var test()
+		{
+			println("C->test()");
+			
+		}
 	}
 }
-class A : C
+class A : cpps::C
 {
 	var name;
 	A(int a){
@@ -42,14 +49,14 @@ class B:A
 {
 	var age;
 	B(){
-		A::constructor(10); //在构造函数非0参数时需要手动调用，否则不会调用
+		A::constructor(10);
 		println("B class");
 	}
 	var test()
 	{
 		println("B->test()");
 		println(age);
-		C::test();
+		cpps::C::test();
 	}
 }
 

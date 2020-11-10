@@ -1663,6 +1663,30 @@ namespace cpps
 				cpps_parse_rmspaceandenter(buffer);
 				Node *parent = new Node(parents, parents->filename, buffer.line());
 				parent->s = cpps_parse_varname(buffer);
+				// 2020-11-10 增加支持继承namespace 
+				Node* lastNode = parent;
+				//是否使用名空间
+				while (!buffer.isend())
+				{
+					//剔除回车.
+					cpps_parse_rmspaceandenter(buffer);
+					if (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':')
+					{
+						buffer.pop();
+						buffer.pop();
+
+						cpps_parse_rmspaceandenter(buffer);
+
+						Node* child = new Node(lastNode, parents->filename, buffer.line());
+						child->s = cpps_parse_varname(buffer);
+						child->type = CPPS_ONAMESPANCE_CHILD;
+						lastNode = child;
+					}
+					else
+					{
+						break;
+					}
+				}
 
 				if (buffer.cur() != ',')
 				{
@@ -2627,6 +2651,7 @@ namespace cpps
 
 		cpps_regvar * v = new cpps_regvar();
 		v->setVarName(d->s);
+		v->setIsConst(true);
 		v->setValue(cpps_value(cppsclass));
 		domain->regVar(NULL,v);
 
@@ -2638,6 +2663,15 @@ namespace cpps
 			Node* o = *it;
 			cpps_domain* leftdomain = NULL;
 			cpps_regvar *regvar = domain->getVar(o->s,leftdomain);
+
+			Node* lastNamespace = o;
+			while (lastNamespace && lastNamespace->getleft() && lastNamespace->getleft()->type == CPPS_ONAMESPANCE_CHILD)
+			{
+				regvar = regvar->getValue().value.domain->getVar(lastNamespace->getleft()->s, leftdomain,false);
+				lastNamespace = lastNamespace->getleft();
+			}
+
+
 			if (regvar->getValue().tt != CPPS_TCLASS)
 			{
 				throw("父类必须为类。不能为其他类型。");
@@ -3428,8 +3462,11 @@ namespace cpps
 				}
 				else if (left.tt == CPPS_TDOMAIN)
 				{
+					cpps_domain* takedomain = leftdomain;
 					leftdomain = left.value.domain;
 					ret = cpps_calculate_expression(c, left.value.domain, d->getright(), leftdomain);
+					if(left.value.domain->domainType == cpps_domain_type_namespace) //名空间不更改左域
+						leftdomain = takedomain;
 				}
 			}
 			else

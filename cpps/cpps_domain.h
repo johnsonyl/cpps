@@ -51,6 +51,7 @@ namespace cpps
 				{
 					cpps_regfunction *func = (cpps_regfunction *)f;
 					var->setValue(cpps_value(func->func));
+					var->setIsConst(true);
 					func->func->setIsNeesC(f->isneedC);
 				}
 				else if (f->type == cpps_def_regclass)
