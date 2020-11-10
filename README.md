@@ -14,6 +14,28 @@ cpps脚本是一个基于c++的脚本语言。
 
 3.增加父类对名空间的支持
 
+4.foreach 还是修改成C++ 方式。 并且 : 后为表达式
+
+```
+
+foreach(var item : [1,2])
+{
+	println(item);
+	foreach(var item2 : [3,4])
+	{
+		println(item2);
+	}
+}
+
+
+foreach(var item : {a:1,b:"2"})
+{
+	println(item.first());
+	println(item.second());
+}
+
+```
+
 ```
 namespace cpps
 {

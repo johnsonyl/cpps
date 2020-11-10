@@ -1579,13 +1579,13 @@ namespace cpps
 		
 		//剔除空格
 		cpps_parse_rmspaceandenter(buffer);
-		s = cpps_parse_varname(buffer);
-		if (s != "in")
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "foreach 后面缺少 ‘in’"));
+		if (buffer.cur() != ':')
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "foreach 后面缺少 ‘:’"));
+		buffer.pop();
 
-		//for2 指定name
+		//for2 修改成获取表达式
 		cpps_parse_rmspaceandenter(buffer);
-		for2->s = cpps_parse_varname(buffer);
+		cpps_parse_expression(fordomain, for2, root, buffer);
 
 		//剔除空格
 		cpps_parse_rmspaceandenter(buffer);
@@ -2429,7 +2429,10 @@ namespace cpps
 
 
 		cpps_domain* leftdomain = NULL;
-		cpps_regvar* v = domain->getVar(for2->s, leftdomain, true);
+
+		cpps_value v = cpps_calculate_expression(c, domain, for2->l[0], leftdomain);
+
+		//cpps_regvar* v = domain->getVar(for2->s, leftdomain, true);
 		
 		cpps_regvar* for1_v = new cpps_regvar();
 		for1_v->setVarName(for1->s);
@@ -2437,11 +2440,11 @@ namespace cpps
 		domain->regVar(c, for1_v);
 
 
-		if (!v) return;
+		if (v.tt == CPPS_ONIL) return;
 
-		if (v->getValue().isDomain() && v->getValue().value.domain->domainName == "vector")
+		if (v.isDomain() && v.value.domain->domainName == "vector")
 		{
-			cpps_vector* vec = cpps_converter<cpps_vector*>::apply(v->getValue());
+			cpps_vector* vec = cpps_converter<cpps_vector*>::apply(v);
 			if (vec)
 			{
 				std::vector<cpps_value>& realvector = vec->realvector();
@@ -2462,13 +2465,13 @@ namespace cpps
 				}
 			}
 		}
-		else if (v->getValue().isDomain() && v->getValue().value.domain->domainName == "map")
+		else if (v.isDomain() && v.value.domain->domainName == "map")
 		{
 			cpps_map_node *mapnode;
 			cpps_value ret = newClassPtr<cpps_map_node>(c, &mapnode);
 
 			for1_v->setValue(ret);
-			cpps_map* vmap = cpps_converter<cpps_map*>::apply(v->getValue());
+			cpps_map* vmap = cpps_converter<cpps_map*>::apply(v);
 			if (vmap)
 			{
 				std::map<cpps_value, cpps_value>& realmap = vmap->realmap();
@@ -2492,13 +2495,13 @@ namespace cpps
 				}
 			}
 		}
-		else if (v->getValue().isDomain() && v->getValue().value.domain->domainName == "unordered_map")
+		else if (v.isDomain() && v.value.domain->domainName == "unordered_map")
 		{
 			cpps_map_node* mapnode;
 			cpps_value ret = newClassPtr<cpps_map_node>(c, &mapnode);
 
 			for1_v->setValue(ret);
-			cpps_unordered_map* vmap = cpps_converter<cpps_unordered_map*>::apply(v->getValue());
+			cpps_unordered_map* vmap = cpps_converter<cpps_unordered_map*>::apply(v);
 			if (vmap)
 			{
 				std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap = vmap->realmap();
@@ -2521,6 +2524,11 @@ namespace cpps
 					if (domain->isbreak) break; //需要跳出循环
 				}
 			}
+		}
+		else
+		{
+
+			throw(cpps_error(d->filename, d->line, cpps_error_forerror, "foreach 只支持map,unordered_map,vector.其他格式暂不支持。"));
 		}
 
 	}
