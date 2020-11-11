@@ -147,16 +147,20 @@ namespace cpps
 			case '\'': ch = 39; break;
 			case '"': ch = 34; break;
 			case '0': ch = 0; break;
+			case '{': ch = '{'; break;
+			case '}': ch = '}'; break;
 			default: ch = ch2; break;
 			}
 		}
 		return ch;
 	}
-	Node* cpps_parse_string(cpps_domain *domain, Node * o, cppsbuffer& buffer, int8 endch)
+	Node* cpps_parse_string(cpps_domain *domain, Node * o, Node* root, cppsbuffer& buffer, int8 endch)
 	{
 		Node *str = new Node(o->filename,buffer.line());
 		str->type = CPPS_OSTR;
 		buffer.pop(); // pop '"'
+
+		Node* laststr = NULL;
 
 		while (buffer.realcur() != endch && !buffer.isend())
 		{
@@ -164,7 +168,29 @@ namespace cpps
 			//todo 解析反斜杠
 			ch = cpps_parse_transfer_character(ch, buffer);
 
-			str->s.push_back(ch);
+			if (ch == '{')
+			{
+				
+				Node* v = new Node(str, o->filename, buffer.line());
+				v->type = CPPS_VARNAME;
+				cpps_parse_expression(domain, v, root, buffer);
+
+				if(buffer.cur() != '}')
+					throw(cpps_error(str->filename, buffer.line(), cpps_error_varerror, "字符串定义变量值时意外没检测到 ‘}'结尾。"));
+
+				buffer.pop();//pop }
+				laststr = NULL;
+			}
+			else
+			{
+				if (laststr == NULL) {
+
+					laststr = new Node(o->filename, buffer.line());
+					laststr->type = CPPS_OSTR;
+					str->add(laststr);
+				}
+				laststr->s.push_back(ch);
+			}
 		}
 		buffer.pop();
 
@@ -807,11 +833,11 @@ namespace cpps
 		char ch = buffer.cur();
 		if (ch == '"')
 		{
-			return cpps_parse_string(domain, o, buffer,'"');
+			return cpps_parse_string(domain, o,root, buffer,'"');
 		}
 		else if (ch == '\'')
 		{
-			return cpps_parse_string(domain, o, buffer, '\'');
+			return cpps_parse_string(domain, o, root, buffer, '\'');
 		}
 		else if (ch == '{')
 		{
@@ -3102,9 +3128,22 @@ namespace cpps
 		{
 			ret.tt = CPPS_TSTRING;
 
-			std::string *str;
+			std::string* str;
 			cpps_value ret2 = newClassPtr<std::string>(c, &str);
-			str->append(d->s);
+			for (size_t i = 0; i < d->l.size(); i++)
+			{
+				Node* s = d->l[i];
+				if (s->type == CPPS_OSTR)
+				{
+					str->append(s->s);
+				}
+				else
+				{
+					cpps_value v = cpps_calculate_expression(c, domain, s->l[0], leftdomain);
+					str->append(cpps_to_string(v));
+				}
+			}
+
 			ret.value.domain = ret2.value.domain;
 		}
 		else if (d->type == CPPS_ONUMBER)

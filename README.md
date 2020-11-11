@@ -5,6 +5,30 @@ cpps脚本是一个基于c++的脚本语言。
 
 其代码风格更像c++， 给那些跟我一样不喜欢py,lua,js做脚本的朋友一个很好的脚本语言。
 
+2020-11-12 更新
+
+1.支持类似py,php的字符串format处理功能
+
+话不多说，上代码
+
+```
+
+class A
+{
+	var name = "john";
+	var age = 32;
+}
+var a = new A();
+var s = "my name is {a.name} , i'm {a.age} years old.";
+println(s);
+
+输出：
+[Cpps 1.2.0 Copyright (C) 2015-2020 By Johnson, Pub-test]
+my name is john , i'm 32 years old.
+>
+
+值得注意： { 与 } 需要使用 \{ 与 \} 来特殊处理了。
+```
 
 2020-11-10 更新2
 
