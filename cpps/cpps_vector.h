@@ -42,53 +42,53 @@ public:
 
 #define VECTORCLASS(c) 
 
-#define  CPPS_VECTOR_ITER_C() 1
+#define  CPPS_VECTOR_ITER_C 1
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
 
-#define  CPPS_VECTOR_ITER_C() 2
+#define  CPPS_VECTOR_ITER_C 2
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
 
-#define  CPPS_VECTOR_ITER_C() 3
+#define  CPPS_VECTOR_ITER_C 3
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
 
-#define  CPPS_VECTOR_ITER_C() 4
+#define  CPPS_VECTOR_ITER_C 4
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
 
 
-#define  CPPS_VECTOR_ITER_C() 5
+#define  CPPS_VECTOR_ITER_C 5
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
 
-#define  CPPS_VECTOR_ITER_C() 6
+#define  CPPS_VECTOR_ITER_C 6
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
-#define  CPPS_VECTOR_ITER_C() 7
+#define  CPPS_VECTOR_ITER_C 7
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
-#define  CPPS_VECTOR_ITER_C() 8
+#define  CPPS_VECTOR_ITER_C 8
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
-#define  CPPS_VECTOR_ITER_C() 9
+#define  CPPS_VECTOR_ITER_C 9
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
-#define  CPPS_VECTOR_ITER_C() 10
+#define  CPPS_VECTOR_ITER_C 10
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
-#define  CPPS_VECTOR_ITER_C() 11
+#define  CPPS_VECTOR_ITER_C 11
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 
@@ -100,18 +100,18 @@ public:
 namespace cpps
 {
 
-	template<typename ret, CPPS_PP_ENUM_PARAMS(CPPS_VECTOR_ITER_C(), class p) >
-	CPPS_PP_CAT(class vector, CPPS_PP_CAT(VECTOR_I_, CPPS_VECTOR_ITER_C()))
+	template<typename ret, CPPS_PP_ENUM_PARAMS(CPPS_VECTOR_ITER_C, class p) >
+	CPPS_PP_CAT(class vector, CPPS_PP_CAT(VECTOR_I_, CPPS_VECTOR_ITER_C))
 	{
 	public:
 		typedef ret rettype;
 
 		size_t		getparamcount()
 		{
-			return CPPS_VECTOR_ITER_C();
+			return CPPS_VECTOR_ITER_C;
 		}
 	public:
-		CPPS_PP_ENUM_VARS(CPPS_VECTOR_ITER_C(), p, param);
+		CPPS_PP_ENUM_VARS(CPPS_VECTOR_ITER_C, p, param);
 	};
 }
 

@@ -192,7 +192,8 @@ namespace cpps
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <sys/stat.h> 
-#include<unistd.h>
+#include <unistd.h>
+#include <dlfcn.h>
 #ifndef FALSE  
 	#define FALSE   0
 #endif
@@ -207,7 +208,7 @@ namespace cpps
 #define MAXINT64    ((cpps_integer)(MAXUINT64 >> 1))
 #define MININT64    ((cpps_integer)~MAXINT64)
 
-typedef cpps::usint64 HMODULE;
+typedef void* HMODULE;
 
 #define _mkdir(p) mkdir(p,S_IRWXU)
 
@@ -216,6 +217,13 @@ inline unsigned int GetCurrentThreadId()
 {
 	return pthread_self();
 }
+
+namespace cpps { class C; }
+
+typedef struct {
+	void   (*cpps_attach)(cpps::C*);
+	void   (*cpps_detach)(cpps::C*);
+} CPPS_ST_API;
 
 #else
 

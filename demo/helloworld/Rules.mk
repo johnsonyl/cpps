@@ -57,7 +57,7 @@ endif
 
 
 OBJ_DIR = $(OUT_DIR)/objs
-BIN_DIR = bin
+BIN_DIR = ../../bin
 
 $(shell mkdir -p $(OUT_DIR))
 $(shell mkdir -p $(OBJ_DIR))
@@ -74,7 +74,7 @@ GEN_OBJS  = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(SRC_FILES))))
 
 INC_DIRS = -I. -I/usr/include
 LIB_DIRS = -L. -L/lib -L/usr/lib 
-LNK_LIBS = -lrt -ldl -lm -lpthread
+LNK_LIBS = -lrt -ldl -lm -lpthread -lcpps
 
 
 .c.o:

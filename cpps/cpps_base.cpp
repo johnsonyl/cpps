@@ -448,12 +448,13 @@ namespace cpps
 
 	bool	cpps_loadlibrary(C *c,std::string libname)
 	{
+		std::string path = "lib/"+ libname + "/";
 #ifdef WIN32
-		HMODULE module = ::LoadLibraryA((libname + ".dll").c_str());
+		HMODULE module = ::LoadLibraryA((path+(libname + ".dll")).c_str());
 		std::string libfuncname = "cpps_attach";
 		if (module == NULL)
 		{
-			printf("¼ÓÔØÄ£¿é¡¾%s¡¿Ê§°Ü", libname.c_str());
+			printf("¼ÓÔØÄ£¿é¡¾%s¡¿Ê§°Ü\r\n", libname.c_str());
 			FreeLibrary(module);
 			return false;
 		}
@@ -462,13 +463,35 @@ namespace cpps
 		if (cpps_attach == NULL)
 		{
 			FreeLibrary(module);
-			printf("¼ÓÔØÄ£¿é¡¾%s¡¿Ê§°Ü", libname.c_str());
+			printf("¼ÓÔØÄ£¿é¡¾%s¡¿Ê§°Ü\r\n", libname.c_str());
 			return false;
 		}
 
 		c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
 
 		cpps_attach(c);
+#elif LINUX
+		HMODULE module = dlopen((path + (libname + ".so")).c_str(), RTLD_LAZY);
+		if (module == NULL)
+		{
+			printf("dlopen [%s] faild\r\n", libname.c_str());
+			dlclose(module);
+			return false;
+		}
+		dlerror();
+		CPPS_ST_API *api = dlsym(module, "LIBAPI");
+		if(api == NULL)
+		{
+			dlclose(module);
+			printf("dlsym [LIBAPI] faild\r\n");
+			return false;
+		}
+
+		c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+
+		api->cpps_attach(c);
+
+
 #endif
 		return true;
 	}
@@ -487,7 +510,7 @@ namespace cpps
 			cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
 			if (cpps_detach == NULL)
 			{
-				printf("Ð¶ÔØÄ£¿é¡¾%s¡¿Ê§°Ü", libname.c_str());
+				printf("Ð¶ÔØÄ£¿é¡¾%s¡¿Ê§°Ü\r\n", libname.c_str());
 			}
 			else
 			{
@@ -500,10 +523,41 @@ namespace cpps
 			ret = true;
 		}
 		return ret;
+
+#elif LINUX
+		bool ret = false;
+		std::unordered_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
+		if (it != c->modulelist.end())
+		{
+			HMODULE module = it->second;
+
+
+
+			dlerror();
+			CPPS_ST_API* api = dlsym(module, "LIBAPI");
+			if (api == NULL)
+			{
+				printf("dlsym ¡¾LIBAPI¡¿ faild\r\n");
+			}
+			else
+			{
+				api->cpps_detach(c);
+			}
+
+
+			dlclose(module);
+			c->modulelist.erase(it);
+			ret = true;
+		}
+		return ret;
+
 #endif
 	}
 	void cpps_regbase(C *c)
 	{
+		module(c)[
+			_class<std::string>("String")
+		];
 		module(c)[
 			_class<C>("C_STATE"),
 			def("printf", cpps_base_printf),
@@ -531,8 +585,7 @@ namespace cpps
 			def("decodecpps", cpps_decodecpps),
 			def_inside("createthread", cpps_createthread),
 			def_inside("loadlibrary", cpps_loadlibrary),
-			def_inside("freelibrary", cpps_freelibrary),
-			_class<std::string>("String")
+			def_inside("freelibrary", cpps_freelibrary)
 		];
 
 	}

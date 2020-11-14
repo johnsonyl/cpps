@@ -6,7 +6,7 @@ int main()
 {
 	cpps::C* c = cpps::create();
 
-	cpps::dofile(c,"main.cpp");
+	cpps::dofile(c,"script/main.cpp");
 
 	cpps::close(c);
 	return 0;

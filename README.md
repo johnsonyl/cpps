@@ -5,6 +5,26 @@ cpps脚本是一个基于c++的脚本语言。
 
 其代码风格更像c++， 给那些跟我一样不喜欢py,lua,js做脚本的朋友一个很好的脚本语言。
 
+2020-11-14 更新
+
+1.增加linux 动态库功能
+
+详情见demo/demo目录
+
+脚本中使用方法
+
+```
+loadlibrary("demo");
+demotest();
+freelibrary("demo");
+```
+
+2.增加demo/hello world 对linux的编译支持
+
+3.修改cpps make时编译文件目录到bin文件夹
+
+
+
 2020-11-12 更新
 
 1.支持类似py,php的字符串format处理功能

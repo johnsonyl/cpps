@@ -15,6 +15,8 @@ namespace cpps
 {
 	template<typename p1>
 	class dofunc;
+	template< typename p1 >
+	dofunc< p1 > make_function(p1 param1);
 	template<class retType, typename context, typename F, typename IsVoid>
 	retType call_function(cpps_value &ret, cpps_domain *domain, Node*o, context &c, F &f, IsVoid&);
 	template<class T>

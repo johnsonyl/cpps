@@ -103,7 +103,7 @@ namespace cpps
 		{
 			tt = CPPS_TSTRING;
 
-			std::string *str;
+			std::string *str = NULL;
 			cpps_value ret = newClassPtr<std::string>(c, &str);
 			str->append(s);
 			value.domain = ret.value.domain;
