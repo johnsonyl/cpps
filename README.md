@@ -14,7 +14,7 @@ CPPS 的下载与安装非常简单，CPPS不依赖于任何第三方库，仅�
 *LINUX版本*：
 -
 ```
-git co https://github.com/johnsonyl/cpps.git
+git clone https://github.com/johnsonyl/cpps.git
 
 make （编译可执行文件） 
 
@@ -27,7 +27,7 @@ make （编译可执行文件）
 *Windows版本*
 -
 ```
-git co https://github.com/johnsonyl/cpps.git
+git clone https://github.com/johnsonyl/cpps.git
 
 使用Visual Studio打开cpps.sln进行编译即可。
 ```
