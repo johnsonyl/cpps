@@ -1,9 +1,44 @@
 # cpps script
-cpps脚本是一个基于c++的脚本语言。
+#### **欢迎**
 
-项目没有投资，没人使用，所以佛系更新，希望有哪家大企业看中可以投资我呀！！
+CPPS 是一个功能强大，运行速度快，容易上手的解释型脚本语言，非常容易学习和使用，并且可以很容易的嵌入到C++项目中。
 
-其代码风格更像c++， 给那些跟我一样不喜欢py,lua,js做脚本的朋友一个很好的脚本语言。
+CPPS 被设计的初衷是让那些和作者一样不喜欢LUA,PY,等等脚本语法的开发者使用，它可以对接各种项目，无论游戏，WEB，或者是人工智能方面。
+
+它的语法极为像C++,所以C++开发者可以很快速的上手，无需太深入的学习它。
+
+#### **下载与编译**
+
+CPPS 的下载与安装非常简单，CPPS不依赖于任何第三方库，仅仅下载就可以编译。
+
+*LINUX版本*：
+-
+```
+git co https://github.com/johnsonyl/cpps.git
+
+make （编译可执行文件） 
+
+或者 （so库文件）
+
+ make lib 
+
+ make install
+```
+*Windows版本*
+-
+```
+git co https://github.com/johnsonyl/cpps.git
+
+使用Visual Studio打开cpps.sln进行编译即可。
+```
+
+是不是非常简单？
+
+项目中demo文件夹 有如何嵌入CPPS的方法。支持 WINDOWS 与 LINUX。
+
+Hello World 为嵌入CPPS实例
+ 
+demo 为如何开发第一个CPPS库文件。
 
 2020-11-14 更新
 
