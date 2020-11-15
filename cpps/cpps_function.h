@@ -102,14 +102,14 @@ namespace cpps
 	template<class context, CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, class A) >
 	void call_normal(C *c_state, cpps_domain *domain, std::vector<cpps_value> &o, context c, void(*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, A)))
 	{
-		if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0, "函数中需要 %d 个，却得到了 %d 个。", c.vec.getparamcount(), o.size()));
+		if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0,"Expected %d in function, but got %d.", c.vec.getparamcount(), o.size()));
 		CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
 		f(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 	}
 	template <class Ret, class context, CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, class A) >
 	Ret call_member(C *c_state, cpps_domain *domain, std::vector<cpps_value> &o, context c, Ret(*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, A)))
 	{
-		if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0, "函数中需要 %d 个，却得到了 %d 个。", c.vec.getparamcount(), o.size()));
+		if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0, "Expected %d in function, but got %d.", c.vec.getparamcount(), o.size()));
 		CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
 		return f(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 	}
@@ -120,7 +120,7 @@ namespace cpps
 		if (domain && domain->domainType == cpps_domain_type_classvar)
 		{
 			cpps_classvar<CLS> *cls = (cpps_classvar<CLS> *)domain;
-			if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0, "函数中需要 %d 个，却得到了 %d 个。", c.vec.getparamcount(), o.size()));
+			if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0, "Expected %d in function, but got %d.", c.vec.getparamcount(), o.size()));
 			CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
 			(cls->_class->*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 		}
@@ -131,7 +131,7 @@ namespace cpps
 		if (domain&& domain->domainType == cpps_domain_type_classvar)
 		{
 			cpps_classvar<CLS> *cls = (cpps_classvar<CLS> *)domain;
-			if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0, "函数中需要 %d 个，却得到了 %d 个。", c.vec.getparamcount(), o.size()));
+			if (c.vec.getparamcount() > o.size()) throw(cpps_error("", 0, 0, "Expected %d in function, but got %d.", c.vec.getparamcount(), o.size()));
 			CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
 			return (cls->_class->*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 		}

@@ -4,6 +4,7 @@ using namespace std;
 
 namespace cpps
 {
+	bool cpps_io_file_exists(std::string path);
 	void cpps_base_printf(object b)
 	{
 		if (type(b) == CPPS_TNUMBER)
@@ -454,7 +455,7 @@ namespace cpps
 		std::string libfuncname = "cpps_attach";
 		if (module == NULL)
 		{
-			printf("¼ÓÔØÄ£¿é¡¾%s¡¿Ê§°Ü\r\n", libname.c_str());
+			printf("Load module¡¾%s¡¿ faild.\r\n", libname.c_str());
 			FreeLibrary(module);
 			return false;
 		}
@@ -463,13 +464,15 @@ namespace cpps
 		if (cpps_attach == NULL)
 		{
 			FreeLibrary(module);
-			printf("¼ÓÔØÄ£¿é¡¾%s¡¿Ê§°Ü\r\n", libname.c_str());
+			printf("Load module ¡¾%s¡¿ faild\r\n", libname.c_str());
 			return false;
 		}
 
 		c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
 
 		cpps_attach(c);
+
+		
 #elif LINUX
 		HMODULE module = dlopen((path + (libname + ".so")).c_str(), RTLD_LAZY);
 		if (module == NULL)
@@ -493,6 +496,57 @@ namespace cpps
 
 
 #endif
+
+		std::string fpath = path + "main.cpp";
+		bool b = cpps_io_file_exists(fpath);
+		if (b)
+		{
+
+#ifdef _WIN32
+			FILE* file;
+			fopen_s(&file, fpath.c_str(), "rb+");
+#else
+			FILE* file = fopen(fpath.c_str(), "rb+");
+#endif
+			std::string fileSrc;
+			if (file)
+			{
+				char s[4097];
+				memset(s, 0, 4097);
+				fseek(file, 0, SEEK_END);
+				int32 size = ftell(file);
+				fseek(file, 0, SEEK_SET);
+				while (size != 0)
+				{
+					int32 rs = size < 4096 ? size : 4096;
+					fread(s, rs, 1, file);
+					s[rs] = '\0';
+					size -= rs;
+					fileSrc += s;
+				}
+				fclose(file);
+			}
+			if (fileSrc.substr(0, 11) == "cpps_encode")
+			{
+				std::string decode;
+				for (size_t i = 11; i < fileSrc.size(); i++)
+				{
+					decode.append(1, fileSrc[i] - CPPS_ENCODE_CPPS_KEY);
+				}
+				fileSrc = decode;
+			}
+			Node* o = loadbuffer(c, c->_G, fileSrc, fpath);
+			cpps_stack* stack = new cpps_stack("main.cpp", 0, "import");
+
+			c->push_stack(stack);
+			cpps_step_all(c, CPPS_SINGLERET, c->_G, o);
+			c->pop_stack();
+
+
+			cpps_gc_check_step(c);
+
+			delete stack;
+		}
 		return true;
 	}
 	bool	cpps_freelibrary(C*c, std::string libname)
@@ -510,7 +564,7 @@ namespace cpps
 			cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
 			if (cpps_detach == NULL)
 			{
-				printf("Ð¶ÔØÄ£¿é¡¾%s¡¿Ê§°Ü\r\n", libname.c_str());
+				printf("Free Module¡¾%s¡¿ faild.\r\n", libname.c_str());
 			}
 			else
 			{

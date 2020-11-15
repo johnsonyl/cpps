@@ -18,20 +18,21 @@ namespace cpps
 	void					cpps_parse_dofunction(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
 	void					cpps_parse_expression(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
 	int32					cpps_parse_expression_step(cpps_domain* domain, Node* param, Node*& lastOpNode, Node* root, cppsbuffer& buffer);
-	Node* cpps_parse_param(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
-	Node* cpps_parse_symbol(cpps_domain* domain, Node* o, cppsbuffer& buffer, bool leftsymbol = false);
-	Node* cpps_parse_string(cpps_domain* domain, Node* o, cppsbuffer& buffer, int8 endch);
+	Node*					cpps_parse_param(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
+	Node*					cpps_parse_symbol(cpps_domain* domain, Node* o, cppsbuffer& buffer, bool leftsymbol = false);
+	Node*					cpps_parse_string(cpps_domain* domain, Node* o, cppsbuffer& buffer, int8 endch);
 	void					cpps_parse_var(cpps_domain* domain, Node* child, Node* root, cppsbuffer& buffer, int32 limit, int8 isconst);
-	Node* cpps_parse_var_param(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
-	Node* cpps_parse_number(cpps_domain* domain, Node* o, cppsbuffer& buffer);
+	Node*					cpps_parse_var_param(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
+	Node*					cpps_parse_number(cpps_domain* domain, Node* o, cppsbuffer& buffer);
 	void					cpps_parse_def_function(cpps_domain* domain, Node* right, Node* root, cppsbuffer& buffer);
-	Node* cpps_parse_line(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer, int32 limit = 0);
+	Node*					cpps_parse_line(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer, int32 limit = 0);
 	void					cpps_parse_builtin(cpps_domain* domain, Node* child, Node* root, cppsbuffer& buffer, int32 limit);
 	void					cpps_parse_def(cpps_domain* domain, Node* child, Node* root, cppsbuffer& buffer, int32 limit);
-	Node* cpps_parse_new_setv(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
+	Node*					cpps_parse_new_setv(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer);
 	void					cpps_gc_add_barrier(C* c, cpps_regvar* v);
 	void					cpps_gc_check_gen0(C* c);
 	void					cpps_gc_check_gen1(C* c);
+	bool					cpps_loadlibrary(C* c, std::string libname);
 
 
 	void cpps_gc_check_step(C* c)
@@ -100,7 +101,7 @@ namespace cpps
 	}
 	bool cpps_parse_isbuiltinname(std::string s)
 	{
-		return s == "if" || s == "const" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "include" || s == "dostring";
+		return s == "if" || s == "const" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring";
 	}
 	bool cpps_is_not_use_var_name(std::string s)
 	{
@@ -120,7 +121,7 @@ namespace cpps
 	{
 		if (!cpps_parse_isnumber(buffer.realcur()))
 		{
-			throw(cpps_error(str->filename, buffer.line(), cpps_error_paramerror, "在小数点后不是预期的数字！"));
+			throw(cpps_error(str->filename, buffer.line(), cpps_error_paramerror, "Not the expected number after the decimal point."));
 		}
 		while (cpps_parse_isnumber(buffer.realcur()))
 		{
@@ -176,7 +177,7 @@ namespace cpps
 				cpps_parse_expression(domain, v, root, buffer);
 
 				if (buffer.cur() != '}')
-					throw(cpps_error(str->filename, buffer.line(), cpps_error_varerror, "字符串定义变量值时意外没检测到 ‘}'结尾。"));
+					throw(cpps_error(str->filename, buffer.line(), cpps_error_varerror, "Unexpected end of '}' not detected when string defining variable value."));
 
 				buffer.pop();//pop }
 				laststr = NULL;
@@ -284,9 +285,9 @@ namespace cpps
 		}
 		else
 		{
-			throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "定义函数未检测到'{'"));
+			throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "Definition function did not detect '{'"));
 		}
-		throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "定义函数未检测到'}'"));
+		throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "Definition function did not detect '}'"));
 	}
 
 
@@ -302,7 +303,7 @@ namespace cpps
 			char ch = buffer.pop();
 			if (limit & CPPS_NOT_DEFVAR)
 			{
-				throw("禁止定义变量");
+				throw("Prohibit defining variables");
 			}
 			//是个变量
 			right->type = CPPS_ODEFVAR_VAR;
@@ -314,7 +315,7 @@ namespace cpps
 			char ch = buffer.pop();
 			if (limit & CPPS_NOT_DEFFUNCTION)
 			{
-				throw("禁止定义函数");
+				throw("Function definition prohibited");
 			}
 
 			right->type = CPPS_ODEFVAR_FUNC;
@@ -328,7 +329,7 @@ namespace cpps
 		{
 			right->type = CPPS_ODEFVAR_NIL;
 
-			throw(cpps_error(var->filename, buffer.line(), cpps_error_varerror, "定义变量错误，变量后面应该有 '=' 或 '(' !"));
+			throw(cpps_error(var->filename, buffer.line(), cpps_error_varerror, "Error in defining variable. There should be '=' or '(' after the variable!"));
 		}
 	}
 
@@ -345,13 +346,13 @@ namespace cpps
 			str->type = CPPS_VARNAME;
 
 			if (cpps_parse_isnumber(buffer.cur())) //首位是个字母
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "变量不能以数字开头!"));
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "Variable cannot start with a number."));
 
 			//先找名字
 			str->s = cpps_parse_varname(buffer);
 			if (cpps_is_not_use_var_name(str->s))
 			{
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "变量名不可以使用关键字!"));
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "Variable names cannot use reserved keywords."));
 			}
 			cpps_parse_var_right(domain, str, root, buffer, limit);
 
@@ -378,7 +379,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 
 		if (buffer.cur() != '{')
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "名空间为检测到 '{' 请检查。"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_varnotnumber, "'{' was detected for namespace. Please check."));
 		buffer.pop();
 
 		while (!buffer.isend())
@@ -393,7 +394,7 @@ namespace cpps
 			}
 			if (buffer.isend())
 			{
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "未检测到名空间的 '}'"));
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "'}' was detected for namespace. Please check."));
 			}
 			cpps_parse_line(domain, child, root, buffer, CPPS_NOT_DEFASSEMBLE);
 		}
@@ -402,7 +403,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '}')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "未检测到名空间的 '}'"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "'}' was detected for namespace. Please check."));
 		}
 		buffer.pop(); //pop }
 	}
@@ -432,13 +433,13 @@ namespace cpps
 			cpps_parse_rmspaceandenter(buffer);
 
 			if (buffer.cur() != '(')
-				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "catch需要 '(' 请检查。"));
+				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "Catch did not detect '('"));
 			buffer.pop();
 
 			cpps_parse_rmspaceandenter(buffer);
 			std::string ifvar = cpps_parse_varname(buffer);
 			if (ifvar != "var")
-				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "需要定义 'var' 来接受变量， 请检查。"));
+				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "'var' needs to be defined to receive variables."));
 
 			cpps_parse_rmspaceandenter(buffer);
 			catchvar->s = cpps_parse_varname(buffer);
@@ -447,7 +448,7 @@ namespace cpps
 			cpps_parse_rmspaceandenter(buffer);
 			if (buffer.cur() != ')')
 			{
-				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "catch 未检测到 ')'请检查"));
+				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "Catch did not detect ')'"));
 			}
 			buffer.pop(); //pop }
 
@@ -461,7 +462,7 @@ namespace cpps
 		}
 		else
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_trycatherror, "try 需要对应catch 请检查。"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_trycatherror, "Try needs corresponding catch."));
 		}
 
 	}
@@ -474,7 +475,7 @@ namespace cpps
 
 
 		if (cpps_parse_isnumber(buffer.cur())) //首位是个字母
-			throw(cpps_error(o->filename, buffer.line(), cpps_error_varnotnumber, "变量不能以数字开头!"));
+			throw(cpps_error(o->filename, buffer.line(), cpps_error_varnotnumber, "Variable cannot start with a number."));
 
 		param->s = cpps_parse_varname(buffer);
 
@@ -487,7 +488,7 @@ namespace cpps
 
 			if (param->s.empty())
 			{
-				throw(cpps_error(param->filename, buffer.line(), cpps_error_varnotnumber, "new 的对象必须拥有类型!"));
+				throw(cpps_error(param->filename, buffer.line(), cpps_error_varnotnumber, "The object of new must have a type."));
 			}
 			Node* lastNode = param;
 			//是否使用名空间
@@ -522,7 +523,7 @@ namespace cpps
 
 				if (buffer.cur() != ']')
 				{
-					throw(cpps_error(param->filename, buffer.line(), cpps_error_varnotnumber, "定义数组的时候未检测到 ']'!"));
+					throw(cpps_error(param->filename, buffer.line(), cpps_error_varnotnumber, "']' was not detected when defining an array"));
 				}
 				buffer.pop();
 			}
@@ -660,7 +661,7 @@ namespace cpps
 			cpps_parse_rmspaceandenter(buffer);
 
 			if (buffer.cur() != ':')
-				throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "定义数组未检测到 '}'"));
+				throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "Definition object not detected '}'."));
 
 			buffer.pop();
 
@@ -677,7 +678,7 @@ namespace cpps
 		}
 
 
-		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "定义数组未检测到 '}'"));
+		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "Definition object not detected '}'"));
 		return bracket;
 	}
 	Node* cpps_parse_new_setv(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer)
@@ -710,7 +711,7 @@ namespace cpps
 			cpps_parse_rmspaceandenter(buffer);
 
 			if (buffer.cur() != '=')
-				throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "定义数组未检测到 '}'"));
+				throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "'=' was not detected when setting the variable"));
 
 			buffer.pop();
 
@@ -727,7 +728,7 @@ namespace cpps
 		}
 
 
-		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "定义数组未检测到 '}'"));
+		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "'}' was not detected when setting the variable"));
 		return bracket;
 	}
 	Node* cpps_parse_array(cpps_domain* domain, Node* o, Node* root, cppsbuffer& buffer)
@@ -760,7 +761,7 @@ namespace cpps
 		}
 
 
-		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "定义数组未检测到 '}'"));
+		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "Definition array not detected '}'"));
 		return bracket;
 	}
 
@@ -785,15 +786,15 @@ namespace cpps
 				geto->type = CPPS_OGETCHIILD;
 				child = new Node(o->filename, buffer.line());
 				cpps_parse_expression(domain, child, root, buffer);
-				if (!child) throw("[' 后续必须有参数...");
-				if (buffer.cur() != ']')  throw("'.' 未找到 ']'...");
+				if (!child) throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "'[' must be followed by a parameter"));
+				if (buffer.cur() != ']')  throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "']' parsing error"));
 				buffer.pop();
 			}
 			else if (symblo == '.')
 			{
 				geto->type = CPPS_OGETOBJECT;
 				child = cpps_parse_var_param(domain, geto, root, buffer);
-				if (!child) throw("'.' 后续必须有参数...");
+				if (!child) throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "The variable name is required later on '.'"));
 			}
 			else if (symblo == '(') //是调用函数
 			{
@@ -810,13 +811,13 @@ namespace cpps
 			else if (symblo == ':')
 			{
 				if (buffer.cur() != ':')
-					throw("名空间引用需要用'::' 但只检测到一个:");
+					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "namespace requires double ':'"));
 
 				buffer.pop();
 
 				geto->type = CPPS_OGETOBJECT;
 				child = cpps_parse_var_param(domain, geto, root, buffer);
-				if (!child) throw("'::' 后续必须有参数...");
+				if (!child) throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "namespace:: need a name is required later."));
 
 			}
 
@@ -862,10 +863,6 @@ namespace cpps
 		else if (ch == '(')
 		{
 			return cpps_parse_bracket(domain, o, root, buffer);
-		}
-		else
-		{
-			//throw(cpps_error(o->filename, buffer.line(), cpps_error_paramerror, "参数错误，读取错误！！"));
 		}
 		return NULL;
 	}
@@ -990,7 +987,7 @@ namespace cpps
 		if (!p)
 		{
 			//没有参数
-			throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "表达式写法错误，请检查。。"));
+			throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "Expression parsing error."));
 		}
 
 
@@ -1078,7 +1075,7 @@ namespace cpps
 
 			if (buffer.cur() != ':')
 			{
-				throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "三元表达式写法错误，请检查。。"));
+				throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "Ternary expression parsing error."));
 			}
 			buffer.pop();
 
@@ -1194,7 +1191,7 @@ namespace cpps
 			{
 				if (op->type != CPPS_VARNAME && op->type != CPPS_OGETOBJECT && op->type != CPPS_OGETCHIILD)
 				{
-					throw(cpps_error(op->filename, op->line, cpps_error_paramerror, " '%s' 的左边必须为变量", lastOpNode->s.c_str()));
+					throw(cpps_error(op->filename, op->line, cpps_error_paramerror, "The left side of %s must be a variable", lastOpNode->s.c_str()));
 				}
 				if (op->type == CPPS_VARNAME)
 					op->type = CPPS_QUOTEVARNAME;
@@ -1209,7 +1206,7 @@ namespace cpps
 			{
 				if (op->type != CPPS_VARNAME && op->type != CPPS_OGETOBJECT && op->type != CPPS_OGETCHIILD)
 				{
-					throw(cpps_error(op->filename, op->line, cpps_error_paramerror, " '%s' 的右边必须为变量", lastOpNode->s.c_str()));
+					throw(cpps_error(op->filename, op->line, cpps_error_paramerror, " The right side of %s must be a variable", lastOpNode->s.c_str()));
 				}
 				if (op->type == CPPS_VARNAME)
 					op->type = CPPS_QUOTEVARNAME;
@@ -1306,7 +1303,7 @@ namespace cpps
 
 
 		//未找到） 就返回了。 这是错的啊。。
-		throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "未找到），是不是参数写的有问题？？"));
+		throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "The calling function did not find ')'."));
 
 	}
 
@@ -1334,7 +1331,7 @@ namespace cpps
 			cpps_parse_line(assdomain, o, root, buffer);
 		}
 
-		throw(cpps_error(o->filename, holdline, cpps_error_assembleerror, "未找到执行集合的  ‘}'. "));
+		throw(cpps_error(o->filename, holdline, cpps_error_assembleerror, "The '}' of the execution collection was not found."));
 
 	}
 	void cpps_parse_def(cpps_domain* domain, Node* child, Node* root, cppsbuffer& buffer, int32 limit)
@@ -1355,7 +1352,7 @@ namespace cpps
 		}
 		else if (!child->s.empty())
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_varerror, "在 '%c' 的前面缺少 '=' ！", ch));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_varerror, "Missing '=' in front of '%c'.", ch));
 		}
 
 
@@ -1374,7 +1371,7 @@ namespace cpps
 		if (buffer.cur() != '(')
 		{
 			// if 后面必须接() 
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "if 后面缺少 '(' "));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '('after if."));
 		}
 		buffer.pop();
 
@@ -1388,7 +1385,7 @@ namespace cpps
 
 		if (buffer.cur() != ')')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "if 后面缺少 ')' "));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing ')' after if."));
 		}
 		buffer.pop();
 
@@ -1465,7 +1462,7 @@ namespace cpps
 		//先检测 这个return 是否合法。
 		if (!cpps_parse_canreturn(domain))
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_deffuncrror, "未知的 return. return 必须定义在函数中！"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_deffuncrror, "Unknown return. Return must be defined in function."));
 		}
 
 		child->type = CPPS_ORETURN;
@@ -1489,7 +1486,7 @@ namespace cpps
 		//先检测 这个return 是否合法。
 		if (!cpps_parse_canthrow(domain))
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_trycatherror, "未知的 throw. throw 必须定义在try中！"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_trycatherror, "Unknown throw. Throw must be defined after try!"));
 		}
 
 		child->type = CPPS_OTHROW;
@@ -1516,7 +1513,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "for 后面缺少 ‘(’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing '(' after for"));
 		}
 		buffer.pop(); //pop (
 
@@ -1530,7 +1527,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ';')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "for 后面缺少第一个 ‘;’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing first ';' after for"));
 		}
 		buffer.pop(); // pop ;
 
@@ -1545,7 +1542,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ';')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "for 后面缺少第二个 ‘;’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing second ';' after for"));
 		}
 		buffer.pop(); // pop 
 
@@ -1561,7 +1558,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ')')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "for 后面缺少 ‘）’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing ')'after for"));
 		}
 		buffer.pop(); // pop )
 
@@ -1586,7 +1583,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "for 后面缺少 ‘(’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing '('after foreach"));
 		}
 		buffer.pop(); //pop (
 
@@ -1597,7 +1594,7 @@ namespace cpps
 		// var
 		std::string s = cpps_parse_varname(buffer);
 		if (s != "var")
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "foreach 开头应是 ‘var’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Foreach should start with 'var'"));
 
 		//varname
 		cpps_parse_rmspaceandenter(buffer);
@@ -1606,7 +1603,7 @@ namespace cpps
 		//剔除空格
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ':')
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "foreach 后面缺少 ‘:’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing ':'after foreach"));
 		buffer.pop();
 
 		//for2 修改成获取表达式
@@ -1617,7 +1614,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ')')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "foreach 后面缺少 ‘)’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing ')'after foreach"));
 		}
 		buffer.pop(); // pop )
 
@@ -1642,7 +1639,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_whileerror, "while 后面缺少 ‘(’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_whileerror, "Missing '('after while"));
 		}
 		buffer.pop(); //pop (
 
@@ -1654,7 +1651,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ')')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_whileerror, "while 后面缺少 ‘)’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_whileerror, "Missing ')'after while"));
 		}
 		buffer.pop(); // pop )
 
@@ -1727,7 +1724,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '{')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "class 后面缺少 ‘{’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '{' after class"));
 		}
 		buffer.pop(); //pop }
 
@@ -1744,7 +1741,7 @@ namespace cpps
 			}
 			if (buffer.isend())
 			{
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "未检测到类的 '}'"));
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '}'after class"));
 			}
 			cpps_parse_line(domain, vars, root, buffer, CPPS_NOT_DEFASSEMBLE | CPPS_NOT_USEBUILTIN);
 		}
@@ -1753,11 +1750,18 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '}')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "未检测到类的 '}'"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '}'after class"));
 		}
 		buffer.pop(); //pop }
 
 	}
+	void cpps_parse_import(cpps_domain* domain, Node* child, Node* root, cppsbuffer& buffer)
+	{
+		child->type = CPPS_OIMPORT;
+		cpps_parse_rmspaceandenter(buffer);
+		cpps_parse_expression(domain, child, root, buffer);
+	}
+
 	void cpps_parse_include(cpps_domain* domain, Node* child, Node* root, cppsbuffer& buffer)
 	{
 		child->type = CPPS_OINCLUDE;
@@ -1766,7 +1770,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "if 后面缺少 ‘(’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '(' after include"));
 		}
 		buffer.pop(); //pop (
 
@@ -1783,7 +1787,7 @@ namespace cpps
 
 			if (buffer.isend())
 			{
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "未检测到include的  '）'"));
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing ')'after include"));
 			}
 			cpps_parse_expression(domain, child, root, buffer);
 
@@ -1798,7 +1802,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ')')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "if 后面缺少 ‘)’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '('after include"));
 		}
 		buffer.pop(); // pop )
 
@@ -1812,7 +1816,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "if 后面缺少 ‘(’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '(' after dofile"));
 		}
 		buffer.pop(); //pop (
 
@@ -1829,7 +1833,7 @@ namespace cpps
 
 			if (buffer.isend())
 			{
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "未检测到dofile的  '）'"));
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing ')' after dofile"));
 			}
 			cpps_parse_expression(domain, child, root, buffer);
 
@@ -1844,7 +1848,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ')')
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "if 后面缺少 ‘)’"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing ')' after dofile"));
 		}
 		buffer.pop(); // pop )
 
@@ -1857,7 +1861,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(')
 		{
-			throw("dostring 的时候没有找到 '(' 。");
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '(' after dostring"));
 		}
 		buffer.pop(); //pop (
 
@@ -1871,7 +1875,7 @@ namespace cpps
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ')')
 		{
-			throw("dostring 的时候没有找到 ')' 。");
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing ')' after dostring"));
 		}
 		buffer.pop(); // pop )
 
@@ -1881,7 +1885,7 @@ namespace cpps
 	{
 		if (!cpps_parse_canbreak(domain))
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_deffuncrror, "未知的 break 必须定义在 while for 中！"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_deffuncrror, "Unknown break must be defined in while or for."));
 		}
 
 		child->type = CPPS_OBREAK;
@@ -1891,7 +1895,7 @@ namespace cpps
 	{
 		if (!cpps_parse_cancontinue(domain))
 		{
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_deffuncrror, "未知的 continue 必须定义在 while for 中！"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_deffuncrror, "Unknown continue must be defined in while or for"));
 		}
 
 		child->type = CPPS_OCONTINUE;
@@ -1931,6 +1935,10 @@ namespace cpps
 		else if (child->s == "dofile")
 		{
 			cpps_parse_dofile(domain, child, root, buffer);
+		}
+		else if (child->s == "import")
+		{
+			cpps_parse_import(domain, child, root, buffer);
 		}
 		else if (child->s == "include")
 		{
@@ -1981,7 +1989,7 @@ namespace cpps
 		{
 			if (limit & CPPS_NOT_DEFASSEMBLE)
 			{
-				throw("不允许定义集！！！！！");
+				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
 			}
 
 			buffer.pop();
@@ -1994,7 +2002,7 @@ namespace cpps
 			if (cpps_parse_isnumber(buffer.cur()))
 			{
 				//首字母为 数字的话肯定有问题。想都别想。。
-				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "表达式首个字母不能为数字 ' %c '", buffer.cur()));
+				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "The first letter of an expression cannot be a number '%c'", buffer.cur()));
 			}
 			int32 offset = buffer.offset(); //记录一下 先检测是否为表达式
 
@@ -2010,7 +2018,7 @@ namespace cpps
 			{
 				if (limit & CPPS_NOT_USEBUILTIN && child->s != "var" && child->s != "const")
 				{
-					throw("不允许使用关键字！！！！！");
+					throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "builtin are not allowed"));
 				}
 
 				cpps_parse_builtin(domain, child, root, buffer, limit);
@@ -2170,7 +2178,7 @@ namespace cpps
 	}
 	int32 dofile(cpps::C* c, const char* path)
 	{
-		return loadfile(c, path) || pcall(c, CPPS_MUNITRET, 0, 0);
+		return loadfile(c, path) || pcall(c, CPPS_SINGLERET, 0, 0);
 	}
 	void  cpps_destory_node(cpps::C* c, Node* d)
 	{
@@ -2304,7 +2312,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error(d->filename, d->line, cpps_error_trycatherror, "非法的 throw ..请在try内定义。"));
+				throw(cpps_error(d->filename, d->line, cpps_error_trycatherror, "Illegal throw. please define in try."));
 			}
 		}
 		else
@@ -2341,7 +2349,7 @@ namespace cpps
 			else
 			{
 				//艹，没找到函数？？ 那怎么return
-				throw(cpps_error(d->filename, d->line, cpps_error_deffuncrror, "非法的 return ..请在函数内定义。"));
+				throw(cpps_error(d->filename, d->line, cpps_error_deffuncrror, "Illegal retrun. please define in function."));
 			}
 		}
 		else
@@ -2381,7 +2389,7 @@ namespace cpps
 		}
 		else
 		{
-			throw(cpps_error(d->filename, d->line, cpps_error_deffuncrror, "非法的 break ..请在for或while内定义。"));
+			throw(cpps_error(d->filename, d->line, cpps_error_deffuncrror, "Illegal break. please define in while or for."));
 		}
 	}
 
@@ -2558,7 +2566,7 @@ namespace cpps
 		else
 		{
 
-			throw(cpps_error(d->filename, d->line, cpps_error_forerror, "foreach 只支持map,unordered_map,vector.其他格式暂不支持。"));
+			throw(cpps_error(d->filename, d->line, cpps_error_forerror, "Foreach only supports map, unordered_ Map, vector. Other formats are not supported at the moment."));
 		}
 
 	}
@@ -2659,7 +2667,7 @@ namespace cpps
 			cpps_step_all(c, CPPS_SINGLERET, execdomain, func);
 			if (execdomain->funcRet.tt != CPPS_TNIL)
 			{
-				throwerr = cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "throw引发的异常.");
+				throwerr = cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "The exception thrown by throw.");
 				throwerr.value = execdomain->funcRet;
 				hasCatch = true;
 			}
@@ -2673,7 +2681,7 @@ namespace cpps
 		catch (const char* s)
 		{
 			cpps_pop_stack_to_here(c, takestack);//清栈
-			throwerr = cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "throw引发的未知异常.");
+			throwerr = cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "Unknown exception thrown by throw.");
 			throwerr.value = s;
 			hasCatch = true;
 		}
@@ -2714,7 +2722,7 @@ namespace cpps
 
 			if (regvar->getValue().tt != CPPS_TCLASS)
 			{
-				throw("父类必须为类。不能为其他类型。");
+				throw(cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "The parent class must be a class. Cannot be another type."));
 			}
 			cpps_cppsclass* parentclass = (cpps_cppsclass*)regvar->getValue().value.domain;
 			cppsclass->parentClassList().push_back(parentclass); //添加父类
@@ -2766,6 +2774,30 @@ namespace cpps
 			}
 		}
 	}
+	void cpps_step_import(C* c, cpps_domain* domain, Node* o)
+	{
+		cpps_domain* leftdomain = NULL;
+		if (o->l.empty()) return;
+
+		cpps_value list = cpps_calculate_expression(c, domain, o->l[0], leftdomain);
+		cpps_cppsclass* cppsclass = (cpps_cppsclass*)list.value.domain->parent[0];
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)list.value.domain;
+		if (list.tt == CPPS_TSTRING)
+		{
+			cpps_loadlibrary(c, cpps_to_string(list));
+		}
+		else if(cppsclass->getClassName() == "vector")
+		{
+			cpps_vector* vec = (cpps_vector*)cppsclassvar->getclsptr();
+			for(auto &v : vec->realvector())
+			{
+				if (v.tt == CPPS_TSTRING)
+				{
+					cpps_loadlibrary(c, cpps_to_string(v));
+				}
+			}
+		}
+	}
 	void cpps_step_dofile(C* c, cpps_domain* domain, Node* o)
 	{
 		_CPPS_TRY
@@ -2813,7 +2845,7 @@ namespace cpps
 				cpps_stack* stack = new cpps_stack((*it)->filename, (*it)->line, "dofile");
 
 				c->push_stack(stack);
-				cpps_step_all(c, CPPS_MUNITRET, domain, o);
+				cpps_step_all(c, CPPS_SINGLERET, domain, o);
 				c->pop_stack();
 
 
@@ -2835,7 +2867,7 @@ namespace cpps
 		Node* o = loadbuffer(c, domain, str, "");
 		cpps_stack* stack = new cpps_stack(d->filename, d->line, "dostring");
 		c->push_stack(stack);
-		cpps_step_all(c, CPPS_MUNITRET, domain, o);
+		cpps_step_all(c, CPPS_SINGLERET, domain, o);
 		c->pop_stack();
 		delete stack;
 
@@ -2945,6 +2977,10 @@ namespace cpps
 		else if (d->type == CPPS_OINCLUDE)
 		{
 			cpps_step_dofile(c, domain, d);
+		}
+		else if (d->type == CPPS_OIMPORT)
+		{
+			cpps_step_import(c, domain, d);
 		}
 		else if (d->type == CPPS_ODOSTRING)
 		{
@@ -3268,7 +3304,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error(d->filename, d->line, cpps_error_normalerror, "new [%s] 出的对象必须为类对象", d->s.c_str()));
+				throw(cpps_error(d->filename, d->line, cpps_error_normalerror, "The object out of new [%s] must be a class object", d->s.c_str()));
 			}
 		}
 		else if (d->type == CPPS_OBRACKET)
@@ -3341,7 +3377,7 @@ namespace cpps
 			}
 			else
 			{
-				printf("WARRING: 警告，获取到【%s】一个不存在的变量，是否有意为之？ line: %d file: %s\n", d->s.c_str(), d->line, d->filename.c_str());
+				printf("Warning:  got a not existent variable of [%s].  line: %d file: %s\n", d->s.c_str(), d->line, d->filename.c_str());
 			}
 		}
 		else if (d->type == CPPS_VARNAME_LAMBDA)
@@ -3430,11 +3466,11 @@ namespace cpps
 						cpps_value right = cpps_calculate_expression(c, domain, d->getright()->getleft(), leftdomain);
 						if (right.tt != CPPS_TINTEGER)
 						{
-							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "array 的 [] 里面必须为数字当索引。"));
+							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array must contain a number as an index.。"));
 						}
 						leftdomain = takedomain;
 						if (pVec->size() <= right.value.integer)
-							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "array 越界了 当前长度[%d] 需要获取长度[%d]。", pVec->size(), right.value.integer));
+							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d].。", pVec->size(), right.value.integer));
 
 						ret = pVec->at(right.value.integer);
 					}
@@ -3477,7 +3513,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "'.' 操作前面 [%s] 必须为类对象或者为域.", d->getleft()->s.c_str()));
+				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
 			}
 		}
 		else if (d->type == CPPS_OGETOBJECT)
@@ -3505,7 +3541,7 @@ namespace cpps
 
 					//check this class is parent class..
 					bool is_parent_class = cpps_check_parent_class((cpps_cppsclass*)leftdomain->parent[0], cppsclass);
-					if (!is_parent_class) throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "执行了非父类的函数[%s::%s].", d->getleft()->s.c_str(), d->getright()->s.c_str()));
+					if (!is_parent_class) throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "Non parent function executed: [%s::%s].", d->getleft()->s.c_str(), d->getright()->s.c_str()));
 
 					cpps_regvar* var = cppsclass->getVar(d->getright()->s, takedomain, false);
 					if (var && var->getValue().tt == CPPS_TFUNCTION)
@@ -3524,7 +3560,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "'.' 操作前面 [%s] 必须为类对象或者为域.", d->getleft()->s.c_str()));
+				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
 			}
 
 		}
@@ -3559,11 +3595,11 @@ namespace cpps
 						cpps_value right = cpps_calculate_expression(c, domain, d->getright()->getleft(), leftdomain);
 						if (right.tt != CPPS_TINTEGER)
 						{
-							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "array 的 [] 里面必须为数字当索引。"));
+							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array must contain a number as an index."));
 						}
 						leftdomain = takedomain;
 						if (pVec->size() <= right.value.integer)
-							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "array 越界了 当前长度[%d] 需要获取长度[%d]。", pVec->size(), right.value.integer));
+							throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d].", pVec->size(), right.value.integer));
 
 						ret = cpps_value(&pVec->cpps_at(right.value.integer));
 					}
@@ -3602,7 +3638,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "'.' 操作前面 [%s] 必须为类对象或者为域.", d->getleft()->s.c_str()));
+				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
 			}
 		}
 		else if (d->type == CPPS_QUOTEGETOBJECT)
@@ -3628,7 +3664,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "'.' 操作前面 [%s] 必须为类对象或者为域.", d->getleft()->s.c_str()));
+				throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
 			}
 		}
 		return ret;
@@ -3653,7 +3689,7 @@ namespace cpps
 		for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)
 		{
 			cpps::cpps_stack* stack = *it;
-			std::cout << "#f" << i << " " << stack->f.c_str() << "	第" << stack->l << "行	函数：" << stack->func.c_str() << std::endl;
+			std::cout << "#f" << i << " " << stack->f.c_str() << "	The" << stack->l << "line	function：" << stack->func.c_str() << std::endl;
 			i++;
 		}
 
@@ -3670,7 +3706,7 @@ namespace cpps
 			Node* o = loadbuffer(c, domain, str, "");
 			cpps_stack* stack = new cpps_stack(d->filename, d->line, "dostring");
 			c->push_stack(stack);
-			cpps_step_all(c, CPPS_MUNITRET, domain, o);
+			cpps_step_all(c, CPPS_SINGLERET, domain, o);
 			c->pop_stack();
 			delete stack;
 		}

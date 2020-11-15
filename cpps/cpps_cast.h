@@ -20,7 +20,7 @@ namespace cpps
 
 		if (!converter::match((o.value)))
 		{
-			throw("object_cast払移。。。");
+			throw(cpps_error("0", 0, 0, "Convert failed"));
 		}
 
 		return converter::apply((o.value));

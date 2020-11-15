@@ -285,17 +285,17 @@ namespace cpps
 		//c->gclock.lock();
 		std::string ret = "";
 		char buffer[1024];
-		sprintf(buffer,"gen0内存 %I64d b\n", c->getGen0size());
+		sprintf(buffer,"gen0 memory %I64d b\n", c->getGen0size());
 		ret += buffer;
-		sprintf(buffer, "gen1内存 %I64d b\n", c->getGen1size());	//测试 200字节进行清理年轻代
+		sprintf(buffer, "gen1 memory %I64d b\n", c->getGen1size());	//测试 200字节进行清理年轻代
 		ret += buffer;
-		sprintf(buffer, "当前内存 %I64d b\n", c->getGen0size() + c->getGen1size());
+		sprintf(buffer, "current memory %I64d b\n", c->getGen0size() + c->getGen1size());
 		ret += buffer;
-		sprintf(buffer, "c->barrierList.size(): %I64d 个\n", c->getBarrierList()->size());
+		sprintf(buffer, "c->barrierList.size(): %I64d \n", c->getBarrierList()->size());
 		ret += buffer;
-		sprintf(buffer, "c->gen1.size(): %I64d 个\n", c->getGen1()->size());
+		sprintf(buffer, "c->gen1.size(): %I64d \n", c->getGen1()->size());
 		ret += buffer;
-		sprintf(buffer, "c->gen0.size(): %I64d 个\n", c->getGen0()->size());
+		sprintf(buffer, "c->gen0.size(): %I64d \n", c->getGen0()->size());
 		ret += buffer;
 
 		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getGen1()->begin(); it != c->getGen1()->end(); it++)

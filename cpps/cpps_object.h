@@ -34,7 +34,7 @@ namespace cpps
 		{
 			if (!cpps_cpp_to_cpps_converter<Type>::match(c,v))
 			{
-				throw("×ª»»Ê§°Ü¡£¡£¡£¡£");
+				throw(cpps_error("0", 0, 0, "Convert failed"));
 			}
 
 			value = cpps_cpp_to_cpps_converter<Type>::apply(c,v);

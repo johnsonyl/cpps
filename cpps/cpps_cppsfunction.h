@@ -76,7 +76,7 @@ namespace cpps
 
 			if (o->size() > params->l.size())
 			{
-				throw("参数不对");
+				throw("The number of parameters does not match");
 			}
 
 			for (size_t i = 0; i < params->l.size(); i++)

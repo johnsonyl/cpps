@@ -51,7 +51,6 @@ namespace cpps
 			return new cpps_classvar<C>(getClassName(),this, cpps_domain_type_classvar, alloc);
 		}
 	};
-
 	template <class T>
 	struct cpps_class_singleton
 	{
@@ -76,6 +75,7 @@ namespace cpps
 		cpps_cppsclass	*v;
 	};
 
+	
 }
 
 #endif // CPPS_CLASS_CPPS_HEAD_

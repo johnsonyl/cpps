@@ -87,7 +87,7 @@ namespace cpps
 				return (*(tmpStr)) < (*(tmpStr2));
 			}
 			default:
-				throw(cpps_error("unknow file", 0, 0, "<   ... 不可以当key用！type: %d", right.tt));
+				throw(cpps_error("unknow file", 0, 0, "<   ... It can't be used as a key.type: %d", right.tt));
 			}
 		}
 		return tt < right.tt;
@@ -111,7 +111,7 @@ namespace cpps
 				return (*(tmpStr)) > (*(tmpStr2));
 			}
 			default:
-				throw(cpps_error("unknow file", 0, 0, ">   ... 不可以当key用！ type: %d", right.tt));
+				throw(cpps_error("unknow file", 0, 0, ">   ... It can't be used as a key. type: %d", right.tt));
 			}
 		}
 		return tt > right.tt;
@@ -135,7 +135,7 @@ namespace cpps
 				return (*(tmpStr)) == (*(tmpStr2));
 			}
 			default:
-				throw(cpps_error("unknow file", 0, 0, "==   ... 不可以当key用！ type: %d", right.tt));
+				throw(cpps_error("unknow file", 0, 0, "==   ... It can't be used as a key. type: %d", right.tt));
 			}
 		}
 		return false;
@@ -156,7 +156,7 @@ namespace cpps
 			return std::hash<std::string>()(*(tmpStr));
 		}
 		default:
-			throw(cpps_error("unknow file", 0, 0, "==   ... 不可以当hash用！ type: %d", _Keyval.tt));
+			throw(cpps_error("unknow file", 0, 0, "==   ... It can't be used as a HashKey. type: %d", _Keyval.tt));
 		}
 		return _Keyval.tt;
 	}

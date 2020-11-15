@@ -83,7 +83,7 @@ namespace cpps
 			{
 				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD)
 				{
-					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, " '%s' 的左边必须为变量",s.c_str()));
+					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, " The left side of %s must be a variable.",s.c_str()));
 				}
 				if (p->type == CPPS_VARNAME)
 					p->type = CPPS_QUOTEVARNAME;
@@ -98,7 +98,7 @@ namespace cpps
 			{
 				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD)
 				{
-					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, " '%s' 的右边必须为变量", s.c_str()));
+					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, "The right side of %s must be a variable.", s.c_str()));
 				}
 				if (p->type == CPPS_VARNAME)
 					p->type = CPPS_QUOTEVARNAME;
@@ -131,7 +131,7 @@ namespace cpps
 			{
 				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD)
 				{
-					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, " '%s' 的左边必须为变量", s.c_str()));
+					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, " The left side of %s must be a variable", s.c_str()));
 				}
 				if (p->type == CPPS_VARNAME)
 					p->type = CPPS_QUOTEVARNAME;

@@ -5,24 +5,27 @@
 
 
 #include <cpps.h>
+#include "json/json.h"
+#include "jsonconvert.h"
+
+
 using namespace cpps;
 
-void demotest()
-{
-	printf("hit demo function.\r\n");
-}
+
 #ifdef _WIN32
 extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
 #else
 extern "C" void  cpps_attach(cpps::C* c)
 #endif
 {
-	printf("attach demo\r\n");
-
 	cpps::cpps_init_cpps_class(c);
 
-	module(c)[
-		def("demotest", demotest)
+	module(c, "json")[
+		defvar(c, "encode_ascii", Json::encode_ascii),
+		defvar(c, "encode_unicode", Json::encode_unicode),
+		defvar(c, "encode_utf8", Json::encode_utf8),
+		def("encode", &cppstojson),
+		def_inside("decode", &jsontocpps)
 	];
 }
 #ifdef _WIN32
@@ -31,7 +34,6 @@ extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
 extern "C" void  cpps_detach(cpps::C * c)
 #endif
 {
-	printf("detach demo\r\n");
 }
 
 #ifdef LINUX

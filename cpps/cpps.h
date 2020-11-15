@@ -57,5 +57,6 @@
 #include "cpps_string.h"
 #include "cpps_debug.h"
 
+#include "cpps_reg_cpps_class.h"
 
 #endif // CPPS_CPPS_HEAD_

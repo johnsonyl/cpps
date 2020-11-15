@@ -72,7 +72,7 @@ namespace cpps
 		{
 			if (isend())
 			{
-				throw(cpps_error(filename.c_str(), l, 0, "未知的文件结尾."));
+				throw(cpps_error(filename.c_str(), l, 0, "Unknown end of file."));
 			}
 			int32 ret = bufferoffset++;
 

@@ -26,7 +26,7 @@ namespace cpps
 		static R		apply(cpps_value obj)
 		{
 			if(!match(obj))
-				throw("cpps_converter払移。。。");
+				throw(cpps_error("0", 0, 0, "Convert failed"));
 
 			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
 			return static_cast<R>(clsvar->getclsptr());

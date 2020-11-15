@@ -13,7 +13,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0",0,0,"不能对布尔值做这种运算啊！"));
+			throw(cpps_error("0",0,0,"This operation cannot be performed on Boolean values."));
 		}
 		cpps_value _result;
 		_result.tt = CPPS_TNIL;
@@ -51,7 +51,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
 		cpps_value _result;
 		_result.tt = CPPS_TNIL;
@@ -90,7 +90,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
 		cpps_value _result;
 		_result.tt = CPPS_TNIL;
@@ -129,7 +129,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
 		cpps_value _result;
 		_result.tt = CPPS_TNIL;
@@ -168,7 +168,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
 		cpps_value _result;
 		_result.tt = CPPS_TNIL;
@@ -207,7 +207,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
 		cpps_value _result;
 		_result.tt = CPPS_TNIL;
@@ -232,7 +232,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "不能对布尔值做这种运算啊！"));
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
 		cpps_value _result;
 		_result.tt = CPPS_TNIL;
@@ -303,7 +303,7 @@ namespace cpps
 			v.value.integer++;
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "不能对非数字进行自增操作！"));
+			throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
 			break;
 		}
 		return ret;
@@ -321,7 +321,7 @@ namespace cpps
 			v.value.integer++;
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "不能对非数字进行自增操作！"));
+			throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
 			break;
 		}
 		return v;
@@ -340,7 +340,7 @@ namespace cpps
 			v.value.integer--;
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "不能对非数字进行自减操作！"));
+			throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
 			break;
 		}
 		return ret;
@@ -358,7 +358,7 @@ namespace cpps
 			v.value.integer--;
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "不能对非数字进行自减操作！"));
+			throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
 			break;
 		}
 		return v;
@@ -381,7 +381,7 @@ namespace cpps
 			_result.tt = CPPS_TINTEGER;
 			_result.value.number = cpps_to_number(a);
 		default:
-			throw(cpps_error("0", 0, 0, "不能对数字和变量以外的类型取正！"));
+			throw(cpps_error("0", 0, 0, "Cannot do +a operation on non number."));
 			break;
 		}
 		return _result;
@@ -403,7 +403,7 @@ namespace cpps
 			_result.tt = CPPS_TINTEGER;
 			_result.value.number = -cpps_to_number(a);
 		default:
-			throw(cpps_error("0", 0, 0, "不能对数字和变量以外的类型取负！"));
+			throw(cpps_error("0", 0, 0, "Cannot do -a operation on non number."));
 			break;
 		}
 		return _result;
@@ -468,7 +468,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "变量未定义！"));
+			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 		cpps_value & v = *(a.value.value);
 		*(a.value.value) = cpps_add(v, b);
@@ -484,7 +484,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "变量未定义！"));
+			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 
 		cpps_value & v = *(a.value.value);
@@ -500,7 +500,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "变量未定义！"));
+			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 
 		cpps_value & v = *(a.value.value);
@@ -545,7 +545,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -559,7 +559,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -574,11 +574,11 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非字符串和字符串进行比较！"));
+				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "这俩不能比较！"));
+			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
 		return ret;
@@ -601,7 +601,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -615,7 +615,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -630,11 +630,11 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非字符串和字符串进行比较！"));
+				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "这俩不能比较！"));
+			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
 		return ret;
@@ -657,7 +657,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -671,7 +671,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -686,11 +686,11 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非字符串和字符串进行比较！"));
+				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "这俩不能比较！"));
+			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
 		return ret;
@@ -713,7 +713,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -727,7 +727,7 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非数字和数字进行比较！"));
+				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -742,11 +742,11 @@ namespace cpps
 			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "不能将非字符串和字符串进行比较！"));
+				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "这俩不能比较！"));
+			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
 		return ret;

@@ -44,6 +44,19 @@ demo 为如何开发第一个CPPS库文件。
 *更新日志*：
 -
 
+2020-11-15 更新
+
+添加json支持库
+
+增加 import 导入支持库功能
+
+```
+import ["json", "demo"];
+//or
+//import "json";
+//import "demo";
+```
+
 2020-11-14 更新
 
 1.增加linux 动态库功能

@@ -46,7 +46,7 @@ namespace cpps
 		{
 			if (idx < 0 || idx >= size())
 			{
-				throw(cpps_error("0", 0, 0, "vector 越界了！"));
+				throw(cpps_error("0", 0, 0, "Vector is out of bounds!"));
 				return cpps::nil;
 			}
 			return _vec.at((size_t)idx);
@@ -55,7 +55,7 @@ namespace cpps
 		{
 			if (idx < 0 || idx >= size())
 			{
-				throw(cpps_error("0", 0, 0, "vector 越界了！"));
+				throw(cpps_error("0", 0, 0, "Vector is out of bounds!"));
 				return cpps::nil;
 			}
 			return _vec[(usint32)idx];

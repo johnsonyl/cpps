@@ -89,6 +89,7 @@
 #define CPPS_ODEFCONSTVAR		49 //变量名字const
 #define CPPS_ONEW_SETV			50	//new Class(){ this }
 #define CPPS_OFOREACH			51	//foreach循环
+#define	CPPS_OIMPORT			52	//import导入库
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误
@@ -133,32 +134,32 @@ typedef long long __int64;
 
 #define cpps_catch } catch (cpps_error e)\
 {\
-	printf("错误: %d : %s file:%s line:%d \n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+	printf("error: %d : %s file:%s line:%d \n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
 	\
 }\
 	catch (const char* s)\
 {\
-	printf("错误: %s \n", s); \
+	printf("error: %s \n", s); \
 }
 #define _CPPS_CATCH } catch (cpps_error e)\
 {\
-	printf("错误: %d : %s file:%s line:%d \n错误堆栈信息：\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+	printf("error: %d : %s file:%s line:%d \nError stack information：\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
-	std::cout << " " << stack->f.c_str() << "	第" << stack->l << "行	函数：" << stack->func.c_str() << std::endl; \
+	std::cout << " " << stack->f.c_str() << "	The " << stack->l << " line	function：" << stack->func.c_str() << std::endl; \
 }\
 	c->resume();\
 }\
 	catch (const char* s)\
 {\
-	printf("错误: %s \n错误堆栈信息：\n", s); \
+	printf("error: %s \nnError stack information：\n", s); \
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
-	std::cout << " " << stack->f.c_str() << "	第" << stack->l << "行	函数：" << stack->func.c_str() << std::endl; \
+	std::cout << " " << stack->f.c_str() << "	The " << stack->l << " line	function：" << stack->func.c_str() << std::endl; \
 }\
 	c->resume();\
 }

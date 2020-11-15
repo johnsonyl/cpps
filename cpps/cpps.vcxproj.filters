@@ -218,6 +218,9 @@
     <ClInclude Include="coroutine.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="cpps_reg_cpps_class.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="nativecall.asm">

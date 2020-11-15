@@ -12,7 +12,7 @@ namespace cpps
 	//编译为机器码
 	void cpps_jit_compiler::compiler(C *c,cpps_domain *domain, Node *p)
 	{
-		printf("开始编译函数.\n");
+		printf("Start compiling functions.\n");
 
 		for (std::vector<Node*>::iterator it = p->l.begin(); it != p->l.end(); ++it)
 		{
@@ -47,11 +47,11 @@ namespace cpps
 		cpps_regvar *reg = domain->getVar(o->s, leftdomain);
 		if (!reg)
 		{
-			throw("JIT ERROR：要执行的函数变量不存在");
+			throw("JIT ERROR：The function variable to execute does not exist.");
 		}
 		if (reg->getValue().tt != CPPS_TFUNCTION)
 		{
-			throw("JIT ERROR：需要执行的变量不是函数，不能被执行");
+			throw("JIT ERROR：The variable to be executed is not a function and cannot be executed.");
 		}
 		mov_rcx_rsp_off(0x40); //获取 stack参数
 		call_func((usint64)cpps_jit_create_cpps_value); //返回值暂时存到rax里
@@ -210,7 +210,7 @@ namespace cpps
 			cpps_regvar *var = domain->getVar(v->s,leftdomain);
 			if (!var || var->getValue().tt != CPPS_TCLASS)
 			{
-				throw(cpps_error(v->filename, v->line, cpps_error_classerror, " 【%s】 new 出的对象必须为类对象", v->s.c_str()));
+				throw(cpps_error(v->filename, v->line, cpps_error_classerror, " The object out of the new %s must be a class object", v->s.c_str()));
 			}
 
 			usint32 cpps_value_offset = reg_stack_size(sizeof(usint64));

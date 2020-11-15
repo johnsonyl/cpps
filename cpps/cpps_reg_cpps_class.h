@@ -1,0 +1,37 @@
+#pragma once
+
+namespace cpps
+{
+	template<class T>
+	bool	cpps_reg_cpps_class(cpps::C* c, std::string classname, std::string node = "_G")
+	{
+		cpps_domain* root = c->_G;
+		cpps_domain* leftdomain = NULL;
+		if (node != "_G")
+		{
+			cpps::cpps_regvar* d = c->_G->getVar(node, leftdomain, false);
+			if (!d)
+				return false;
+			if (!d->getValue().isDomain())
+				return false;
+
+			root = d->getValue().value.domain;
+		}
+		leftdomain = NULL;
+		cpps::cpps_regvar* var = root->getVar(classname, leftdomain, false);
+		cpps_cppsclass* cls = (cpps_cppsclass*)var->getValue().value.domain;
+		cpps_class_singleton<T*>::getSingletonPtr()->setsls(cls);
+		return true;
+	}
+	inline void	cpps_init_cpps_class(cpps::C* c)
+	{
+		cpps::cpps_reg_cpps_class<std::string>(c, "String", "_G");
+		cpps::cpps_reg_cpps_class<cpps_vector>(c, "vector", "_G");
+		cpps::cpps_reg_cpps_class<C>(c, "C_STATE", "_G");
+		cpps::cpps_reg_cpps_class<cpps_trycatch_error>(c, "cpps_trycatch_error", "_G");
+		cpps::cpps_reg_cpps_class<cpps_map>(c, "map", "_G");
+		cpps::cpps_reg_cpps_class<cpps_map_node>(c, "cpps_map_node", "_G");
+		cpps::cpps_reg_cpps_class<cpps_unordered_map>(c, "unordered_map", "_G");
+		//cpps::cpps_reg_cpps_class<cpps_lock>(c, "cpps_lock", "_G");
+	}
+}
