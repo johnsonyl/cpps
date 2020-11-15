@@ -1,10 +1,8 @@
-import ["json", "demo"];
+import ["json"];
 //or
 //import "json";
 //import "demo";
 system("chcp 65001"); //use utf8 string
-
-demotest();
 
 
 
@@ -16,8 +14,8 @@ println(arr);
 println(obj);
 
 
-var arr2 = json.encode(arr, json.encode_utf8);
-var obj2 = json.encode(obj, json.encode_utf8);
+var arr2 = json.encode(arr);
+var obj2 = json.encode(obj);
 
 
 
@@ -27,3 +25,4 @@ println(obj2);
 
 println(json.decode(arr2));
 println(json.decode(obj2));
+
