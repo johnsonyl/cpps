@@ -48,6 +48,8 @@ demo 为如何开发第一个CPPS库文件。
 
 添加json支持库
 
+简化json.encode默认支持为utf8格式
+
 增加 import 导入支持库功能
 
 ```
@@ -64,8 +66,8 @@ println(arr);
 println(obj);
 
 
-var arr2 = json.encode(arr, json.encode_utf8);
-var obj2 = json.encode(obj, json.encode_utf8);
+var arr2 = json.encode(arr);
+var obj2 = json.encode(obj);
 
 
 

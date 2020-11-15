@@ -3554,8 +3554,8 @@ namespace cpps
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = left.value.domain;
 					ret = cpps_calculate_expression(c, left.value.domain, d->getright(), leftdomain);
-					if (left.value.domain->domainType == cpps_domain_type_namespace) //名空间不更改左域
-						leftdomain = takedomain;
+					//if (left.value.domain->domainType == cpps_domain_type_namespace) //名空间不更改左域
+					//	leftdomain = takedomain;
 				}
 			}
 			else
