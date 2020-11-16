@@ -44,6 +44,30 @@ demo 为如何开发第一个CPPS库文件。
 *更新日志*：
 -
 
+2020-11-16 更新
+-
+
+添加curl支持库
+
+```
+import ["json","demo","curl"];
+//or
+//import "json";
+//import "demo";
+
+
+var url = curl.curl_easy_init();
+
+curl.curl_easy_setopt(url, curl.CURLOPT_URL, "http://blog.chinaunix.net");
+curl.curl_easy_setopt(url, curl.CURLOPT_VERBOSE, 0);
+var res = curl.curl_easy_perform(url);
+println(res);
+println(url.getdata());
+
+
+curl.curl_easy_cleanup(url);
+```
+
 2020-11-15 更新
 -
 

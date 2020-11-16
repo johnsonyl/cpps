@@ -69,6 +69,29 @@ namespace cpps
 		return strStream.str();
 	}
 
+
+	cpps_vector* cpps_to_cpps_vector(cpps_value obj)
+	{
+		if (!obj.isDomain()) return NULL;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
+		cpps_vector* ret = (cpps_vector*)cppsclassvar->getclsptr();
+		return ret;
+	}
+	cpps_map* cpps_to_cpps_map(cpps_value obj)
+	{
+		if (!obj.isDomain()) return NULL;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
+		cpps_map* ret = (cpps_map*)cppsclassvar->getclsptr();
+		return ret;
+	}
+	cpps_unordered_map* cpps_to_cpps_unordered_map(cpps_value obj)
+	{
+		if (!obj.isDomain()) return NULL;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
+		cpps_unordered_map* ret = (cpps_unordered_map*)cppsclassvar->getclsptr();
+		return ret;
+	}
+
 	bool cpps_value::operator<(const cpps_value &right) const
 	{
 		if (tt == right.tt)

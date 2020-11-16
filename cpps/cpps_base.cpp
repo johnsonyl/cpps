@@ -450,55 +450,68 @@ namespace cpps
 	bool	cpps_loadlibrary(C *c,std::string libname)
 	{
 		std::string path = "lib/"+ libname + "/";
+		std::string fpath;
+
+
 #ifdef WIN32
-		HMODULE module = ::LoadLibraryA((path+(libname + ".dll")).c_str());
-		std::string libfuncname = "cpps_attach";
-		if (module == NULL)
+
+		fpath = path + (libname + ".dll");
+		bool b = cpps_io_file_exists(fpath);
+		if (b)
 		{
-			printf("Load module¡¾%s¡¿ faild.\r\n", libname.c_str());
-			FreeLibrary(module);
-			return false;
-		}
+			HMODULE module = ::LoadLibraryA(fpath.c_str());
+			std::string libfuncname = "cpps_attach";
+			if (module == NULL)
+			{
+				printf("Load module¡¾%s¡¿ faild.\r\n", libname.c_str());
+				FreeLibrary(module);
+				return false;
+			}
 
-		cpps_attach_func cpps_attach = (cpps_attach_func)GetProcAddress(module, libfuncname.c_str());
-		if (cpps_attach == NULL)
-		{
-			FreeLibrary(module);
-			printf("Load module ¡¾%s¡¿ faild\r\n", libname.c_str());
-			return false;
-		}
+			cpps_attach_func cpps_attach = (cpps_attach_func)GetProcAddress(module, libfuncname.c_str());
+			if (cpps_attach == NULL)
+			{
+				FreeLibrary(module);
+				printf("Load module ¡¾%s¡¿ faild\r\n", libname.c_str());
+				return false;
+			}
 
-		c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
 
-		cpps_attach(c);
+			cpps_attach(c);
 
-		
+
 #elif LINUX
-		HMODULE module = dlopen((path + (libname + ".so")).c_str(), RTLD_LAZY);
-		if (module == NULL)
-		{
-			printf("dlopen [%s] faild\r\n", libname.c_str());
-			dlclose(module);
-			return false;
-		}
-		dlerror();
-		CPPS_ST_API *api = dlsym(module, "LIBAPI");
-		if(api == NULL)
-		{
-			dlclose(module);
-			printf("dlsym [LIBAPI] faild\r\n");
-			return false;
-		}
 
-		c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+		fpath = path + (libname + ".so");
+		bool b = cpps_io_file_exists(fpath);
+		if (b)
+		{
+			HMODULE module = dlopen(fpath.c_str(), RTLD_LAZY);
+			if (module == NULL)
+			{
+				printf("dlopen [%s] faild\r\n", libname.c_str());
+				dlclose(module);
+				return false;
+			}
+			dlerror();
+			CPPS_ST_API* api = dlsym(module, "LIBAPI");
+			if (api == NULL)
+			{
+				dlclose(module);
+				printf("dlsym [LIBAPI] faild\r\n");
+				return false;
+			}
 
-		api->cpps_attach(c);
+			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+
+			api->cpps_attach(c);
 
 
 #endif
-
-		std::string fpath = path + "main.cpp";
-		bool b = cpps_io_file_exists(fpath);
+		}
+		fpath = path + "main.cpp";
+		b = cpps_io_file_exists(fpath);
 		if (b)
 		{
 

@@ -19,6 +19,9 @@ namespace cpps
 	struct cpps_domain;
 	struct cpps_cppsclass;
 	struct cpps_cppsclassvar;
+	struct cpps_vector;
+	struct cpps_map;
+	struct cpps_unordered_map;
 	struct cpps_value
 	{
 		cpps_value()
@@ -165,6 +168,9 @@ namespace cpps
 	cpps_number	cpps_to_number(cpps_value obj);
 	cpps_integer cpps_to_integer(cpps_value obj);
 	std::string cpps_to_string(cpps_value obj);
+	cpps_vector* cpps_to_cpps_vector(cpps_value obj);
+	cpps_map* cpps_to_cpps_map(cpps_value obj);
+	cpps_unordered_map* cpps_to_cpps_unordered_map(cpps_value obj);
 
 	static cpps_value		nil;
 }
