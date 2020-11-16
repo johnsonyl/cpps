@@ -452,6 +452,7 @@ namespace cpps
 		std::string path = "lib/"+ libname + "/";
 		std::string fpath;
 
+		if (c->modulelist.find(libname) != c->modulelist.end()) return true;
 
 #ifdef WIN32
 
@@ -564,6 +565,9 @@ namespace cpps
 	}
 	bool	cpps_freelibrary(C*c, std::string libname)
 	{
+
+		if (c->modulelist.find(libname) == c->modulelist.end()) return true;
+
 #ifdef WIN32
 
 		bool ret = false;
