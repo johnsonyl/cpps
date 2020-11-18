@@ -45,17 +45,15 @@ demo 为如何开发第一个CPPS库文件。
 -
 
 2020-11-19 更新
+-
 
-增加第一版socket库基于libevent.
-修复一些BUG
+1.增加第一版socket库基于libevent.
+2.修复一些BUG
 
 ```
 system("chcp 65001"); //use utf8 string
 
 import ["socket"];
-
-
-
 
 /*
 
