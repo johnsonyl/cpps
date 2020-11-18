@@ -240,13 +240,21 @@ namespace cpps
 
 			ret.tt = CPPS_TCLASSVAR;
 			
-			//有问题啊
-			cpps_cppsclassvar *var = cpps_class_singleton<Type>::getSingletonPtr()->getcls()->create(false);
-			ret.value.domain = var;
-			var->setclsptr((void *)v);
+			std::unordered_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+			cpps_cppsclassvar* var;
+			if (it == c->_class_map_classvar.end())
+			{
+				var = cpps_class_singleton<Type>::getSingletonPtr()->getcls()->create(c,false);
+				var->setclsptr((void*)v);
 
-			//将新创建出来的添加到新生区稍后检测要不要干掉
-			cpps_gc_add_gen0(c, var);
+				//将新创建出来的添加到新生区稍后检测要不要干掉
+				cpps_gc_add_gen0(c, var);
+			}
+			else
+				var = it->second;
+
+			ret.value.domain = var;
+
 
 			return ret;
 		}

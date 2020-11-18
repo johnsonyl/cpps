@@ -27,6 +27,7 @@ namespace cpps
 	{
 		cpps::cpps_reg_cpps_class<std::string>(c, "String", "_G");
 		cpps::cpps_reg_cpps_class<cpps_vector>(c, "vector", "_G");
+		cpps::cpps_reg_cpps_class<Buffer>(c, "Buffer", "_G");
 		cpps::cpps_reg_cpps_class<C>(c, "C_STATE", "_G");
 		cpps::cpps_reg_cpps_class<cpps_trycatch_error>(c, "cpps_trycatch_error", "_G");
 		cpps::cpps_reg_cpps_class<cpps_map>(c, "map", "_G");

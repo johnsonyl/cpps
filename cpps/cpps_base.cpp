@@ -491,8 +491,7 @@ namespace cpps
 			HMODULE module = dlopen(fpath.c_str(), RTLD_LAZY);
 			if (module == NULL)
 			{
-				printf("dlopen [%s] faild\r\n", libname.c_str());
-				dlclose(module);
+				printf("dlopen [%s]:%s faild\r\n", libname.c_str(), dlerror());
 				return false;
 			}
 			dlerror();

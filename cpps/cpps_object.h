@@ -43,7 +43,7 @@ namespace cpps
 		object		operator [] (std::string k)
 		{
 			cpps_value ret;
-			if(value.tt == CPPS_TDOMAIN)
+			if(value.isDomain() )
 			{
 				cpps_domain* leftdomain = NULL;
 
@@ -59,11 +59,11 @@ namespace cpps
 		cpps_value	value;
 	};
 
-	static int32		type(object& o)
+	static int32		type(object o)
 	{
 		return o.value.tt;
 	}
-	static std::string type_s(object &o)
+	static std::string type_s(object o)
 	{
 		switch (type(o))
 		{

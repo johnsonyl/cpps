@@ -1521,7 +1521,7 @@ namespace cpps
 		//剔除空格
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != ';')
-			cpps_parse_line(fordomain, for1, root, buffer, CPPS_NOT_DEFASSEMBLE | CPPS_NOT_DEFFUNCTION | CPPS_NOT_USEBUILTIN | CPPS_NOT_DONTDELETEEND | CPPS_NOT_DEFVAR);
+			cpps_parse_line(fordomain, for1, root, buffer, CPPS_NOT_DEFASSEMBLE | CPPS_NOT_DEFFUNCTION | CPPS_NOT_USEBUILTIN | CPPS_NOT_DONTDELETEEND );
 
 		//剔除空格
 		cpps_parse_rmspaceandenter(buffer);
@@ -3222,7 +3222,7 @@ namespace cpps
 			if (v && v->getValue().tt == CPPS_TCLASS)
 			{
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)v->getValue().value.domain;
-				cpps_cppsclassvar* cppsclassvar = cppsclass->create();
+				cpps_cppsclassvar* cppsclassvar = cppsclass->create(c);
 
 
 				//将类对象里面的变量创建出来

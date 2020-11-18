@@ -25,7 +25,7 @@ namespace cpps
 			o = _o;
 			classname = _classname;
 		}
-		virtual cpps_cppsclassvar *	create(bool alloc = true)
+		virtual cpps_cppsclassvar *	create(C* c, bool alloc = true)
 		{
 			return (new cpps_cppsclassvar(getClassName(), this, cpps_domain_type_classvar, alloc));
 		}
@@ -39,16 +39,22 @@ namespace cpps
 		std::vector<cpps_cppsclass*> _parentClassList;
 	};
 
-	template <class C>
+	template <class T>
 	struct cpps_class : public cpps_cppsclass
 	{
 		cpps_class(std::string _classname,cpps_domain* p, char type)
 			:cpps_cppsclass(_classname, NULL, p, type)
 		{
 		}
-		virtual cpps_cppsclassvar *	create(bool alloc = true)
+		virtual cpps_cppsclassvar* create(C* c,bool alloc = true)
 		{
-			return new cpps_classvar<C>(getClassName(),this, cpps_domain_type_classvar, alloc);
+			cpps_classvar<T>* v = new cpps_classvar<T>(getClassName(), this, cpps_domain_type_classvar, alloc);
+			if (alloc)
+			{
+				cpps_cppsclassvar* class_var = (cpps_cppsclassvar* )v;
+				c->_class_map_classvar.insert(std::unordered_map<void*, cpps_cppsclassvar*>::value_type(v->_class, class_var));
+			}
+			return v;
 		}
 	};
 	template <class T>

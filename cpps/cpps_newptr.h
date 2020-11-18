@@ -20,7 +20,7 @@ namespace cpps
 	template<class T>
 	cpps_cppsclassvar*		newClassPtr(C *c, T ** ret)
 	{
-		cpps_cppsclassvar *var = cpps_class_singleton<T*>::getSingletonPtr()->getcls()->create(true);
+		cpps_cppsclassvar *var = cpps_class_singleton<T*>::getSingletonPtr()->getcls()->create(c,true);
 		//cpps_regvar* v = new cpps_regvar;
 		//v->setValue(var);
 
@@ -34,5 +34,6 @@ namespace cpps
 	}
 }
 
+#define cpps_create_class_var(t,c,v,p) t *p = NULL; cpps_value v = newClassPtr<t>(c, &p);
 
 #endif // CPPS_NEWPTR_HEAD_

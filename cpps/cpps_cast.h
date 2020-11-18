@@ -14,7 +14,7 @@
 namespace cpps
 {
 	template<class T>
-	static T object_cast(object& o)
+	static T object_cast(object o)
 	{
 		typedef cpps_converter<T> converter;
 

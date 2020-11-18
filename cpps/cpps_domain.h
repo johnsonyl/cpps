@@ -120,7 +120,7 @@ namespace cpps
 			parent[1] = exec;
 		}
 
-		void destory(C *c)
+		virtual void destory(C *c)
 		{
 			for (std::unordered_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end();++it)
 			{

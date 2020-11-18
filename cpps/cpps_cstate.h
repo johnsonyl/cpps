@@ -64,6 +64,7 @@ namespace cpps
 		std::unordered_map<int, size_t>												lastgensize;
 		std::string																	(*func)(std::string &);
 		std::unordered_map<std::string, HMODULE>									modulelist;
+		std::unordered_map<void*, cpps_cppsclassvar*>								_class_map_classvar;
 		bool																		debug;
 		cpps_lock																	stacklock;
 		//cpps_lock							gclock;

@@ -48,6 +48,11 @@ namespace cpps
 		virtual void *getclsptr(){ return (void *)_class; }
 		virtual void setclsptr(void *p){ _class = (CLS*)p; }
 		virtual size_t size() { return sizeof(*this) + (_class ? sizeof(*_class) : 0 ); }
+		virtual void destory(C* c) {
+			cpps_domain::destory(c);
+			if (_class && isAllocClass())
+				c->_class_map_classvar.erase(_class);
+		}
 		CLS *_class;
 	};
 

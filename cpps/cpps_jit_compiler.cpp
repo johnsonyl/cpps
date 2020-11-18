@@ -156,7 +156,7 @@ namespace cpps
 	}
 	cpps_cppsclassvar * cpps_jit_new_var(C *c,cpps_cppsclass *cppsclass)
 	{
-		cpps_cppsclassvar *cppsclassvar = cppsclass->create();
+		cpps_cppsclassvar *cppsclassvar = cppsclass->create(c);
 			
 		if (cppsclass->o)
 			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar, cppsclass->o->getright());
