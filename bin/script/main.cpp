@@ -1,7 +1,3 @@
-import ["json"];
-//or
-//import "json";
-//import "demo";
 system("chcp 65001"); //use utf8 string
 
 import ["socket"];
