@@ -36,9 +36,16 @@ cmake .
 
 项目中demo文件夹 有如何嵌入CPPS的方法。支持 WINDOWS 与 LINUX。
 
-Hello World 为嵌入CPPS实例
+example/cppsc 为嵌入CPPS实例
  
-demo 为如何开发第一个CPPS库文件。
+example/demo 为如何开发第一个CPPS库文件。
+
+lib/curl 为libcurl封装库 需要安装编译libcurl
+
+lib/json 为json解析封装库
+
+lib/socket 为libevent封装库 需要安装编译libevent
+
 
 
 *更新日志*：
