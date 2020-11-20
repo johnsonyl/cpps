@@ -16,18 +16,18 @@ CPPS 的下载与安装非常简单，CPPS不依赖于任何第三方库，仅�
 ```
 git clone https://github.com/johnsonyl/cpps.git
 
-make （编译可执行文件） 
+cmake .
 
-或者 （so库文件）
+make
 
- make lib 
-
- make install
+make install
 ```
 *Windows版本*
 -
 ```
 git clone https://github.com/johnsonyl/cpps.git
+
+cmake .
 
 使用Visual Studio打开cpps.sln进行编译即可。
 ```
@@ -43,6 +43,11 @@ demo 为如何开发第一个CPPS库文件。
 
 *更新日志*：
 -
+
+2020-11-20 更新
+
+1.修改项目结构
+2.修改编译为cmake方式
 
 2020-11-19 更新
 -

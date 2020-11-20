@@ -1,0 +1,40 @@
+﻿# CMakeList.txt: libcpps 的 CMake 项目，在此处包括源代码并定义
+# 项目特定的逻辑。
+#
+cmake_minimum_required (VERSION 3.8)
+
+project(cppsc)
+
+# 将源代码添加到此项目的可执行文件。
+message(${PROJECT_SOURCE_DIR})
+
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../src)
+LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin)
+
+AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
+
+
+IF(WIN32)
+	
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin)
+
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin)
+
+ELSE()
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../../bin)
+ENDIF()
+
+add_executable (${PROJECT_NAME} ${SRC_LIST})
+
+IF(WIN32)
+	target_link_libraries(${PROJECT_NAME} cpps)
+ELSE()
+	target_link_libraries(${PROJECT_NAME} -lrt -ldl -lm -lpthread -lcpps)
+	install(TARGETS cppsc
+	RUNTIME DESTINATION bin)
+ENDIF()
