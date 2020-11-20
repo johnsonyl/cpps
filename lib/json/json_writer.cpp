@@ -357,7 +357,7 @@ static JSONCPP_STRING valueToQuotedStringN(const char* value, unsigned length, i
 	  length * 2 + 3; // allescaped+quotes+NULL
   result.reserve(maxsize); // to avoid lots of mallocs
   result += "\"";
-  char const* end = value + length;
+  //char const* end = value + length;
 
   if (encodeType == encode_ascii)
   {

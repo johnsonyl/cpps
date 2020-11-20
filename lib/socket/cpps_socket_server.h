@@ -48,7 +48,7 @@ namespace cpps {
 	{
 	public:
 		cpps_socket_server();
-		~cpps_socket_server();
+		virtual ~cpps_socket_server();
 
 		void									setcstate(cpps::C* cstate);
 		cpps_socket_server*						setoption(cpps::C* cstate, cpps::object opt);

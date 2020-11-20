@@ -31,7 +31,10 @@ namespace cpps
 			parent[1] = NULL;
 			domainName = domainname;
 		}
+		virtual ~cpps_domain()
+		{
 
+		}
 		virtual cpps_cppsclassvar *	create()
 		{
 			return NULL;
@@ -57,7 +60,7 @@ namespace cpps
 				else if (f->type == cpps_def_regclass)
 				{
 					cpps_regclass *cls = (cpps_regclass *)f;
-					cpps_domain *domain = (cpps_domain *)cls->cls;
+					//cpps_domain *domain = (cpps_domain *)cls->cls;
 					//domain->parent[0] = this;
 					var->setValue(cpps_value(cls->cls));
 				}

@@ -19,6 +19,10 @@ namespace cpps
 		{
 			gclevel = 0;
 		}
+		virtual ~cpps_gcobject()
+		{
+			
+		}
 		virtual void							setGCLevel(char l)
 		{
 			gclevel = l;

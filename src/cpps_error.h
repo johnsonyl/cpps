@@ -39,9 +39,9 @@ struct cpps_error
 		va_list ap;
 		va_start(ap, format);
 #ifdef _WIN32
-		int size = vsprintf_s(szString,4096, format, ap);
+		vsprintf_s(szString,4096, format, ap);
 #else
-		int size = vsprintf(szString, format, ap);
+		vsprintf(szString, format, ap);
 #endif
 		va_end(ap);
 

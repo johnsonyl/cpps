@@ -33,7 +33,7 @@ namespace cpps
 		//构造函数
 		inline cpps_lock() { ::InitializeCriticalSection(&thread_lock); }
 		//析构函数
-		inline ~cpps_lock() { ::DeleteCriticalSection(&thread_lock); }
+		virtual ~cpps_lock() { ::DeleteCriticalSection(&thread_lock); }
 
 		//功能函数
 	public:
@@ -51,7 +51,7 @@ namespace cpps
 		//构造函数
 		inline cpps_lock() { pthread_mutex_init(&thread_lock,NULL); }
 		//析构函数
-		inline ~cpps_lock() { ::pthread_mutex_destroy(&thread_lock); }
+		virtual ~cpps_lock() { ::pthread_mutex_destroy(&thread_lock); }
 
 		//功能函数
 	public:

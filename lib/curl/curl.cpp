@@ -61,7 +61,7 @@ cpps_value cpps_curl_easy_getinfo(C*c,cpps_curl*curl, cpps_integer info)
     {
         cpps_create_class_var(std::string,c, str_v, str_p);
         char buffer[4096] = { 0 };
-        CURLcode code = curl_easy_getinfo(curl->curl, (CURLINFO)info, &buffer);
+        curl_easy_getinfo(curl->curl, (CURLINFO)info, &buffer);
         str_p->append(buffer);
         ret = str_v;
     }
@@ -69,14 +69,14 @@ cpps_value cpps_curl_easy_getinfo(C*c,cpps_curl*curl, cpps_integer info)
     case 2: //int
     {
         cpps_integer int_v;
-        CURLcode code = curl_easy_getinfo(curl->curl, (CURLINFO)info, &int_v);
+        curl_easy_getinfo(curl->curl, (CURLINFO)info, &int_v);
         ret = int_v;
     }
         break;
     case 3: //double
     {
         cpps_number number_v;
-        CURLcode code = curl_easy_getinfo(curl->curl, (CURLINFO)info, &number_v);
+        curl_easy_getinfo(curl->curl, (CURLINFO)info, &number_v);
         ret = number_v;
     }
         break;
@@ -85,7 +85,7 @@ cpps_value cpps_curl_easy_getinfo(C*c,cpps_curl*curl, cpps_integer info)
         cpps_create_class_var(cpps_vector, c, vec_v, vec_p)
 
         struct curl_slist* cookies = NULL;
-        CURLcode code = curl_easy_getinfo(curl->curl, (CURLINFO)info, &cookies);
+        curl_easy_getinfo(curl->curl, (CURLINFO)info, &cookies);
 
         while (cookies) {
             vec_p->push_back(cpps_value(c, cookies->data));
@@ -217,7 +217,7 @@ cpps_integer     cpps_curl_easy_setopt(cpps_curl* curl, cpps_integer option, cpp
         {
             cpps_vector* v = cpps_to_cpps_vector(arg);
             struct curl_slist* slist = NULL;
-            for (auto i = 0; i < v->realvector().size(); i++)
+            for (size_t i = 0; i < v->realvector().size(); i++)
             {
                 slist = curl_slist_append(slist, cpps_to_string(v->realvector()[i]).c_str());
             }

@@ -284,6 +284,8 @@ namespace cpps
 	{
 		//c->gclock.lock();
 		std::string ret = "";
+#ifdef WIN32
+
 		char buffer[1024];
 		sprintf(buffer,"gen0 memory %I64d b\n", c->getGen0size());
 		ret += buffer;
@@ -307,6 +309,7 @@ namespace cpps
 				printf("%s\r\n", tmpStr->c_str());
 			}
 		}
+#endif
 		return ret;
 	}
 	void cpps_reggc(C *c)

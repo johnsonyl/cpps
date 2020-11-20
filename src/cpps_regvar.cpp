@@ -8,11 +8,11 @@ namespace cpps
 	{
 		if (v.tt == CPPS_TCLASSVAR)
 		{
-			cpps_cppsclassvar *var = (cpps_cppsclassvar *)v.value.domain;
+			//cpps_cppsclassvar *var = (cpps_cppsclassvar *)v.value.domain;
 		}
 		if (value.tt == CPPS_TCLASSVAR)
 		{
-			cpps_cppsclassvar *var = (cpps_cppsclassvar *)value.value.domain;
+			//cpps_cppsclassvar *var = (cpps_cppsclassvar *)value.value.domain;
 		}
 		value = v;
 	}
@@ -21,7 +21,7 @@ namespace cpps
 	{
 		if (value.tt == CPPS_TCLASSVAR)
 		{
-			cpps_cppsclassvar *var = (cpps_cppsclassvar *)value.value.domain;
+			//cpps_cppsclassvar *var = (cpps_cppsclassvar *)value.value.domain;
 		}
 	}
 

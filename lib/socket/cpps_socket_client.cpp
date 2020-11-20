@@ -172,7 +172,6 @@ namespace cpps
 
 	void cpps_socket_client::onEventCallback(cpps_socket* sock, short e)
 	{
-		cpps_socket_client* client = (cpps_socket_client*)sock;
 		if (e & BEV_EVENT_EOF)
 		{
 			if (cpps::type(client_option.option_close) == CPPS_TFUNCTION)

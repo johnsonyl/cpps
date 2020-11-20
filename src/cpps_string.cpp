@@ -131,10 +131,10 @@ namespace cpps
 	{
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
+		size_t tmpn = (size_t)n;
 		if (tmpStr->size() <= size_t(pos)) return "";
-		if (tmpStr->size() <= size_t(pos + n) && n != std::string::npos) n = std::string::npos;
-		return tmpStr->substr((unsigned int) pos, (unsigned int)n);
+		if (tmpStr->size() <= size_t(pos + tmpn) && tmpn != std::string::npos) tmpn = std::string::npos;
+		return tmpStr->substr((size_t) pos, (size_t)n);
 	}
 	cpps_integer	cpps_string_npos()
 	{

@@ -23,8 +23,11 @@ namespace cpps
 	struct cpps_cppsclassvar;
 	struct cpps_stack
 	{
-		cpps_stack(std::string f, int32 l,std::string func)
-		:f(f), l(l), func(func){}
+		cpps_stack(std::string pf, int32 pl,std::string pfunc){
+			f = pf;
+			l = pl;
+			func = pfunc;
+		}
 
 		std::vector<cpps_value> *createparams();
 		cpps_value *create_cpps_value();

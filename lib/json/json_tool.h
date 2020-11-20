@@ -75,14 +75,13 @@ static inline JSONCPP_STRING codePointToUTF8(unsigned int cp) {
           src[0] = static_cast<wchar_t>(cp);
 
           int len = 0;
-          int ret = 0;
 
           len = wcslen(src) + 1;
 
           /*sizeof(wchar_t) = 4 */
 
           /*这里的第三个长度参数，应为字节长度，即宽字符长度 * 4 */
-          ret = wcstombs(dest, src, len * sizeof(wchar_t));
+          wcstombs(dest, src, len * sizeof(wchar_t));
 
           result = dest;
 

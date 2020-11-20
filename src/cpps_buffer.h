@@ -43,7 +43,6 @@ namespace cpps
 				{
 					realpop();
 					realpop();
-					int  a = 10;
 					while (!isend())
 					{
 						if (realcur() == '*')
@@ -61,7 +60,6 @@ namespace cpps
 				}
 			}
 
-			int32 ret = bufferoffset;
 			
 			
 
@@ -100,7 +98,6 @@ namespace cpps
 				{
 					realpop();
 					realpop();
-					int  a = 10;
 					while (!isend())
 					{
 						if (realcur() == '*')

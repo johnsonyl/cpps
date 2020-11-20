@@ -75,7 +75,6 @@ namespace cpps {
 		SocketAddr.ai_socktype = SOCK_STREAM;
 		SocketAddr.ai_protocol = IPPROTO_IP;
 		int  ret;
-		const int on = 1;
 		char s_port[256];
 #ifdef WIN32
 		_itoa_s(port, s_port, 10);
@@ -310,7 +309,6 @@ namespace cpps {
 
 	void cpps_socket_server::onWriteCallback(cpps_socket* sock, struct bufferevent* bv)
 	{
-		cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
 		//do nothing..
 	}
 

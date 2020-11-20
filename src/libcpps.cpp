@@ -300,7 +300,7 @@ namespace cpps
 
 		if (buffer.cur() == '=')
 		{
-			char ch = buffer.pop();
+			buffer.pop();
 			if (limit & CPPS_NOT_DEFVAR)
 			{
 				throw("Prohibit defining variables");
@@ -312,7 +312,7 @@ namespace cpps
 		}
 		else if (buffer.cur() == '(') //定义了一个函数
 		{
-			char ch = buffer.pop();
+			buffer.pop();
 			if (limit & CPPS_NOT_DEFFUNCTION)
 			{
 				throw("Function definition prohibited");
@@ -1474,7 +1474,7 @@ namespace cpps
 		if (buffer.cur() == ';')
 		{
 			buffer.pop();
-			Node* nil = new Node(child, child->filename, child->line);
+			new Node(child, child->filename, child->line);
 			return;
 		}
 		//查找后续参数
@@ -3523,7 +3523,7 @@ namespace cpps
 			{
 				if (left.tt == CPPS_TCLASSVAR)
 				{
-					cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
+					//cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
 					cpps_domain* execdomain = new cpps_domain(c->_G, cpps_domain_type_exec, "");
 					//cpps_domain *takedomain = leftdomain;
 					leftdomain = left.value.domain;
@@ -3551,7 +3551,7 @@ namespace cpps
 				}
 				else if (left.tt == CPPS_TDOMAIN)
 				{
-					cpps_domain* takedomain = leftdomain;
+					//cpps_domain* takedomain = leftdomain;
 					leftdomain = left.value.domain;
 					ret = cpps_calculate_expression(c, left.value.domain, d->getright(), leftdomain);
 					//if (left.value.domain->domainType == cpps_domain_type_namespace) //名空间不更改左域
@@ -3648,7 +3648,7 @@ namespace cpps
 			{
 				if (left.tt == CPPS_TCLASSVAR)
 				{
-					cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
+					//cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
 					cpps_regvar* v = getregvar(left.value.domain, d->getright());
 					if (v)
 					{

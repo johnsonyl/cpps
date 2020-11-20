@@ -192,7 +192,7 @@ namespace cpps
 		stacklock.lock();
 		if (_callstack.find(GetCurrentThreadId()) == _callstack.end()) return;
 
-		for (int i = 0; i < _callstack[GetCurrentThreadId()]->size(); i++)
+		for (size_t i = 0; i < _callstack[GetCurrentThreadId()]->size(); i++)
 		{
 			cpps_stack* stack = _callstack[GetCurrentThreadId()]->at(i);
 			delete stack;

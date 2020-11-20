@@ -165,12 +165,11 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 
 cpps::object jsontocpps(cpps::C *c, std::string json)
 {
-	bool res;
 	Json::Value root;
 	JSONCPP_STRING errs;
 	Json::CharReaderBuilder readerBuilder;
 	std::unique_ptr<Json::CharReader> const jsonReader(readerBuilder.newCharReader());
-	res = jsonReader->parse(json.c_str(), json.c_str() + json.length(), &root, &errs);
+	jsonReader->parse(json.c_str(), json.c_str() + json.length(), &root, &errs);
 	
 	return jsonvaluetocpps(c, root);
 }
