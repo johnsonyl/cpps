@@ -19,6 +19,7 @@ namespace cpps
 	{
 		cpps_regvar()
 		{
+			n8isConst = 0;
 		}
 		~cpps_regvar();
 		void	setVarName(std::string n)

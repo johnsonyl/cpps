@@ -174,9 +174,9 @@ namespace cpps
 				buffsize = s;
 				return;
 			}
-			usint32 newsize = static_cast<usint32>(s);
-			char *newbuff = new char[newsize + 1];
-			memset(newbuff, 0, (size_t)s + 1);
+			size_t newsize = static_cast<size_t>(s);
+			char *newbuff = new char[newsize+1];
+			memset(newbuff, 0, (size_t)newsize+1);
 
 			if (buff)
 			{

@@ -3,7 +3,7 @@
 class cpps_trycatch_error
 {
 public:
-	cpps_trycatch_error(){}
+	cpps_trycatch_error() { erron = 0; line = 0; }
 	cpps_trycatch_error(std::string f, int l, int n, const char *format, ...);
 	cpps_trycatch_error(cpps_error e);
 	~cpps_trycatch_error();

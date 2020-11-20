@@ -33,8 +33,10 @@ namespace cpps
 
 	struct cpps_function
 	{
+		cpps_function() { isNeesC = false; }
 		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
-		{}
+		{
+		}
 		void			setfuncname(std::string name){
 			funcname = name;
 		}
