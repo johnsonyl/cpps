@@ -29,6 +29,7 @@ namespace cpps
 		{
 			return (new cpps_cppsclassvar(getClassName(), this, cpps_domain_type_classvar, alloc));
 		}
+		virtual bool	iscppsclass() { return true; }
 		std::string		getClassName()
 		{
 			return classname;
@@ -46,7 +47,8 @@ namespace cpps
 			:cpps_cppsclass(_classname, NULL, p, type)
 		{
 		}
-		virtual cpps_cppsclassvar* create(C* c,bool alloc = true)
+		virtual bool	iscppsclass() { return false; }
+		virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
 		{
 			cpps_classvar<T>* v = new cpps_classvar<T>(getClassName(), this, cpps_domain_type_classvar, alloc);
 			if (alloc)

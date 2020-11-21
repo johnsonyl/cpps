@@ -99,6 +99,15 @@ namespace cpps
 		}
 		return ret;
 	}
+	std::string cpps_parse_object_varname(cppsbuffer& buffer)
+	{
+		std::string ret = "";
+		while (buffer.cur()!= ':')
+		{
+			ret.push_back(buffer.pop());
+		}
+		return ret;
+	}
 	bool cpps_parse_isbuiltinname(std::string s)
 	{
 		return s == "if" || s == "const" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring";
@@ -655,7 +664,7 @@ namespace cpps
 
 			Node* n = new Node(bracket, o->filename, buffer.line());
 			Node* k = new Node(n, o->filename, buffer.line());
-			k->s = cpps_parse_varname(buffer);
+			k->s = cpps_parse_object_varname(buffer);
 
 			//ÌÞ³ý»Ø³µ.
 			cpps_parse_rmspaceandenter(buffer);

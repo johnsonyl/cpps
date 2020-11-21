@@ -358,6 +358,18 @@ namespace cpps
 		}
 	};
 	template<>
+	struct cpps_cpp_to_cpps_converter<char *>
+	{
+		static bool				match(C *c, char * obj)
+		{
+			return true;
+		}
+		static cpps_value		apply(C *c, char * obj)
+		{
+			return cpps_value(c,obj);
+		}
+	};
+	template<>
 	struct cpps_cpp_to_cpps_converter<const char *>
 	{
 		static bool				match(C *c, const char * obj)

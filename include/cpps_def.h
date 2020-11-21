@@ -143,7 +143,7 @@ typedef long long __int64;
 }
 #define _CPPS_CATCH } catch (cpps_error e)\
 {\
-	printf("error: %d : %s file:%s line:%d \nError stack information£º\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
@@ -154,7 +154,7 @@ for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != 
 }\
 	catch (const char* s)\
 {\
-	printf("error: %s \nnError stack information£º\n", s); \
+	printf("error: %s \nnError stack information:\n", s); \
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\

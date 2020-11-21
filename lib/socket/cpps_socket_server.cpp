@@ -11,11 +11,43 @@ namespace cpps {
 		ev_listener = NULL;
 		ev_socket = 0;
 		c = NULL;
+		sever_running = false;
+
+
+		struct event_config* cfg = event_config_new();
+
+#ifdef _WIN32
+		evthread_use_windows_threads();
+		event_config_set_flag(cfg, EVENT_BASE_FLAG_STARTUP_IOCP);
+		//根据CPU实际数量配置libEvent的CPU数
+		SYSTEM_INFO si;
+		GetSystemInfo(&si);
+		event_config_set_num_cpus_hint(cfg, si.dwNumberOfProcessors);
+#else
+
+		if (event_config_require_features(cfg, EV_FEATURE_ET) == -1)
+		{
+			printf("event_config_require_features error...\r\n");
+			return;
+		}
+		event_config_set_flag(cfg, EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST);
+		evthread_use_pthreads();
+
+#endif
+
+		ev_base = event_base_new_with_config(cfg);
+		if (!ev_base) {
+			printf("event_base_new_with_config error...\r\n"); return;
+		}
+		event_config_free(cfg);
+
 	}
 
 	cpps_socket_server::~cpps_socket_server()
 	{
 		stop();
+		event_base_free(ev_base);
+		ev_base = NULL;
 	}
 
 	void cpps_socket_server::setcstate(cpps::C* cstate)
@@ -88,32 +120,6 @@ namespace cpps {
 		}
 #endif
 
-		struct event_config* cfg = event_config_new();
-
-#ifdef _WIN32
-		evthread_use_windows_threads();
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_STARTUP_IOCP);
-		//根据CPU实际数量配置libEvent的CPU数
-		SYSTEM_INFO si;
-		GetSystemInfo(&si);
-		event_config_set_num_cpus_hint(cfg, si.dwNumberOfProcessors);
-#else
-
-		if (event_config_require_features(cfg, EV_FEATURE_ET) == -1)
-		{
-			printf("event_config_require_features error...\r\n");
-			return this;
-		}
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST);
-		evthread_use_pthreads();
-
-#endif
-
-		ev_base = event_base_new_with_config(cfg);
-		if (!ev_base) {
-			printf("event_base_new_with_config error...\r\n"); return NULL;
-		}
-		event_config_free(cfg);
 
 		ressave = res;
 
@@ -132,8 +138,6 @@ namespace cpps {
 		if (NULL == res || NULL == ev_listener)
 		{
 			printf("evconnlistener_new_bind error...\r\n");
-			event_base_free(ev_base);
-			ev_base = NULL;
 			return this;
 		}
 		
@@ -158,6 +162,7 @@ namespace cpps {
 			return;
 		}
 		client->set_client_info(ip, port);
+		evutil_make_socket_nonblocking(client->evsocket);
 
 		if (cpps::type(srv->server_option.option_accept) == CPPS_TFUNCTION)
 		{
@@ -229,15 +234,15 @@ namespace cpps {
 			delete client.second;
 		}
 		server_client_list.clear();
-		if (ev_base) {
+		if (ev_listener) {
 
-			event_base_free(ev_base);
+			evconnlistener_free(ev_listener);
+			ev_listener = NULL;
 			ev_listener = NULL;
 			inc_socket_index = 1;
 			ev_socket = 0;
 		}
 		sever_running = false;
-
 	}
 
 	bool cpps_socket_server::isrunning()
@@ -262,6 +267,7 @@ namespace cpps {
 
 		if (server_option.option_headsize == 0)
 		{
+			buffer_ptr->clear();
 			buffer_ptr->realloc(packetsize);
 			evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), packetsize);
 
@@ -274,6 +280,7 @@ namespace cpps {
 		{
 			while (packetsize >= server_option.option_headsize)
 			{
+				buffer_ptr->clear();
 				buffer_ptr->realloc(server_option.option_headsize);
 				buffer_ptr->seek(0);
 				evbuffer_copyout(client->socket_evbuffer, buffer_ptr->getbuffer(), server_option.option_headsize);
@@ -292,6 +299,7 @@ namespace cpps {
 					}
 					else if (size <= packetsize)
 					{
+						buffer_ptr->clear();
 						buffer_ptr->realloc(size);
 						buffer_ptr->seek(0);
 						evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), size);

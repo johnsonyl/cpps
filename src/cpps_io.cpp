@@ -153,11 +153,11 @@ namespace cpps
 	}
 	std::string cpps_getcwd()
 	{
-		char buffer[32768];
+		char buffer[4096];
 #ifdef WIN32
-		_getcwd(buffer, 32768);
+		_getcwd(buffer, 4096);
 #else
-		getcwd(buffer, 32768);
+		getcwd(buffer, 4096);
 #endif
 		return buffer;
 	}
@@ -207,6 +207,7 @@ namespace cpps
 				.def("writeString", &Buffer::writeString)
 				.def("writeBool", &Buffer::writeBool)
 				.def("seek", &Buffer::seek)
+				.def("clear", &Buffer::clear)
 				.def("length", &Buffer::length),
 			_class<FILE>("FILE")
 		];

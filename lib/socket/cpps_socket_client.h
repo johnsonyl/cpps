@@ -19,14 +19,12 @@ namespace cpps {
 		cpps_socket_client_option()
 		{
 			option_headsize = 0;
-			isset = false;
 		}
 		cpps::object		option_connected;
 		cpps::object		option_data;
 		cpps::object		option_close;
 		cpps_integer		option_headsize;
 		cpps::object		option_parser;
-		bool				isset;
 	};
 
 	class cpps_socket_client : public cpps_socket , public cpps_socket_event_callback

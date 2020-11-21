@@ -31,7 +31,6 @@ namespace cpps {
 		{
 			option_ip = "0.0.0.0";
 			option_headsize = 0;
-			isset = false;
 		}
 		std::string			option_ip;
 		cpps::object		option_accept;
@@ -39,7 +38,6 @@ namespace cpps {
 		cpps::object		option_close;
 		cpps_integer		option_headsize;
 		cpps::object		option_parser;
-		bool				isset;
 	};
 
 	class cpps_socket_server_client;

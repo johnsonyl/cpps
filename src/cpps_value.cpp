@@ -91,6 +91,12 @@ namespace cpps
 		cpps_unordered_map* ret = (cpps_unordered_map*)cppsclassvar->getclsptr();
 		return ret;
 	}
+	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj)
+	{
+		if (!obj.isDomain()) return NULL;
+		cpps_cppsclass* cppsclassvar = (cpps_cppsclass*)obj.value.domain;
+		return cppsclassvar;
+	}
 
 	bool cpps_value::operator<(const cpps_value &right) const
 	{

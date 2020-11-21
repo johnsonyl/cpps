@@ -6,10 +6,17 @@ namespace cpps
 	cpps_socket_client::cpps_socket_client()
 	{
 		client_connection = false;
+		c = NULL;
+		dest_port = 0;
 		struct event_config* cfg = event_config_new();
 
 #ifdef _WIN32
 		evthread_use_windows_threads();
+		event_config_set_flag(cfg, EVENT_BASE_FLAG_STARTUP_IOCP);
+		//根据CPU实际数量配置libEvent的CPU数
+		SYSTEM_INFO si;
+		GetSystemInfo(&si);
+		event_config_set_num_cpus_hint(cfg, si.dwNumberOfProcessors);
 #else
 
 		if (event_config_require_features(cfg, EV_FEATURE_ET) == -1)
@@ -26,6 +33,7 @@ namespace cpps
 		if (!ev_base) {
 			printf("event_base_new_with_config error...\r\n");
 		}
+		event_config_free(cfg);
 	}
 
 	cpps_socket_client::~cpps_socket_client()
@@ -48,7 +56,6 @@ namespace cpps
 		client_option.option_close = opt["close"];
 		client_option.option_parser = opt["parser"];
 		if (cpps::type(opt["headersize"]) == CPPS_TINTEGER) client_option.option_headsize = object_cast<cpps_integer>(opt["headersize"]);
-		client_option.isset = true;
 		return this;
 	}
 
@@ -73,7 +80,7 @@ namespace cpps
 			close();
 			return false;
 		}
-
+		
 
 		set_event_callback(this);
 		return true;
@@ -115,6 +122,7 @@ namespace cpps
 
 		if (client_option.option_headsize == 0)
 		{
+			buffer_ptr->clear();
 			buffer_ptr->realloc(packetsize);
 			evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), packetsize);
 
@@ -127,6 +135,7 @@ namespace cpps
 		{
 			while (packetsize >= client_option.option_headsize)
 			{
+				buffer_ptr->clear();
 				buffer_ptr->realloc(client_option.option_headsize);
 				buffer_ptr->seek(0);
 				evbuffer_copyout(client->socket_evbuffer, buffer_ptr->getbuffer(), client_option.option_headsize);
@@ -145,6 +154,7 @@ namespace cpps
 					}
 					else if (size <= packetsize)
 					{
+						buffer_ptr->clear();
 						buffer_ptr->realloc(size);
 						buffer_ptr->seek(0);
 						evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), size);
@@ -196,6 +206,7 @@ namespace cpps
 		}
 		else if (e & BEV_EVENT_CONNECTED)
 		{
+
 			client_connection = true;
 			if (cpps::type(client_option.option_connected) == CPPS_TFUNCTION)
 			{

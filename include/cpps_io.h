@@ -25,26 +25,25 @@ namespace cpps
 		}
 		~Buffer()
 		{
-			if (buff) delete[] buff;
-			buff = NULL;
-			buffsize = 0;
-			offset = 0;
+			clear();
 		}
 		void			read(Buffer *out, cpps_integer len)
 		{
-			_write(_read(NULL, len), len);
+			out->_write(getbuffer(), length());
 		}
 		Buffer			*write(Buffer *buf, cpps_integer len)
 		{
-			_write(_read(NULL, len), len);
+			_write(buf->getbuffer(), len);
 			return this;
 		}
 		char *			_read(char *out, cpps_integer len)
 		{
+			if (length() + len > buffsize) return NULL;
+
 			char *ret = getbuffer() + length();
 			if (out)
 			{
-				memcpy(ret, out, (size_t)len);
+				memcpy(out, ret, (size_t)len);
 			}
 			seek(length() + len);
 			return ret;
@@ -58,7 +57,7 @@ namespace cpps
 		std::string		tostring()
 		{
 			std::string ret;
-			ret = getbuffer();
+			ret.append(getbuffer(), buffsize);
 			return ret;
 		}
 		cpps_integer	tointeger()
@@ -108,7 +107,8 @@ namespace cpps
 		std::string		readString(cpps_integer len)
 		{
 			std::string ret;
-			ret.append(_read(NULL, len), (usint32)len);
+			ret.resize(len);
+			_read((char*)ret.c_str(), len);
 			return ret;
 		}
 		bool			readBool()
@@ -166,6 +166,13 @@ namespace cpps
 		char *			getbuffer()
 		{
 			return buff;
+		}
+		void			clear()
+		{
+			if (buff) delete[] buff;
+			buff = NULL;
+			buffsize = 0;
+			offset = 0;
 		}
 		void			realloc(cpps_integer s)
 		{

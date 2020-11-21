@@ -36,5 +36,5 @@ IF(WIN32)
 ELSE()
 	target_link_libraries(${PROJECT_NAME} -lrt -ldl -lm -lpthread -lcpps)
 	install(TARGETS cppsc
-	RUNTIME DESTINATION bin)
+	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/local/bin/)
 ENDIF()

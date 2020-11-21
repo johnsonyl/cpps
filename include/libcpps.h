@@ -28,6 +28,7 @@ namespace cpps
 	int32					pcall(C * c, int32 retType, cpps_domain* domain, Node *o);
 	int32					cpps_str2d(const char *s, cpps_number *result);
 	int32					cpps_str2i64(const char *s, cpps_integer *result);
+	void					cpps_pop_stack_to_here(C* c, cpps_stack* here);
 }
 
 

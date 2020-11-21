@@ -25,7 +25,7 @@ inline std::string cpps_socket_g2u(std::string gb2312)
 	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
 	ret = str;
 	if (wstr) delete[] wstr;
-	if (str) delete[] str;
+	if (str) free(str);
 	return ret;
 }
 

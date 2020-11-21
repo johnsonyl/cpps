@@ -42,8 +42,6 @@ namespace cpps {
 		if (nFd == 0)
 			evsocket = bufferevent_getfd(evbufferevent);
 
-		evutil_make_socket_nonblocking(evsocket);
-
 		socket_evbuffer = evbuffer_new();
 
 		bufferevent_setcb(evbufferevent, &cpps_socket::on_read_cb, &cpps_socket::on_write_cb, &cpps_socket::on_event_cb, this);
