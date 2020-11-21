@@ -3,10 +3,6 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("cpps")
-
-
-
 IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
 ELSE (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	#default release.
@@ -28,10 +24,8 @@ ELSE (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	
 ENDIF(CMAKE_SYSTEM_NAME MATCHES "Windows")
 
-# TODO: 如有需要，请添加测试并安装目标。
-set(CMAKE_INSTALL_PREFIX /usr)
 
 # 包含子项目。
-add_subdirectory ("src")
-add_subdirectory ("example/demo")
-add_subdirectory ("example/cppsc")
+add_subdirectory ("curl")
+add_subdirectory ("json")
+add_subdirectory ("socket")

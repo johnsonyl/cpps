@@ -9,7 +9,7 @@ project(socket)
 message(${PROJECT_SOURCE_DIR})
 
 IF(WIN32)
-	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../src ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin ${PROJECT_SOURCE_DIR}/../../deps/deps/lib)
 
 
@@ -25,7 +25,7 @@ IF(WIN32)
 
 
 ELSE()
-	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../src /usr/include)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/lib /usr/lib64)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
 ENDIF()
