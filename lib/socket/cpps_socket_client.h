@@ -36,8 +36,8 @@ namespace cpps {
 		virtual ~cpps_socket_client();
 
 		void									setcstate(cpps::C* cstate);
-		cpps_socket_client*						setoption(cpps::C* cstate, cpps::object opt);
-		bool									connect(std::string ip, cpps::usint16 port);
+		cpps_socket_client*						setoption( cpps::object opt);
+		bool									connect(cpps::C* cstate, std::string ip, cpps::usint16 port);
 		virtual	void							run();
 		virtual void							close();
 		virtual void							closesocket();

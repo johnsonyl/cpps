@@ -51,9 +51,9 @@ namespace cpps {
 		virtual ~cpps_socket_server();
 
 		void									setcstate(cpps::C* cstate);
-		cpps_socket_server*						setoption(cpps::C* cstate, cpps::object opt);
+		cpps_socket_server*						setoption( cpps::object opt);
 		int										get_addrinfo(const struct sockaddr* addr, std::string& ip, cpps::usint16& port);
-		cpps_socket_server*						listen( cpps::usint16 port);
+		cpps_socket_server*						listen(cpps::C* cstate, cpps::usint16 port);
 		virtual cpps_socket_server_client*		create_server_client();
 		virtual void							free_server_client(cpps_socket_server_client* client);
 		virtual	void							send(cpps_integer socketIndex, cpps::Buffer* buffer);

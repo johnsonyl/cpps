@@ -41,9 +41,8 @@ namespace cpps
 		c = cstate;
 	}
 
-	cpps_socket_client* cpps_socket_client::setoption(cpps::C* cstate, cpps::object opt)
+	cpps_socket_client* cpps_socket_client::setoption( cpps::object opt)
 	{
-		setcstate(cstate);
 		client_option.option_connected = opt["connected"];
 		client_option.option_data = opt["data"];
 		client_option.option_close = opt["close"];
@@ -53,11 +52,11 @@ namespace cpps
 		return this;
 	}
 
-	bool cpps_socket_client::connect(std::string ip, cpps::usint16 port)
+	bool cpps_socket_client::connect(cpps::C* cstate, std::string ip, cpps::usint16 port)
 	{
-		if (client_option.isset == false) return false;
 		if (ip.empty()) return false;
 		if (port == 0) return false;
+		setcstate(cstate);
 
 		dest_ip = ip;
 		dest_port = port;

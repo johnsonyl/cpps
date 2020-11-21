@@ -23,16 +23,14 @@ namespace cpps {
 		c = cstate;
 	}
 
-	cpps_socket_server* cpps_socket_server::setoption(cpps::C* cstate,cpps::object opt)
+	cpps_socket_server* cpps_socket_server::setoption(cpps::object opt)
 	{
-		setcstate(cstate);
 		if(cpps::type(opt["ip"]) == CPPS_TSTRING) server_option.option_ip =  object_cast<std::string>(opt["ip"]);
 		server_option.option_accept = opt["accept"];
 		server_option.option_data = opt["data"];
 		server_option.option_close = opt["close"];
 		server_option.option_parser = opt["parser"];
 		if (cpps::type(opt["headersize"]) == CPPS_TINTEGER) server_option.option_headsize = object_cast<cpps_integer>(opt["headersize"]);
-		server_option.isset = true;
 		return this;
 	}
 
@@ -64,9 +62,9 @@ namespace cpps {
 		return 0;
 	}
 
-	cpps_socket_server* cpps_socket_server::listen(cpps::usint16 port)
+	cpps_socket_server* cpps_socket_server::listen(cpps::C* cstate, cpps::usint16 port)
 	{
-		if (server_option.isset == false) return this;
+		setcstate(cstate);
 
 		struct addrinfo SocketAddr, * res = NULL, * ressave = NULL;
 		memset(&SocketAddr, 0, sizeof(SocketAddr));
@@ -94,6 +92,11 @@ namespace cpps {
 
 #ifdef _WIN32
 		evthread_use_windows_threads();
+		event_config_set_flag(cfg, EVENT_BASE_FLAG_STARTUP_IOCP);
+		//根据CPU实际数量配置libEvent的CPU数
+		SYSTEM_INFO si;
+		GetSystemInfo(&si);
+		event_config_set_num_cpus_hint(cfg, si.dwNumberOfProcessors);
 #else
 
 		if (event_config_require_features(cfg, EV_FEATURE_ET) == -1)
@@ -110,6 +113,7 @@ namespace cpps {
 		if (!ev_base) {
 			printf("event_base_new_with_config error...\r\n"); return NULL;
 		}
+		event_config_free(cfg);
 
 		ressave = res;
 
@@ -134,6 +138,7 @@ namespace cpps {
 		}
 		
 		ev_socket = evconnlistener_get_fd(ev_listener);
+		evutil_make_socket_nonblocking(ev_socket);
 		evconnlistener_set_error_cb(ev_listener, &cb_listener_error);
 		sever_running = true;
 		return this;
