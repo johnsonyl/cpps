@@ -3,6 +3,8 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+project ("cppslibs")
+
 IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
 ELSE (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	#default release.

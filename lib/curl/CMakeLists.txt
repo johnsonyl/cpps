@@ -6,7 +6,6 @@ cmake_minimum_required (VERSION 3.8)
 project(curl)
 
 # 将源代码添加到此项目的可执行文件。
-message(${PROJECT_SOURCE_DIR})
 
 IF(WIN32)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
@@ -25,11 +24,14 @@ ELSE()
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
 ENDIF()
 
+file(GLOB_RECURSE CURRENT_HEADERS  *.h)
+source_group("Include" FILES ${CURRENT_HEADERS}) 
+
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 
 
-ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST})
+ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WIN32)
 	target_link_libraries(${PROJECT_NAME} cpps libcrypto libcurl libssl zdll zlib )
 ELSE()

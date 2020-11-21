@@ -32,9 +32,10 @@ ENDIF()
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
+file(GLOB_RECURSE CURRENT_HEADERS  *.h)
+source_group("Include" FILES ${CURRENT_HEADERS}) 
 
-
-ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST})
+ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WIN32)
 	target_link_libraries(${PROJECT_NAME} ws2_32 winmm wldap32 wsock32 Iphlpapi cpps libcrypto libevent libevent_core libevent_extras libevent_openssl libssl zdll zlib )
 ELSE()
