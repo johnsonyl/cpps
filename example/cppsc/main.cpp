@@ -30,7 +30,6 @@ int32 main(int argc,char **argv)
 
 	}
 
-
 	C* c = cpps::create();
 
 	printf("[Cpps 1.2.0 Copyright (C) 2015-2020 By Johnson, Pub-test]\n");

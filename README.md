@@ -51,7 +51,47 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-11-22 更新2
+-
+
+1.增加http模块 httprequest类
+
+```
+system("chcp 65001"); //use utf8 string
+
+import ["http"];
+
+var request = new http::httprequest();
+request.setcookiesfile("cookies.txt");
+//request.setproxy(httpproxy.SOCK5,"192.168.1.166:25455");
+//request.setproxyaccount("johnsonyl","mima");
+request.addheaders({User-Agent:"cppsrequest/1.1.0"});
+var ret = request.get("http://192.168.1.166:8080/Home/test?kkk=100");
+
+
+println("-------------------GET-------------------------");
+println("get:{ret}");
+var cookies = request.getcookies();
+println("cookies:{cookies}");
+
+var headers = request.getheaders();
+println("headers:{headers}");
+
+
+println("-------------------POST-------------------------");
+ret = request.post("http://192.168.1.166:8080/Home/test","kkk=100");
+println("post:{ret}");
+var cookies = request.getcookies();
+println("cookies:{cookies}");
+
+var headers = request.getheaders();
+println("headers:{headers}");
+println("-------------------END-------------------------");
+
+```
+
 2020-11-22 更新
+-
 
 1.增加httpserver
 
