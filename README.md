@@ -55,6 +55,8 @@ lib/socket 为libevent封装库 需要安装编译libevent
 -
 
 1.增加hashlib库 md5 sha1 sha224 sha256 sha384 sha512
+2.http模块增加urlencode,urldecode
+3.增加字符串encoding gbk<->utf8
 
 ```
 system("chcp 65001"); //use utf8 string
@@ -90,6 +92,27 @@ println(sha384.hexdigest());//0a989ebc4a77b56a6e2bb7b19d995d185ce44090c13e2984b7
 var sha512 = new hashlib::sha512();
 sha512.update("123456");
 println(sha512.hexdigest());//ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413
+```
+
+```
+//windows default GBK 
+//system("chcp 65001"); //use utf8 string
+
+import ["encoding"];
+
+
+var s = "我是中文";
+println(s); //鎴戞槸涓枃
+
+var utf8 = encoding.encode(s,encoding.UTF8);
+println(utf8); //鎴戞槸涓枃
+var gbk = encoding.encode(s,encoding.GBK);
+println(gbk);//我是中文
+utf8 = encoding.encode(gbk,encoding.UTF8);
+println(utf8);//鎴戞槸涓枃
+s = encoding.encode(utf8,encoding.GBK);
+println(s);//我是中文
+
 ```
 
 2020-11-23 更新

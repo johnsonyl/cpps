@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "cpps_http_request.h"
+#include "cpps_http_encode.h"
 
 using namespace cpps;
 using namespace std;
@@ -36,7 +37,9 @@ extern "C" void  cpps_attach(cpps::C* c)
         .def("getcookies",&cpps_http_request::getcookies)
         .def("getheaders",&cpps_http_request::getheaders)
         .def("settimeout",&cpps_http_request::settimeout)
-        .def("followlocation",&cpps_http_request::followlocation)
+        .def("followlocation",&cpps_http_request::followlocation),
+        def("urlencode",urlencode),
+        def("urldecode",urldecode)
 	];
 
 
