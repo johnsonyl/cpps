@@ -1,5 +1,4 @@
 #include "cpps_mysql.h"
-#include "mysql.h"
 #include "cpps_mysql_record.h"
 #include "cpps_mysql_result.h"
 namespace cpps

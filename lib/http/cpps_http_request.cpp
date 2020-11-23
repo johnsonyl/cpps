@@ -124,7 +124,7 @@ namespace cpps
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &retheaders);
 
-		CURLcode res = curl_easy_perform(curl);   // 执行
+		/*CURLcode res = */curl_easy_perform(curl);   // 执行
 
 		struct curl_slist* cookies = NULL;
 		curl_easy_getinfo(curl, CURLINFO_COOKIELIST, &cookies);		//获得cookie数据

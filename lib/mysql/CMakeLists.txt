@@ -20,7 +20,7 @@ IF(WIN32)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
 ELSE()
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/local/include)
-	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/lib)
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/lib /usr/local/lib /usr/local/lib64 /usr/lib64 /usr/lib64/mysql)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
 ENDIF()
 
