@@ -3224,11 +3224,17 @@ namespace cpps
 			ret.tt = CPPS_TCLASSVAR;
 			cpps_regvar* v = domain->getVar(d->s, leftdomain);
 
+			if (!v)
+				throw(cpps_error(d->filename, d->line, cpps_error_normalerror, "[%s] not found or not defined", d->s.c_str()));
 			//看看有没有使用名空间
 			Node* lastNamespace = d;
 			while (lastNamespace && lastNamespace->getleft() && lastNamespace->getleft()->type == CPPS_ONAMESPANCE_CHILD)
 			{
 				v = v->getValue().value.domain->getVar(lastNamespace->getleft()->s, leftdomain);
+
+				if (!v)
+					throw(cpps_error(lastNamespace->getleft()->filename, lastNamespace->getleft()->line, cpps_error_normalerror, "[%s] not found or not defined", lastNamespace->getleft()->s.c_str()));
+
 				lastNamespace = lastNamespace->getleft();
 			}
 
@@ -3302,6 +3308,7 @@ namespace cpps
 						cpps_regvar* var = cppsclassvar->getVar("constructor", leftdomain);
 						if (var && var->getValue().tt == CPPS_TFUNCTION) {
 
+							/*cpps_function* f = var->getValue().value.func;*/
 							cpps_domain* execdomain = new cpps_domain(domain, cpps_domain_type_func, "constructor");
 							execdomain->setexecdomain(domain);
 
