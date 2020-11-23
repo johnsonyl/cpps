@@ -2077,7 +2077,7 @@ namespace cpps
 		return child;
 	}
 
-	Node* loadbuffer(C* c, cpps_domain* domain, std::string str, std::string filename)
+	Node* loadbuffer(C* c, cpps_domain* domain, std::string &str, std::string filename)
 	{
 		//如果需要转译
 		if (c->func)
@@ -2871,9 +2871,10 @@ namespace cpps
 			cpps_domain* leftdomain = NULL;
 
 		cpps_value path = cpps_calculate_expression(c, domain, d->getleft(), leftdomain);
-		std::string str = cpps_to_string(path);
+		std::string *str = cpps_get_string(path);
+		if (!str) return;
 
-		Node* o = loadbuffer(c, domain, str, "");
+		Node* o = loadbuffer(c, domain, *str, "");
 		cpps_stack* stack = new cpps_stack(d->filename, d->line, "dostring");
 		c->push_stack(stack);
 		cpps_step_all(c, CPPS_SINGLERET, domain, o);
@@ -3190,8 +3191,11 @@ namespace cpps
 				}
 				else
 				{
+					cpps_domain* takedomian = leftdomain;
+					leftdomain = NULL;
 					cpps_value v = cpps_calculate_expression(c, domain, s->l[0], leftdomain);
-					str->append(cpps_to_string(v));
+					leftdomain = takedomian;
+					str->append(v.tt == CPPS_TSTRING ? *cpps_get_string(v) : cpps_to_string(v));
 				}
 			}
 

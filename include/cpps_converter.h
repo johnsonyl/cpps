@@ -88,11 +88,11 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING ;
 		}
 		static const char *	apply(cpps_value obj)
 		{
-			return (const char *)cpps_to_string(obj).c_str();
+			return (const char *)cpps_get_string(obj)->c_str();
 		}
 	};
 	template<>
@@ -100,11 +100,11 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING ;
 		}
 		static const unsigned char *		apply(cpps_value obj)
 		{
-			return (const unsigned char *)cpps_to_string(obj).c_str();
+			return (const unsigned char *)cpps_get_string(obj)->c_str();
 		}
 	};
 	template<>
@@ -112,11 +112,11 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING ;
 		}
 		static char *		apply(cpps_value obj)
 		{
-			return (char *)cpps_to_string(obj).c_str();
+			return (char *)cpps_get_string(obj)->c_str();
 		}
 	};
 	template<>
@@ -124,11 +124,11 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING ;
 		}
 		static unsigned char *		apply(cpps_value obj)
 		{
-			return (unsigned char *)cpps_to_string(obj).c_str();
+			return (unsigned char *)cpps_get_string(obj)->c_str();
 		}
 	};
 	template<>

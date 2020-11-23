@@ -171,6 +171,7 @@ namespace cpps
 	cpps_number	cpps_to_number(cpps_value obj);
 	cpps_integer cpps_to_integer(cpps_value obj);
 	std::string cpps_to_string(cpps_value obj);
+	std::string* cpps_get_string(cpps_value obj);
 	cpps_vector* cpps_to_cpps_vector(cpps_value obj);
 	cpps_map* cpps_to_cpps_map(cpps_value obj);
 	cpps_unordered_map* cpps_to_cpps_unordered_map(cpps_value obj);

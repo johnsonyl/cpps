@@ -18,9 +18,9 @@ namespace cpps {
 
 		for (auto header : m->realmap())
 		{
-			std::string k = cpps_to_string(header.first);
-			std::string v = cpps_to_string(header.second);
-			evhttp_add_header(out_headers, k.c_str(), v.c_str());
+			std::string *k = cpps_get_string(header.first);
+			std::string *v = cpps_get_string(header.second);
+			evhttp_add_header(out_headers, k->c_str(), v->c_str());
 		}
 	}
 

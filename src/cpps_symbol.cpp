@@ -259,8 +259,8 @@ namespace cpps
 		std::string *str;
 		cpps_value ret = newClassPtr<std::string>(c, &str);
 		ret.tt = CPPS_TSTRING;
-		str->append(cpps_to_string(a));
-		str->append(cpps_to_string(b));
+		str->append(a.tt == CPPS_TSTRING ? *cpps_get_string(a) : cpps_to_string(a));
+		str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
 
 		return ret;
 	}
@@ -278,11 +278,11 @@ namespace cpps
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		if (b.tt == CPPS_TREGVAR)
 		{
-			tmpStr->append(cpps_to_string(*(b.value.value)));
+			tmpStr->append(*cpps_get_string(*(b.value.value)));
 		}
 		else
 		{
-			tmpStr->append(cpps_to_string(b));
+			tmpStr->append(*cpps_get_string(b));
 		}
 
 		return *(a.value.value);
@@ -808,19 +808,19 @@ namespace cpps
 			}
 			else if (b.tt == CPPS_TINTEGER)
 			{
-				std::string t = cpps_to_string(b);
+				std::string *t = cpps_get_string(b);
 
 				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
 				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-				ret.value.b = *(tmpStr) == t;
+				ret.value.b = *(tmpStr) == *t;
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
-				std::string t = cpps_to_string(b);
+				std::string *t = cpps_get_string(b);
 
 				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
 				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-				ret.value.b = *(tmpStr) == t;
+				ret.value.b = *(tmpStr) == *t;
 			}
 			break; 
 		case CPPS_TBOOLEAN:

@@ -51,6 +51,83 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-11-23 更新
+
+1.增加base64模块
+
+2.增加mysql模块
+
+3.优化cpps
+
+4.修复字符串format 调用函数找不到变量的BUG.
+
+```
+//base64例子
+system("chcp 65001"); //use utf8 string
+
+import ["base64"];
+
+
+var s = "abc";
+println("source:{s}");
+var encode_s = base64.encode(s);
+println("encode_s:{encode_s}");
+var deocde_s = base64.decode(encode_s);
+println("deocde_s:{deocde_s}");
+
+```
+
+```
+//mysql例子
+import ["mysql"];
+
+
+var option = new MysqlOption()
+{
+	db = "dbname",
+	host = "127.0.0.1",
+	user = "root",
+	passwd = "*******",
+	prot = 3306,
+	isreconnect = true
+}
+var conn = mysql.connect(option);
+if(conn == null)
+{
+	println("connect error");
+	exit(0);
+}
+
+var results = conn.call("selectuser",["john"])
+println(conn.error());
+foreach(var result : results)
+{
+	foreach(var record : result.records())
+	{
+		println("----------------------------------------");
+		foreach(var field: record.fields())
+		{
+			println("{field.first()}:{field.second()}");
+		}
+	}
+}
+
+
+var results = conn.execute("select * from users where username = 'john';")
+println(conn.error());
+foreach(var result : results)
+{
+	foreach(var record : result.records())
+	{
+		println("id:"..record.get("id"));
+		println("username:"..record.get("username"));
+		println("userpwd:"..record.get("userpwd"));
+	}
+}
+
+
+```
+
 2020-11-22 更新2
 -
 

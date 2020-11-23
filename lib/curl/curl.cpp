@@ -59,11 +59,11 @@ cpps_value cpps_curl_easy_getinfo(C*c,cpps_curl*curl, cpps_integer info)
     {
     case 1: //string
     {
-        cpps_create_class_var(std::string,c, str_v, str_p);
+        std::string str_p;
         char buffer[4096] = { 0 };
         curl_easy_getinfo(curl->curl, (CURLINFO)info, &buffer);
-        str_p->append(buffer);
-        ret = str_v;
+        str_p.append(buffer);
+        ret = cpps_value(c,str_p);
     }
         break;
     case 2: //int
@@ -209,8 +209,8 @@ cpps_integer     cpps_curl_easy_setopt(cpps_curl* curl, cpps_integer option, cpp
         break;
     case 2://string
         {
-            std::string v = cpps_to_string(arg);
-            curl_easy_setopt(curl->curl, (CURLoption)option, v.c_str());
+            std::string *v = cpps_get_string(arg);
+            curl_easy_setopt(curl->curl, (CURLoption)option, v->c_str());
         }
         break;
     case 3://vector
@@ -219,7 +219,7 @@ cpps_integer     cpps_curl_easy_setopt(cpps_curl* curl, cpps_integer option, cpp
             struct curl_slist* slist = NULL;
             for (size_t i = 0; i < v->realvector().size(); i++)
             {
-                slist = curl_slist_append(slist, cpps_to_string(v->realvector()[i]).c_str());
+                slist = curl_slist_append(slist, cpps_get_string(v->realvector()[i])->c_str());
             }
             curl_easy_setopt(curl->curl, (CURLoption)option, slist);
             curl->slists.push_back(slist);

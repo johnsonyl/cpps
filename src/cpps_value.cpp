@@ -43,7 +43,17 @@ namespace cpps
 		}
 		return ret;
 	}
-
+	std::string* cpps_get_string(cpps_value obj)
+	{
+		if (obj.tt == CPPS_TSTRING)
+		{
+			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
+			std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+			return tmpStr;
+		}
+		
+		return NULL;
+	}
 	std::string cpps_to_string(cpps_value obj)
 	{
 		std::stringstream strStream;
@@ -59,7 +69,7 @@ namespace cpps
 		{
 			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)obj.value.domain;
 			std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-			return std::string(tmpStr->begin(),tmpStr->end());
+			return *tmpStr;
 		}
 		else if (obj.tt == CPPS_TBOOLEAN)
 		{
