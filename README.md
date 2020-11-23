@@ -55,7 +55,9 @@ lib/socket 为libevent封装库 需要安装编译libevent
 -
 
 1.增加hashlib库 md5 sha1 sha224 sha256 sha384 sha512
+
 2.http模块增加urlencode,urldecode
+
 3.增加字符串encoding gbk<->utf8
 
 ```
