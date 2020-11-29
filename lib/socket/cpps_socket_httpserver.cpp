@@ -8,7 +8,7 @@ namespace cpps {
 		ev_base = NULL;
 		ev_http = NULL;
 		c = NULL;
-
+		http_running = false;
 		struct event_config* cfg = event_config_new();
 
 #ifdef _WIN32
@@ -171,12 +171,12 @@ namespace cpps {
 					std::string method = "Index";
 					if (!controller.method.empty()) method = controller.method;
 					cpps_domain* leftdomain = NULL;
-					cpps_regvar *var = cppsclass->getVar(method, leftdomain, true);
+					cpps_regvar *var = cppsclass->getvar(method, leftdomain, true);
 					if (var) //找到method了.
 					{
 						//创建变量.
 						cpps_cppsclassvar* cppsclassvar = newcppsclasvar(httpserver->c, cppsclass);
-						doclassfunction(httpserver->c, cppsclassvar, var->getValue(), cpps_request_var);
+						doclassfunction(httpserver->c, cppsclassvar, var->getval(), cpps_request_var);
 						return;
 					}
 				}
@@ -206,7 +206,7 @@ namespace cpps {
 			for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)
 			{
 				cpps::cpps_stack* stack = *it;
-				sprintf(errbuffer, "file:%s [%d] %s\n", stack->f.c_str(), stack->l, stack->func.c_str());
+				sprintf(errbuffer, "file:%s [%d] %s\n", stack->f, stack->l, stack->func);
 				errmsg.append(errbuffer);
 			}
 			cpps_pop_stack_to_here(httpserver->c, takestack); //清栈
@@ -237,7 +237,7 @@ namespace cpps {
 			cpps::cpps_cppsclass* cppsclass = cpps_to_cpps_cppsclass(cls.value);
 			if (cppsclass->iscppsclass())
 			{
-				http_class_route_list[cppsclass->getClassName()] = cls;
+				http_class_route_list[cppsclass->getclassname()] = cls;
 			}
 		}
 	}

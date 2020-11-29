@@ -16,7 +16,7 @@ namespace cpps
 {
 	struct C;
 	struct cpps_domain;
-	struct Node;
+	struct node;
 
 	struct cpps_jit_compiler
 	{
@@ -29,10 +29,10 @@ namespace cpps
 			mov_rsp_off_r8(0x40);
 		}
 
-		void			compiler(C *c, cpps_domain *domain, Node *p);
-		void			compiler_dofunction(C * c, cpps_domain * domain, Node * o);
-		void			compiler_params(C * c, cpps_domain * domain, Node * v);
-		void			compiler_vector_pushback(C * c, cpps_domain * domain, Node * v, usint32 vector_offset);
+		void			compiler(C *c, cpps_domain *domain, node *p);
+		void			compiler_dofunction(C * c, cpps_domain * domain, node * o);
+		void			compiler_params(C * c, cpps_domain * domain, node * v);
+		void			compiler_vector_pushback(C * c, cpps_domain * domain, node * v, usint32 vector_offset);
 
 
 

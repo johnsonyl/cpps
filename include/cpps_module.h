@@ -21,26 +21,26 @@ namespace cpps
 		cpps_reg* f;
 	};
 
-	struct RegxModule
+	struct regxmodule
 	{
 
-		RegxModule(cpps_reg_class c)
+		regxmodule(cpps_reg_class c)
 			:f(c.f)
 		{
 			f->isneedC = false;
 		}
-		RegxModule( cpps_regfunction* f,bool b )
+		regxmodule( cpps_regfunction* f,bool b )
 			:f(f)
 		{
 			f->isneedC = b;
 		}
 
-		RegxModule(cpps_reggvar* f, bool b)
+		regxmodule(cpps_reggvar* f, bool b)
 			:f(f)
 		{
 			f->isneedC = b;
 		}
-		RegxModule 	operator ,(RegxModule c)
+		regxmodule 	operator ,(regxmodule c)
 		{
 			if (!f->next)
 			{
@@ -66,14 +66,14 @@ namespace cpps
 		{
 			_cls = new cpps_class<C>(name,NULL, cpps_domain_type_class);
 			f = new cpps_regclass_template<C>(name, _cls);
-			cpps_class_singleton<C*>::getSingletonPtr()->setsls(_cls);
+			cpps_class_singleton<C*>::instance()->setsls(_cls);
 		}
 		template<class F>
 		_class<C>& 	def(std::string func, F _f)
 		{
 			cpps_reg* r = make_regfunction(func, _f);
 			r->isneedC = false;
-			_cls->regFunc( r );
+			_cls->regfunc( r );
 			return *this;
 		}
 
@@ -82,7 +82,7 @@ namespace cpps
 		{
 			cpps_reg* r = make_regvar(name, cpps_cpp_to_cpps_converter<F>::apply(c, v));
 			r->isneedC = false;
-			_cls->regFunc(r);
+			_cls->regfunc(r);
 			return *this;
 		}
 
@@ -91,38 +91,38 @@ namespace cpps
 		{
 			cpps_reg* r = make_regfunction(func, _f);
 			r->isneedC = true;
-			_cls->regFunc(r);
+			_cls->regfunc(r);
 			return *this;
 		}
 
-		RegxModule 	operator ,(RegxModule c)
+		regxmodule 	operator ,(regxmodule c)
 		{
-			RegxModule(*this).operator,(c);
+			regxmodule(*this).operator,(c);
 			return *this;
 		}
 		cpps_class<C> *_cls;
 	};
 
 	template<class F>
-	RegxModule def(std::string func, F f)
+	regxmodule def(std::string func, F f)
 	{
-		return RegxModule(make_regfunction(func, f),false);
+		return regxmodule(make_regfunction(func, f),false);
 	}
 
 
 	template<class F>
-	RegxModule defvar(C *c,std::string name, F v)
+	regxmodule defvar(C *c,std::string name, F v)
 	{
-		return RegxModule(make_regvar(name, cpps_cpp_to_cpps_converter<F>::apply(c,v)), false);
+		return regxmodule(make_regvar(name, cpps_cpp_to_cpps_converter<F>::apply(c,v)), false);
 	}
 
 
 
 
 	template<class F>
-	RegxModule def_inside(std::string func, F f)
+	regxmodule def_inside(std::string func, F f)
 	{
-		return RegxModule(make_regfunction(func, f), true);
+		return regxmodule(make_regfunction(func, f), true);
 	}
 	
 
@@ -137,24 +137,24 @@ namespace cpps
 			{
 				cpps_domain* leftdomain = NULL;
 
-				cpps_regvar * v = domain->getVar(_domain,leftdomain);
+				cpps_regvar * v = domain->getvar(_domain,leftdomain);
 				if (!v)
 				{
 					cpps_domain *temp_domain = new cpps_domain(NULL, cpps_domain_type_root,"root");//创建根节点域
 
 
 					v = new cpps_regvar();//_G 为根节点
-					v->setVarName(_domain);
-					v->setValue(cpps_value(temp_domain)); //域列表会copy进去
-					domain->regVar(NULL,v); //将自己注册成_G..
+					v->setvarname(_domain);
+					v->setval(cpps_value(temp_domain)); //域列表会copy进去
+					domain->regvar(NULL,v); //将自己注册成_G..
 				}
-				domain = v->getValue().value.domain;
+				domain = v->getval().value.domain;
 			}
 		}
 
-		void	operator [](RegxModule m)
+		void	operator [](regxmodule m)
 		{
-			domain->regFunc(m.f);
+			domain->regfunc(m.f);
 		}
 
 	public:

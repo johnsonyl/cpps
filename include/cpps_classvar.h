@@ -17,7 +17,7 @@ namespace cpps
 	struct cpps_cppsclassvar : public cpps_domain
 	{
 		cpps_cppsclassvar(std::string clsname,cpps_domain* p, char type, bool alloc)
-			:cpps_domain(p, type, clsname), isAlloc(alloc)
+			:cpps_domain(p, type, clsname), isalloc(alloc)
 		{
 			usecount = 0;
 		}
@@ -27,9 +27,9 @@ namespace cpps
 		}
 		virtual void *getclsptr(){ return NULL; }
 		virtual void setclsptr(void *p){ }
-		virtual bool isAllocClass() { return isAlloc; }
+		virtual bool isallocclass() { return isalloc; }
 		virtual size_t size() { return sizeof(*this); }
-		bool isAlloc;
+		bool isalloc;
 		int usecount;
 	};
 	template<class CLS>
@@ -43,14 +43,14 @@ namespace cpps
 		}
 		virtual ~cpps_classvar()
 		{
-			if (_class && isAllocClass()) delete _class;
+			if (_class && isallocclass()) delete _class;
 		}
 		virtual void *getclsptr(){ return (void *)_class; }
 		virtual void setclsptr(void *p){ _class = (CLS*)p; }
 		virtual size_t size() { return sizeof(*this) + (_class ? sizeof(*_class) : 0 ); }
 		virtual void destory(C* c) {
 			cpps_domain::destory(c);
-			if (_class && isAllocClass())
+			if (_class && isallocclass())
 				c->_class_map_classvar.erase(_class);
 		}
 		CLS *_class;

@@ -25,7 +25,7 @@ namespace cpps
 		object(cpps_value v)
 		{
 			value = v;
-			value.parentLambdaVar = NULL;
+			value.parentlambdavar = NULL;
 		}
 
 
@@ -43,14 +43,14 @@ namespace cpps
 		object		operator [] (std::string k)
 		{
 			cpps_value ret;
-			if(value.isDomain() )
+			if(value.isdomain() )
 			{
 				cpps_domain* leftdomain = NULL;
 
-				cpps_regvar* var = value.value.domain->getVar(k,leftdomain);
+				cpps_regvar* var = value.value.domain->getvar(k,leftdomain);
 				if (var)
 				{
-					ret = var->getValue();
+					ret = var->getval();
 				}
 			}
 			return static_cast<object>(ret);

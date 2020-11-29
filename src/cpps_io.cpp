@@ -180,7 +180,7 @@ namespace cpps
 			def("getfilepath", cpps_io_getfilepath),
 			def("getfilename", cpps_io_getfilename),
 			def("getfilenamenotext", getfilenamenotext),
-			def("_getcwd", cpps_getcwd),
+			def("getcwd", cpps_getcwd),
 			def("mkdir",cpps_io_mkdir),
 			def("file_exists",cpps_io_file_exists)
 		];
@@ -192,20 +192,20 @@ namespace cpps
 				.def("tostring", &Buffer::tostring)
 				.def("tointeger", &Buffer::tointeger)
 				.def("tonumber", &Buffer::tonumber)
-				.def("readInt8", &Buffer::readInt8)
-				.def("readInt16", &Buffer::readInt16)
-				.def("readInt32", &Buffer::readInt32)
-				.def("readInt", &Buffer::readInt)
-				.def("readNumber", &Buffer::readNumber)
-				.def("readString", &Buffer::readString)
-				.def("readBool", &Buffer::readBool)
-				.def("writeInt8", &Buffer::writeInt8)
-				.def("writeInt16", &Buffer::writeInt16)
-				.def("writeInt32", &Buffer::writeInt32)
-				.def("writeInt", &Buffer::writeInt)
-				.def("writeNumber", &Buffer::writeNumber)
-				.def("writeString", &Buffer::writeString)
-				.def("writeBool", &Buffer::writeBool)
+				.def("readInt8", &Buffer::readint8)
+				.def("readInt16", &Buffer::readint16)
+				.def("readInt32", &Buffer::readint32)
+				.def("readInt", &Buffer::readint)
+				.def("readNumber", &Buffer::readnumber)
+				.def("readString", &Buffer::readstring)
+				.def("readBool", &Buffer::readbool)
+				.def("writeInt8", &Buffer::writeint8)
+				.def("writeInt16", &Buffer::writeint16)
+				.def("writeInt32", &Buffer::writeint32)
+				.def("writeInt", &Buffer::writeint)
+				.def("writeNumber", &Buffer::writenumber)
+				.def("writeString", &Buffer::writestring)
+				.def("writeBool", &Buffer::writebool)
 				.def("seek", &Buffer::seek)
 				.def("clear", &Buffer::clear)
 				.def("length", &Buffer::length),

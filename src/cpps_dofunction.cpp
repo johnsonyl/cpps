@@ -15,16 +15,17 @@ namespace cpps
 
 
 				cpps_domain *execdomain = c->_G;
-				if (func.value.parentLambdaVar)
-					execdomain = func.value.parentLambdaVar;
+				if (func.value.parentlambdavar)
+					execdomain = func.value.parentlambdavar;
 
-				cpps_stack *stack = new cpps_stack("", 0, f->funcname);
+				cpps_stack* stack = c->stack_alloc();
+				stack->init("", 0, f->funcname.c_str());
 				c->push_stack(stack);
 
 				f->callfunction(c, &ret, execdomain, &paramlist);
 
 				c->pop_stack();
-				delete stack;
+				c->stack_free(stack);
 				//¼ì²âgc
 				//if ( c->getcallstack()->size() == 0)
 			/*	{
@@ -47,16 +48,17 @@ namespace cpps
 
 
 				cpps_domain *execdomain = leftdomain;
-				if (func.value.parentLambdaVar)
-					execdomain = func.value.parentLambdaVar;
+				if (func.value.parentlambdavar)
+					execdomain = func.value.parentlambdavar;
 
-				cpps_stack *stack = new cpps_stack("", 0, f->funcname);
+				cpps_stack* stack = c->stack_alloc();
+				stack->init("", 0, f->funcname.c_str());
 				c->push_stack(stack);
 
 				f->callfunction(c, &ret, execdomain, &paramlist);
 
 				c->pop_stack();
-				delete stack;
+				c->stack_free( stack);
 				//¼ì²âgc
 				//if ( c->getcallstack()->size() == 0)
 			/*	{

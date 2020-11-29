@@ -49,7 +49,7 @@ namespace cpps
 	cpps_value cpps_string_split(C *c, cpps_value v, std::string v2)
 	{
 		cpps_vector *vec;
-		cpps_value ret = newClassPtr<cpps_vector>(c,&vec);
+		cpps_value ret = newclass<cpps_vector>(c,&vec);
 
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
@@ -97,7 +97,7 @@ namespace cpps
 	{
 
 		cpps_vector *vec;
-		cpps_value ret = newClassPtr<cpps_vector>(c, &vec);
+		cpps_value ret = newclass<cpps_vector>(c, &vec);
 
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)old.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
@@ -220,7 +220,7 @@ namespace cpps
 	cpps_value cpps_string_regex_search(C *c,std::string src, std::string reg)
 	{
 		std::smatch *vec;
-		cpps_value ret = newClassPtr<std::smatch>(c, &vec);
+		cpps_value ret = newclass<std::smatch>(c, &vec);
 
 		std::regex e(reg.c_str());
 		std::regex_search(src,*vec, e);

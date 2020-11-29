@@ -6,25 +6,25 @@ namespace cpps
 
 	void cpps_gc_add_barrier(C*c, cpps_regvar *v)
 	{
-		c->getBarrierList()->insert(v);
+		c->getbarrierlist()->insert(v);
 	}
 
 	void cpps_gc_remove_barrier(C*c, cpps_regvar *v)
 	{
-			c->getBarrierList()->erase(v);
+			c->getbarrierlist()->erase(v);
 	}
 
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p)
 	{
-		c->setGen0size(c->getGen0size() + p->size());
+		c->setgen0size(c->getgen0size() + p->size());
 		//新增到新生代
-		c->getGen0()->insert(p);
+		c->getgen0()->insert(p);
 	}
 	void cpps_gc_add_gen1(C*c, cpps_cppsclassvar *p)
 	{
-		c->setGen1size(c->getGen1size() + p->size());
+		c->setgen1size(c->getgen1size() + p->size());
 		//新增到老生代
-		c->getGen1()->insert(p);
+		c->getgen1()->insert(p);
 	}
 	void cpps_gc_check_gen_value(C*c, cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck);
 
@@ -33,9 +33,9 @@ namespace cpps
 		for (std::unordered_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList.begin(); it != v.value.domain->varList.end(); ++it)
 		{
 			cpps_regvar *var = it->second;
-			if (var->getValue().tt == CPPS_TCLASSVAR|| var->getValue().tt == CPPS_TSTRING)
+			if (var->getval().tt == CPPS_TCLASSVAR|| var->getval().tt == CPPS_TSTRING)
 			{
-				cpps_gc_check_gen_value(c, var->getValue(), checkchild, oldgen, newgen,size, isCheck);
+				cpps_gc_check_gen_value(c, var->getval(), checkchild, oldgen, newgen,size, isCheck);
 			}
 		}
 	}
@@ -47,7 +47,7 @@ namespace cpps
 			if (isCheck.find((cpps_cppsclassvar*)v.value.domain) != isCheck.end()) return;//已经check过
 			isCheck.insert((cpps_cppsclassvar*)v.value.domain);
 
-			if (v.value.domain->getDomainName() == "vector")
+			if (v.value.domain->getdomainname() == "vector")
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_vector *pVector = (cpps_vector*)pClsVar->getclsptr();
@@ -63,11 +63,11 @@ namespace cpps
 					oldgen->erase(it);
 					newgen->insert(pClsVar);
 					size += pClsVar->size();
-					pClsVar->setGCLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 				}
 
 			}
-			else if (v.value.domain->getDomainName() == "map" )
+			else if (v.value.domain->getdomainname() == "map" )
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_map *pMap = (cpps_map*)pClsVar->getclsptr();
@@ -87,10 +87,10 @@ namespace cpps
 					oldgen->erase(it);
 					newgen->insert(pClsVar);
 					size += pClsVar->size();
-					pClsVar->setGCLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 				}
 			}
-			else if (v.value.domain->getDomainName() == "unordered_map")
+			else if (v.value.domain->getdomainname() == "unordered_map")
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_unordered_map *pMap = (cpps_unordered_map*)pClsVar->getclsptr();
@@ -110,7 +110,7 @@ namespace cpps
 					oldgen->erase(it);
 					newgen->insert(pClsVar);
 					size += pClsVar->size();
-					pClsVar->setGCLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 				}
 			}
 			else if (v.tt == CPPS_TCLASSVAR)
@@ -122,7 +122,7 @@ namespace cpps
 					oldgen->erase(it);
 					newgen->insert(pClsVar);
 					size += pClsVar->size();
-					pClsVar->setGCLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 					
 				}
 				if (checkchild )
@@ -140,7 +140,7 @@ namespace cpps
 				oldgen->erase(it);
 				newgen->insert(pClsVar);
 				size += pClsVar->size();
-				pClsVar->setGCLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+				pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 			}
 		}
 	}
@@ -151,34 +151,34 @@ namespace cpps
 		std::unordered_set<cpps_cppsclassvar *> isCheck;
 	
 		cpps_value value = c->_G;
-		size_t tmp = c->getGen1size();
-		cpps_gc_check_child(value, c, true, c->getGen0(), c->getGen1(), tmp, isCheck);
-		c->setGen1size(tmp);
+		size_t tmp = c->getgen1size();
+		cpps_gc_check_child(value, c, true, c->getgen0(), c->getgen1(), tmp, isCheck);
+		c->setgen1size(tmp);
 
 
 		std::unordered_set<cpps_cppsclassvar *> tempoldgen;
 		size_t tempoldgensize = 0;
 
-		for (std::unordered_set<cpps_regvar*>::iterator it = c->getBarrierList()->begin();
-			it != c->getBarrierList()->end(); ++it)
+		for (std::unordered_set<cpps_regvar*>::iterator it = c->getbarrierlist()->begin();
+			it != c->getbarrierlist()->end(); ++it)
 		{
 			cpps_regvar *v = *it;
-			cpps_gc_check_gen_value(c, v->getValue(), true, c->getGen0(), &tempoldgen, tempoldgensize, isCheck);
+			cpps_gc_check_gen_value(c, v->getval(), true, c->getgen0(), &tempoldgen, tempoldgensize, isCheck);
 		}
 
 
 
 		//释放gen0里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getGen0()->begin();
-			it != c->getGen0()->end(); ++it)
+		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
+			it != c->getgen0()->end(); ++it)
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
 			delete pClsVar;
 		}
-		c->getGen0()->clear();
-		*(c->getGen0()) = tempoldgen;
-		c->setGen0size(tempoldgensize);
+		c->getgen0()->clear();
+		*(c->getgen0()) = tempoldgen;
+		c->setgen0size(tempoldgensize);
 
 	}
 
@@ -191,8 +191,8 @@ namespace cpps
 		std::unordered_set<cpps_cppsclassvar *> isCheck1;
 		std::unordered_set<cpps_cppsclassvar *> isCheck;
 		cpps_value value = c->_G;
-		cpps_gc_check_child(value, c, true, c->getGen0(), &newgen, newgensize, isCheck);
-		cpps_gc_check_child(value, c, true, c->getGen1(), &newgen, newgensize, isCheck1);
+		cpps_gc_check_child(value, c, true, c->getgen0(), &newgen, newgensize, isCheck);
+		cpps_gc_check_child(value, c, true, c->getgen1(), &newgen, newgensize, isCheck1);
 
 
 
@@ -200,84 +200,74 @@ namespace cpps
 		size_t tempoldgensize = 0;
 
 		//先把新生代的检测了
-		for (std::unordered_set<cpps_regvar*>::iterator it = c->getBarrierList()->begin();
-			it != c->getBarrierList()->end(); ++it)
+		for (std::unordered_set<cpps_regvar*>::iterator it = c->getbarrierlist()->begin();
+			it != c->getbarrierlist()->end(); ++it)
 		{
 			cpps_regvar *v = *it;
-			cpps_gc_check_gen_value(c, v->getValue(), true, c->getGen0(), &tempoldgen, tempoldgensize, isCheck);
-			cpps_gc_check_gen_value(c, v->getValue(), true, c->getGen1(), &tempoldgen, tempoldgensize, isCheck1);
+			cpps_gc_check_gen_value(c, v->getval(), true, c->getgen0(), &tempoldgen, tempoldgensize, isCheck);
+			cpps_gc_check_gen_value(c, v->getval(), true, c->getgen1(), &tempoldgen, tempoldgensize, isCheck1);
 		}
 
 
 
 
 		//释放gen0里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getGen0()->begin();
-			it != c->getGen0()->end(); ++it)
+		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
+			it != c->getgen0()->end(); ++it)
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
 			delete pClsVar;
 		}
-		c->getGen0()->clear();
-		*(c->getGen0()) = tempoldgen;
-		c->setGen0size(tempoldgensize);
+		c->getgen0()->clear();
+		*(c->getgen0()) = tempoldgen;
+		c->setgen0size(tempoldgensize);
 
 
 		//释放gen1里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getGen1()->begin();
-			it != c->getGen1()->end(); ++it)
+		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin();
+			it != c->getgen1()->end(); ++it)
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
 			delete pClsVar;
 		}
-		c->getGen1()->clear();
-		*(c->getGen1()) = newgen;
-		c->setGen1size(newgensize);
-		c->setLastgensize(c->getGen1size());
+		c->getgen1()->clear();
+		*(c->getgen1()) = newgen;
+		c->setgen1size(newgensize);
+		c->setlastgensize(c->getgen1size());
 
 
 
 	}
-	void		gc_cleanup(C *c,int tid )
+	void		gc_cleanup(C *c )
 	{
 		//清理当前线程的
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getGen0(tid)->begin();
-			it != c->getGen0(tid)->end(); ++it)
+		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
+			it != c->getgen0()->end(); ++it)
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
 			delete pClsVar;
 		}
-		c->getGen0(tid)->clear();
-		c->setGen0size(0);
+		c->getgen0()->clear();
+		c->setgen0size(0);
 
 		//释放gen1里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getGen1(tid)->begin();
-			it != c->getGen1(tid)->end(); ++it)
+		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin();
+			it != c->getgen1()->end(); ++it)
 		{
 			cpps_cppsclassvar * pClsVar = *it;
 			pClsVar->destory(c);
 			delete pClsVar;
 		}
 
-		c->getGen1(tid)->clear();
-		c->setGen1size(0, tid);
-		c->setLastgensize(0, tid);
-		c->getBarrierList(tid)->clear();
+		c->getgen1()->clear();
+		c->setgen1size(0);
+		c->setlastgensize(0);
+		c->getbarrierlist()->clear();
 
-		auto gen0 = c->gen0[tid];
-		if(gen0) delete gen0;
-		c->gen0.erase(tid);
 
-		auto gen1 = c->gen1[tid];
-		if (gen1) delete gen1;
-		c->gen1.erase(tid);
-
-		auto barrierList = c->barrierList[tid];
-		if (barrierList) delete barrierList;
-		c->barrierList.erase(tid);
 
 	}
 	std::string gcinfo(C *c)
@@ -287,20 +277,20 @@ namespace cpps
 #ifdef WIN32
 
 		char buffer[1024];
-		sprintf(buffer,"gen0 memory %I64d b\n", c->getGen0size());
+		sprintf(buffer,"gen0 memory %I64d b\n", c->getgen0size());
 		ret += buffer;
-		sprintf(buffer, "gen1 memory %I64d b\n", c->getGen1size());	//测试 200字节进行清理年轻代
+		sprintf(buffer, "gen1 memory %I64d b\n", c->getgen1size());	//测试 200字节进行清理年轻代
 		ret += buffer;
-		sprintf(buffer, "current memory %I64d b\n", c->getGen0size() + c->getGen1size());
+		sprintf(buffer, "current memory %I64d b\n", c->getgen0size() + c->getgen1size());
 		ret += buffer;
-		sprintf(buffer, "c->barrierList.size(): %I64d \n", c->getBarrierList()->size());
+		sprintf(buffer, "c->barrierList.size(): %I64d \n", c->getbarrierlist()->size());
 		ret += buffer;
-		sprintf(buffer, "c->gen1.size(): %I64d \n", c->getGen1()->size());
+		sprintf(buffer, "c->gen1.size(): %I64d \n", c->getgen1()->size());
 		ret += buffer;
-		sprintf(buffer, "c->gen0.size(): %I64d \n", c->getGen0()->size());
+		sprintf(buffer, "c->gen0.size(): %I64d \n", c->getgen0()->size());
 		ret += buffer;
 
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getGen1()->begin(); it != c->getGen1()->end(); it++)
+		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin(); it != c->getgen1()->end(); it++)
 		{
 			auto v = *it;
 			if (v->domainName == "String")

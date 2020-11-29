@@ -2,177 +2,93 @@
 
 namespace cpps
 {
-	void C::push(Node *_o)
+	void C::push(node *_o)
 	{
 		o = _o;
 	}
 
 	void C::push_stack(cpps_stack* stack)
 	{
-		stacklock.lock();
-		if (_callstack[GetCurrentThreadId()] == NULL)
-		{
-			_callstack[GetCurrentThreadId()] = new std::vector<cpps_stack*>;
-		}
-		_callstack[GetCurrentThreadId()]->push_back(stack);
-		stacklock.unlock();
+		_callstack.push_back(stack);
 	}
 
 	void C::pop_stack()
 	{
-		stacklock.lock();
-		_callstack[GetCurrentThreadId()]->pop_back();
-		stacklock.unlock();
+		_callstack.pop_back();
 	}
 
 	std::vector<cpps_stack*>* C::getcallstack()
 	{
-		stacklock.lock();
-		std::vector<cpps_stack*>* ret = _callstack[GetCurrentThreadId()];
-		stacklock.unlock();
+		std::vector<cpps_stack*>* ret = &_callstack;
 		return ret;
 	}
-	std::unordered_set<cpps_regvar*>* C::getBarrierList(int tid)
+	std::unordered_set<cpps_regvar*>* C::getbarrierlist()
 	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-
-		stacklock.lock();
-		if (barrierList[tid] == NULL)
-		{
-			barrierList[tid] = new std::unordered_set<cpps_regvar*>;
-		}
-
-		std::unordered_set<cpps_regvar*>*ret = barrierList[tid];
-		stacklock.unlock();
-		return ret;
-	}
-	std::unordered_set<cpps_cppsclassvar *>* C::getGen0(int tid)
-	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (gen0[tid] == NULL)
-		{
-			gen0[tid] = new std::unordered_set<cpps_cppsclassvar *>;
-		}
-		std::unordered_set<cpps_cppsclassvar*>*ret = gen0[tid];
-		stacklock.unlock();
+		std::unordered_set<cpps_regvar*>*ret = &barrierList;
 		return ret;
 	}
 
-	std::unordered_set<cpps_cppsclassvar *>* C::getGen1(int tid)
+	cpps::cpps_domain* C::domain_alloc()
 	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (gen1[tid] == NULL)
-		{
-			gen1[tid] = new std::unordered_set<cpps_cppsclassvar *>;
-		}
-		std::unordered_set<cpps_cppsclassvar*>* ret = gen1[tid];
-		stacklock.unlock();
-		return ret;
+		return domain_pool.alloc();
 	}
-	void		C::setGen0size(size_t s, int tid)
+
+	void C::domain_free(cpps::cpps_domain* domain)
 	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (gen0size.find(tid) == gen0size.end())
-		{
-			gen0size.insert(std::unordered_map<int, size_t>::value_type(tid, 0));
-		}
-		gen0size[tid] = s;
-		stacklock.unlock();
+		domain_pool.free(domain);
 	}
-	size_t		C::getGen0size(int tid)
+
+	cpps::cpps_stack* C::stack_alloc()
 	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (gen0size.find(tid) == gen0size.end())
-		{
-			gen0size.insert(std::unordered_map<int, size_t>::value_type(tid, 0));
-		}
-		size_t ret = gen0size[tid];
-		stacklock.unlock();
+		return stack_pool.alloc();
+	}
+
+	void C::stack_free(cpps::cpps_stack* stack)
+	{
+		stack_pool.free(stack);
+	}
+
+	std::unordered_set<cpps_cppsclassvar*>* C::getgen0()
+	{
+		std::unordered_set<cpps_cppsclassvar*>*ret = &gen0;
 		return ret;
 	}
 
-	void		C::setGen1size(size_t s, int tid)
+	std::unordered_set<cpps_cppsclassvar *>* C::getgen1()
 	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (gen1size.find(tid) == gen1size.end())
-		{
-			gen1size.insert(std::unordered_map<int, size_t>::value_type(tid, 0));
-		}
-		gen1size[tid] = s;
-		stacklock.unlock();
-	}
-	size_t		C::getGen1size(int tid)
-	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (gen1size.find(tid) == gen1size.end())
-		{
-			gen1size.insert(std::unordered_map<int, size_t>::value_type(tid, 0));
-		}
-		size_t ret = gen1size[tid];
-		stacklock.unlock();
+		std::unordered_set<cpps_cppsclassvar*>* ret = &gen1;
 		return ret;
 	}
-	void		C::setLastgensize(size_t s, int tid)
+	void		C::setgen0size(size_t s)
 	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (lastgensize.find(tid) == lastgensize.end())
-		{
-			lastgensize.insert(std::unordered_map<int, size_t>::value_type(tid, 0));
-		}
-		lastgensize[tid] = s;
-		stacklock.unlock();
+		gen0size = s;
 	}
-	size_t		C::getLastgensize(int tid)
+	size_t		C::getgen0size()
 	{
-		if (tid == 0)
-		{
-			tid = GetCurrentThreadId();
-		}
-		stacklock.lock();
-		if (lastgensize.find(tid) == lastgensize.end())
-		{
-			lastgensize.insert(std::unordered_map<int, size_t>::value_type(tid, 0));
-		}
-		size_t ret = lastgensize[tid];
-		stacklock.unlock();
-		return ret;
+		return gen0size;
+	}
+
+	void		C::setgen1size(size_t s)
+	{
+		gen1size = s;
+	}
+	size_t		C::getgen1size()
+	{
+		return gen1size;
+	}
+	void		C::setlastgensize(size_t s)
+	{
+		lastgensize = s;
+	}
+	size_t		C::getlastgensize()
+	{
+		return lastgensize;
 	}
 	C::C()
 	{
-		gen0size.clear();
-		gen1size.clear();
-		lastgensize.clear();
+		gen0size = 0;
+		gen1size = 0;
+		lastgensize = 0;
 		func = NULL;
 		debug = false;
 	}
@@ -189,16 +105,12 @@ namespace cpps
 
 	void C::resume()
 	{
-		stacklock.lock();
-		if (_callstack.find(GetCurrentThreadId()) == _callstack.end()) return;
-
-		for (size_t i = 0; i < _callstack[GetCurrentThreadId()]->size(); i++)
+		for (size_t i = 0; i < _callstack.size(); i++)
 		{
-			cpps_stack* stack = _callstack[GetCurrentThreadId()]->at(i);
+			cpps_stack* stack = _callstack.at(i);
 			delete stack;
 		}
-		_callstack[GetCurrentThreadId()]->clear();
-		stacklock.unlock();
+		_callstack.clear();
 	}
 
 

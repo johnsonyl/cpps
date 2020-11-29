@@ -32,24 +32,6 @@ namespace cpps
 			{
 				ret = it->second;
 			}
-			if (false)
-			{
-				printf("=================================================:");
-
-				printf("notfind:");
-				cpps_base_printf(k);
-				printf("\n");
-
-				std::map<cpps_value, cpps_value>::iterator it = _map.begin();
-				for (;it != _map.end(); ++it)
-				{
-					printf("key:");
-					cpps_base_printf(it->first);
-					printf("value:");
-					cpps_base_printf(it->second);
-					printf("\n");
-				}
-			}
 			return ret;
 		}
 		cpps_value&		cpps_find(cpps_value k)
@@ -128,9 +110,9 @@ namespace cpps
 		void			begin();
 		bool			end();
 		void			next();
-		cpps_value			it();
+		cpps_value		it();
 		void			pop();
-		cpps_value			key();
+		cpps_value		key();
 		void			clear();
 		cpps_integer	size();
 
@@ -170,7 +152,7 @@ namespace cpps
 		{
 			if (obj.tt != CPPS_TCLASSVAR) return false;
 			cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.domain->parent[0];
-			if (cls->getClassName() != "map") return false;
+			if (cls->getclassname() != "map") return false;
 
 			return true;
 		}
@@ -190,7 +172,7 @@ namespace cpps
 		{
 			if (obj.tt != CPPS_TCLASSVAR) return false;
 			cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.domain->parent[0];
-			if (cls->getClassName() != "unordered_map") return false;
+			if (cls->getclassname() != "unordered_map") return false;
 
 			return true;
 		}

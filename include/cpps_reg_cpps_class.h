@@ -9,18 +9,18 @@ namespace cpps
 		cpps_domain* leftdomain = NULL;
 		if (node != "_G")
 		{
-			cpps::cpps_regvar* d = c->_G->getVar(node, leftdomain, false);
+			cpps::cpps_regvar* d = c->_G->getvar(node, leftdomain, false);
 			if (!d)
 				return false;
-			if (!d->getValue().isDomain())
+			if (!d->getval().isdomain())
 				return false;
 
-			root = d->getValue().value.domain;
+			root = d->getval().value.domain;
 		}
 		leftdomain = NULL;
-		cpps::cpps_regvar* var = root->getVar(classname, leftdomain, false);
-		cpps_cppsclass* cls = (cpps_cppsclass*)var->getValue().value.domain;
-		cpps_class_singleton<T*>::getSingletonPtr()->setsls(cls);
+		cpps::cpps_regvar* var = root->getvar(classname, leftdomain, false);
+		cpps_cppsclass* cls = (cpps_cppsclass*)var->getval().value.domain;
+		cpps_class_singleton<T*>::instance()->setsls(cls);
 		return true;
 	}
 	inline void	cpps_init_cpps_class(cpps::C* c)

@@ -14,7 +14,7 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TINTEGER)
 		{
-			int32 s = object_cast<int32>(b);
+			int64 s = object_cast<int64>(b);
 			cout << s;
 		}
 		else if (type(b) == CPPS_TSTRING)
@@ -95,7 +95,7 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TINTEGER)
 		{
-			int32 s = object_cast<int32>(b);
+			int64 s = object_cast<int64>(b);
 			cout << s << endl;
 		}
 		else if (type(b) == CPPS_TSTRING)
@@ -230,7 +230,7 @@ namespace cpps
 	}
 	void cpps_base_foreach(C *c,cpps_value va, cpps_value func)
 	{
-		if (va.isDomain() && func.tt == CPPS_TFUNCTION)
+		if (va.isdomain() && func.tt == CPPS_TFUNCTION)
 		{
 			if (va.value.domain->domainName == "vector")
 			{
@@ -240,12 +240,12 @@ namespace cpps
 					for (v->begin(); v->end();)
 					{
 						object func_object = func;
-						func_object.value.parentLambdaVar = func.parentLambdaVar;
+						func_object.value.parentlambdavar = func.parentlambdavar;
 						object r = dofunction(c, func_object, v->it());
 
-						if (func.parentLambdaVar->isbreak == true)
+						if (func.parentlambdavar->isbreak == true)
 						{
-							func.parentLambdaVar->isbreak = false;
+							func.parentlambdavar->isbreak = false;
 							break;
 						}
 
@@ -269,12 +269,12 @@ namespace cpps
 					for (v->begin(); v->end(); )
 					{
 						object func_object = func;
-						func_object.value.parentLambdaVar = func.parentLambdaVar;
+						func_object.value.parentlambdavar = func.parentlambdavar;
 						object r = dofunction(c, func_object, v->key(),v->it());
 
-						if (func.parentLambdaVar->isbreak == true)
+						if (func.parentlambdavar->isbreak == true)
 						{
-							func.parentLambdaVar->isbreak = false;
+							func.parentlambdavar->isbreak = false;
 							break;
 						}
 
@@ -297,13 +297,13 @@ namespace cpps
 					for (v->begin(); v->end(); )
 					{
 						object func_object = func;
-						func_object.value.parentLambdaVar = func.parentLambdaVar;
+						func_object.value.parentlambdavar = func.parentlambdavar;
 						object r = dofunction(c, func_object, v->key(), v->it());
 
 
-						if (func.parentLambdaVar->isbreak == true)
+						if (func.parentlambdavar->isbreak == true)
 						{
-							func.parentLambdaVar->isbreak = false;
+							func.parentlambdavar->isbreak = false;
 							break;
 						}
 
@@ -410,7 +410,7 @@ namespace cpps
 		C*c = param->c;
 		cpps_value func = param->func;
 		cpps_value value = param->value;
-		func.parentLambdaVar = NULL;
+		func.parentlambdavar = NULL;
 #ifdef WIN32
 		SetEvent(param->eventFinish);
 #endif
@@ -524,17 +524,18 @@ namespace cpps
 				}
 				fileSrc = decode;
 			}
-			Node* o = loadbuffer(c, c->_G, fileSrc, fpath);
-			cpps_stack* stack = new cpps_stack("main.cpp", 0, "import");
+			node* o = loadbuffer(c, c->_G, fileSrc, fpath);
+			cpps_stack* stack = c->stack_alloc();
+			stack->init("main.cpp", 0, "import");
 
 			c->push_stack(stack);
-			cpps_step_all(c, CPPS_SINGLERET, c->_G, o);
+			cpps_step_all(c, CPPS_SINGLERET, c->_G,c->_G, o);
 			c->pop_stack();
 
 
 			cpps_gc_check_step(c);
 
-			delete stack;
+			c->stack_free(stack);
 		}
 		return true;
 	}

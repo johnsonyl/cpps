@@ -10,13 +10,13 @@ namespace cpps
 	//参数3 cpps_stack *stack rsp + 40h
 
 	//编译为机器码
-	void cpps_jit_compiler::compiler(C *c,cpps_domain *domain, Node *p)
+	void cpps_jit_compiler::compiler(C *c,cpps_domain *domain, node *p)
 	{
 		printf("Start compiling functions.\n");
 
-		for (std::vector<Node*>::iterator it = p->l.begin(); it != p->l.end(); ++it)
+		for (std::vector<node*>::iterator it = p->l.begin(); it != p->l.end(); ++it)
 		{
-			Node *o = *it;
+			node *o = *it;
 			switch (o->type)
 			{
 			case CPPS_ODOFUNCTION:
@@ -40,16 +40,16 @@ namespace cpps
 		f->callfunction(c, ret, domain, o, stack);
 	}
 	//已经失效了，因为解析层已经修改了 此函数需要重写了。
-	void cpps_jit_compiler::compiler_dofunction(C * c,cpps_domain * domain, Node * o)
+	void cpps_jit_compiler::compiler_dofunction(C * c,cpps_domain * domain, node * o)
 	{
 		//检测编译异常
 		cpps_domain* leftdomain = NULL;
-		cpps_regvar *reg = domain->getVar(o->s, leftdomain);
+		cpps_regvar *reg = domain->getvar(o->s, leftdomain);
 		if (!reg)
 		{
 			throw("JIT ERROR：The function variable to execute does not exist.");
 		}
-		if (reg->getValue().tt != CPPS_TFUNCTION)
+		if (reg->getval().tt != CPPS_TFUNCTION)
 		{
 			throw("JIT ERROR：The variable to be executed is not a function and cannot be executed.");
 		}
@@ -60,7 +60,7 @@ namespace cpps
 		mov_rsp_off_rax(ret_offset);
 
 
-		cpps_function *f = reg->getValue().value.func;
+		cpps_function *f = reg->getval().value.func;
 		mov_rcx_rsp_off(0x40); //获取 stack参数
 		call_func((usint64)cpps_jit_createparams); //返回值暂时存到rax里
 
@@ -68,9 +68,9 @@ namespace cpps
 		mov_rsp_off_rax(vector_offset);
 
 		//编译参数
-		for (std::vector<Node*>::iterator it2 = o->l.begin(); it2 != o->l.end(); ++it2)
+		for (std::vector<node*>::iterator it2 = o->l.begin(); it2 != o->l.end(); ++it2)
 		{
-			Node *v = *it2;
+			node *v = *it2;
 			compiler_params(c, domain, v);
 			compiler_vector_pushback(c, domain, v, vector_offset);
 		}
@@ -134,7 +134,7 @@ namespace cpps
 	}
 	cpps_value* cpps_jit_get_regvar_value(cpps_value* value, cpps_regvar* var)
 	{
-		*value = var->getValue();
+		*value = var->getval();
 		return value;
 	}
 	char* cpps_jit_create_string(const char *str)
@@ -148,7 +148,7 @@ namespace cpps
 		cpps_number *pNumber = new cpps_number(number);
 		return pNumber;
 	}
-	void cpps_jit_compiler::compiler_vector_pushback(C * c, cpps_domain * domain, Node * v, usint32 vector_offset)
+	void cpps_jit_compiler::compiler_vector_pushback(C * c, cpps_domain * domain, node * v, usint32 vector_offset)
 	{
 		mov_rdx_rax();
 		mov_rcx_rsp_off(vector_offset);
@@ -159,12 +159,12 @@ namespace cpps
 		cpps_cppsclassvar *cppsclassvar = cppsclass->create(c);
 			
 		if (cppsclass->o)
-			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar, cppsclass->o->getright());
+			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar ,cppsclassvar, cppsclass->o->getright());
 
 		cpps_regvar * v = new cpps_regvar();//_G 为根节点
-		v->setVarName("this");
-		v->setValue(cpps_value(cppsclassvar)); //域列表会copy进去
-		cppsclassvar->regVar(c,v);
+		v->setvarname("this");
+		v->setval(cpps_value(cppsclassvar)); //域列表会copy进去
+		cppsclassvar->regvar(c,v);
 
 		return cppsclassvar;
 	}
@@ -172,7 +172,7 @@ namespace cpps
 	{
 		vector->resize(size);
 	}
-	void cpps_jit_compiler::compiler_params(C * c, cpps_domain * domain, Node * v)
+	void cpps_jit_compiler::compiler_params(C * c, cpps_domain * domain, node * v)
 	{
 		mov_rcx_rsp_off(0x40); //获取 stack参数
 		call_func((usint64)cpps_jit_create_cpps_value); //返回值暂时存到rax里
@@ -207,8 +207,8 @@ namespace cpps
 		else if (v->type == CPPS_ONEWVAR)
 		{
 			cpps_domain* leftdomain = NULL;
-			cpps_regvar *var = domain->getVar(v->s,leftdomain);
-			if (!var || var->getValue().tt != CPPS_TCLASS)
+			cpps_regvar *var = domain->getvar(v->s,leftdomain);
+			if (!var || var->getval().tt != CPPS_TCLASS)
 			{
 				throw(cpps_error(v->filename, v->line, cpps_error_classerror, " The object out of the new %s must be a class object", v->s.c_str()));
 			}
@@ -217,7 +217,7 @@ namespace cpps
 			mov_rsp_off_rax(cpps_value_offset);
 
 
-			cpps_cppsclass *cppsclass = (cpps_cppsclass*)var->getValue().value.domain;
+			cpps_cppsclass *cppsclass = (cpps_cppsclass*)var->getval().value.domain;
 			mov_rdx_ll((usint64)cppsclass);
 			mov_rcx_rsp_off(0x30);
 			call_func((usint64)cpps_jit_new_var);
@@ -258,7 +258,7 @@ namespace cpps
 		else if (v->type == CPPS_VARNAME)
 		{
 			cpps_domain* leftdomain = NULL;
-			cpps_regvar *var = domain->getVar(v->s,leftdomain);
+			cpps_regvar *var = domain->getvar(v->s,leftdomain);
 			if (!var)
 			{
 				return;

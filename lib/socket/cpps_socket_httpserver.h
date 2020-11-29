@@ -50,7 +50,6 @@ namespace cpps {
 	public:
 		cpps::C*								c;
 		struct event_base*						ev_base;
-		struct evconnlistener*					ev_listener;
 		struct evhttp*							ev_http;
 		http_route								http_route_list;
 		http_route								http_class_route_list;

@@ -24,27 +24,27 @@ namespace cpps
 	struct cpps_map;
 	struct cpps_unordered_map;
 	template<class T>
-	cpps_cppsclassvar*		newClassPtr(C *c, T ** ret);
+	cpps_cppsclassvar*		newclass(C *c, T ** ret);
 	struct cpps_value
 	{
 		cpps_value()
 		{
 			tt = CPPS_TNIL;
 			value.number = 0;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		
 		cpps_value(const cpps_number n)
 		{
 			tt = CPPS_TNUMBER;
 			value.number = n;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		cpps_value(const cpps_integer i)
 		{
 			tt = CPPS_TINTEGER;
 			value.integer = i;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 
 #ifdef _WIN32
@@ -52,7 +52,7 @@ namespace cpps
 		{
 			tt = CPPS_TINTEGER;
 			value.integer = i;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 
 #else
@@ -60,39 +60,39 @@ namespace cpps
 		{
 			tt = CPPS_TINTEGER;
 			value.integer = i;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 #endif
 		cpps_value(const bool b)
 		{
 			tt = CPPS_TBOOLEAN;
 			value.b = b;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		cpps_value(cpps_function* f)
 		{
 			tt = CPPS_TFUNCTION;
 			value.func = f;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 
 		cpps_value(cpps_domain* d)
 		{
 			tt = CPPS_TDOMAIN;
 			value.domain = d;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		cpps_value(cpps_cppsclass* d)
 		{
 			tt = CPPS_TCLASS;
 			value.domain = (cpps_domain*)(d);
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		cpps_value(cpps_cppsclassvar* d)
 		{
 			tt = CPPS_TCLASSVAR;
 			value.domain = (cpps_domain*)(d);
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 // 		cpps_value(cpps_regvar* v)
 // 		{
@@ -103,27 +103,27 @@ namespace cpps
 		{
 			tt = CPPS_TREGVAR;
 			value.value = v;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		cpps_value(C*c, const char* s)
 		{
 			tt = CPPS_TSTRING;
 
 			std::string *str = NULL;
-			cpps_value ret = newClassPtr<std::string>(c, &str);
+			cpps_value ret = newclass<std::string>(c, &str);
 			str->append(s);
 			value.domain = ret.value.domain;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		cpps_value(C*c,const std::string& s)
 		{
 			tt = CPPS_TSTRING;
 
 			std::string *str;
-			cpps_value ret = newClassPtr<std::string>(c, &str);
+			cpps_value ret = newclass<std::string>(c, &str);
 			str->append(s.begin(),s.end());
 			value.domain = ret.value.domain;
-			parentLambdaVar = NULL;
+			parentlambdavar = NULL;
 		}
 		~cpps_value()
 		{
@@ -136,7 +136,7 @@ namespace cpps
 
 		bool				operator == (const cpps_value &right) const;
 		
-		bool				isDomain()
+		bool				isdomain()
 		{
 			return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR;
 		}
@@ -156,12 +156,10 @@ namespace cpps
 			cpps_domain *		domain;		// domain
 			cpps_regvar *		var;		// 变量指针
 			cpps_value *		value;		// 值引用
-			//std::string			*str;
 		};
-		//std::string				str;		//字符串类型
 		Value					value;		//值。
 		int8					tt;			//类型
-		cpps_domain*			parentLambdaVar; //lambda父域
+		cpps_domain*			parentlambdavar; //lambda父域
 
 	};
 

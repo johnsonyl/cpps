@@ -82,28 +82,28 @@ namespace cpps
 
 	cpps_vector* cpps_to_cpps_vector(cpps_value obj)
 	{
-		if (!obj.isDomain()) return NULL;
+		if (!obj.isdomain()) return NULL;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
 		cpps_vector* ret = (cpps_vector*)cppsclassvar->getclsptr();
 		return ret;
 	}
 	cpps_map* cpps_to_cpps_map(cpps_value obj)
 	{
-		if (!obj.isDomain()) return NULL;
+		if (!obj.isdomain()) return NULL;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
 		cpps_map* ret = (cpps_map*)cppsclassvar->getclsptr();
 		return ret;
 	}
 	cpps_unordered_map* cpps_to_cpps_unordered_map(cpps_value obj)
 	{
-		if (!obj.isDomain()) return NULL;
+		if (!obj.isdomain()) return NULL;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
 		cpps_unordered_map* ret = (cpps_unordered_map*)cppsclassvar->getclsptr();
 		return ret;
 	}
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj)
 	{
-		if (!obj.isDomain()) return NULL;
+		if (!obj.isdomain()) return NULL;
 		cpps_cppsclass* cppsclassvar = (cpps_cppsclass*)obj.value.domain;
 		return cppsclassvar;
 	}

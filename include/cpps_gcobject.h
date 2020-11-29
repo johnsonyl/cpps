@@ -23,11 +23,11 @@ namespace cpps
 		{
 			
 		}
-		virtual void							setGCLevel(char l)
+		virtual void							setgcLevel(char l)
 		{
 			gclevel = l;
 		}
-		virtual char							getGCLevel()
+		virtual char							getgcLevel()
 		{
 			return gclevel;
 		}

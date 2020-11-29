@@ -33,7 +33,7 @@ Json::Value cppstojsonvalue(cpps::object obj)
 	{
 		cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.value.domain->parent[0];
 
-		if (cls->getClassName() == "map" )
+		if (cls->getclassname() == "map" )
 		{
 			ret = Json::Value(Json::objectValue);
 			cpps::cpps_map *m = cpps::object_cast<cpps::cpps_map*>(obj);
@@ -54,7 +54,7 @@ Json::Value cppstojsonvalue(cpps::object obj)
 				}
 			}
 		}
-		else if (cls->getClassName() == "unordered_map")
+		else if (cls->getclassname() == "unordered_map")
 		{
 			ret = Json::Value(Json::objectValue);
 			cpps::cpps_unordered_map *m = cpps::object_cast<cpps::cpps_unordered_map*>(obj);
@@ -75,7 +75,7 @@ Json::Value cppstojsonvalue(cpps::object obj)
 				}
 			}
 		}
-		else if (cls->getClassName() == "vector")
+		else if (cls->getclassname() == "vector")
 		{
 			ret = Json::Value(Json::arrayValue);
 			cpps::cpps_vector *m = cpps::object_cast<cpps::cpps_vector*>(obj);
@@ -116,7 +116,7 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 	if (v.isArray())
 	{
 		cpps::cpps_vector *vct = NULL;
-		cpps::cpps_value ret = cpps::newClassPtr<cpps::cpps_vector>(c, &vct);
+		cpps::cpps_value ret = cpps::newclass<cpps::cpps_vector>(c, &vct);
 		for (int i = 0; i < static_cast<int>(v.size());i++)
 		{
 			vct->push_back(jsonvaluetocpps(c, v[i]).value);
@@ -151,7 +151,7 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 	{
 
 		cpps::cpps_map *vct = NULL;
-		cpps::cpps_value ret = cpps::newClassPtr<cpps::cpps_map>(c, &vct);
+		cpps::cpps_value ret = cpps::newclass<cpps::cpps_map>(c, &vct);
 
 		Json::Value::Members members = v.getMemberNames();
 		for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)

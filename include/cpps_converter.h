@@ -230,7 +230,7 @@ namespace cpps
 		static bool match(C *c, Type v)
 		{
 			//检测是否支持
-			return cpps_class_singleton<Type>::getSingletonPtr() != NULL && c!=NULL;
+			return cpps_class_singleton<Type>::instance() != NULL && c!=NULL;
 		}
 		static cpps_value apply(C *c, Type v)
 		{
@@ -244,7 +244,7 @@ namespace cpps
 			cpps_cppsclassvar* var;
 			if (it == c->_class_map_classvar.end())
 			{
-				var = cpps_class_singleton<Type>::getSingletonPtr()->getcls()->create(c,false);
+				var = cpps_class_singleton<Type>::instance()->getcls()->create(c,false);
 				var->setclsptr((void*)v);
 
 				//将新创建出来的添加到新生区稍后检测要不要干掉

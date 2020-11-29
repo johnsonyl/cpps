@@ -121,7 +121,7 @@ namespace cpps
 		{
 			if (obj.tt != CPPS_TCLASSVAR) return false;
 			cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.domain->parent[0];
-			if (cls->getClassName() != "vector") return false;
+			if (cls->getclassname() != "vector") return false;
 
 			return true;
 		}

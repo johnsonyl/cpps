@@ -18,7 +18,40 @@
 
 namespace cpps
 {
+	enum cpps_symbol_type
+	{
+		CPPS_SYMBOL_TYPE_LEFTAUTOINCREASE,
+		CPPS_SYMBOL_TYPE_LEFTAUTODECREASE,
+		CPPS_SYMBOL_TYPE_PLUS,
+		CPPS_SYMBOL_TYPE_MINUS,
+		CPPS_SYMBOL_TYPE_NOT,
+		CPPS_SYMBOL_TYPE_RIGHTAUTOINCREASE,
+		CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE,
+		CPPS_SYMBOL_TYPE_MUL,
+		CPPS_SYMBOL_TYPE_DIVIDE,
+		CPPS_SYMBOL_TYPE_QUYU,
+		CPPS_SYMBOL_TYPE_ADD,
+		CPPS_SYMBOL_TYPE_ADD2,
+		CPPS_SYMBOL_TYPE_ADD3,
+		CPPS_SYMBOL_TYPE_SUBTRACT,
+		CPPS_SYMBOL_TYPE_STRCAT,
+		CPPS_SYMBOL_TYPE_BIGGER,
+		CPPS_SYMBOL_TYPE_BIGGEROREQUEL,
+		CPPS_SYMBOL_TYPE_LESS,
+		CPPS_SYMBOL_TYPE_LESSOREQUEL,
+		CPPS_SYMBOL_TYPE_EQUEL,
+		CPPS_SYMBOL_TYPE_NOTEQUEL,
+		CPPS_SYMBOL_TYPE_ASSIGNMENT,
+		CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT,
+		CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT,
+		CPPS_SYMBOL_TYPE_MULANDASSIGNMENT,
+		CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT,
+		CPPS_SYMBOL_TYPE_AND,
+		CPPS_SYMBOL_TYPE_OR,
+		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT,
+		CPPS_SYMBOL_TYPE_TERNARYOPERATOR,
 
+	};
 	struct cpps_symbol;
 	typedef	std::map<std::string, cpps_symbol*> CPPS_SYMBOL_MAP;
 
@@ -28,17 +61,23 @@ namespace cpps
 		//第三位第四位表示参数个数，最后四位表示操作优先级
 		byte		symbollimit;		
 		//操作符函数
-		std::string symbolfuncname;		//操作函数名
+		//std::string symbolfuncname;		//操作函数名
+		int8	symboltype;
 
 		byte getprio(){ return symbollimit & 0x0F; }
 		byte getparamnum(){ return (symbollimit >> 4) & 0x03; }
 		byte getparamleftlimit(){ return symbollimit & 0x80; }
 		byte getparamrightlimit(){ return symbollimit & 0x40; }
 
-		cpps_symbol(byte prio, byte paramnum,byte paramlimit,std::string funcname)
+		//cpps_symbol(byte prio, byte paramnum,byte paramlimit,std::string funcname)
+		//{
+		//	symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
+		//	symbolfuncname = funcname;
+		//}
+		cpps_symbol(byte prio, byte paramnum, byte paramlimit, int8 type)
 		{
 			symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
-			symbolfuncname = funcname;
+			symboltype = type;
 		}
 	};
 	bool			cpps_parse_isleftasso(byte prio);

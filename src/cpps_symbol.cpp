@@ -9,13 +9,13 @@ namespace cpps
 	bool				symbolleftasso[MAXSYMBOLPRIO];	//操作符是否左结合
 
 
-	cpps_value cpps_add(cpps_value a, cpps_value b)
+	void cpps_add(cpps_value &a, cpps_value b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
 			throw(cpps_error("0",0,0,"This operation cannot be performed on Boolean values."));
 		}
-		cpps_value _result;
+		;
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -45,15 +45,14 @@ namespace cpps
 			_result.tt = CPPS_TNIL;
 			break;
 		}
-		return _result;
 	}
-	cpps_value cpps_add2(cpps_value a, cpps_value b)
+	void cpps_add2(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
 			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
-		cpps_value _result;
+		;
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -83,16 +82,15 @@ namespace cpps
 			_result.tt = CPPS_TNIL;
 			break;
 		}
-		return _result;
 	}
 
-	cpps_value cpps_add3(cpps_value a, cpps_value b)
+	void cpps_add3(cpps_value &a, cpps_value b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
 			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
-		cpps_value _result;
+		
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -122,16 +120,15 @@ namespace cpps
 			_result.tt = CPPS_TNIL;
 			break;
 		}
-		return _result;
 	}
 
-	cpps_value cpps_subtract(cpps_value a, cpps_value b)
+	void cpps_subtract(cpps_value& a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
 			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
-		cpps_value _result;
+		
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -161,16 +158,15 @@ namespace cpps
 			_result.tt = CPPS_TNIL;
 			break;
 		}
-		return _result;
 	}
 	
-	cpps_value cpps_mul(cpps_value a, cpps_value b)
+	void cpps_mul(cpps_value& a, cpps_value b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
 			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
-		cpps_value _result;
+		
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -200,16 +196,15 @@ namespace cpps
 			_result.tt = CPPS_TNIL;
 			break;
 		}
-		return _result;
 	}
 	
-	cpps_value cpps_quyu(cpps_value a, cpps_value b)
+	void cpps_quyu(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
 			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
-		cpps_value _result;
+		
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -226,15 +221,14 @@ namespace cpps
 			_result.tt = CPPS_TNIL;
 			break;
 		}
-		return _result;
 	}
-	cpps_value cpps_divide(cpps_value a, cpps_value b)
+	void cpps_divide(cpps_value &a, cpps_value b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
 			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 		}
-		cpps_value _result;
+		
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -251,25 +245,23 @@ namespace cpps
 			_result.tt = CPPS_TNIL;
 			break;
 		}
-		return _result;
 	}
 
-	cpps_value cpps_strcat(C*c,cpps_value a, cpps_value b)
+	void cpps_strcat(C*c,cpps_value &a, cpps_value &b, cpps_value &ret)
 	{
 		std::string *str;
-		cpps_value ret = newClassPtr<std::string>(c, &str);
+		ret = newclass<std::string>(c, &str);
 		ret.tt = CPPS_TSTRING;
 		str->append(a.tt == CPPS_TSTRING ? *cpps_get_string(a) : cpps_to_string(a));
 		str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
 
-		return ret;
 	}
 
-	cpps_value cpps_strcatassignment(cpps_value a, cpps_value b)
+	void cpps_strcatassignment(cpps_value &a, cpps_value &b,cpps_value &ret)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			return cpps_value();
+			return;
 		}
 
 		a.value.value->tt = CPPS_TSTRING;
@@ -285,15 +277,13 @@ namespace cpps
 			tmpStr->append(*cpps_get_string(b));
 		}
 
-		return *(a.value.value);
-
-	
+		ret = *(a.value.value);
 	}
 	
-	cpps_value cpps_rightautoincrease(cpps_value a)
+	void cpps_rightautoincrease(cpps_value& a, cpps_value &ret)
 	{
 		cpps_value &v = *(a.value.value);
-		cpps_value ret = v;
+		ret = v;
 		switch (v.tt)
 		{
 		case CPPS_TNUMBER:
@@ -306,10 +296,9 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
 			break;
 		}
-		return ret;
 	}
 
-	cpps_value cpps_leftautoincrease(cpps_value a)
+	void cpps_leftautoincrease(cpps_value& a,cpps_value &ret)
 	{
 		cpps_value &v = *(a.value.value);
 		switch (v.tt)
@@ -324,13 +313,13 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
 			break;
 		}
-		return v;
+		ret = v;
 	}
 
-	cpps_value cpps_rightautodecrease(cpps_value a)
+	void cpps_rightautodecrease(cpps_value& a, cpps_value& ret)
 	{
 		cpps_value &v = *(a.value.value);
-		cpps_value ret = v;
+		ret = v;
 		switch (v.tt)
 		{
 		case CPPS_TNUMBER:
@@ -343,10 +332,9 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
 			break;
 		}
-		return ret;
 	}
 
-	cpps_value cpps_leftautodecrease(cpps_value a)
+	void cpps_leftautodecrease(cpps_value& a, cpps_value& ret)
 	{
 		cpps_value &v = *(a.value.value);
 		switch (v.tt)
@@ -361,13 +349,13 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
 			break;
 		}
-		return v;
+		ret = v;
 	}
 
 	//正号
-	cpps_value cpps_plus(cpps_value a)
+	void cpps_plus(cpps_value& a, cpps_value &_result)
 	{
-		cpps_value _result;
+		
 		_result.tt = CPPS_TNIL;
 
 		switch (a.tt)
@@ -384,12 +372,11 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "Cannot do +a operation on non number."));
 			break;
 		}
-		return _result;
 	}
 
-	cpps_value cpps_minus(cpps_value a)
+	void cpps_minus(cpps_value& a, cpps_value &_result)
 	{
-		cpps_value _result;
+		
 		_result.tt = CPPS_TNIL;
 
 		switch (a.tt)
@@ -406,14 +393,13 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "Cannot do -a operation on non number."));
 			break;
 		}
-		return _result;
 	}
 
-	cpps_value cpps_assignment(C*c,cpps_value a,cpps_value b)
+	void cpps_assignment(C*c,cpps_value& a,cpps_value b,cpps::cpps_value &ret)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			return cpps_value();
+			return ;
 		}
 
 		if (b.tt == CPPS_TREGVAR)
@@ -422,7 +408,7 @@ namespace cpps
 			{
 
 				std::string *str;
-				cpps_value ret = newClassPtr<std::string>(c, &str);
+				cpps_value ret = newclass<std::string>(c, &str);
 				ret.tt = CPPS_TSTRING;
 
 
@@ -436,7 +422,7 @@ namespace cpps
 			else
 				*(a.value.value) = *(b.value.value);
 
-			(*(a.value.value)).parentLambdaVar = NULL;
+			(*(a.value.value)).parentlambdavar = NULL;
 
 		}
 		else {
@@ -444,7 +430,7 @@ namespace cpps
 			if (b.tt == CPPS_TSTRING)
 			{
 				std::string *str;
-				cpps_value ret = newClassPtr<std::string>(c, &str);
+				cpps_value ret = newclass<std::string>(c, &str);
 				ret.tt = CPPS_TSTRING;
 
 				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)b.value.domain;
@@ -456,81 +442,192 @@ namespace cpps
 			else
 				*(a.value.value) = b;
 
-			(*(a.value.value)).parentLambdaVar = NULL;
+			(*(a.value.value)).parentlambdavar = NULL;
 		}
 
-		return *(a.value.value);
-// 		a.value.var->setValue(b);
-// 		return a.value.var->getValue();
+		ret = *(a.value.value);
 	}
 
-	cpps_value cpps_addandassignment(cpps_value a, cpps_value b)
+	void cpps_addandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
-		cpps_value & v = *(a.value.value);
-		*(a.value.value) = cpps_add(v, b);
-		return *(a.value.value);
+		cpps_value& v = *(a.value.value);
 
 
-// 		cpps_value & v = a.value.var->getValue();
-// 		a.value.var->setValue(cpps_add(v, b));
-// 		return a.value.var->getValue();
+		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+		}
+		;
+		_result.tt = CPPS_TNIL;
+		switch (v.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				v.value.integer += cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) + cpps_to_number(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) + cpps_to_number(b);
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			v.tt = CPPS_TNUMBER;
+			v.value.number = cpps_to_number(v) + cpps_to_number(b);
+			break;
+		default:
+			break;
+		}
+		_result = v;
+
 	}
 
-	cpps_value cpps_subtractandassignment(cpps_value a, cpps_value b)
+	void cpps_subtractandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
+		cpps_value& v = *(a.value.value);
 
-		cpps_value & v = *(a.value.value);
-		*(a.value.value) = cpps_subtract(v, b);
-		return *(a.value.value);
 
-// 		cpps_value & v = a.value.var->getValue();
-// 		a.value.var->setValue(cpps_subtract(v, b));
-// 		return a.value.var->getValue();
+		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+		}
+		;
+		_result.tt = CPPS_TNIL;
+		switch (v.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				v.value.integer -= cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) - cpps_to_number(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) - cpps_to_number(b);
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			v.tt = CPPS_TNUMBER;
+			v.value.number = cpps_to_number(v) - cpps_to_number(b);
+			break;
+		default:
+			break;
+		}
+		_result = v;
+
 	}
 
-	cpps_value cpps_mulandassignment(cpps_value a, cpps_value b)
+	void cpps_mulandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
+		cpps_value& v = *(a.value.value);
 
-		cpps_value & v = *(a.value.value);
-		*(a.value.value) = cpps_mul(v, b);
-		return *(a.value.value);
 
-// 		cpps_value & v = a.value.var->getValue();
-// 		a.value.var->setValue(cpps_mul(v, b));
-// 		return a.value.var->getValue();
+		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+		}
+		;
+		_result.tt = CPPS_TNIL;
+		switch (v.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				v.value.integer *= cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) * cpps_to_number(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) * cpps_to_number(b);
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			v.tt = CPPS_TNUMBER;
+			v.value.number = cpps_to_number(v) * cpps_to_number(b);
+			break;
+		default:
+			break;
+		}
+		_result = v;
 	}
 
-	cpps_value cpps_divideandassignment(cpps_value a, cpps_value b)
+	void cpps_divideandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "变量未定义！"));
+			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
+		cpps_value& v = *(a.value.value);
 
-		cpps_value & v = *(a.value.value);
-		*(a.value.value) = cpps_divide(v, b);
-		return *(a.value.value);
 
-// 		cpps_value & v = a.value.var->getValue();
-// 		a.value.var->setValue(cpps_divide(v, b));
-// 		return a.value.var->getValue();
+		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+		}
+		;
+		_result.tt = CPPS_TNIL;
+		switch (v.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				v.value.integer /= cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) / cpps_to_number(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				v.tt = CPPS_TNUMBER;
+				v.value.number = cpps_to_number(v) / cpps_to_number(b);
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			v.tt = CPPS_TNUMBER;
+			v.value.number = cpps_to_number(v) / cpps_to_number(b);
+			break;
+		default:
+			break;
+		}
+		_result = v;
 	}
 
-	cpps_value cpps_bigger(cpps_value a, cpps_value b)
+	void cpps_bigger(cpps_value& a, cpps_value b, cpps_value &ret)
 	{
-		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
 		{
@@ -581,12 +678,10 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
-		return ret;
 	}
 
-	cpps_value cpps_less(cpps_value a, cpps_value b)
+	void cpps_less(cpps_value& a, cpps_value b, cpps_value &ret)
 	{
-		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
 		{
@@ -637,12 +732,10 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
-		return ret;
 	}
 
-	cpps_value cpps_biggerorequel(cpps_value a, cpps_value b)
+	void cpps_biggerorequel(cpps_value& a, cpps_value b, cpps_value &ret)
 	{
-		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
 		{
@@ -693,12 +786,10 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
-		return ret;
 	}
 
-	cpps_value cpps_lessorequel(cpps_value a, cpps_value b)
+	void cpps_lessorequel(cpps_value& a, cpps_value b, cpps_value &ret)
 	{
-		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
 		{
@@ -749,12 +840,10 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "These two can't be compared."));
 			break;
 		}
-		return ret;
 	}
 
-	cpps_value cpps_equel(cpps_value a, cpps_value b)
+	void cpps_equel(cpps_value& a, cpps_value b, cpps_value &ret)
 	{
-		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
 		ret.value.b = false;
 
@@ -844,29 +933,22 @@ namespace cpps
 		default:
 			break;
 		}
-		return ret;
 	}
 
-	cpps_value cpps_notequel(cpps_value a, cpps_value b)
+	void cpps_notequel(cpps_value& a, cpps_value b, cpps_value &ret)
 	{
-		cpps_value ret = cpps_equel(a, b);
+		cpps_equel(a, b, ret);
 		ret.value.b = !ret.value.b;
-		return ret;
 	}
 
-	cpps_value cpps_not(cpps_value a)
+	void cpps_not(cpps_value a, cpps_value &ret)
 	{
-		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
-		
 		typedef cpps_converter<bool> converter;
-
 		bool b = converter::apply(a);
 		ret.value.b = !b;
-
-		return ret;
 	}
-	cpps_value cpps_and(cpps_value a, cpps_value b)
+	/*cpps_value cpps_and(cpps_value a, cpps_value b)
 	{
 		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
@@ -878,8 +960,8 @@ namespace cpps
 
 		return ret;
 
-	}
-	cpps_value cpps_or(cpps_value a, cpps_value b)
+	}*/
+	/*cpps_value cpps_or(cpps_value a, cpps_value b)
 	{
 		cpps_value ret;
 		ret.tt = CPPS_TBOOLEAN;
@@ -890,80 +972,49 @@ namespace cpps
 		ret.value.b = converter::apply(a) || converter::apply(b);
 
 		return ret;
-	}
-	cpps_value cpps_ternaryoperator(cpps_value a, cpps_value b,cpps_value c)
+	}*/
+	/*cpps_value cpps_ternaryoperator(cpps_value a, cpps_value b,cpps_value c)
 	{
 		typedef cpps_converter<bool> converter;
 
 		bool b0 = converter::apply(a);
 
 		return b0 ? b : c;
-	}
+	}*/
 	void cpps_regsymbols(C * c)
 	{
-		module(c)[
-			def("++a", cpps_leftautoincrease),
-			def("--a", cpps_leftautodecrease),
-			def("+a", cpps_plus),
-			def("-a", cpps_minus),
-			def("!a", cpps_not),
-			def("++", cpps_rightautoincrease),
-			def("--", cpps_rightautodecrease),
-			def("*", cpps_mul),
-			def("/", cpps_divide),
-			def("%", cpps_quyu),
-			def("+", cpps_add),
-			def("&", cpps_add2),
-			def("|", cpps_add3),
-			def("-", cpps_subtract),
-			def_inside("..", cpps_strcat),
-			def(">", cpps_bigger),
-			def(">=", cpps_biggerorequel),
-			def("<", cpps_less),
-			def("<=", cpps_lessorequel),
-			def("==", cpps_equel),
-			def("!=", cpps_notequel),
-			def_inside("=", cpps_assignment),
-			def("+=", cpps_addandassignment),
-			def("-=", cpps_subtractandassignment),
-			def("*=", cpps_mulandassignment),
-			def("/=", cpps_divideandassignment),
-			def("&&", cpps_and),
-			def("||", cpps_or),
-			def("..=", cpps_strcatassignment),
-			def("?", cpps_ternaryoperator)
-		];
-
-		leftsymbolmap["++"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	"++a");
-		leftsymbolmap["--"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	"--a");
-		leftsymbolmap["+"]	= new cpps_symbol(0, 1, NOLIMIT,		"+a");
-		leftsymbolmap["-"]	= new cpps_symbol(0, 1, NOLIMIT,		"-a");
-		leftsymbolmap["!"]	= new cpps_symbol(0, 1, NOLIMIT,		"!a");
-		symbolmap["++"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	"++");
-		symbolmap["--"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	"--");
-		symbolmap["*"]		= new cpps_symbol(1, 2, NOLIMIT,		"*");
-		symbolmap["/"]		= new cpps_symbol(1, 2, NOLIMIT,		"/");
-		symbolmap["%"]		= new cpps_symbol(1, 2, NOLIMIT,		"%");
-		symbolmap["+"]		= new cpps_symbol(2, 2, NOLIMIT,		"+");
-		symbolmap["&"]		= new cpps_symbol(2, 2, NOLIMIT,		"&");
-		symbolmap["|"]		= new cpps_symbol(2, 2, NOLIMIT,		"|");
-		symbolmap["-"]		= new cpps_symbol(2, 2, NOLIMIT,		"-");
-		symbolmap[".."]		= new cpps_symbol(3, 2, NOLIMIT,		"..");
-		symbolmap[">"]		= new cpps_symbol(4, 2, NOLIMIT,		">");
-		symbolmap[">="]		= new cpps_symbol(4, 2, NOLIMIT,		">=");
-		symbolmap["<"]		= new cpps_symbol(4, 2, NOLIMIT,		"<");
-		symbolmap["<="]		= new cpps_symbol(4, 2, NOLIMIT,		"<=");
-		symbolmap["=="]		= new cpps_symbol(5, 2, NOLIMIT,		"==");
-		symbolmap["!="]		= new cpps_symbol(5, 2, NOLIMIT,		"!=");
-		symbolmap["&&"]		= new cpps_symbol(6, 2, NOLIMIT,		"&&");
-		symbolmap["||"]		= new cpps_symbol(7, 2, NOLIMIT,		"||");
-		symbolmap["?"]		= new cpps_symbol(8, 3, NOLIMIT,		"?");
-		symbolmap["="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"=");
-		symbolmap["+="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"+=");
-		symbolmap["-="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"-=");
-		symbolmap["*="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"*=");
-		symbolmap["/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"/=");
-		symbolmap["..="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..=");
+		
+		
+		leftsymbolmap["++"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	CPPS_SYMBOL_TYPE_LEFTAUTOINCREASE);
+		leftsymbolmap["--"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	CPPS_SYMBOL_TYPE_LEFTAUTODECREASE);
+		leftsymbolmap["+"]	= new cpps_symbol(0, 1, NOLIMIT,		CPPS_SYMBOL_TYPE_PLUS);
+		leftsymbolmap["-"]	= new cpps_symbol(0, 1, NOLIMIT,		CPPS_SYMBOL_TYPE_MINUS);
+		leftsymbolmap["!"]	= new cpps_symbol(0, 1, NOLIMIT,		CPPS_SYMBOL_TYPE_NOT);
+		symbolmap["++"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_RIGHTAUTOINCREASE);
+		symbolmap["--"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE);
+		symbolmap["*"]		= new cpps_symbol(1, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_MUL);
+		symbolmap["/"]		= new cpps_symbol(1, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_DIVIDE);
+		symbolmap["%"]		= new cpps_symbol(1, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_QUYU);
+		symbolmap["+"]		= new cpps_symbol(2, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_ADD);
+		symbolmap["&"]		= new cpps_symbol(2, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_ADD2);
+		symbolmap["|"]		= new cpps_symbol(2, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_ADD3);
+		symbolmap["-"]		= new cpps_symbol(2, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_SUBTRACT);
+		symbolmap[".."]		= new cpps_symbol(3, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_STRCAT);
+		symbolmap[">"]		= new cpps_symbol(4, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_BIGGER);
+		symbolmap[">="]		= new cpps_symbol(4, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_BIGGEROREQUEL);
+		symbolmap["<"]		= new cpps_symbol(4, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_LESS);
+		symbolmap["<="]		= new cpps_symbol(4, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_LESSOREQUEL);
+		symbolmap["=="]		= new cpps_symbol(5, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_EQUEL);
+		symbolmap["!="]		= new cpps_symbol(5, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_NOTEQUEL);
+		symbolmap["&&"]		= new cpps_symbol(6, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_AND);
+		symbolmap["||"]		= new cpps_symbol(7, 2, NOLIMIT,		CPPS_SYMBOL_TYPE_OR);
+		symbolmap["?"]		= new cpps_symbol(8, 3, NOLIMIT,		CPPS_SYMBOL_TYPE_TERNARYOPERATOR);
+		symbolmap["="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_ASSIGNMENT);
+		symbolmap["+="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT);
+		symbolmap["-="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT);
+		symbolmap["*="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_MULANDASSIGNMENT);
+		symbolmap["/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT);
+		symbolmap["..="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	CPPS_SYMBOL_TYPE_STRCATASSIGNMENT);
 
 		symbolleftasso[0] = false;
 		symbolleftasso[1] = true;
@@ -1005,6 +1056,196 @@ namespace cpps
 		}
 
 		return ret;
+	}
+
+	
+
+	void cpps_symbol_handle(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_value& ret)
+	{
+		cpps_domain* leftdomain = NULL;
+		cpps_value a = cpps_calculate_expression(c, domain,root, d->l[0], leftdomain);
+		leftdomain = NULL;
+
+		switch (d->symbol->symboltype)
+		{
+		case CPPS_SYMBOL_TYPE_LEFTAUTOINCREASE:
+		{
+			cpps_leftautoincrease(a, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_LEFTAUTODECREASE:
+		{
+			cpps_leftautodecrease(a, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_PLUS:
+		{
+			cpps_plus(a, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_MINUS:
+		{
+			cpps_minus(a, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_NOT:
+		{
+			cpps_not(a, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_RIGHTAUTOINCREASE:
+		{
+			cpps_rightautoincrease(a, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE:
+		{
+			cpps_rightautodecrease(a, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_MUL:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_mul(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_DIVIDE:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_divide(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_QUYU:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_quyu(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_ADD:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_add(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_ADD2:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_add2(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_ADD3:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_add3(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_SUBTRACT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_subtract(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_STRCAT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_strcat(c, a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_BIGGER:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_bigger(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_BIGGEROREQUEL:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_biggerorequel(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_LESS:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_less(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_LESSOREQUEL:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_lessorequel(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_EQUEL:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_equel(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_NOTEQUEL:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_notequel(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_ASSIGNMENT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_assignment(c, a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_addandassignment( a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_subtractandassignment(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_MULANDASSIGNMENT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_mulandassignment(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_divideandassignment(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_AND:
+		{
+			typedef cpps::cpps_converter<bool> convert;
+			ret.tt = CPPS_TBOOLEAN;
+			ret.value.b =  convert::apply(a) && convert::apply(cpps_calculate_expression(c, domain, root, d->l[1], leftdomain));
+
+		}
+		case CPPS_SYMBOL_TYPE_OR:
+		{
+			typedef cpps::cpps_converter<bool> convert;
+			ret.tt = CPPS_TBOOLEAN;
+			ret.value.b = convert::apply(a) || convert::apply(cpps_calculate_expression(c, domain, root, d->l[1], leftdomain));
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_STRCATASSIGNMENT:
+		{
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			cpps_strcatassignment(a, b, ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_TERNARYOPERATOR:
+		{
+			typedef cpps::cpps_converter<bool> convert;
+			ret = convert::apply(a) ? cpps_calculate_expression(c, domain, root, d->l[1], leftdomain) : cpps_calculate_expression(c, domain, root, d->l[2], leftdomain);
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
 }

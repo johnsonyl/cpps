@@ -74,80 +74,80 @@ namespace cpps
 			cpps_str2d(str.c_str(), &ret);
 			return ret;
 		}
-		cpps_integer	readInt8()
+		cpps_integer	readint8()
 		{
 			signed char ret = 0;
 			_read((char *)&ret, sizeof(signed char));
 			return ret;
 		}
-		cpps_integer	readInt16()
+		cpps_integer	readint16()
 		{
 			short ret = 0;
 			_read((char *)&ret, sizeof(short));
 			return ret;
 		}
-		cpps_integer	readInt32()
+		cpps_integer	readint32()
 		{
 			int32 ret = 0;
 			_read((char *)&ret, sizeof(int32));
 			return ret;
 		}
-		cpps_integer	readInt()
+		cpps_integer	readint()
 		{
 			cpps_integer ret = 0;
 			_read((char *)&ret, sizeof(cpps_integer));
 			return ret;
 		}
-		cpps_number		readNumber()
+		cpps_number		readnumber()
 		{
 			cpps_number ret = 0;
 			_read((char *)&ret, sizeof(cpps_number));
 			return ret;
 		}
-		std::string		readString(cpps_integer len)
+		std::string		readstring(cpps_integer len)
 		{
 			std::string ret;
 			ret.resize(len);
 			_read((char*)ret.c_str(), len);
 			return ret;
 		}
-		bool			readBool()
+		bool			readbool()
 		{
 			bool ret = false;
 			_read((char *)&ret, sizeof(bool));
 			return ret;
 		}
-		Buffer*			writeInt8(signed char i)
+		Buffer*			writeint8(signed char i)
 		{
 			_write((char *)&i, sizeof(signed char));
 			return this;
 		}
-		Buffer*			writeInt16(short i)
+		Buffer*			writeint16(short i)
 		{
 			_write((char *)&i, sizeof(short));
 			return this;
 		}
-		Buffer*			writeInt32(int32 i)
+		Buffer*			writeint32(int32 i)
 		{
 			_write((char *)&i, sizeof(int32));
 			return this;
 		}
-		Buffer*			writeInt(cpps_integer i)
+		Buffer*			writeint(cpps_integer i)
 		{
 			_write((char *)&i, sizeof(cpps_integer));
 			return this;
 		}
-		Buffer*			writeNumber(cpps_number i)
+		Buffer*			writenumber(cpps_number i)
 		{
 			_write((char *)&i, sizeof(cpps_number));
 			return this;
 		}
-		Buffer*			writeString(std::string s)
+		Buffer*			writestring(std::string s)
 		{
 			_write(s.c_str(), s.size());
 			return this;
 		}
-		Buffer*			writeBool(bool b)
+		Buffer*			writebool(bool b)
 		{
 			_write((char *)&b, sizeof(bool));
 			return this;

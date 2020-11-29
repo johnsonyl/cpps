@@ -90,6 +90,8 @@
 #define CPPS_ONEW_SETV			50	//new Class(){ this }
 #define CPPS_OFOREACH			51	//foreach循环
 #define	CPPS_OIMPORT			52	//import导入库
+#define	CPPS_OOFFSET			53	//offset相对定位免查找更快速执行
+#define	CPPS_QUOTEOFFSET		54	//offset引用
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误
@@ -101,6 +103,12 @@
 #define CPPS_NOT_DEFVAR			8 //不可以给变量设置值
 #define CPPS_NOT_DONTDELETEEND	16 //不需要移除;
 #define CPPS_NOT_DEFCLASS		32 //不要定义类
+
+//regvatlist
+#define CPPS_OFFSET_TYPE_GLOBAL 0		//_G 
+#define CPPS_OFFSET_TYPE_LEFTDOMAIN 1	//leftdomain + N
+#define	CPPS_OFFSET_TYPE_SELF 2			// SELF + N;
+#define	CPPS_OFFSET_TYPE_LEFTCLASS 3	// LEFT CLASS + N;
 
 enum
 {
@@ -148,7 +156,7 @@ typedef long long __int64;
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
-	std::cout << " " << stack->f.c_str() << "	The " << stack->l << " line	function：" << stack->func.c_str() << std::endl; \
+	std::cout << " " << stack->f << "	The " << stack->l << " line	function：" << stack->func << std::endl; \
 }\
 	c->resume();\
 }\
@@ -159,7 +167,7 @@ for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != 
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
-	std::cout << " " << stack->f.c_str() << "	The " << stack->l << " line	function：" << stack->func.c_str() << std::endl; \
+	std::cout << " " << stack->f << "	The " << stack->l << " line	function：" << stack->func << std::endl; \
 }\
 	c->resume();\
 }
@@ -246,6 +254,7 @@ typedef struct {
 #include <list>
 #include <assert.h>
 #include <sstream>
+#include <set>
 #include <unordered_set>
 #include <unordered_map>
 #include<math.h>

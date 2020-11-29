@@ -19,33 +19,37 @@ namespace cpps
 	{
 		cpps_regvar()
 		{
-			n8isConst = 0;
+			nconst = 0;
+			offset = -1;
+			offsettype = -1;
 		}
 		~cpps_regvar();
-		void	setVarName(std::string n)
+		void	setvarname(std::string n)
 		{
 			varName = n;
 		}
 
-		void setValue(cpps_value v);
-		cpps_value& getValue()
+		void setval(cpps_value v);
+		cpps_value& getval()
 		{
 			return value;
 		}
 	
-		int8 isConst()
+		int8 isconst()
 		{
-			return n8isConst;
+			return nconst;
 		}
-		void setIsConst(int8 c)
+		void setconst(int8 c)
 		{
-			n8isConst = c;
+			nconst = c;
 		}
-	private:
-		cpps_value			value;
 	public:
+		cpps_value			value;
 		std::string			varName;
-		int8				n8isConst;
+		int8				nconst;
+
+		int32				offset;
+		int32				offsettype;
 	};
 
 	

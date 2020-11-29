@@ -24,34 +24,41 @@ namespace cpps
 {
 
 	//内部
-	cpps_value				cpps_calculate_expression(C *c, cpps_domain *domain, Node *o, cpps_domain *&leftdomain);
-	void					cpps_step(C * c, cpps_domain *domain, Node* d);
-	void					cpps_step_all(C * c, int32 retType, cpps_domain* domain, Node *o );
+	cpps_value				cpps_calculate_expression(C *c, cpps_domain *domain, cpps_domain* root, node *o, cpps_domain *&leftdomain);
+	void					cpps_step(C * c, cpps_domain *domain, cpps_domain* root, node* d);
+	void					cpps_step_all(C * c, int32 retType, cpps_domain* domain, cpps_domain* root, node *o );
 
-	void					make_values(C *c, cpps_domain *domain, Node *d, std::vector<cpps_value> &params, std::vector<cpps_regvar *>&varlist);
+	void					make_values(C *c, cpps_domain *domain, cpps_domain *root, node *d, std::vector<cpps_value> &params, cpps_domain* execdomain);
 	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
 	void					cpps_gc_remove_barrier(C*c, cpps_regvar *v);
 	void					cpps_gc_check_step(C * c);
-	
+	void					cpps_destory_node(node* d);
 
 	
 
 	struct cpps_cppsfunction : public cpps_function
 	{
-		cpps_cppsfunction(cpps_domain *d,Node *p,Node *c)
+		cpps_cppsfunction(cpps_domain *d,node *p,node *c, usint32 count)
 		{
-			params = new Node(p->filename, p->line);
+			params = new node(p->filename, p->line);
 			params->clone(p); //克隆出所有列表
 
-			context = new Node(c->filename, c->line);
+			context = new node(c->filename, c->line);
 			context->clone(c); //克隆出所有列表
 
+			varcount = count;
+
+#ifdef CPPS_JIT_COMPILER
 			jitbuffer = NULL;
 			jitbufferSize = 0;
+#endif // CPPS_JIT_COMPILER
 
 			domain = d;
 		}
-
+		virtual ~cpps_cppsfunction() {
+			cpps_destory_node(params); delete params; params = NULL;
+			cpps_destory_node(context); delete context; context = NULL;
+		}
 
 		virtual int8 getparamcount() { return static_cast<int8>(params->l.size()); }
 
@@ -69,7 +76,8 @@ namespace cpps
 #endif // CPPS_JIT_COMPILER
 
 			//todo 先delete指针
-			cpps_domain *funcdomain = new cpps_domain(domain, cpps_domain_type_exec,"");
+			cpps_domain* funcdomain = c->domain_alloc();
+			funcdomain->init(domain, cpps_domain_type_exec);
 			funcdomain->setexecdomain(prevdomain);
 
 			//l 的0 代表返回值列表 1.代表参数列表
@@ -82,38 +90,36 @@ namespace cpps
 			for (size_t i = 0; i < params->l.size(); i++)
 			{
 
-				Node* d = params->l[i];
-				Node* varName = d->l[0];
+				node* d = params->l[i];
+				node* varname = d->l[0];
 
-				if (varName->type == CPPS_VARNAME)
+				if (varname->type == CPPS_VARNAME)
 				{
 					cpps_regvar * v = new cpps_regvar();
-					v->setVarName(varName->s);
+					v->setvarname(varname->s);
 
 					if (i >= o->size())
 					{
-						if (i < varName->l.size())
+						if (i < varname->l.size())
 						{
-							Node *var = varName->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
+							node *var = varname->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
 							cpps_domain *leftdomain = NULL;
-							cpps_value value = cpps_calculate_expression(c, prevdomain, var, leftdomain);
-							v->setValue(value);
-							//if (value.tt == CPPS_TCLASS)
-							//{
-							//	cpps_gc_add_barrier(c, v);
-							//}
+							cpps_value value = cpps_calculate_expression(c, prevdomain, prevdomain, var, leftdomain);
+							v->setval(value);
 						}
 					}
 					else
 					{
 						cpps_value value = (*o)[i];
-						v->setValue(value);
-						//if (value.tt == CPPS_TCLASS)
-						//{
-						//	cpps_gc_add_barrier(c, v);
-						//}
+						v->setval(value);
 					}
-					funcdomain->regVar(c,v);
+					funcdomain->regvar(c,v);
+					if (varname->offsettype == CPPS_OFFSET_TYPE_SELF)
+					{
+						v->offset = varname->offset;
+						v->offsettype = varname->offsettype;
+						funcdomain->regidxvar(varname->offset, v);
+					}
 				}
 			}
 		
@@ -124,8 +130,8 @@ namespace cpps
 // 				*ret = stack->funcRet;//return的值反馈回去
 
 #else
-
-			cpps_step_all(c,CPPS_SINGLERET,funcdomain, context);
+			funcdomain->resize(varcount);
+			cpps_step_all(c,CPPS_SINGLERET,funcdomain,funcdomain, context);
 			
  			if (ret)
  				*ret = funcdomain->funcRet;//return的值反馈回去
@@ -134,12 +140,12 @@ namespace cpps
 
 
 			funcdomain->destory(c);
-			delete funcdomain;
+			c->domain_free(funcdomain);
 
 
 			cpps_regvar v;
-			v.setVarName("ret");
-			v.setValue(*ret);
+			v.setvarname("ret");
+			v.setval(*ret);
 			cpps_gc_add_barrier(c, &v);
 
 			cpps_gc_check_step(c);
@@ -147,11 +153,14 @@ namespace cpps
 			cpps_gc_remove_barrier(c, &v);
 		}
 	public:
-		Node		*params;
-		Node		*context;
+		usint32		varcount;
+		node		*params;
+		node		*context;
 		cpps_domain	*domain; //在每个函数中临时创建一个域。 提供临时变量
-		char		*jitbuffer; //JIT缓存
+#ifdef CPPS_JIT_COMPILER
+		char*		jitbuffer; //JIT缓存
 		size_t		jitbufferSize;
+#endif
 	};
 
 }

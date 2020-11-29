@@ -17,12 +17,12 @@ namespace cpps
 	template <class T>
 	struct cpps_class_singleton;
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p);
-	void cpps_call_parent_class_default_constructor(C* c, Node* n, cpps_cppsclass* parent_cppsclass, cpps_domain* domain, cpps_domain* leftdomain);
+	void cpps_call_parent_class_default_constructor(C* c, node* n, cpps_cppsclass* parent_cppsclass, cpps_domain* domain, cpps_domain* root, cpps_domain* leftdomain);
 	//可以增加到GC的PTR
 	template<class T>
-	cpps_cppsclassvar*		newClassPtr(C *c, T ** ret)
+	cpps_cppsclassvar*		newclass(C *c, T ** ret)
 	{
-		cpps_cppsclassvar *var = cpps_class_singleton<T*>::getSingletonPtr()->getcls()->create(c,true);
+		cpps_cppsclassvar *var = cpps_class_singleton<T*>::instance()->getcls()->create(c,true);
 		//cpps_regvar* v = new cpps_regvar;
 		//v->setValue(var);
 
@@ -39,34 +39,34 @@ namespace cpps
 		cpps_cppsclassvar* cppsclassvar = cppsclass->create(c);
 		//将类对象里面的变量创建出来
 		if (cppsclass->o)
-			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar, cppsclass->o->getright());
+			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar,cppsclassvar, cppsclass->o->getright());
 
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, cppsclassvar);
 
 		cpps_regvar* v = new cpps_regvar();
-		v->setVarName("this");
-		v->setValue(cpps_value(cppsclassvar)); //域列表会copy进去
-		v->setIsConst(true);
-		cppsclassvar->regVar(NULL, v);
+		v->setvarname("this");
+		v->setval(cpps_value(cppsclassvar)); //域列表会copy进去
+		v->setconst(true);
+		cppsclassvar->regvar(NULL, v);
 
 		//执行0参数构造函数
 		cpps_domain* leftdomain = NULL;
-		cpps_regvar* var = cppsclassvar->getVar("constructor", leftdomain);
-		if (var && var->getValue().tt == CPPS_TFUNCTION)
+		cpps_regvar* var = cppsclassvar->getvar("constructor", leftdomain);
+		if (var && var->getval().tt == CPPS_TFUNCTION)
 		{
-			Node n("",0);
+			node n("",0);
 			leftdomain = cppsclassvar;
-			for (size_t i = 0; i < cppsclass->parentClassList().size(); ++i)
+			for (size_t i = 0; i < cppsclass->parentclasslist().size(); ++i)
 			{
-				cpps_cppsclass* parent_cppsclass = cppsclass->parentClassList()[i];
-				cpps_call_parent_class_default_constructor(c, &n, parent_cppsclass, c->_G, leftdomain);
+				cpps_cppsclass* parent_cppsclass = cppsclass->parentclasslist()[i];
+				cpps_call_parent_class_default_constructor(c, &n, parent_cppsclass, c->_G,c->_G, leftdomain);
 			}
 
-			cpps_function* f = var->getValue().value.func;
+			cpps_function* f = var->getval().value.func;
 			if (f->getparamcount() == 0)
 			{
-				doclassfunction(c, cppsclassvar, var->getValue());
+				doclassfunction(c, cppsclassvar, var->getval());
 			}
 		}
 
@@ -76,6 +76,6 @@ namespace cpps
 	}
 }
 
-#define cpps_create_class_var(t,c,v,p) t *p = NULL; cpps_value v = newClassPtr<t>(c, &p);
+#define cpps_create_class_var(t,c,v,p) t *p = NULL; cpps_value v = newclass<t>(c, &p);
 
 #endif // CPPS_NEWPTR_HEAD_
