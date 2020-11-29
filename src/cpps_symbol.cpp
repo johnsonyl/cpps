@@ -406,17 +406,25 @@ namespace cpps
 		{
 			if (b.value.value->tt == CPPS_TSTRING)
 			{
+				if (a.value.value->tt == CPPS_TSTRING)
+				{
+					std::string* src = cpps_get_string(*(b.value.value));
+					std::string* tar = cpps_get_string(*(a.value.value));
+					*tar = *src;
+				}
+				else
+				{
+					std::string* str;
+					cpps_value ret = newclass<std::string>(c, &str);
+					ret.tt = CPPS_TSTRING;
 
-				std::string *str;
-				cpps_value ret = newclass<std::string>(c, &str);
-				ret.tt = CPPS_TSTRING;
 
+					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.value->value.domain;
+					std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
 
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)b.value.value->value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-				str->append(tmpStr->c_str());
-				*(a.value.value) = ret;
+					str->append(tmpStr->c_str());
+					*(a.value.value) = ret;
+				}
 
 			}
 			else
@@ -429,15 +437,25 @@ namespace cpps
 
 			if (b.tt == CPPS_TSTRING)
 			{
-				std::string *str;
-				cpps_value ret = newclass<std::string>(c, &str);
-				ret.tt = CPPS_TSTRING;
+				if (a.value.value->tt == CPPS_TSTRING)
+				{
+					std::string* src = cpps_get_string(b);
+					std::string* tar = cpps_get_string(*a.value.value);
+					*tar = *src;
+					//tar->assign(*src);
+				}
+				else
+				{
+					std::string* str;
+					cpps_value ret = newclass<std::string>(c, &str);
+					ret.tt = CPPS_TSTRING;
 
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)b.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.domain;
+					std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
 
-				str->append(tmpStr->begin(),tmpStr->end());
-				*(a.value.value) = ret;
+					str->append(tmpStr->begin(), tmpStr->end());
+					*(a.value.value) = ret;
+				}
 			}
 			else
 				*(a.value.value) = b;

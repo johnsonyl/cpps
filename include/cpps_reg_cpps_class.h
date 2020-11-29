@@ -33,6 +33,7 @@ namespace cpps
 		cpps::cpps_reg_cpps_class<cpps_map>(c, "map", "_G");
 		cpps::cpps_reg_cpps_class<cpps_map_node>(c, "cpps_map_node", "_G");
 		cpps::cpps_reg_cpps_class<cpps_unordered_map>(c, "unordered_map", "_G");
+		cpps::cpps_reg_cpps_class<cpps_range>(c, "range", "_G");
 		//cpps::cpps_reg_cpps_class<cpps_lock>(c, "cpps_lock", "_G");
 	}
 }

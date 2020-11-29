@@ -79,6 +79,7 @@ namespace cpps
 			cpps_domain* funcdomain = c->domain_alloc();
 			funcdomain->init(domain, cpps_domain_type_exec);
 			funcdomain->setexecdomain(prevdomain);
+			funcdomain->resize(varcount);
 
 			//l 的0 代表返回值列表 1.代表参数列表
 
@@ -130,7 +131,6 @@ namespace cpps
 // 				*ret = stack->funcRet;//return的值反馈回去
 
 #else
-			funcdomain->resize(varcount);
 			cpps_step_all(c,CPPS_SINGLERET,funcdomain,funcdomain, context);
 			
  			if (ret)

@@ -36,10 +36,10 @@ namespace cpps
 			offsettype = -1;
 			parentclassoffset = NULL;
 		}
-		cpps_domain(cpps_domain* p, char type, std::string domainname)
+		cpps_domain(cpps_domain* p, char type, std::string name)
 			:cpps_gcobject()
 		{
-			init(p, type, domainname);
+			init(p, type, name);
 		}
 		virtual ~cpps_domain()
 		{
@@ -49,13 +49,13 @@ namespace cpps
 		{
 			return NULL;
 		}
-		void init(cpps_domain* p, char type, std::string domainname)
+		void init(cpps_domain* p, char type, std::string name)
 		{
 			parent[0] = p;
 			domainType = type;
 			isbreak = false;
 			parent[1] = NULL;
-			domainName = domainname;
+			domainname = name;
 			funcRet.tt = CPPS_TNIL;
 			hasVar = false;
 			stacklist = NULL;
@@ -78,7 +78,7 @@ namespace cpps
 		}
 		std::string								getdomainname()
 		{
-			return domainName;
+			return domainname;
 		}
 		void									regfunc(cpps_reg* f)
 		{
@@ -251,7 +251,7 @@ namespace cpps
 		std::unordered_map<std::string, cpps_regvar*>		varList;
 		cpps_value											funcRet;//当他是一个func域的时候作为返回值用的 将来或许还有别的用途 暂时起名为funcRet
 		bool												isbreak;//有可能其他地方让我这个执行集退出执行
-		std::string											domainName; //域名字
+		std::string											domainname; //域名字
 		bool												hasVar;
 		std::vector< cpps_regvar*>							*stacklist;
 		int32												offset;

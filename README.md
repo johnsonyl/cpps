@@ -51,6 +51,27 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-11-30 更新
+
+1.增加foreach xrange.
+
+2.优化cpps速度
+
+
+```
+foreach(var i : xrange(0,999))
+{
+	println(i);
+}
+
+foreach(var i : nrange(0,999,3)) //每次递增3
+{
+	println(i);
+}
+
+```
+
+
 2020-11-29 更新
 -
 

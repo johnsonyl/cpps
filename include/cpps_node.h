@@ -219,6 +219,7 @@ namespace cpps
 			cpps_number			number;		// double float 
 			cpps_integer		integer;	// int
 			int32				b;			// bool
+			cpps_cppsclassvar	*str;		//string
 		};
 		Value					value;		//Öµ¡£
 

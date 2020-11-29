@@ -33,7 +33,7 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TCLASSVAR)
 		{
-			if (b.value.value.domain->domainName == "vector")
+			if (b.value.value.domain->domainname == "vector")
 			{
 				cout << "[";
 				cpps_vector *v = cpps_converter<cpps_vector*>::apply(b.value);
@@ -47,7 +47,7 @@ namespace cpps
 				}
 				cout << "]";
 			}
-			else if (b.value.value.domain->domainName == "map")
+			else if (b.value.value.domain->domainname == "map")
 			{
 				cout << "{";
 				cpps_map *v = cpps_converter<cpps_map*>::apply(b.value);
@@ -63,7 +63,7 @@ namespace cpps
 				}
 				cout << "}";
 			}
-			else if (b.value.value.domain->domainName == "unordered_map")
+			else if (b.value.value.domain->domainname == "unordered_map")
 			{
 				cout << "{";
 				cpps_unordered_map *v = cpps_converter<cpps_unordered_map*>::apply(b.value);
@@ -115,7 +115,7 @@ namespace cpps
 		else if (type(b) == CPPS_TCLASSVAR)
 		{
 			
-			if (b.value.value.domain->domainName == "vector")
+			if (b.value.value.domain->domainname == "vector")
 			{
 				cout << "[";
 				cpps_vector *v = cpps_converter<cpps_vector*>::apply(b.value);
@@ -129,7 +129,7 @@ namespace cpps
 				}
 				cout << "]";
 			}
-			else if (b.value.value.domain->domainName == "map")
+			else if (b.value.value.domain->domainname == "map")
 			{
 				cout << "{";
 				cpps_map *v = cpps_converter<cpps_map*>::apply(b.value);
@@ -145,7 +145,7 @@ namespace cpps
 				}
 				cout << "}";
 			}
-			else if (b.value.value.domain->domainName == "unordered_map")
+			else if (b.value.value.domain->domainname == "unordered_map")
 			{
 				cout << "{";
 				cpps_unordered_map *v = cpps_converter<cpps_unordered_map*>::apply(b.value);
@@ -232,7 +232,7 @@ namespace cpps
 	{
 		if (va.isdomain() && func.tt == CPPS_TFUNCTION)
 		{
-			if (va.value.domain->domainName == "vector")
+			if (va.value.domain->domainname == "vector")
 			{
 				cpps_vector *v = cpps_converter<cpps_vector*>::apply(va);
 				if (v)
@@ -261,7 +261,7 @@ namespace cpps
 					}
 				}
 			}
-			else if (va.value.domain->domainName == "map" )
+			else if (va.value.domain->domainname == "map" )
 			{
 				cpps_map *v = cpps_converter<cpps_map*>::apply(va);
 				if (v)
@@ -289,7 +289,7 @@ namespace cpps
 					}
 				}
 			}
-			else if (va.value.domain->domainName == "unordered_map")
+			else if (va.value.domain->domainname == "unordered_map")
 			{
 				cpps_unordered_map *v = cpps_converter<cpps_unordered_map*>::apply(va);
 				if (v)

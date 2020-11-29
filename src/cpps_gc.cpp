@@ -293,7 +293,7 @@ namespace cpps
 		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin(); it != c->getgen1()->end(); it++)
 		{
 			auto v = *it;
-			if (v->domainName == "String")
+			if (v->domainname == "String")
 			{
 				std::string *tmpStr = (std::string *)v->getclsptr();
 				printf("%s\r\n", tmpStr->c_str());
