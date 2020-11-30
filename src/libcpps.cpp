@@ -3075,9 +3075,8 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_OBRACKET) {
 			cpps_domain* leftdomain = NULL;
-			if (d->getleft())
-				/* 获取第一个节点 */
-				ret = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
+			/* 获取第一个节点 */
+			if (d->getleft()) ret = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
 		}
 		else if (d->type == CPPS_OARRAY) {
 			cpps_calculate_expression_array(ret, c, d, leftdomain, domain, root);

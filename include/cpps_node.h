@@ -90,9 +90,14 @@ namespace cpps
 			type = v->type;
 			for (auto n : v->l)
 			{
-				node* cpyn = new node();
-				cpyn->clone(n);
-				l.push_back(cpyn);
+				if (n == NULL){
+					node* cpyn = new node();
+					cpyn->clone(n);
+					l.push_back(cpyn);
+				}
+				else {
+					l.push_back(n);//ռλ
+				}
 			}
 			filename = v->filename;
 			symbol = v->symbol;
