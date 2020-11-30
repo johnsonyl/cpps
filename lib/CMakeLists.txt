@@ -6,6 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("cppslibs")
 
 IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 ELSE (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	#default release.
 	if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
