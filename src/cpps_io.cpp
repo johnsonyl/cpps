@@ -161,6 +161,41 @@ namespace cpps
 #endif
 		return buffer;
 	}
+	std::string cpps_real_path()
+	{
+		char abs_path[1024];
+		memset(abs_path, 0, 1024);
+#ifdef WIN32
+		GetModuleFileNameA(NULL, abs_path, 1024);
+		size_t cnt = strlen(abs_path);
+		for (size_t i = cnt; i >= 0; --i)
+		{
+			if (abs_path[i] == '\\')
+			{
+				abs_path[i + 1] = '\0';
+				break;
+	}
+		}
+#else
+		size_t cnt = readlink("/proc/self/exe", abs_path, 1024);//获取可执行程序的绝对路径
+		if (cnt < 0 || cnt >= 1024)
+		{
+			return NULL;
+		}
+		//最后一个'/' 后面是可执行程序名，去掉devel/lib/m100/exe，只保留前面部分路径
+
+		for (size_t i = cnt; i >= 0; --i)
+		{
+			if (abs_path[i] == '/')
+			{
+				abs_path[i + 1] = '\0';
+				break;
+			}
+		}
+#endif
+		
+		return abs_path;
+	}
 	void cpps_regio(C *c)
 	{
 		module(c,"io")[
@@ -182,6 +217,7 @@ namespace cpps
 			def("getfilenamenotext", getfilenamenotext),
 			def("getcwd", cpps_getcwd),
 			def("mkdir",cpps_io_mkdir),
+			def("getrealpath", cpps_real_path),
 			def("file_exists",cpps_io_file_exists)
 		];
 

@@ -29,6 +29,7 @@ namespace cpps
 			offsettype = -1;
 			size = -1;
 			varlist = NULL;
+			value.integer = 0;
 		}
 		node(std::string f)
 		{
@@ -43,6 +44,7 @@ namespace cpps
 			offsettype = -1;
 			size = -1;
 			varlist = NULL;
+			value.integer = 0;
 		}
 		node(node *n,std::string f,int32 ln)
 		{
@@ -58,6 +60,7 @@ namespace cpps
 			offsettype = -1;
 			size = -1;
 			varlist = NULL;
+			value.integer = 0;
 		}
 		node(std::string f, int32 ln)
 		{
@@ -73,6 +76,7 @@ namespace cpps
 			offsettype = -1;
 			size = -1;
 			varlist = NULL;
+			value.integer = 0;
 		}
 		void release()
 		{

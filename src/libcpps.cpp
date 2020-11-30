@@ -30,6 +30,33 @@ namespace cpps {
 	void cpps_gc_check_gen1(C* c);
 	bool cpps_loadlibrary(C* c, std::string libname);
 	void cpps_symbol_handle(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_value& ret);
+	bool cpps_io_file_exists(std::string path);
+	std::string cpps_getcwd();
+	std::string cpps_real_path();
+	void cpps_load_filebuffer(const char* path, std::string& fileSrc)
+	{
+#ifdef _WIN32
+		FILE* file;
+		fopen_s(&file, path, "rb+");
+# else
+		FILE* file = fopen(path, "rb+");
+#endif
+		if (file) {
+			char s[4097];
+			memset(s, 0, 4097);
+			fseek(file, 0, SEEK_END);
+			int32 size = ftell(file);
+			fseek(file, 0, SEEK_SET);
+			while (size != 0) {
+				int32 rs = size < 4096 ? size : 4096;
+				fread(s, rs, 1, file);
+				s[rs] = '\0';
+				size -= rs;
+				fileSrc += s;
+			}
+			fclose(file);
+		}
+	}
 	inline void cpps_gc_check_step(C* c) {
 		size_t	g0size = c->getgen0size();
 		size_t	g1size = c->getgen1size();
@@ -88,6 +115,13 @@ namespace cpps {
 	std::string cpps_parse_object_varname(cppsbuffer& buffer) {
 		std::string ret = "";
 		while (buffer.cur() != ':') {
+			ret.push_back(buffer.pop());
+		}
+		return(ret);
+	}
+	std::string cpps_parse_include_varname(cppsbuffer& buffer) {
+		std::string ret = "";
+		while (buffer.cur() != '>') {
 			ret.push_back(buffer.pop());
 		}
 		return(ret);
@@ -1439,39 +1473,44 @@ namespace cpps {
 		cpps_parse_rmspaceandenter(buffer);
 		cpps_parse_expression(c, domain, child, root, buffer);
 	}
+	std::string cpps_rebuild_filepath(std::string path)
+	{
+		/*1.先查工作路径.*/
+		std::string tmppath = cpps_getcwd() + path;
+		if (cpps_io_file_exists(tmppath)) return tmppath;
+		/*2.查执行文件所在目录.*/
+		tmppath = cpps_real_path() + path;
+		if (cpps_io_file_exists(tmppath)) return tmppath;
+		/*3.绝对路径.*/
+		tmppath = path;
+		if (cpps_io_file_exists(tmppath)) return tmppath;
+		return "";
+	}
 	void cpps_parse_include(C* c, cpps_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		child->type = CPPS_OINCLUDE;
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() != '(') {
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '(' after include"));
+		//#include <cpps/cpps.cpp> √
+		if (buffer.cur() != '<') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '<' after include"));
 		}
 		buffer.pop();
-		/* pop ( */
-		while (!buffer.isend()) {
-			/* 剔除回车. */
-			cpps_parse_rmspaceandenter(buffer);
-			/* 是否到最后了。 */
-			if (buffer.cur() == ')') {
-				break;
-			}
-			if (buffer.isend()) {
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing ')'after include"));
-			}
-			cpps_parse_expression(c, domain, child, root, buffer);
-			/* 是否到最后了。 */
-			if (buffer.cur() == ',') {
-				buffer.pop();
-				/* pop , */
-			}
-		}
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() != ')') {
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '('after include"));
+		std::string path = cpps_parse_include_varname(buffer);
+		child->s = path;
+		path = cpps_rebuild_filepath(path);
+		if(path.empty()) throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "can't include file : %s", child->s.c_str()));
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != '>') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '>'after include"));
 		}
 		buffer.pop();
-		/* pop ) */
+		/*载入文件*/
+		std::string fileSrc;
+		cpps_load_filebuffer(path.c_str(), fileSrc);
+		buffer.append(fileSrc.c_str(),(int32) fileSrc.size());
+
 	}
 	void cpps_parse_dofile(C* c, cpps_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		child->type = CPPS_ODOFILE;
@@ -1565,12 +1604,6 @@ namespace cpps {
 		else if (child->s == "dofile") {
 			cpps_parse_dofile(c, domain, child, root, buffer);
 		}
-		else if (child->s == "import") {
-			cpps_parse_import(c, domain, child, root, buffer);
-		}
-		else if (child->s == "include") {
-			cpps_parse_include(c, domain, child, root, buffer);
-		}
 		else if (child->s == "dostring") {
 			cpps_parse_dostring(c, domain, child, root, buffer);
 		}
@@ -1609,6 +1642,25 @@ namespace cpps {
 			cpps_parse_assemble(c, domain, child, root, buffer);
 			/* remove idxvar */
 			cpps_parse_unreg_node(child, root);
+		}
+		else if (buffer.cur() == '#'){
+			/* 剔除空格 */
+			if (limit & CPPS_NOT_DEFSYSTEM) {
+				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
+			}
+			buffer.pop();
+			cpps_parse_rmspaceandenter(buffer);
+			child->s = cpps_parse_varname(buffer);
+			if (child->s == "include") {
+				child->type = CPPS_OINCLUDE;
+				cpps_parse_include(c, domain, child, root, buffer);
+			}
+			else if (child->s == "import") {
+				cpps_parse_import(c, domain, child, root, buffer);
+			}
+			else {
+				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "parse error [%s] .", child->s.c_str()));
+			}
 		}
 		else {
 			if (cpps_parse_isnumber(buffer.cur())) {
@@ -1666,10 +1718,6 @@ namespace cpps {
 		o->type = CPPS_ROOT;
 		o->size = 0;
 		o->varsize = 0;
-		/*
-		 * o->offset = 0;
-		 * o->offsettype = 0;
-		 */
 		cppsbuffer buffer(filename.c_str(), str.c_str(), (int32)str.size());
 		while (true) {
 			/* 剔除回车. */
@@ -1697,8 +1745,8 @@ namespace cpps {
 		c->_G->regvar(NULL, v);
 		/* 将自己注册成_G.. */
 	}
-	cpps::C* create() {
-		C* c = new cpps::C();
+	cpps::C* create(int argc, char** argv) {
+		C* c = new cpps::C(argc, argv);
 		cpps_create_root_G(c);
 		cpps_regsymbols(c);
 		cpps_regbase(c);
@@ -1712,6 +1760,7 @@ namespace cpps {
 		cpps_regdebug(c);
 		cpps_reglock(c);
 		cpps_regrange(c);
+		cpps_regconsole(c);
 		return(c);
 	}
 	int32 dostring(C* c, std::string str) {
@@ -1725,35 +1774,8 @@ namespace cpps {
 		return(CPPS_NOERROR);
 	}
 	int32 loadfile(cpps::C* c, const char* path) {
-#ifdef _WIN32
-		FILE* file;
-		fopen_s(&file, path, "rb+");
-# else
-		FILE* file = fopen(path, "rb+");
-#endif
 		std::string fileSrc;
-		if (file) {
-			char s[4097];
-			memset(s, 0, 4097);
-			fseek(file, 0, SEEK_END);
-			int32 size = ftell(file);
-			fseek(file, 0, SEEK_SET);
-			while (size != 0) {
-				int32 rs = size < 4096 ? size : 4096;
-				fread(s, rs, 1, file);
-				s[rs] = '\0';
-				size -= rs;
-				fileSrc += s;
-			}
-			fclose(file);
-		}
-		if (fileSrc.substr(0, 11) == "cpps_encode") {
-			std::string decode;
-			for (size_t i = 11; i < fileSrc.size(); i++) {
-				decode.append(1, fileSrc[i] - CPPS_ENCODE_CPPS_KEY);
-			}
-			fileSrc = decode;
-		}
+		cpps_load_filebuffer(path, fileSrc);
 		node* o = loadbuffer(c, c->_G, fileSrc, path);
 		if (o) {
 			c->push(o);
@@ -1983,7 +2005,7 @@ namespace cpps {
 	void cpps_step_for(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 
 		cpps_domain* fordomain = c->domain_alloc();
-		fordomain->init(domain, cpps_domain_type_exec);
+		fordomain->init(domain, cpps_domain_type_for);
 		fordomain->setexecdomain(domain);
 		node* for1 = d->l[0];
 		node* for2 = d->l[1];
@@ -2016,7 +2038,7 @@ namespace cpps {
 	}
 	void cpps_step_foreach(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		cpps_domain* foreachdomain = c->domain_alloc();
-		foreachdomain->init(domain, cpps_domain_type_exec);
+		foreachdomain->init(domain, cpps_domain_type_foreach);
 		foreachdomain->setexecdomain(domain);
 		node* for1 = d->l[0];
 		node* for2 = d->l[1];
@@ -2135,7 +2157,7 @@ namespace cpps {
 	}
 	void cpps_step_while(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		cpps_domain* whiledomain = c->domain_alloc();
-		whiledomain->init(domain, cpps_domain_type_exec);
+		whiledomain->init(domain, cpps_domain_type_while);
 		whiledomain->setexecdomain(domain);
 		whiledomain->isbreak = false;
 		node* while1 = d->l[0];
@@ -2351,35 +2373,8 @@ namespace cpps {
 				cpps_domain* leftdomain = NULL;
 				cpps_value	path = cpps_calculate_expression(c, domain, root, *it, leftdomain);
 				std::string	fpath = cpps_to_string(path);
-#ifdef _WIN32
-				FILE* file;
-				fopen_s(&file, fpath.c_str(), "rb+");
-# else
-				FILE* file = fopen(fpath.c_str(), "rb+");
-#endif
 				std::string fileSrc;
-				if (file) {
-					char s[4097];
-					memset(s, 0, 4097);
-					fseek(file, 0, SEEK_END);
-					int32 size = ftell(file);
-					fseek(file, 0, SEEK_SET);
-					while (size != 0) {
-						int32 rs = size < 4096 ? size : 4096;
-						fread(s, rs, 1, file);
-						s[rs] = '\0';
-						size -= rs;
-						fileSrc += s;
-					}
-					fclose(file);
-				}
-				if (fileSrc.substr(0, 11) == "cpps_encode") {
-					std::string decode;
-					for (size_t i = 11; i < fileSrc.size(); i++) {
-						decode.append(1, fileSrc[i] - CPPS_ENCODE_CPPS_KEY);
-					}
-					fileSrc = decode;
-				}
+				cpps_load_filebuffer(fpath.c_str(), fileSrc);
 				node* o = loadbuffer(c, domain, fileSrc, fpath);
 				cpps_stack* stack = c->stack_alloc();
 				stack->init((*it)->filename.c_str(), (*it)->line, "dofile");
@@ -2560,7 +2555,7 @@ namespace cpps {
 			cpps_step_dofile(c, NULL, root, d);
 		}
 		else if (d->type == CPPS_OINCLUDE) {
-			cpps_step_dofile(c, domain, root, d);
+			//do nothing...
 		}
 		else if (d->type == CPPS_OIMPORT) {
 			cpps_step_import(c, domain, root, d);

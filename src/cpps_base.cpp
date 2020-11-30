@@ -5,6 +5,9 @@ using namespace std;
 namespace cpps
 {
 	bool cpps_io_file_exists(std::string path);
+	void cpps_load_filebuffer(const char* path, std::string& fileSrc);
+	std::string getfilenamenotext(std::string str);
+	std::string cpps_rebuild_filepath(std::string path);
 	void cpps_base_printf(object b)
 	{
 		if (type(b) == CPPS_TNUMBER)
@@ -421,8 +424,6 @@ namespace cpps
 		return 0;
 	}
 	
-	std::string getfilenamenotext(std::string str);
-
 	bool	cpps_loadlibrary(C *c,std::string libname)
 	{
 		std::string path = "lib/"+ libname + "/";
@@ -432,9 +433,8 @@ namespace cpps
 
 #ifdef WIN32
 
-		fpath = path + (libname + ".dll");
-		bool b = cpps_io_file_exists(fpath);
-		if (b)
+		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
+		if (!fpath.empty())
 		{
 			HMODULE module = ::LoadLibraryA(fpath.c_str());
 			std::string libfuncname = "cpps_attach";
@@ -460,9 +460,8 @@ namespace cpps
 
 #elif LINUX
 
-		fpath = path + "lib" + (libname + ".so");
-		bool b = cpps_io_file_exists(fpath);
-		if (b)
+		fpath = cpps_rebuild_filepath(path + "lib" + (libname + ".so"));
+		if (!fpath.empty())
 		{
 			HMODULE module = dlopen(fpath.c_str(), RTLD_LAZY);
 			if (module == NULL)
@@ -486,44 +485,11 @@ namespace cpps
 
 #endif
 		}
-		fpath = path + "main.cpp";
-		b = cpps_io_file_exists(fpath);
-		if (b)
+		fpath = cpps_rebuild_filepath(path + "main.cpp");
+		if (!fpath.empty())
 		{
-
-#ifdef _WIN32
-			FILE* file;
-			fopen_s(&file, fpath.c_str(), "rb+");
-#else
-			FILE* file = fopen(fpath.c_str(), "rb+");
-#endif
 			std::string fileSrc;
-			if (file)
-			{
-				char s[4097];
-				memset(s, 0, 4097);
-				fseek(file, 0, SEEK_END);
-				int32 size = ftell(file);
-				fseek(file, 0, SEEK_SET);
-				while (size != 0)
-				{
-					int32 rs = size < 4096 ? size : 4096;
-					fread(s, rs, 1, file);
-					s[rs] = '\0';
-					size -= rs;
-					fileSrc += s;
-				}
-				fclose(file);
-			}
-			if (fileSrc.substr(0, 11) == "cpps_encode")
-			{
-				std::string decode;
-				for (size_t i = 11; i < fileSrc.size(); i++)
-				{
-					decode.append(1, fileSrc[i] - CPPS_ENCODE_CPPS_KEY);
-				}
-				fileSrc = decode;
-			}
+			cpps_load_filebuffer(fpath.c_str(), fileSrc);
 			node* o = loadbuffer(c, c->_G, fileSrc, fpath);
 			cpps_stack* stack = c->stack_alloc();
 			stack->init("main.cpp", 0, "import");
@@ -600,6 +566,16 @@ namespace cpps
 
 #endif
 	}
+	cpps_value cpps_getargs(C* c)
+	{
+		cpps_vector* vct;
+		cpps_value ret = newclass<cpps_vector>(c, &vct);
+		for (int i = 0; i < c->application_argc; i++)
+		{
+			vct->push_back(cpps_value(c, c->application_argv[i]));
+		}
+		return ret;
+	}
 	void cpps_regbase(C *c)
 	{
 		module(c)[
@@ -631,7 +607,8 @@ namespace cpps
 			def("encodecpps", cpps_encodecpps),
 			def("decodecpps", cpps_decodecpps),
 			def_inside("loadlibrary", cpps_loadlibrary),
-			def_inside("freelibrary", cpps_freelibrary)
+			def_inside("freelibrary", cpps_freelibrary),
+			def_inside("getargs", cpps_getargs)
 		];
 
 	}

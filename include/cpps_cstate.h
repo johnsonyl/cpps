@@ -44,7 +44,9 @@ namespace cpps
 
 	struct C
 	{
-		C();
+		C():C(0,NULL){};
+		C(int argc, char** argv);
+		virtual ~C() {}
 		std::unordered_set<cpps_cppsclassvar *>*									getgen0();
 		std::unordered_set<cpps_cppsclassvar *>*									getgen1();
 		void																		setgen0size(size_t s);
@@ -80,6 +82,8 @@ namespace cpps
 		bool																		debug;
 		cpps_object_pool<cpps::cpps_domain>											domain_pool;
 		cpps_object_pool<cpps::cpps_stack>											stack_pool;
+		int																			application_argc;
+		char**																		application_argv;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

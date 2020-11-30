@@ -84,13 +84,15 @@ namespace cpps
 	{
 		return lastgensize;
 	}
-	C::C()
+	C::C(int argc, char** argv)
 	{
 		gen0size = 0;
 		gen1size = 0;
 		lastgensize = 0;
 		func = NULL;
 		debug = false;
+		application_argc = argc;
+		application_argv = argv;
 	}
 
 	void C::debugopen()

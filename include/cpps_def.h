@@ -103,6 +103,7 @@
 #define CPPS_NOT_DEFVAR			8 //不可以给变量设置值
 #define CPPS_NOT_DONTDELETEEND	16 //不需要移除;
 #define CPPS_NOT_DEFCLASS		32 //不要定义类
+#define CPPS_NOT_DEFSYSTEM		32 //不允许使用#
 
 //regvatlist
 #define CPPS_OFFSET_TYPE_GLOBAL 0		//_G 

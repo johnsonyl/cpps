@@ -19,7 +19,7 @@ namespace cpps
 		cppsbuffer(const char *_filename,const char* _buffer, int32 _buffersize)
 		{
 			filename = _filename;
-			buffer = _buffer;
+			buffer.append(_buffer,_buffersize);
 			buffersize = _buffersize;
 			bufferoffset = 0;
 			l = 1;
@@ -143,8 +143,13 @@ namespace cpps
 		{
 			return l;
 		}
+		void		append(const char* _buffer, int32 _buffersize)
+		{
+			buffer.insert(bufferoffset,_buffer, _buffersize);
+			buffersize += _buffersize;
+		}
 	public:
-		const char *buffer;
+		std::string	buffer;
 		std::string filename;
 		int32			buffersize;
 		int32			bufferoffset;

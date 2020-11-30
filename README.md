@@ -51,6 +51,18 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-1 更新
+-
+
+1.修复更新的BUG.
+
+2.增加console基础库
+
+3.增加读取传入参数
+
+4.增加文本地址读取顺序.
+
+
 2020-11-30 更新
 -
 
@@ -90,7 +102,7 @@ foreach(var i : nrange(0,999,3)) //每次递增3
 ```
 system("chcp 65001"); //use utf8 string
 
-import "hashlib";
+#import "hashlib"
 
 
 var md5 = new hashlib::md5();
@@ -127,7 +139,7 @@ println(sha512.hexdigest());//ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c8
 //windows default GBK 
 //system("chcp 65001"); //use utf8 string
 
-import ["encoding"];
+#import "encoding"
 
 
 var s = "我是中文";
@@ -159,7 +171,7 @@ println(s);//我是中文
 //base64例子
 system("chcp 65001"); //use utf8 string
 
-import ["base64"];
+#import "base64"
 
 
 var s = "abc";
@@ -173,7 +185,7 @@ println("deocde_s:{deocde_s}");
 
 ```
 //mysql例子
-import ["mysql"];
+#import "mysql"
 
 
 var option = new MysqlOption()
@@ -230,7 +242,7 @@ foreach(var result : results)
 ```
 system("chcp 65001"); //use utf8 string
 
-import ["http"];
+#import "http"
 
 var request = new http::httprequest();
 request.setcookiesfile("cookies.txt");
@@ -273,7 +285,7 @@ println("-------------------END-------------------------");
 ```
 system("chcp 65001"); //use utf8 string
 
-import ["socket"];
+#import "socket"
 
 class Home
 {
@@ -428,7 +440,7 @@ while (true){
 ```
 system("chcp 65001"); //use utf8 string
 
-import ["socket"];
+#import "socket"
 
 /*
 
@@ -528,10 +540,10 @@ while (true)
 添加curl支持库
 
 ```
-import ["json","demo","curl"];
+#import ["json","demo","curl"]
 //or
-//import "json";
-//import "demo";
+//#import "json"
+//#import "demo"
 
 
 var url = curl.curl_easy_init();
@@ -556,10 +568,10 @@ curl.curl_easy_cleanup(url);
 增加 import 导入支持库功能
 
 ```
-import ["json", "demo"];
+#import ["json", "demo"]
 //or
-//import "json";
-//import "demo";
+//#import "json"
+//#import "demo"
 
 var arr = [1, 2, 3, 4, 5, 6, 7];
 var obj = { a : "我是开发者", b : "hehe" };
