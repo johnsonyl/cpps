@@ -124,7 +124,7 @@ namespace cpps
 		size_t pos = str.find_last_of(".");
 		if (pos != std::string::npos)
 		{
-			return str.substr(0,pos-1);
+			return str.substr(0,pos);
 		}
 		return "";
 	}

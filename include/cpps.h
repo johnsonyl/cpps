@@ -31,6 +31,7 @@
 #include "cpps_regfunction.h"
 #include "cpps_regvar.h"
 #include "cpps_domain.h"
+#include "cpps_node_domain.h"
 #include "cpps_function.h"
 #include "cpps_classvar.h"
 #include "cpps_class.h"

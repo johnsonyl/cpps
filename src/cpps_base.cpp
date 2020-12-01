@@ -490,7 +490,7 @@ namespace cpps
 		{
 			std::string fileSrc;
 			cpps_load_filebuffer(fpath.c_str(), fileSrc);
-			node* o = loadbuffer(c, c->_G, fileSrc, fpath);
+			node* o = loadbuffer(c,  fileSrc, fpath);
 			cpps_stack* stack = c->stack_alloc();
 			stack->init("main.cpp", 0, "import");
 

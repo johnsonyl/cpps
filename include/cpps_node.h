@@ -16,6 +16,7 @@
 namespace cpps
 {
 	struct C;
+	struct cpps_node_domain;
 	struct node
 	{
 		node() {
@@ -207,7 +208,7 @@ namespace cpps
 			return NULL;
 		}
 
-		void setdomain(cpps_domain * d)
+		void setdomain(cpps_node_domain* d)
 		{
 			domain = d;
 		}
@@ -219,7 +220,7 @@ namespace cpps
 		std::string filename;
 		cpps_symbol* symbol;
 		node *parent;
-		cpps_domain * domain;
+		cpps_node_domain* domain;
 		int32 line;
 
 		//½âÊÍ×ª»¯

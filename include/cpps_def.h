@@ -92,6 +92,7 @@
 #define	CPPS_OIMPORT			52	//import导入库
 #define	CPPS_OOFFSET			53	//offset相对定位免查找更快速执行
 #define	CPPS_QUOTEOFFSET		54	//offset引用
+#define CPPS_OCATCH				45 //catch
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误

@@ -256,7 +256,7 @@ namespace cpps
 		std::vector< cpps_regvar*>							*stacklist;
 		int32												offset;
 		int32												offsettype;
-		std::map<cpps_domain*, int32>*			parentclassoffset; //基类偏移
+		std::map<cpps_domain*, int32>*						parentclassoffset; //基类偏移
 
 	
 	};
