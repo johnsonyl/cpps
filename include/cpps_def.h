@@ -236,6 +236,8 @@ typedef struct {
 	void   (*cpps_detach)(cpps::C*);
 } CPPS_ST_API;
 
+
+
 #else
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS

@@ -86,6 +86,9 @@ namespace cpps
 	}
 	C::C(int argc, char** argv)
 	{
+		o = NULL;
+		_G = NULL;
+		curnode = NULL;
 		gen0size = 0;
 		gen1size = 0;
 		lastgensize = 0;

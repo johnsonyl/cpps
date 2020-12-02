@@ -49,7 +49,7 @@ namespace cpps
 				throw(cpps_error("0", 0, 0, "Vector is out of bounds!"));
 				return cpps::nil;
 			}
-			return _vec.at((size_t)idx);
+			return _vec[((size_t)idx)];
 		}
 		cpps_value&		cpps_at(cpps_integer idx)
 		{

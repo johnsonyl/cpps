@@ -84,6 +84,7 @@ namespace cpps
 		cpps_object_pool<cpps::cpps_stack>											stack_pool;
 		int																			application_argc;
 		char**																		application_argv;
+		node*																		curnode;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

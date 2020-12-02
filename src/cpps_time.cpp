@@ -142,12 +142,12 @@ namespace cpps
 	cpps_integer cpps_time_getyear(cpps_integer t1)
 	{
 		struct tm t = time2tm(t1);
-		return t.tm_year + 1900;
+		return (cpps_integer)t.tm_year + 1900;
 	}
 	cpps_integer cpps_time_getmon(cpps_integer t1)
 	{
 		struct tm t = time2tm(t1);
-		return t.tm_mon + 1;
+		return (cpps_integer)t.tm_mon + 1;
 	}
 	cpps_integer cpps_time_getday(cpps_integer t1)
 	{
@@ -173,6 +173,11 @@ namespace cpps
 	{
 		struct tm t = time2tm(t1);
 		return t.tm_yday;
+	}
+	cpps_integer cpps_time_getwday(cpps_integer t1)
+	{
+		struct tm t = time2tm(t1);
+		return t.tm_wday;
 	}
 	cpps_integer cpps_time_transtime(cpps_integer y, cpps_integer m, cpps_integer d, cpps_integer h, cpps_integer mi, cpps_integer s)
 	{
@@ -287,6 +292,7 @@ namespace cpps
 			def("getmin", cpps_time_getmin),
 			def("getsec", cpps_time_getsec),
 			def("getyday", cpps_time_getyday),
+			def("getwday", cpps_time_getwday),
 			def("addmonths", cpps_time_addmonths),
 			def("adddays", cpps_time_adddays),
 			def("addyears", cpps_time_addyears),

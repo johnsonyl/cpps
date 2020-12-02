@@ -1632,6 +1632,7 @@ namespace cpps {
 	}
 	node* cpps_parse_line(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, int32 limit) {
 		node* child = new node(o, o->filename, buffer.line());
+		while (buffer.cur() == ';') buffer.pop(); /*pop空行*/
 		if (buffer.cur() == '{') {
 			if (limit & CPPS_NOT_DEFASSEMBLE) {
 				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
@@ -2509,6 +2510,9 @@ namespace cpps {
 	}
 
 	void cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
+		/*记录当前执行的node*/
+		c->curnode = d;
+
 		if (d->type == CPPS_ODEFVAR) {
 			cpps_step_def_var(c, domain, root, d);
 		}
