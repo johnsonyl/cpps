@@ -31,6 +31,7 @@
 #define CPPS_TREGVAR	8	//变量引用（指针)（域）
 #define CPPS_TCLASS		9	//定义类
 #define CPPS_TCLASSVAR  10  //类的对象
+#define CPPS_TLAMBDAFUNCTION	11
 
 #define CPPS_SINGLERET		0
 #define CPPS_MUNITRET		1
@@ -92,7 +93,8 @@
 #define	CPPS_OIMPORT			52	//import导入库
 #define	CPPS_OOFFSET			53	//offset相对定位免查找更快速执行
 #define	CPPS_QUOTEOFFSET		54	//offset引用
-#define CPPS_OCATCH				45 //catch
+#define CPPS_OCATCH				55 //catch
+#define CPPS_ODEFVAR_LAMBDA_FUNC 56 //定义函数
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误

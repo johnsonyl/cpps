@@ -37,6 +37,7 @@
 #include "cpps_class.h"
 #include "cpps_jit_compiler.h"
 #include "cpps_cppsfunction.h"
+#include "cpps_lambda_function.h"
 #include "cpps_is_void.h"
 #include "cpps_call_function.h"
 #include "cpps_make_function.h"

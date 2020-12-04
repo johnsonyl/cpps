@@ -215,7 +215,7 @@ namespace cpps
 	}
 	bool cpps_base_isfunction(cpps_value v)
 	{
-		return v.tt == CPPS_TFUNCTION;
+		return v.tt == CPPS_TFUNCTION || v.tt == CPPS_TLAMBDAFUNCTION;
 	}
 	cpps_integer cpps_base_objtype(cpps_value v)
 	{
@@ -231,98 +231,7 @@ namespace cpps
 		SetConsoleTitleA(title.c_str());
 #endif
 	}
-	void cpps_base_foreach(C *c,cpps_value va, cpps_value func)
-	{
-		if (va.isdomain() && func.tt == CPPS_TFUNCTION)
-		{
-			if (va.value.domain->domainname == "vector")
-			{
-				cpps_vector *v = cpps_converter<cpps_vector*>::apply(va);
-				if (v)
-				{
-					for (v->begin(); v->end();)
-					{
-						object func_object = func;
-						func_object.value.parentlambdavar = func.parentlambdavar;
-						object r = dofunction(c, func_object, v->it());
-
-						if (func.parentlambdavar->isbreak == true)
-						{
-							func.parentlambdavar->isbreak = false;
-							break;
-						}
-
-
-						if (type(r) == CPPS_TBOOLEAN)
-						{
-							bool ret = object_cast<bool>(r);
-							if(!ret) v->pop();
-							else v->next();
-						}
-						else
-							v->next();
-					}
-				}
-			}
-			else if (va.value.domain->domainname == "map" )
-			{
-				cpps_map *v = cpps_converter<cpps_map*>::apply(va);
-				if (v)
-				{
-					for (v->begin(); v->end(); )
-					{
-						object func_object = func;
-						func_object.value.parentlambdavar = func.parentlambdavar;
-						object r = dofunction(c, func_object, v->key(),v->it());
-
-						if (func.parentlambdavar->isbreak == true)
-						{
-							func.parentlambdavar->isbreak = false;
-							break;
-						}
-
-						if (type(r) == CPPS_TBOOLEAN)
-						{
-							bool ret = object_cast<bool>(r);
-							if (!ret) v->pop();
-							else v->next();
-						}
-						else
-							v->next();
-					}
-				}
-			}
-			else if (va.value.domain->domainname == "unordered_map")
-			{
-				cpps_unordered_map *v = cpps_converter<cpps_unordered_map*>::apply(va);
-				if (v)
-				{
-					for (v->begin(); v->end(); )
-					{
-						object func_object = func;
-						func_object.value.parentlambdavar = func.parentlambdavar;
-						object r = dofunction(c, func_object, v->key(), v->it());
-
-
-						if (func.parentlambdavar->isbreak == true)
-						{
-							func.parentlambdavar->isbreak = false;
-							break;
-						}
-
-						if (type(r) == CPPS_TBOOLEAN)
-						{
-							bool ret = object_cast<bool>(r);
-							if (!ret) v->pop();
-							else v->next();
-						}
-						else
-							v->next();
-					}
-				}
-			}
-		}
-	}
+	
 	void cpps_assert(bool b)
 	{
 		assert(b);
@@ -413,7 +322,6 @@ namespace cpps
 		C*c = param->c;
 		cpps_value func = param->func;
 		cpps_value value = param->value;
-		func.parentlambdavar = NULL;
 #ifdef WIN32
 		SetEvent(param->eventFinish);
 #endif

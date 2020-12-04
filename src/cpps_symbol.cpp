@@ -430,7 +430,6 @@ namespace cpps
 			else
 				*(a.value.value) = *(b.value.value);
 
-			(*(a.value.value)).parentlambdavar = NULL;
 
 		}
 		else {
@@ -460,7 +459,6 @@ namespace cpps
 			else
 				*(a.value.value) = b;
 
-			(*(a.value.value)).parentlambdavar = NULL;
 		}
 
 		ret = *(a.value.value);

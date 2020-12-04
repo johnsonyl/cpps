@@ -62,7 +62,7 @@ namespace cpps
 
 		virtual int8 getparamcount() { return static_cast<int8>(params->l.size()); }
 
-		virtual void  callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, std::vector<cpps_value> *o, cpps_stack *stack )
+		virtual void  callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, std::vector<cpps_value> *o, cpps_stack *stack, std::vector< cpps_regvar*>* lambdastacklist)
 		{
 #ifdef CPPS_JIT_COMPILER
 
@@ -80,6 +80,10 @@ namespace cpps
 			funcdomain->init(domain, cpps_domain_type_exec);
 			funcdomain->setexecdomain(prevdomain);
 			funcdomain->resize(varcount);
+			if (lambdastacklist) {
+				for (size_t i = 0; i < lambdastacklist->size(); i++)
+					(*(funcdomain->stacklist))[i] = (*(lambdastacklist))[i];
+			}
 
 			//l 的0 代表返回值列表 1.代表参数列表
 
@@ -119,6 +123,7 @@ namespace cpps
 					{
 						v->offset = varname->offset;
 						v->offsettype = varname->offsettype;
+						v->closeure = varname->closure;
 						funcdomain->regidxvar(varname->offset, v);
 					}
 				}
@@ -137,8 +142,7 @@ namespace cpps
  				*ret = funcdomain->funcRet;//return的值反馈回去
 #endif
 
-
-
+			/*是否闭包*/
 			funcdomain->destory(c);
 			c->domain_free(funcdomain);
 

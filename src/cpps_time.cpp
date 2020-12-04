@@ -277,6 +277,9 @@ namespace cpps
 
 	void cpps_regtime(C *c)
 	{
+		module(c)[
+			def("now", cpps_time_gettime)
+		];
 		module(c, "time")[
 			def("gettime", cpps_time_gettime),
 			def("gettimestr", cpps_time_gettimestr),

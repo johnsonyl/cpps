@@ -170,8 +170,13 @@ namespace cpps
 				for (std::unordered_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
 				{
 					cpps_regvar* v = it->second;
-					cpps_gc_remove_barrier(c, v);
-					delete v;
+					if (!v->closeure) { /*闭包不删除*/
+						cpps_gc_remove_barrier(c, v);
+						if (v->stackdomain) {
+							v->stackdomain->removeidxvar(v->offset);
+						}
+						delete v;
+					}
 				}
 				varList.clear();
 				hasVar = false;
@@ -197,6 +202,8 @@ namespace cpps
 				(*stacklist)[offset] = v;
 			else
 				stacklist->push_back(v);
+
+			v->stackdomain = this;
 		}
 		void									removeidxvar(int32 offset)
 		{
@@ -204,7 +211,7 @@ namespace cpps
 			{
 				return;
 			}
-			//(*stacklist)[offset] = NULL;
+			(*stacklist)[offset] = NULL;
 
 		}
 
@@ -236,6 +243,8 @@ namespace cpps
 		}
 		void resize(usint16 size)
 		{
+			if (size == 0) return;
+
 			if (size == 65535) return;
 
 			if (stacklist == NULL)
@@ -257,8 +266,6 @@ namespace cpps
 		int32												offset;
 		int32												offsettype;
 		std::map<cpps_domain*, int32>*						parentclassoffset; //基类偏移
-
-	
 	};
 
 }

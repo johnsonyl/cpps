@@ -85,6 +85,7 @@ namespace cpps
 		int																			application_argc;
 		char**																		application_argv;
 		node*																		curnode;
+		bool																		buildoffset;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

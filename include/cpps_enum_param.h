@@ -83,17 +83,17 @@
 
 
 #define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_0(t,v)
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##1 = cpps_converter<A1>::apply(v[0]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##2 = cpps_converter<A2>::apply(v[1]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) t##3 = cpps_converter<A3>::apply(v[2]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) t##4 = cpps_converter<A4>::apply(v[3]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) t##5 = cpps_converter<A5>::apply(v[4]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) t##6 = cpps_converter<A6>::apply(v[5]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) t##7 = cpps_converter<A7>::apply(v[6]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) t##8 = cpps_converter<A8>::apply(v[7]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) t##9 = cpps_converter<A9>::apply(v[8]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) t##10 = cpps_converter<A10>::apply(v[9]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_11(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) t##11 = cpps_converter<A11>::apply(v[10]);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##1 = cpps_converter<A1>::apply(v.size() >= 1 ? v[0] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##2 = cpps_converter<A2>::apply(v.size() >= 2 ? v[1] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) t##3 = cpps_converter<A3>::apply(v.size() >= 3 ? v[2] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) t##4 = cpps_converter<A4>::apply(v.size() >= 4 ? v[3] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) t##5 = cpps_converter<A5>::apply(v.size() >= 5 ? v[4] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) t##6 = cpps_converter<A6>::apply(v.size() >= 6 ? v[5] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) t##7 = cpps_converter<A7>::apply(v.size() >= 7 ? v[6] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) t##8 = cpps_converter<A8>::apply(v.size() >= 8 ? v[7] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) t##9 = cpps_converter<A9>::apply(v.size() >= 9 ? v[8] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) t##10 = cpps_converter<A10>::apply(v.size() >= 10 ? v[9] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_11(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) t##11 = cpps_converter<A11>::apply(v.size() >= 11 ? v[10] : cpps::nil);
 
 #elif LINUX
 
@@ -170,17 +170,17 @@
 
 
 #define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_0(t,v)
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##1 = cpps_converter<A1>::apply(v[0]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##2 = cpps_converter<A2>::apply(v[1]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) t##3 = cpps_converter<A3>::apply(v[2]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) t##4 = cpps_converter<A4>::apply(v[3]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) t##5 = cpps_converter<A5>::apply(v[4]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) t##6 = cpps_converter<A6>::apply(v[5]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) t##7 = cpps_converter<A7>::apply(v[6]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) t##8 = cpps_converter<A8>::apply(v[7]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) t##9 = cpps_converter<A9>::apply(v[8]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) t##10 = cpps_converter<A10>::apply(v[9]);
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_11(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) t##11 = cpps_converter<A10>::apply(v[10]);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##1 = cpps_converter<A1>::apply(v.size() >= 1 ? v[0] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##2 = cpps_converter<A2>::apply(v.size() >= 2 ? v[1] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_2(t,v) t##3 = cpps_converter<A3>::apply(v.size() >= 3 ? v[2] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_3(t,v) t##4 = cpps_converter<A4>::apply(v.size() >= 4 ? v[3] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_4(t,v) t##5 = cpps_converter<A5>::apply(v.size() >= 5 ? v[4] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_5(t,v) t##6 = cpps_converter<A6>::apply(v.size() >= 6 ? v[5] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_6(t,v) t##7 = cpps_converter<A7>::apply(v.size() >= 7 ? v[6] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_7(t,v) t##8 = cpps_converter<A8>::apply(v.size() >= 8 ? v[7] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_8(t,v) t##9 = cpps_converter<A9>::apply(v.size() >= 9 ? v[8] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_9(t,v) t##10 = cpps_converter<A10>::apply(v.size() >= 10 ? v[9] : cpps::nil);
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_11(t,v) CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_10(t,v) t##11 = cpps_converter<A11>::apply(v.size() >= 11 ? v[10] : cpps::nil);
 
 
 

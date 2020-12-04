@@ -31,6 +31,7 @@ namespace cpps
 			size = -1;
 			varlist = NULL;
 			value.integer = 0;
+			closure = false;
 		}
 		node(std::string f)
 		{
@@ -46,6 +47,7 @@ namespace cpps
 			size = -1;
 			varlist = NULL;
 			value.integer = 0;
+			closure = false;
 		}
 		node(node *n,std::string f,int32 ln)
 		{
@@ -62,6 +64,7 @@ namespace cpps
 			size = -1;
 			varlist = NULL;
 			value.integer = 0;
+			closure = false;
 		}
 		node(std::string f, int32 ln)
 		{
@@ -78,6 +81,7 @@ namespace cpps
 			size = -1;
 			varlist = NULL;
 			value.integer = 0;
+			closure = false;
 		}
 		void release()
 		{
@@ -114,6 +118,7 @@ namespace cpps
 			size = v->size;
 			varlist = v->varlist;
 			value = v->value;
+			closure = v->closure;
 		}
 
 		void setparent(node* p)
@@ -222,6 +227,7 @@ namespace cpps
 		node *parent;
 		cpps_node_domain* domain;
 		int32 line;
+		bool closure;
 
 		//解释转化
 		union Value
@@ -255,7 +261,7 @@ namespace cpps
 				varlist->erase(s);
 			}
 		}
-		node* getnode(std::string &s)
+		node* getnode(std::string &s ,bool b = false)
 		{
 			if (varlist != NULL) //需要在添加
 			{
@@ -265,9 +271,9 @@ namespace cpps
 					return it->second;
 				}
 			}
-			if (parent != NULL)
+			if ((type != CPPS_ODEFVAR_LAMBDA_FUNC || b == true)&& parent != NULL)
 			{
-				return parent->getnode(s);
+				return parent->getnode(s,b);
 			}
 			return NULL;
 		}

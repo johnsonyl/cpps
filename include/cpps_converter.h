@@ -21,12 +21,14 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TCLASSVAR;
+			return obj.tt == CPPS_TCLASSVAR || obj.tt == CPPS_TNIL;
 		}
 		static R		apply(cpps_value obj)
 		{
 			if(!match(obj))
 				throw(cpps_error("0", 0, 0, "Convert failed"));
+
+			if (obj.tt == CPPS_TNIL) return NULL;
 
 			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
 			return static_cast<R>(clsvar->getclsptr());
@@ -88,7 +90,7 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING ;
+			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
 		}
 		static const char *	apply(cpps_value obj)
 		{
@@ -100,7 +102,7 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING ;
+			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
 		}
 		static const unsigned char *		apply(cpps_value obj)
 		{
@@ -112,7 +114,7 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING ;
+			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
 		}
 		static char *		apply(cpps_value obj)
 		{
@@ -124,7 +126,7 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TSTRING ;
+			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
 		}
 		static unsigned char *		apply(cpps_value obj)
 		{

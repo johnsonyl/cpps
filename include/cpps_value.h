@@ -31,20 +31,17 @@ namespace cpps
 		{
 			tt = CPPS_TNIL;
 			value.number = 0;
-			parentlambdavar = NULL;
 		}
 		
 		cpps_value(const cpps_number n)
 		{
 			tt = CPPS_TNUMBER;
 			value.number = n;
-			parentlambdavar = NULL;
 		}
 		cpps_value(const cpps_integer i)
 		{
 			tt = CPPS_TINTEGER;
 			value.integer = i;
-			parentlambdavar = NULL;
 		}
 
 #ifdef _WIN32
@@ -52,7 +49,6 @@ namespace cpps
 		{
 			tt = CPPS_TINTEGER;
 			value.integer = i;
-			parentlambdavar = NULL;
 		}
 
 #else
@@ -60,39 +56,33 @@ namespace cpps
 		{
 			tt = CPPS_TINTEGER;
 			value.integer = i;
-			parentlambdavar = NULL;
 		}
 #endif
 		cpps_value(const bool b)
 		{
 			tt = CPPS_TBOOLEAN;
 			value.b = b;
-			parentlambdavar = NULL;
 		}
 		cpps_value(cpps_function* f)
 		{
 			tt = CPPS_TFUNCTION;
 			value.func = f;
-			parentlambdavar = NULL;
 		}
 
 		cpps_value(cpps_domain* d)
 		{
 			tt = CPPS_TDOMAIN;
 			value.domain = d;
-			parentlambdavar = NULL;
 		}
 		cpps_value(cpps_cppsclass* d)
 		{
 			tt = CPPS_TCLASS;
 			value.domain = (cpps_domain*)(d);
-			parentlambdavar = NULL;
 		}
 		cpps_value(cpps_cppsclassvar* d)
 		{
 			tt = CPPS_TCLASSVAR;
 			value.domain = (cpps_domain*)(d);
-			parentlambdavar = NULL;
 		}
 // 		cpps_value(cpps_regvar* v)
 // 		{
@@ -103,7 +93,6 @@ namespace cpps
 		{
 			tt = CPPS_TREGVAR;
 			value.value = v;
-			parentlambdavar = NULL;
 		}
 		cpps_value(C*c, const char* s)
 		{
@@ -113,7 +102,6 @@ namespace cpps
 			cpps_value ret = newclass<std::string>(c, &str);
 			str->append(s);
 			value.domain = ret.value.domain;
-			parentlambdavar = NULL;
 		}
 		cpps_value(C*c,const std::string& s)
 		{
@@ -123,7 +111,6 @@ namespace cpps
 			cpps_value ret = newclass<std::string>(c, &str);
 			str->append(s.begin(),s.end());
 			value.domain = ret.value.domain;
-			parentlambdavar = NULL;
 		}
 		~cpps_value()
 		{
@@ -159,7 +146,6 @@ namespace cpps
 		};
 		Value					value;		//÷µ°£
 		int8					tt;			//¿‡–Õ
-		cpps_domain*			parentlambdavar; //lambda∏∏”Ú
 
 	};
 

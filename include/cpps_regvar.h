@@ -15,6 +15,7 @@
 
 namespace cpps
 {
+	struct cpps_domain;
 	struct cpps_regvar
 	{
 		cpps_regvar()
@@ -22,6 +23,9 @@ namespace cpps
 			nconst = 0;
 			offset = -1;
 			offsettype = -1;
+			closeure = false;
+			closeureusecount = 0;
+			stackdomain = NULL;
 		}
 		~cpps_regvar();
 		void	setvarname(std::string n)
@@ -50,6 +54,9 @@ namespace cpps
 
 		int32				offset;
 		int32				offsettype;
+		bool				closeure;
+		int32				closeureusecount;
+		cpps_domain*		stackdomain;
 	};
 
 	

@@ -34,21 +34,21 @@ namespace cpps
 	struct cpps_function
 	{
 		cpps_function() { isNeesC = false; }
-		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
+		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 		}
-		void			setfuncname(std::string name){
+		virtual void			setfuncname(std::string name){
 			funcname = name;
 		}
-		std::string		getfuncname(){
+		virtual std::string		getfuncname(){
 			return funcname;
 		}
 
-		void setIsNeesC(bool b)
+		virtual void setIsNeesC(bool b)
 		{
 			isNeesC = b;
 		}
-		bool getIsNeedC()
+		virtual bool getIsNeedC()
 		{
 			return isNeesC;
 		}
@@ -126,7 +126,7 @@ namespace cpps
 		}
 
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 			dofunc< vector1<R> > func = make_function(param);
 
@@ -153,7 +153,7 @@ namespace cpps
 			param = make_vector(f);
 		}
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 			dofunc< vector1<R> > func = make_function(param);
 
@@ -245,7 +245,7 @@ namespace cpps
 			param = make_vector(f);
 		}
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 			dofunc<CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > > func = make_function(param);
 
@@ -271,7 +271,7 @@ namespace cpps
 			param = make_vector(f);
 		}
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 			dofunc<CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > > func = make_function(param);
 

@@ -94,6 +94,7 @@ namespace cpps
 		lastgensize = 0;
 		func = NULL;
 		debug = false;
+		buildoffset = false;
 		application_argc = argc;
 		application_argv = argv;
 	}

@@ -51,6 +51,34 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-5 更新
+-
+
+1.增加lambda闭包.类似js.解决了内存泄露问题.
+
+2. 优化cpps运行速度.cpps_value减少一个8字节指针,理论又提速了.
+
+```
+var outer() {
+      var result = [];
+      result.resize(10);
+
+      for (var i = 0; i<10;i++){
+        result[i] = [](var num){
+             return [](){
+                   println(num);   // 此时访问的num，是上层函数执行环境的num，数组有10个函数对象，每个对象的执行环境下的number都不一样
+             };
+        }(i);
+     }
+     return result;
+}
+var l = outer();
+foreach(var n : l)
+{
+	n();
+}
+```
+
 2020-12-2 更新
 -
 

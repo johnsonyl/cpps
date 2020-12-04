@@ -25,7 +25,6 @@ namespace cpps
 		object(cpps_value v)
 		{
 			value = v;
-			value.parentlambdavar = NULL;
 		}
 
 

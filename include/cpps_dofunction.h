@@ -83,6 +83,12 @@ namespace cpps
 	object					dofunction(C *c, object func, CPPS_PP_ENUM_VARS_PARAMS(CPPS_DOFUNCTION_ITER_C, A, p))
 	{
 		cpps_value ret;
+		if (func.value.tt == CPPS_TLAMBDAFUNCTION) {
+			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)func.value.value.domain;
+			cpps_lambda_function* pfunc = (cpps_lambda_function*)cppsclassvar->getclsptr();
+			func.value = pfunc;
+			func.value.tt = CPPS_TFUNCTION;
+		}
 		if (func.value.tt == CPPS_TFUNCTION)
 		{
 			cpps_function *f = func.value.value.func;
@@ -91,7 +97,7 @@ namespace cpps
 				std::vector<cpps_value> paramlist;
 				CPPS_PP_ENUM_VARS_PARAMS_PUSHBACK(CPPS_DOFUNCTION_ITER_C, paramlist, A, p, c);
 
-				cpps_domain *execdomain2 = func.value.parentlambdavar ? func.value.parentlambdavar : c->_G;
+				cpps_domain *execdomain2 =  c->_G;
 				cpps_domain* execdomain = c->domain_alloc();
 				execdomain->init(execdomain2, cpps_domain_type_func);
 				execdomain->setexecdomain(execdomain2);
@@ -118,7 +124,7 @@ namespace cpps
 				stack->init("", 0, f->funcname.c_str());
 				c->push_stack(stack);
 
-				f->callfunction(c, &ret, execdomain2, &paramlist, NULL);
+				f->callfunction(c, &ret, execdomain2, &paramlist, NULL,NULL);
 
 
 				c->pop_stack();
@@ -140,6 +146,13 @@ namespace cpps
 	object					doclassfunction(C *c, cpps_domain* leftdomain, object func, CPPS_PP_ENUM_VARS_PARAMS(CPPS_DOFUNCTION_ITER_C, A, p))
 	{
 		cpps_value ret;
+
+		if (func.value.tt == CPPS_TLAMBDAFUNCTION) {
+			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)func.value.value.domain;
+			cpps_lambda_function* pfunc = (cpps_lambda_function*)cppsclassvar->getclsptr();
+			func.value = pfunc;
+			func.value.tt = CPPS_TFUNCTION;
+		}
 		if (func.value.tt == CPPS_TFUNCTION)
 		{
 			cpps_function *f = func.value.value.func;
@@ -148,7 +161,7 @@ namespace cpps
 				std::vector<cpps_value> paramlist;
 				CPPS_PP_ENUM_VARS_PARAMS_PUSHBACK(CPPS_DOFUNCTION_ITER_C, paramlist, A, p, c);
 
-				cpps_domain *execdomain2 = func.value.parentlambdavar ? func.value.parentlambdavar : leftdomain;
+				cpps_domain *execdomain2 = leftdomain;
 				cpps_domain* execdomain = c->domain_alloc();
 				execdomain->init(execdomain2, cpps_domain_type_func);
 				execdomain->setexecdomain(execdomain2);
@@ -175,7 +188,7 @@ namespace cpps
 				stack->init("", 0, f->funcname.c_str());
 				c->push_stack(stack);
 
-				f->callfunction(c, &ret, execdomain2, &paramlist, NULL);
+				f->callfunction(c, &ret, execdomain2, &paramlist, NULL, NULL);
 
 
 				c->pop_stack();

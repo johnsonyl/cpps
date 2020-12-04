@@ -6,6 +6,13 @@ namespace cpps
 	object dofunction(C *c, object func)
 	{
 		cpps_value ret;
+
+		if (func.value.tt == CPPS_TLAMBDAFUNCTION) {
+			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)func.value.value.domain;
+			cpps_lambda_function* pfunc = (cpps_lambda_function*)cppsclassvar->getclsptr();
+			func.value = pfunc;
+			func.value.tt = CPPS_TFUNCTION;
+		}
 		if (func.value.tt == CPPS_TFUNCTION)
 		{
 			cpps_function *f = func.value.value.func;
@@ -15,8 +22,6 @@ namespace cpps
 
 
 				cpps_domain *execdomain = c->_G;
-				if (func.value.parentlambdavar)
-					execdomain = func.value.parentlambdavar;
 
 				cpps_stack* stack = c->stack_alloc();
 				stack->init("", 0, f->funcname.c_str());
@@ -39,6 +44,13 @@ namespace cpps
 	object doclassfunction(C *c,cpps_domain *leftdomain, object func)
 	{
 		cpps_value ret;
+
+		if (func.value.tt == CPPS_TLAMBDAFUNCTION) {
+			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)func.value.value.domain;
+			cpps_lambda_function* pfunc = (cpps_lambda_function*)cppsclassvar->getclsptr();
+			func.value = pfunc;
+			func.value.tt = CPPS_TFUNCTION;
+		}
 		if (func.value.tt == CPPS_TFUNCTION)
 		{
 			cpps_function *f = func.value.value.func;
@@ -48,8 +60,6 @@ namespace cpps
 
 
 				cpps_domain *execdomain = leftdomain;
-				if (func.value.parentlambdavar)
-					execdomain = func.value.parentlambdavar;
 
 				cpps_stack* stack = c->stack_alloc();
 				stack->init("", 0, f->funcname.c_str());
