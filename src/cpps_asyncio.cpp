@@ -87,6 +87,9 @@ namespace cpps {
 				.def("timeout",&cpps_async_task::timeout)
 				.def("pending",&cpps_async_task::pending)
 				.def("running",&cpps_async_task::running)
+				.def("running",&cpps_async_task::running)
+				.def("set_name",&cpps_async_task::set_name)
+				.def("get_name",&cpps_async_task::get_name)
 				.def("add_done_callback",&cpps_async_task::add_done_callback)
 				.def("remove_done_callback",&cpps_async_task::remove_done_callback)
 				.def_inside("cleanup",&cpps_async_task::cleanup),

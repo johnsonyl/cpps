@@ -92,7 +92,17 @@ namespace cpps {
 	void cpps_async_task::call_done_callback(C* c)
 	{
 		if(callback_func.tt == CPPS_TFUNCTION)
-			dofunction(c, callback_func, callback_context);
+			dofunction(c, callback_func, this,callback_context);
+	}
+
+	void cpps_async_task::set_name(std::string n)
+	{
+		name = n;
+	}
+
+	std::string cpps_async_task::get_name()
+	{
+		return name;
 	}
 
 }

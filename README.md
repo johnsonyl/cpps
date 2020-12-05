@@ -74,18 +74,20 @@ async var test1()
 	println("do test1 function done");
 	return "test1";
 }
-var test_call_back(var context)
+var test_call_back(var task,var context)
 {
+	println(task.get_name());
 	println(context);
 }
 
 async var main(){
 
 	var task1 = asyncio.create_task(test());
-	task1.add_done_callback(test_call_back,1);
+	task1.set_name("自定义名字用于区分");
+	task1.add_done_callback(test_call_back,"自定义context内容");
 	var task2 = asyncio.create_task(test1());
 
-	var ret = await asyncio.wait(task1); // await asyncio.wait_for(task1,100/*100 毫秒*/); 
+	var ret = await asyncio.wait(task1);
 	if(ret.timeout())
 	{
 		println("task1 was timeouted.");
@@ -99,6 +101,7 @@ async var main(){
 }
 
 asyncio.run(main());
+
 
 ```
 

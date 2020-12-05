@@ -39,6 +39,8 @@ namespace cpps
 		void				add_done_callback(cpps_value func, cpps_value context);
 		void				remove_done_callback();
 		void				call_done_callback(C* c);
+		void				set_name(std::string n);
+		std::string			get_name();
 
 		cpps_async_object* async_object;
 		coroutine::routine_t rt;
@@ -47,6 +49,7 @@ namespace cpps
 		cpps_value ret;				/*return ·µ»ØÖµ*/
 		cpps_value callback_func;				/*call back func*/
 		cpps_value callback_context;				/*call back func context*/
+		std::string name;
 
 	};
 
