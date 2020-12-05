@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/18 (yy/mm/dd)
 //@Module		:	CPPS
 //@Description	:	Í·ÎÄ¼þ
@@ -50,6 +50,11 @@
 #include "cpps_newptr.h"
 #include "cpps_regfunctionfmt.h"
 #include "cpps_trycatch_error.h"
+#include "cpps_coroutine.h"
+#include "cpps_async_object.h"
+#include "cpps_async_task.h"
+#include "cpps_async_loop.h"
+#include "cpps_asyncio.h"
 
 #include "cpps_base.h"
 #include "cpps_math.h"

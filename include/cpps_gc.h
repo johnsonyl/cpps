@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2016/11/6 (yy/mm/dd)
 //@Module		:	CPPS_GC
 //@Description	:	À¬»ø»ØÊÕ(³õ¼¶£©

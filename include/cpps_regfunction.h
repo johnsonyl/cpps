@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_CALL_FUNCTION
 //@Description	:	×¢²áº¯Êý
@@ -33,7 +33,7 @@ namespace cpps
 
 	struct cpps_function
 	{
-		cpps_function() { isNeesC = false; }
+		cpps_function() { isNeesC = false; nasync = false; }
 		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 		}
@@ -53,8 +53,12 @@ namespace cpps
 			return isNeesC;
 		}
 		virtual int8 getparamcount() { return 0; }
+		virtual bool isasync() { return nasync; }
+		virtual void setasync(bool b) { nasync = b; }
 		bool			isNeesC;
 		std::string		funcname;
+		bool		nasync;
+
 	};
 
 
@@ -75,12 +79,13 @@ namespace cpps
 
 	struct cpps_regfunction : public cpps_reg
 	{
-		cpps_regfunction(std::string f,cpps_function* func)
+		cpps_regfunction(std::string f,cpps_function* func, bool isasync = false)
 		:func(func)
 		{
 			type = cpps_def_regfunction;
 			varname = f;
 			func->setfuncname(f);
+			func->setasync(isasync);
 		}
 		cpps_function* func;
 	};
@@ -139,9 +144,9 @@ namespace cpps
 	
 
 	template<class R>
-	cpps_regfunction* make_regfunction(std::string func, R(*f)())
+	cpps_regfunction* make_regfunction(std::string func, R(*f)(),bool isasync = false)
 	{
-		return new cpps_regfunction(func, new cpps_function1<R>(f));
+		return new cpps_regfunction(func, new cpps_function1<R>(f),isasync);
 	}
 
 	template<class R, class CLS>
@@ -164,9 +169,9 @@ namespace cpps
 	};
 
 	template<class R, class C>
-	cpps_regfunction* make_regfunction(std::string func, R(C::*f)())
+	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(), bool isasync = false)
 	{
-		return new cpps_regfunction(func, new cpps_cpp_function1<R,C>(f));
+		return new cpps_regfunction(func, new cpps_cpp_function1<R,C>(f), isasync);
 	}
 
 	template<class F>
@@ -256,9 +261,9 @@ namespace cpps
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
 	};
 	template<class R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, class A) >
-	cpps_regfunction* make_regfunction(std::string func, R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)))
+	cpps_regfunction* make_regfunction(std::string func, R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false)
 	{
-		return new cpps_regfunction(func, new CPPS_PP_CAT(cpps_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C))<R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)>(f));
+		return new cpps_regfunction(func, new CPPS_PP_CAT(cpps_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C))<R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)>(f), isasync);
 	}
 
 
@@ -282,9 +287,9 @@ namespace cpps
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
 	};
 	template<class R, class C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, class A) >
-	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)))
+	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false)
 	{
-		return new cpps_regfunction(func, new CPPS_PP_CAT(cpps_cpp_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C))<R, C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)>(f));
+		return new cpps_regfunction(func, new CPPS_PP_CAT(cpps_cpp_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C))<R, C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)>(f),isasync);
 	}
 
 

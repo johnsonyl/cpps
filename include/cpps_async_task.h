@@ -1,0 +1,54 @@
+#ifndef CPPS_ASYNC_TASK_CPPS_HEAD_
+#define CPPS_ASYNC_TASK_CPPS_HEAD_
+
+//===================================
+//@Author		:	Johnson
+//@QQ			:	88481106
+//@Email		:	88481106@qq.com
+//@Date			:	2020/12/5 (yy/mm/dd)
+//@Module		:	CPPS_ASYNC_TASK
+//@Description	:	协程任务(协程运行体)
+//@website		:	http://cpps.wiki
+//==================================
+namespace cpps
+{
+	enum
+	{
+		cpps_async_task_pending,
+		cpps_async_task_running,
+		cpps_async_task_done,
+		cpps_async_task_cancelled,
+		cpps_async_task_timeouted,
+	};
+	struct cpps_async_task
+	{
+		cpps_async_task();
+		~cpps_async_task();
+		static void			run(cpps_async_task* p,C*c);
+		cpps_value			getresult();
+		cpps_async_object*	getobject();
+		int8				state();
+		bool				cancelled();
+		bool				done();
+		bool				timeout();
+		bool				pending();
+		bool				running();
+		void				cancel();
+		void				cleanup();/*释放自己.*/
+		void				start(C*c);
+		void				add_done_callback(cpps_value func, cpps_value context);
+		void				remove_done_callback();
+		void				call_done_callback(C* c);
+
+		cpps_async_object* async_object;
+		coroutine::routine_t rt;
+		int8					runstate;
+		std::vector<cpps_stack*> takestacklist;
+		cpps_value ret;				/*return 返回值*/
+		cpps_value callback_func;				/*call back func*/
+		cpps_value callback_context;				/*call back func context*/
+
+	};
+
+}
+#endif //CPPS_ASYNC_TASK_CPPS_HEAD_

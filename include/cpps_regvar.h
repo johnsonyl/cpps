@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/23 (yy/mm/dd)
 //@Module		:	CPPS_REGVAR
 //@Description	:	×¢²á±äÁ¿
@@ -38,7 +38,7 @@ namespace cpps
 		{
 			return value;
 		}
-	
+
 		int8 isconst()
 		{
 			return nconst;

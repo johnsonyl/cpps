@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_MODULE
 //@Description	:	Cpp×¢²áµ½Cpps½Ó¿Ú
@@ -15,7 +15,7 @@
 namespace cpps
 {
 	template<class R>
-	cpps_regfunction* make_regfunction(std::string func, R(*f)(const char* fmt, ...));
+	cpps_regfunction* make_regfunction(std::string func, R(*f)(const char* fmt, ...), bool isasync = false);
 	struct cpps_reg_class
 	{
 		cpps_reg* f;
@@ -69,9 +69,9 @@ namespace cpps
 			cpps_class_singleton<C*>::instance()->setsls(_cls);
 		}
 		template<class F>
-		_class<C>& 	def(std::string func, F _f)
+		_class<C>& 	def(std::string func, F _f, bool isasync = false)
 		{
-			cpps_reg* r = make_regfunction(func, _f);
+			cpps_reg* r = make_regfunction(func, _f,isasync);
 			r->isneedC = false;
 			_cls->regfunc( r );
 			return *this;
@@ -87,9 +87,9 @@ namespace cpps
 		}
 
 		template<class F>
-		_class<C>& 	def_inside(std::string func, F _f)
+		_class<C>& 	def_inside(std::string func, F _f, bool isasync = false)
 		{
-			cpps_reg* r = make_regfunction(func, _f);
+			cpps_reg* r = make_regfunction(func, _f,isasync);
 			r->isneedC = true;
 			_cls->regfunc(r);
 			return *this;
@@ -104,9 +104,9 @@ namespace cpps
 	};
 
 	template<class F>
-	regxmodule def(std::string func, F f)
+	regxmodule def(std::string func, F f, bool isasync = false)
 	{
-		return regxmodule(make_regfunction(func, f),false);
+		return regxmodule(make_regfunction(func, f, isasync),false);
 	}
 
 
@@ -120,9 +120,9 @@ namespace cpps
 
 
 	template<class F>
-	regxmodule def_inside(std::string func, F f)
+	regxmodule def_inside(std::string func, F f, bool isasync = false)
 	{
-		return regxmodule(make_regfunction(func, f), true);
+		return regxmodule(make_regfunction(func, f,isasync), true);
 	}
 	
 

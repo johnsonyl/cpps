@@ -21,8 +21,12 @@
 using namespace cpps;
 using namespace std;
 
-static std::unordered_map<std::string, cpps_logger*> loggerslist;
-static cpps_logger* defaultlogger = NULL;
+struct cpps_logging_data :public cpps_module_data
+{
+	std::unordered_map<std::string, cpps_logger*> loggerslist;
+	cpps_logger* defaultlogger = NULL;
+};
+
 #define cpps_map_get_value(m,k) m->find(cpps_value(c,k))
 namespace cpps { cpps_integer	cpps_time_gettime(); }
 usint8	cpps_slevel_to_nlevel(std::string level)
@@ -180,6 +184,10 @@ cpps_logging_handler* cpps_create_logging_handler(C* c, std::string cls, cpps_ma
 
 bool cpps_create_logger(C* c, cpps::object config)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	for (auto n : loggerslist) {
 		cpps_logger* logger = n.second;
 		delete logger;
@@ -242,6 +250,10 @@ bool cpps_create_logger_with_file(C* c, cpps::object filepath)
 }
 bool cpps_create_logger_with_config(C*c,cpps::object config)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	cpps_map* m = cpps_to_cpps_map(config.value);
 	cpps_integer version = cpps_to_integer(cpps_map_get_value(m,"version"));
 	cpps_value disable_existing_loggers_val = cpps_map_get_value(m, "disable_existing_loggers");
@@ -310,6 +322,10 @@ bool cpps_create_logger_with_config(C*c,cpps::object config)
 }
 void cpps_logging_debug(C* c, std::string msg)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	if (defaultlogger)
 	{
 		defaultlogger->debug(c, msg);
@@ -317,6 +333,10 @@ void cpps_logging_debug(C* c, std::string msg)
 }
 void cpps_logging_info(C* c, std::string msg)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	if (defaultlogger)
 	{
 		defaultlogger->info(c, msg);
@@ -324,6 +344,10 @@ void cpps_logging_info(C* c, std::string msg)
 }
 void cpps_logging_warning(C* c, std::string msg)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	if (defaultlogger)
 	{
 		defaultlogger->warning(c, msg);
@@ -331,6 +355,10 @@ void cpps_logging_warning(C* c, std::string msg)
 }
 void cpps_logging_error(C* c, std::string msg)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	if (defaultlogger)
 	{
 		defaultlogger->error(c, msg);
@@ -338,13 +366,21 @@ void cpps_logging_error(C* c, std::string msg)
 }
 void cpps_logging_critical(C* c, std::string msg)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	if (defaultlogger)
 	{
 		defaultlogger->critical(c, msg);
 	}
 }
-cpps_logger* cpps_getlogger(std::string name)
+cpps_logger* cpps_getlogger(C* c,std::string name)
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	cpps_logger*& defaultlogger = data->defaultlogger;
+
 	if (name == "root" || name == "") return defaultlogger;
 	std::unordered_map<std::string, cpps_logger*>::iterator it = loggerslist.find(name);
 	if (it != loggerslist.end()) return it->second;
@@ -358,6 +394,9 @@ extern "C" void  cpps_attach(cpps::C* c)
 {
 
 	cpps::cpps_init_cpps_class(c);
+	//这样可以保证每个c的moduledata 有区分.不然多脚本的时候会有问题
+	cpps_logging_data* data = new cpps_logging_data();
+	c->setmoduledata("logging", data);
 
 	module(c, "logging")[
 		_class< cpps_logger >("Logger")
@@ -421,6 +460,9 @@ extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
 extern "C" void  cpps_detach(cpps::C * c)
 #endif
 {
+	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
+	delete data;
+	c->setmoduledata("logging", NULL);
 }
 
 #ifdef LINUX

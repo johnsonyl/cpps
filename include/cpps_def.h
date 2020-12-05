@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/24 (yy/mm/dd)
 //@Module		:	CPPS_DEF
 //@Description	:	宏定义
@@ -95,6 +95,8 @@
 #define	CPPS_QUOTEOFFSET		54	//offset引用
 #define CPPS_OCATCH				55 //catch
 #define CPPS_ODEFVAR_LAMBDA_FUNC 56 //定义函数
+#define CPPS_ODEFASYNCVAR		 57 //定义协程函数
+#define CPPS_OAWAIT				58 //await 等待异步函数
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误

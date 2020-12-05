@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/23 (yy/mm/dd)
 //@Module		:	CPPS_ERROR
 //@Description	:	Cpps±¨´í
@@ -28,6 +28,7 @@ enum
 	cpps_error_whileerror = 11,
 	cpps_error_arrayeerror = 12,
 	cpps_error_trycatherror = 13,
+	cpps_error_asyncerror = 14,
 };
 
 

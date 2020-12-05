@@ -5,7 +5,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_NODE
 //@Description	:	Cpps½Úµã
@@ -17,6 +17,12 @@ namespace cpps
 {
 	struct C;
 	struct cpps_node_domain;
+	enum node_var_type
+	{
+		node_var_type_var,
+		node_var_type_constvar,
+		node_var_type_asyncvar,
+	};
 	struct node
 	{
 		node() {

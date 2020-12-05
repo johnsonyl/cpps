@@ -22,6 +22,12 @@ namespace cpps
 		std::vector<cpps_stack*>* ret = &_callstack;
 		return ret;
 	}
+	void C::setcallstack(std::vector<cpps_stack*>* ret)
+	{
+		if (ret == NULL) return;
+
+		 _callstack = *ret;
+	}
 	std::unordered_set<cpps_regvar*>* C::getbarrierlist()
 	{
 		std::unordered_set<cpps_regvar*>*ret = &barrierList;
@@ -46,6 +52,16 @@ namespace cpps
 	void C::stack_free(cpps::cpps_stack* stack)
 	{
 		stack_pool.free(stack);
+	}
+
+	void C::setmoduledata(std::string modulename, cpps_module_data* data)
+	{
+		savemoduledatas[modulename] = data;
+	}
+
+	cpps_module_data* C::getmoduledata(std::string modulename)
+	{
+		return savemoduledatas[modulename];
 	}
 
 	std::unordered_set<cpps_cppsclassvar*>* C::getgen0()

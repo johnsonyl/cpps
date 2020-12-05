@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/26 (yy/mm/dd)
 //@Module		:	CPPS_CPPSFUNCTION
 //@Description	:	Cpps函数处理
@@ -47,6 +47,7 @@ namespace cpps
 			context->clone(c); //克隆出所有列表
 
 			varcount = count;
+
 
 #ifdef CPPS_JIT_COMPILER
 			jitbuffer = NULL;
@@ -155,6 +156,12 @@ namespace cpps
 			cpps_gc_check_step(c);
 
 			cpps_gc_remove_barrier(c, &v);
+		}
+		void	setasync(bool b) {
+			nasync = b;
+		}
+		virtual bool isasync() {
+			return nasync;
 		}
 	public:
 		usint32		varcount;

@@ -3,7 +3,7 @@
 
 //===================================
 //@Author		:	Johnson
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/23 (yy/mm/dd)
 //@Module		:	CPPS_REG
 //@Description	:	

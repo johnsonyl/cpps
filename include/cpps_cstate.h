@@ -6,7 +6,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_CSTATE
 //@Description	:	CppsState
@@ -41,7 +41,7 @@ namespace cpps
 		char		 func[64];
 		int32			l;
 	};
-
+	struct cpps_module_data {}; //interface 
 	struct C
 	{
 		C():C(0,NULL){};
@@ -62,11 +62,14 @@ namespace cpps
 		void																		debugopen();
 		void																		debugclose();
 		std::vector<cpps_stack*>*													getcallstack();
+		void																		setcallstack(std::vector<cpps_stack*>* ret);
 		std::unordered_set<cpps_regvar*>*											getbarrierlist();
 		cpps::cpps_domain*															domain_alloc();
 		void																		domain_free(cpps::cpps_domain* domain);
 		cpps::cpps_stack*															stack_alloc();
 		void																		stack_free(cpps::cpps_stack* stack);
+		void																		setmoduledata(std::string modulename, cpps_module_data* data);
+		cpps_module_data*															getmoduledata(std::string modulename);
 		node* o;
 		cpps_domain*																_G;	//¸ù½Úµã
 		std::vector<cpps_stack*>													_callstack; //¶ÑÕ»
@@ -86,6 +89,7 @@ namespace cpps
 		char**																		application_argv;
 		node*																		curnode;
 		bool																		buildoffset;
+		std::unordered_map<std::string, cpps_module_data*>							savemoduledatas;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

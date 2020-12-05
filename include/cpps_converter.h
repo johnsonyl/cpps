@@ -48,6 +48,7 @@ namespace cpps
 	}\
 	}
 
+	def_cpps_number_cast(char, integer);
 	def_cpps_number_cast(signed char, integer);
 	def_cpps_number_cast(unsigned char, integer);
 
@@ -323,6 +324,7 @@ namespace cpps
 	}\
 	}
 
+	def_cpps_cpp_to_cpps_number_cast(char, integer);
 	def_cpps_cpp_to_cpps_number_cast(signed char, integer);
 	def_cpps_cpp_to_cpps_number_cast(unsigned char, integer);
 

@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/18 (yy/mm/dd)
 //@Module		:	LIBCPPS
 //@Description	:	Cpps处理接口
@@ -28,7 +28,7 @@ namespace cpps
 	int32					pcall(C * c, int32 retType, cpps_domain* domain, node *o);
 	int32					cpps_str2d(const char *s, cpps_number *result);
 	int32					cpps_str2i64(const char *s, cpps_integer *result);
-	void					cpps_pop_stack_to_here(C* c, cpps_stack* here);
+	void					cpps_pop_stack_to_here(C* c, cpps_stack* here, bool cleanup = true);
 }
 
 

@@ -4,7 +4,7 @@
 //===================================
 //@Author		:	Johnson
 //@QQ			:	88481106
-//@Email		:	jiang_4177@163.com
+//@Email		:	88481106@qq.com
 //@Date			:	2015/11/25 (yy/mm/dd)
 //@Module		:	CPPS_DOMAIN
 //@Description	:	域空间
@@ -170,7 +170,7 @@ namespace cpps
 				for (std::unordered_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
 				{
 					cpps_regvar* v = it->second;
-					if (!v->closeure) { /*闭包不删除*/
+					if (!v->closeure && v->closeureusecount > 0) { /*闭包不删除,但是必须有人使用*/
 						cpps_gc_remove_barrier(c, v);
 						if (v->stackdomain) {
 							v->stackdomain->removeidxvar(v->offset);
