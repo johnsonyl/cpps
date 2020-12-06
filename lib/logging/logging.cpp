@@ -323,7 +323,6 @@ bool cpps_create_logger_with_config(C*c,cpps::object config)
 void cpps_logging_debug(C* c, std::string msg)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	if (defaultlogger)
@@ -334,7 +333,6 @@ void cpps_logging_debug(C* c, std::string msg)
 void cpps_logging_info(C* c, std::string msg)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	if (defaultlogger)
@@ -345,7 +343,6 @@ void cpps_logging_info(C* c, std::string msg)
 void cpps_logging_warning(C* c, std::string msg)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	if (defaultlogger)
@@ -356,7 +353,6 @@ void cpps_logging_warning(C* c, std::string msg)
 void cpps_logging_error(C* c, std::string msg)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	if (defaultlogger)
@@ -367,7 +363,6 @@ void cpps_logging_error(C* c, std::string msg)
 void cpps_logging_critical(C* c, std::string msg)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	if (defaultlogger)

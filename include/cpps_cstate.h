@@ -46,7 +46,7 @@ namespace cpps
 	{
 		C():C(0,NULL){};
 		C(int argc, char** argv);
-		virtual ~C() {}
+		virtual ~C();
 		std::unordered_set<cpps_cppsclassvar *>*									getgen0();
 		std::unordered_set<cpps_cppsclassvar *>*									getgen1();
 		void																		setgen0size(size_t s);
@@ -72,7 +72,7 @@ namespace cpps
 		cpps_module_data*															getmoduledata(std::string modulename);
 		node* o;
 		cpps_domain*																_G;	//根节点
-		std::vector<cpps_stack*>													_callstack; //堆栈
+		std::vector<cpps_stack*>													*_callstack; //堆栈
 		std::unordered_set<cpps_regvar*>											barrierList; //分界List
 		std::unordered_set<cpps_cppsclassvar *>										gen0; //分界List
 		std::unordered_set<cpps_cppsclassvar *>										gen1; //分界List

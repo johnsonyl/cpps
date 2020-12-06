@@ -9,24 +9,24 @@ namespace cpps
 
 	void C::push_stack(cpps_stack* stack)
 	{
-		_callstack.push_back(stack);
+		_callstack->push_back(stack);
 	}
 
 	void C::pop_stack()
 	{
-		_callstack.pop_back();
+		_callstack->pop_back();
 	}
 
 	std::vector<cpps_stack*>* C::getcallstack()
 	{
-		std::vector<cpps_stack*>* ret = &_callstack;
+		std::vector<cpps_stack*>* ret = _callstack;
 		return ret;
 	}
 	void C::setcallstack(std::vector<cpps_stack*>* ret)
 	{
 		if (ret == NULL) return;
 
-		 _callstack = *ret;
+		 _callstack = ret;
 	}
 	std::unordered_set<cpps_regvar*>* C::getbarrierlist()
 	{
@@ -113,6 +113,12 @@ namespace cpps
 		buildoffset = false;
 		application_argc = argc;
 		application_argv = argv;
+		_callstack = new std::vector<cpps_stack*>();
+	}
+
+	C::~C()
+	{
+		delete _callstack;
 	}
 
 	void C::debugopen()
@@ -127,12 +133,12 @@ namespace cpps
 
 	void C::resume()
 	{
-		for (size_t i = 0; i < _callstack.size(); i++)
+		for (size_t i = 0; i < _callstack->size(); i++)
 		{
-			cpps_stack* stack = _callstack.at(i);
+			cpps_stack* stack = (*_callstack)[i];
 			delete stack;
 		}
-		_callstack.clear();
+		_callstack->clear();
 	}
 
 

@@ -19,6 +19,7 @@ namespace cpps
 
 		void											setcstate(C* pc);
 		void											loop(C* c);
+		void											popemptytask();
 		bool											isrunning();
 		void											push_task(C *c,cpps_async_task* task);
 		cpps_value										run_until_complete(C* c, cpps_value task);

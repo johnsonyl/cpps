@@ -1859,7 +1859,7 @@ namespace cpps {
 		/* 清理内存 */
 		c->_G->destory(c);
 		c->barrierList.clear();
-		c->_callstack.clear();
+		c->_callstack->clear();
 		cpps_gc_check_gen1(c);
 		//asyncio需要特殊处理
 		cpps_unregasyncio(c);

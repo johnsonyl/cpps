@@ -104,6 +104,7 @@ namespace cpps {
 			defvar(c,"done", (cpps_integer)cpps_async_task_done),
 			defvar(c,"cancelled", (cpps_integer)cpps_async_task_cancelled),
 			defvar(c,"timeout", (cpps_integer)cpps_async_task_timeouted)
+
 		];
 	}
 

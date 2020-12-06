@@ -83,12 +83,13 @@ namespace cpps {
 	void cpps_async_loop::loop(C* c)
 	{
 		runstate = true;
-		std::vector<cpps_stack*> takestacklist = *(c->getcallstack()); /*记录原始callstack*/
-		c->getcallstack()->clear();
+		std::vector<cpps_stack*> *takestacklist = c->getcallstack(); /*记录原始callstack*/
 		bool hasrun = true;
 		while (hasrun) {
 			hasrun = false;
-			//for (auto &task : _tasks) {
+			/*pop empty task*/
+			popemptytask();
+
 			for(size_t i = 0; i < _tasks.size(); i++){
 				auto task = _tasks[i];
 				if (task){
@@ -102,8 +103,6 @@ namespace cpps {
 						c->setcallstack(&task->takestacklist);
 						coroutine::resume(ordinator, task->rt);
 						task = _tasks[i]; /*需要恢复task*/
-						task->takestacklist = *(c->getcallstack());//重新记录stacklist;
-						c->getcallstack()->clear();
 						hasrun = true;
 						if (task->state() == cpps_async_task_done) {
 							task->call_done_callback(c);
@@ -126,8 +125,23 @@ namespace cpps {
 			}
 		}
 		/*恢复stack*/
-		c->setcallstack(&takestacklist);
+		c->setcallstack(takestacklist);
 		runstate = false;
+	}
+
+	void cpps_async_loop::popemptytask()
+	{
+		std::vector< cpps_async_task* >::iterator it = _tasks.begin();
+		std::vector< cpps_async_task* >::iterator end = _tasks.end();
+		for (;it != end;) {
+			cpps_async_task* task = *it;
+			if (task == NULL) {
+				it = _tasks.erase(it);
+				end = _tasks.end();
+			}
+			else
+				++it;
+		}
 	}
 
 	bool cpps_async_loop::isrunning()
