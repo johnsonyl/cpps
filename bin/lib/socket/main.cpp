@@ -15,3 +15,9 @@ class ClientOption
 	var parser;
 	var headersize;
 }
+class HttpServerOption
+{
+	var ip;
+	var exceptionfunc;
+	var notfoundfunc;
+}
