@@ -15,6 +15,7 @@ namespace cpps
 	struct cpps_lambda_function : public cpps_function
 	{
 		cpps_lambda_function() {
+			c = NULL;
 			stacklist = NULL;
 			realfunc = NULL;
 		}

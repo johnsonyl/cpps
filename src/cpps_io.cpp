@@ -116,7 +116,7 @@ namespace cpps
 			return str.substr(pos + 1);
 		}
 
-		return "";
+		return str;
 	}
 	std::string getfilenamenotext(std::string str)
 	{
@@ -126,7 +126,7 @@ namespace cpps
 		{
 			return str.substr(0,pos);
 		}
-		return "";
+		return str;
 	}
 	cpps_integer cpps_io_remove(std::string filepath)
 	{

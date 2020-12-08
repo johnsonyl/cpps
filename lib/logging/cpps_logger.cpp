@@ -54,7 +54,7 @@ namespace cpps
 		cpps_logger_message message;
 		message.created = (usint32)cpps_time_gettime();
 		message.filename = c->curnode ? c->curnode->filename : "";
-		message.funcname = c->_callstack.size() >= 2 ? c->_callstack[c->_callstack.size() - 2]->func : "";
+		message.funcname = c->_callstack->size() >= 2 ? (*(c->_callstack))[c->_callstack->size() - 2]->func : "";
 		message.level = 10;
 		message.lineno = c->curnode ? c->curnode->line : 0;
 		message.message = msg;
@@ -70,7 +70,7 @@ namespace cpps
 		cpps_logger_message message;
 		message.created = (usint32)cpps_time_gettime();
 		message.filename = c->curnode ? c->curnode->filename : "";
-		message.funcname = c->_callstack.size() >= 2 ? c->_callstack[c->_callstack.size() - 2]->func : "";
+		message.funcname = c->_callstack->size() >= 2 ? (*(c->_callstack))[c->_callstack->size() - 2]->func : "";
 		message.level = 20;
 		message.lineno = c->curnode ? c->curnode->line : 0;
 		message.message = msg;
@@ -86,7 +86,7 @@ namespace cpps
 		cpps_logger_message message;
 		message.created = (usint32)cpps_time_gettime();
 		message.filename = c->curnode ? c->curnode->filename : "";
-		message.funcname = c->_callstack.size() >= 2 ? c->_callstack[c->_callstack.size() - 2]->func : "";
+		message.funcname = c->_callstack->size() >= 2 ? (*(c->_callstack))[c->_callstack->size() - 2]->func : "";
 		message.level = 30;
 		message.lineno = c->curnode ? c->curnode->line : 0;
 		message.message = msg;
@@ -102,7 +102,7 @@ namespace cpps
 		cpps_logger_message message;
 		message.created = (usint32)cpps_time_gettime();
 		message.filename = c->curnode ? c->curnode->filename : "";
-		message.funcname = c->_callstack.size() >= 2 ? c->_callstack[c->_callstack.size() - 2]->func : "";
+		message.funcname = c->_callstack->size() >= 2 ? (*(c->_callstack))[c->_callstack->size() - 2]->func : "";
 		message.level = 40;
 		message.lineno = c->curnode ? c->curnode->line : 0;
 		message.message = msg;
@@ -118,7 +118,7 @@ namespace cpps
 		cpps_logger_message message;
 		message.created = (usint32)cpps_time_gettime();
 		message.filename = c->curnode ? c->curnode->filename : "";
-		message.funcname = c->_callstack.size() >= 2 ? c->_callstack[c->_callstack.size() - 2]->func : "";
+		message.funcname = c->_callstack->size() >= 2 ? (*(c->_callstack))[c->_callstack->size() - 2]->func : "";
 		message.level = 50;
 		message.lineno = c->curnode ? c->curnode->line : 0;
 		message.message = msg;

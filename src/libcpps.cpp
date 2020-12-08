@@ -918,7 +918,7 @@ namespace cpps {
 		p = cpps_parse_param(c, domain, param, root, buffer);
 		if (!p) {
 			/* 没有参数 */
-			throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "Expression parsing error."));
+			throw(cpps_error(param->filename, buffer.line(), cpps_error_paramerror, "invalid syntax."));
 		}
 		cpps_parse_rmspaceandenter(buffer);
 		node* op = cpps_parse_symbol(c, domain, param, buffer);

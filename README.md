@@ -7,6 +7,8 @@ CPPS 被设计的初衷是让那些和作者一样不喜欢LUA,PY,等等脚本�
 
 它的语法极为像C++,所以C++开发者可以很快速的上手，无需太深入的学习它。
 
+*招募协同软件作者,三方模块作者.*
+
 #### **下载与编译**
 
 CPPS 的下载与安装非常简单，CPPS不依赖于任何第三方库，仅仅下载就可以编译。
@@ -50,6 +52,95 @@ lib/socket 为libevent封装库 需要安装编译libevent
 
 *更新日志*：
 -
+
+2020-12-9 更新
+-
+
+1.增加compress库 
+
+1.1 支持 zlib gzip 解压与压缩 
+
+1.2 增加 zip ,tar, tar,gz 的文件压缩与解压缩.
+
+注: bz2 lzma 暂时未支持.后续更新.
+
+```
+system("chcp 65001"); //use utf8 string
+
+#import "compress"
+
+ var srcstr = "123456789";
+//zlib
+var tarstr = zlib.compress(srcstr);
+println(string.length(tarstr));
+var srcstr2 = zlib.decompress(tarstr);
+
+println(srcstr2);
+
+println(zlib.adler32(srcstr2));
+println(zlib.crc32(srcstr2));
+
+println(zlib.ZLIB_VERSION);
+println(zlib.ZLIB_RUNTIME_VERSION());
+
+
+//gzip
+//
+var tarstr = gzip.compress(srcstr);
+println(string.length(tarstr));
+var srcstr2 = gzip.decompress(tarstr);
+
+println(srcstr2);
+
+
+
+
+// //zipfile
+var file = zipfile.open("test.zip");
+file.extractall();
+
+//输出个别需要文件
+foreach(var info: file.infolist()){
+	if(!info.is_dir()){
+		var buffer = file.read(info.filename());
+		if(buffer){
+			var filename = io.getfilename(info.filename());
+			println(filename);
+			var file = io.fopen(filename,"wb+");
+			if(file){
+				println("save ok");
+				io.fwrite(file,buffer);
+				io.fclose(file);
+			}
+		}
+	}
+}
+
+//zip 追加文件
+var file = zipfile.open("test2.zip","","a");
+file.write("client.cpp");
+file.close();
+
+//tarfile
+//tar解压缩
+var file = tarfile.open("test.tar","r",10240000);
+file.extractall();
+
+//tar.gz 解压缩
+var file = tarfile.open("test.tar.gz","r:gz",10240000);
+file.extractall();
+
+
+//tar.gz 写入
+var file = tarfile.open("test2.tar.gz","x:gz",10240000);
+
+var fileinfo = file.gettarinfo("server.cpp");
+
+file.addfile(fileinfo);
+file.close();
+
+
+```
 
 2020-12-6 更新
 -
