@@ -11,6 +11,7 @@ namespace cpps
 		port = 3306;
 		mysql = NULL;
 		mysql_stmt = NULL;
+		affectedrows = 0;
 	}
 
 	cpps_mysql::~cpps_mysql()
@@ -50,6 +51,7 @@ namespace cpps
 			mysql_library_end();//free memory; 这里多连接不知道会不会释放其他连接的??
 		}
 		connect_state = false;
+		affectedrows = 0;
 	}
 
 	cpps::cpps_value cpps_mysql::call(std::string spname, cpps::cpps_value params)
@@ -158,7 +160,7 @@ namespace cpps
 			seterror(mysql_stmt_error(mysql_stmt));
 			return nil;
 		}
-
+		affectedrows = mysql_stmt_affected_rows(mysql_stmt);
 		cpps_create_class_var(cpps_vector, c, cpps_vector_var, cpps_vector_ptr);
 		result_build_records(cpps_vector_ptr,false);
 		return cpps_vector_var;
@@ -244,6 +246,7 @@ namespace cpps
 			seterror(mysql_stmt_error(mysql_stmt));
 			return nil;
 		}
+		affectedrows = mysql_stmt_affected_rows(mysql_stmt);
 		cpps_create_class_var(cpps_vector,c,cpps_vector_var, cpps_vector_ptr);
 		result_build_records(cpps_vector_ptr,true);
 		return cpps_vector_var;
@@ -258,19 +261,6 @@ namespace cpps
 			MYSQL_RES* m_mysql_result = mysql_stmt_result_metadata(mysql_stmt);
 			if (m_mysql_result)
 			{
-				/*if (!m_mysql_result)
-				{
-					m_mysql_result = mysql_store_result(mysql);
-					if (!m_mysql_result) {
-
-						clear(m_mysql_result);
-						break;
-					}
-					int err = mysql_stmt_next_result(mysql_stmt);
-					printf("%d", err);
-				}*/
-
-
 				cpps_create_class_var(cpps_mysql_result, c, cpps_mysql_result_var, cpps_mysql_result_ptr);
 				vec->push_back(cpps_mysql_result_var);
 				uint64_t	m_num_rows;
@@ -350,13 +340,13 @@ namespace cpps
 			return false;
 		}
 
-		if (mysql != mysql_real_connect(mysql, host.c_str(), user.c_str(), passwd.c_str(), db.c_str(), port, NULL, (CLIENT_FOUND_ROWS | CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS | CLIENT_MULTI_QUERIES)))
+		if (mysql != mysql_real_connect(mysql, host.c_str(), user.c_str(), passwd.c_str(), db.c_str(), port, NULL, (CLIENT_FOUND_ROWS | CLIENT_MULTI_STATEMENTS  | CLIENT_MULTI_RESULTS )))
 		{
 			connect_state = false;
 			seterror(mysql_error(mysql));
 			return false;
 		}
-
+		mysql_set_server_option(mysql, MYSQL_OPTION_MULTI_STATEMENTS_ON);
 		//初始化stmt
 		mysql_stmt = mysql_stmt_init(mysql);
 		if (!mysql_stmt)
@@ -391,7 +381,10 @@ namespace cpps
 	{
 		errorstr = str;
 	}
-
+	cpps_integer cpps_mysql::affected_rows()
+	{
+		return affectedrows;
+	}
 	void cpps_mysql::clear(MYSQL_RES* m_mysql_result)
 	{
 		do

@@ -66,6 +66,12 @@ lib/socket 为libevent封装库 需要安装编译libevent
 
 5. cppsc 支持部分命令 可以查看-h 或 -help  , 例子 cppsc -h
 
+6. linux walk支持.
+
+7. mysql模块  增加affected_rows 获取最后一次执行影响行数
+
+8. 取消cppsc 可继续执行语句功能.
+
 2020-12-9 更新
 -
 

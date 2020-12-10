@@ -33,6 +33,7 @@ namespace cpps {
 		bool						isconnect();
 		std::string					error();
 		void						seterror(std::string str);
+		cpps_integer				affected_rows();
 		void						clear(MYSQL_RES* m_mysql_result);
 
 	public:
@@ -47,6 +48,7 @@ namespace cpps {
 		bool						connect_state;
 		std::string					errorstr;
 		C*							c;
+		cpps_integer				affectedrows;
 	};
 
 }

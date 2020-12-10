@@ -207,7 +207,7 @@ namespace cpps
 #ifdef WIN32
 		_stati64(path.c_str(), &st->statinfo);
 #else
-		stat(path.c_str(), &st->statinfo);
+		lstat(path.c_str(), &st->statinfo);
 #endif
 		return ret;
 	}
@@ -218,8 +218,8 @@ namespace cpps
 		path = cpps_io_string_replace(path, "\\", "/");
 
 		strcpy(dirNew, path.c_str());
+#if defined WIN32
 		strcat(dirNew, "/*.*");    // 在目录后面加上"\\*.*"进行第一次搜索
-
 		intptr_t handle;
 		_finddata_t findData;
 
@@ -251,6 +251,40 @@ namespace cpps
 		} while (_findnext(handle, &findData) == 0);
 
 		_findclose(handle);    // 关闭搜索句柄
+#elif defined LINUX
+		struct dirent* filename;    // return value for readdir()
+		DIR* dir;                   // return value for opendir()
+		dir = opendir(dirNew);
+		if (NULL == dir)
+		{
+			return;
+		}
+
+		/* read all the files in the dir ~ */
+		while ((filename = readdir(dir)) != NULL)
+		{
+
+			strcpy(dirNew, path.c_str());
+			strcat(dirNew, "/");
+			strcat(dirNew, filename->d_name);
+
+			// get rid of "." and ".."
+			if (strcmp(filename->d_name, ".") == 0 ||
+				strcmp(filename->d_name, "..") == 0)
+				continue;
+
+			
+			vct->push_back(cpps_value(c, dirNew));
+
+			struct stat s;
+			lstat(dirNew, &s);
+			if (S_ISDIR(s.st_mode))
+			{
+				if (bfindchildren)
+					cpps_real_walk(c, vct, dirNew, bfindchildren);
+			}
+		}
+#endif
 	}
 	cpps_value cpps_io_walk( C *c,std::string path,cpps_value findchildren) {
 		

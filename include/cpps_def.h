@@ -209,7 +209,10 @@ namespace cpps
 #include <sys/mman.h>
 #include <sys/stat.h> 
 #include <unistd.h>
+#include <sys/io.h>
 #include <dlfcn.h>
+#include <dirent.h>
+
 #ifndef FALSE  
 	#define FALSE   0
 #endif
@@ -228,6 +231,7 @@ typedef void* HMODULE;
 
 #define _mkdir(p) mkdir(p,S_IRWXU)
 #define _rmdir(p) rmdir(p)
+
 
 #include <pthread.h>
 inline unsigned int GetCurrentThreadId()

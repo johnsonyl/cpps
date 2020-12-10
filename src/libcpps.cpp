@@ -771,8 +771,8 @@ namespace cpps {
 			}
 			else if (symblo == '.') {
 				geto->type = CPPS_OGETOBJECT;
-				child->setparent(geto);
 				child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
+				child->setparent(geto);
 				if (!child)
 					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "The variable name is required later on '.'"));
 			}
