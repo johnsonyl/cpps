@@ -31,8 +31,8 @@ namespace cpps
 						}
 					}
 				}
+				stacklist->clear();
 			}
-			stacklist->clear();
 		}
 		void setrealfunc(cpps_cppsfunction* func)
 		{
@@ -41,6 +41,9 @@ namespace cpps
 		virtual void	callfunction(C* c, cpps_value* ret, cpps_domain* domain, std::vector<cpps_value>* o, cpps_stack* stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 			realfunc->callfunction(c, ret, domain, o, stack,stacklist);
+		}
+		virtual std::string		getfuncname() {
+			return realfunc->getfuncname();
 		}
 		virtual bool getIsNeedC()
 		{

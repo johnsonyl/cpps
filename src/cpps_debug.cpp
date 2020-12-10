@@ -35,6 +35,7 @@ namespace cpps
 			.def("getfile", &cpps_trycatch_error::getfile)
 			.def("getline", &cpps_trycatch_error::getline)
 			.def("getvalue", &cpps_trycatch_error::getvalue)
+			.def("callstack", &cpps_trycatch_error::callstack)
 		];
 	}
 }

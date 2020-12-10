@@ -16,10 +16,12 @@ public:
 	std::string getfile() { return file; }
 	int		getline() { return line; }
 	std::string geterrstr() { return s; }
+	std::string callstack() { return callstackstr; }
 
 	int erron;
 	std::string file;
 	int line;
 	std::string s;
+	std::string callstackstr;
 };
 

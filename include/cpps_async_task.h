@@ -19,6 +19,7 @@ namespace cpps
 		cpps_async_task_done,
 		cpps_async_task_cancelled,
 		cpps_async_task_timeouted,
+		cpps_async_task_thorw,
 	};
 	struct cpps_async_task
 	{
@@ -35,7 +36,7 @@ namespace cpps
 		bool				running();
 		void				cancel();
 		void				cleanup();/*释放自己.*/
-		void				start(C*c);
+		void				start(C* cstate);
 		void				add_done_callback(cpps_value func, cpps_value context);
 		void				remove_done_callback();
 		void				call_done_callback(C* c);
@@ -50,6 +51,8 @@ namespace cpps
 		cpps_value callback_func;				/*call back func*/
 		cpps_value callback_context;				/*call back func context*/
 		std::string name;
+		cpps_trycatch_error	throwerr;//可能携带异常回来
+		C* c;
 
 	};
 

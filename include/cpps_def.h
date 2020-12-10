@@ -152,6 +152,10 @@ typedef long long __int64;
 	printf("error: %d : %s file:%s line:%d \n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
 	\
 }\
+catch(cpps_trycatch_error e)\
+{\
+	printf("error: %d : %s file:%s line:%d \n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+}\
 	catch (const char* s)\
 {\
 	printf("error: %s \n", s); \
@@ -167,7 +171,19 @@ for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != 
 }\
 	c->resume();\
 }\
-	catch (const char* s)\
+catch(cpps_trycatch_error e)\
+{\
+	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+	printf("%s\n",e.callstackstr.c_str());\
+	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
+for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
+{\
+	cpps::cpps_stack *stack = *it; \
+	std::cout << " " << stack->f << "	The " << stack->l << " line	function£º" << stack->func << std::endl; \
+}\
+	c->resume();\
+}\
+catch (const char* s)\
 {\
 	printf("error: %s \nnError stack information:\n", s); \
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \

@@ -1,5 +1,6 @@
 #include "cpps.h"
 namespace cpps {
+	void printcallstack(std::string& errmsg, C* c);
 	cpps_async_task::cpps_async_task()
 	{
 		runstate = cpps_async_task_pending;
@@ -13,8 +14,29 @@ namespace cpps {
 
 	void cpps_async_task::run(cpps_async_task* p,C*c)
 	{
-		p->ret = p->async_object->call(c);
-		p->runstate = cpps_async_task_done;
+		try
+		{
+			p->ret = p->async_object->call(c);
+			p->runstate = cpps_async_task_done;
+		}
+		catch (cpps_trycatch_error e)
+		{
+			std::string errmsg;
+			printcallstack(errmsg, c);
+
+			p->throwerr = e;
+			p->throwerr.callstackstr += errmsg;
+			p->runstate = cpps_async_task_thorw;
+		}
+		catch (cpps_error e)
+		{
+			std::string errmsg;
+			printcallstack(errmsg, c);
+
+			p->throwerr = cpps_trycatch_error(e);
+			p->throwerr.callstackstr = errmsg;
+			p->runstate = cpps_async_task_thorw;
+		}
 	}
 
 	cpps_value cpps_async_task::getresult()
@@ -72,8 +94,9 @@ namespace cpps {
 		delete this;
 	}
 
-	void cpps_async_task::start(C *c)
+	void cpps_async_task::start(C * cstate)
 	{
+		c = cstate;
 		runstate = cpps_async_task_running;
 	}
 

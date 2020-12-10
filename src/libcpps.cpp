@@ -1959,8 +1959,9 @@ namespace cpps {
 						}
 					}
 					/* domain->regFunc(&regfunc); */
-					cpps_domain* funcdomain = new cpps_domain(NULL, cpps_domain_type_func, d->s + "::" + var->s);
+					cpps_domain* funcdomain = new cpps_domain(NULL, cpps_domain_type_func, d->s + "::" + varName->s);
 					cpps_cppsfunction* func = new cpps_cppsfunction(funcdomain, var->l[0], var->l[1], var->size);
+					func->setfuncname(varName->s);
 					func->setIsNeesC(false);
 					if (isasync == node_var_type::node_var_type_asyncvar)
 						func->setasync(true);
@@ -2293,6 +2294,21 @@ namespace cpps {
 		c->domain_free(execdomain2);
 		cpps_gc_check_step(c);
 	}
+
+	void printcallstack(std::string& errmsg, C* c)
+	{
+		char errbuffer[1024];
+		sprintf(errbuffer, "Error stack information:\n");
+		errmsg.append(errbuffer);
+		std::vector<cpps_stack*>* stacklist = c->getcallstack();
+		for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)
+		{
+			cpps::cpps_stack* stack = *it;
+			sprintf(errbuffer, "file:%s [%d] %s\n", stack->f, stack->l, stack->func);
+			errmsg.append(errbuffer);
+		}
+	}
+
 	void cpps_step_trycath(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		node* func = d->l[0];
 		node* catchfun = d->l[1];
@@ -2310,17 +2326,39 @@ namespace cpps {
 				hasCatch = true;
 			}
 		}
+		catch (cpps_trycatch_error e) {
+			throwerr = e;
+
+			std::string errmsg;
+			printcallstack(errmsg, c);
+			throwerr.callstackstr += errmsg;
+
+			cpps_pop_stack_to_here(c, takestack);
+			hasCatch = true;
+
+		}
 		catch (cpps_error e) {
+
+			std::string errmsg;
+			printcallstack(errmsg, c);
+
+
 			cpps_pop_stack_to_here(c, takestack);
 			/* 清栈 */
 			throwerr = cpps_trycatch_error(e);
+			throwerr.callstackstr = errmsg;
 			hasCatch = true;
 		}
 		catch (const char* s) {
+
+			std::string errmsg;
+			printcallstack(errmsg, c);
+
 			cpps_pop_stack_to_here(c, takestack);
 			/* 清栈 */
 			throwerr = cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "Unknown exception thrown by throw.");
-			throwerr.value = s;
+			throwerr.value = cpps_value(c,s);
+			throwerr.callstackstr = errmsg;
 			hasCatch = true;
 		}
 		if (hasCatch)
@@ -3148,6 +3186,11 @@ namespace cpps {
 		/*await 可能接受 cpps_async_object 或者 cpps_async_task*/
 		cpps_async_task* task = cpps_async_await(c,var);
 		if (task) {
+			if (task->state() == cpps_async_task_thorw) {
+				auto throwerr = task->throwerr;
+				task->cleanup();//没用了
+				throw throwerr;
+			}
 			ret = task->getresult();
 			task->cleanup();//没用了
 		}

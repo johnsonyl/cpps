@@ -101,10 +101,12 @@ namespace cpps {
 					else if (task->state() == cpps_async_task_running){
 						/*将这个协程的stack设置回来*/
 						c->setcallstack(&task->takestacklist);
+						
 						coroutine::resume(ordinator, task->rt);
+						
 						task = _tasks[i]; /*需要恢复task*/
 						hasrun = true;
-						if (task->state() == cpps_async_task_done) {
+						if (task->state() == cpps_async_task_done || task->state() == cpps_async_task_thorw) {
 							task->call_done_callback(c);
 							coroutine::destroy(ordinator, task->rt);
 							task->rt = MAXUINT64;
