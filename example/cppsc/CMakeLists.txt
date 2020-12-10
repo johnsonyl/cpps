@@ -35,6 +35,13 @@ IF(WIN32)
 	target_link_libraries(${PROJECT_NAME} cpps)
 ELSE()
 	target_link_libraries(${PROJECT_NAME} -lrt -ldl -lm -lpthread -lcpps)
-	install(TARGETS cppsc
-	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/local/bin/)
+
+	add_custom_command(TARGET cppsc
+	  POST_BUILD 
+	  COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/local/bin/cppsc
+	  COMMAND ln -s ${PROJECT_SOURCE_DIR}/../../bin/cppsc ${CMAKE_INSTALL_PREFIX}/local/bin/cppsc
+	 )
+#	不在安装 cppsc 到系统目录,需要手动建立软连接.
+# 	install(TARGETS cppsc
+#	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/local/bin/)
 ENDIF()

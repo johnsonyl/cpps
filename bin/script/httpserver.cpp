@@ -9,8 +9,8 @@ class Home
 	{
 		name = "I'm John ,32 years old."
 	}
-	//http://127.0.0.1:8080 or http://127.0.0.1:8080/Home or http://127.0.0.1:8080/Home/Index
-	var Index(var request)
+	//http://127.0.0.1:8080 or http://127.0.0.1:8080/Home or http://127.0.0.1:8080/Home/index
+	var index(var request)
 	{
 		println("Home/Index..");
 		println(name);
@@ -36,7 +36,7 @@ class Student
 		age = 18;
 	}
 	//http://127.0.0.1:8080/Student/ or http://127.0.0.1:8080/Student/Index
-	var Index(var request)
+	var index(var request)
 	{
 		
 		request.addheader({
@@ -50,7 +50,7 @@ class Student
 		request.send(200,"OK");
 	}
 	//http://127.0.0.1:8080/Student/Name
-	var Name(var request)
+	var name(var request)
 	{
 		request.addheader({
 			Server:"John Server",
@@ -63,7 +63,7 @@ class Student
 		request.send(200,"OK");
 	}
 	//http://127.0.0.1:8080/Student/Age
-	var Age(var request)
+	var age(var request)
 	{
 		request.addheader({
 			Server:"John Server",
@@ -129,7 +129,7 @@ var option = new HttpServerOption()
 var http = new socket::httpserver().setoption(option).listen(8080);
 
 
-http.register_controller_default(Home);
+http.register_controller(Home,true);
 http.register_controller(Student);
 http.register_handlefunc("/Home/test",test);
 

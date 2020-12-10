@@ -72,6 +72,10 @@ lib/socket 为libevent封装库 需要安装编译libevent
 
 8. 取消cppsc 可继续执行语句功能.
 
+9. 修改cppsc默认当前目录main.cpp
+
+10. 修改cppsc 为建立软连接模式
+
 2020-12-9 更新
 -
 
