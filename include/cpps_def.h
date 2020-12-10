@@ -227,6 +227,7 @@ namespace cpps
 typedef void* HMODULE;
 
 #define _mkdir(p) mkdir(p,S_IRWXU)
+#define _rmdir(p) rmdir(p)
 
 #include <pthread.h>
 inline unsigned int GetCurrentThreadId()
