@@ -11,7 +11,8 @@
 //@website		:	http://cpps.wiki
 //==================================
 
-#define CPPS_VER		"1.0 Aphla"
+#define CPPS_VER		"1.0.0 Build [2020-12-09 13:05:00]"
+#define CPPS_VERN		1000
 #define CPPS_NAME		"CPPS"
 #define M_PI				3.14159265358979323846
 #define CPPS_GEN1_CHECKSIZE			(1024 * 1024 * 128)  // 128 M
@@ -252,6 +253,15 @@ typedef struct {
 #include <direct.h>
 #include <Process.h>
 #include <corecrt_io.h>
+#ifdef WIN32
+#define S_ISDIR(m) m & S_IFDIR
+#define S_ISREG(m) m & S_IFREG
+#define S_ISBLK(m) false
+#define S_ISCHR(m) m & S_IFCHR
+#define S_ISFIFO(m) m & _S_IFIFO
+#define S_ISLNK(m)  false
+#define S_ISSOCK(m)  false
+#endif
 #endif
 
 

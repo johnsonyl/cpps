@@ -15,6 +15,33 @@
 namespace cpps
 {
 
+	struct cpps_io_stat 
+	{
+		cpps_integer dev() { return statinfo.st_dev; }
+		cpps_integer ino() { return statinfo.st_ino; }
+		cpps_integer mode() { return statinfo.st_mode; }
+		cpps_integer nlink() { return statinfo.st_nlink; }
+		cpps_integer uid() { return statinfo.st_uid; }
+		cpps_integer gid() { return statinfo.st_gid; }
+		cpps_integer rdev() { return statinfo.st_rdev; }
+		cpps_integer size() { return statinfo.st_size; }
+		cpps_integer atime() { return statinfo.st_atime; }
+		cpps_integer mtime() { return statinfo.st_mtime; }
+		cpps_integer ctime() { return statinfo.st_ctime; }
+		bool		 isdir() { return S_ISDIR(statinfo.st_mode); }
+		bool		 isreg() { return S_ISREG(statinfo.st_mode); }
+		bool		 isblk() { return S_ISBLK(statinfo.st_mode); }
+		bool		 ischr() { return S_ISCHR(statinfo.st_mode); }
+		bool		 isfifo() { return S_ISFIFO(statinfo.st_mode); }
+		bool		 islink() { return S_ISLNK(statinfo.st_mode); }
+		bool		 issock() { return S_ISSOCK(statinfo.st_mode); }
+#ifdef WIN32
+		struct _stat64 statinfo;
+#else 
+		struct stat statinfo;
+#endif
+	};
+
 	struct Buffer
 	{
 		Buffer()

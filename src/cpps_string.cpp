@@ -151,26 +151,29 @@ namespace cpps
 	{
 		return fmt;
 	}
+	void cpps_string_real_tolower(std::string& s) {
+		for (size_t i = 0;i < s.size(); ++i){
+			s[i] = tolower(s[i]);
+		}
+	}
 	cpps_value cpps_string_lower(cpps_value v)
 	{
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-		for (size_t i = 0; i < tmpStr->size(); i++)
-		{
-			std::string &s = *(tmpStr);
-			s[i] = tolower(tmpStr->at(i));
-		}
+		cpps_string_real_tolower(*tmpStr);
 		return v;
+	}
+
+	void cpps_string_real_toupper(std::string& s) {
+		for (size_t i = 0; i < s.size(); ++i) {
+			s[i] = toupper(s[i]);
+		}
 	}
 	cpps_value cpps_string_upper(cpps_value v)
 	{
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-		for (size_t i = 0; i < tmpStr->size(); i++)
-		{
-			std::string &s = *(tmpStr);
-			s[i] = toupper(tmpStr->at(i));
-		}
+		cpps_string_real_toupper(*tmpStr);
 		return v;
 	}
 	cpps_value cpps_string_trim(cpps_value s)

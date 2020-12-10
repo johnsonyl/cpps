@@ -338,7 +338,7 @@ namespace cpps
 		std::string fpath;
 
 		if (c->modulelist.find(libname) != c->modulelist.end()) return true;
-
+		bool sv = false;
 #ifdef WIN32
 
 		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
@@ -362,6 +362,7 @@ namespace cpps
 			}
 
 			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+			sv = true;
 
 			cpps_attach(c);
 
@@ -387,6 +388,7 @@ namespace cpps
 			}
 
 			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+			sv = true;
 
 			api->cpps_attach(c);
 
@@ -396,6 +398,8 @@ namespace cpps
 		fpath = cpps_rebuild_filepath(path + "main.cpp");
 		if (!fpath.empty())
 		{
+			if(!sv)
+				c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, NULL));
 			std::string fileSrc;
 			cpps_load_filebuffer(fpath.c_str(), fileSrc);
 			node* o = loadbuffer(c,  fileSrc, fpath);
@@ -425,21 +429,22 @@ namespace cpps
 		if (it != c->modulelist.end())
 		{
 			HMODULE module = it->second;
+			if (module) {
+				std::string libfuncname = "cpps_detach";
 
-			std::string libfuncname = "cpps_detach";
+				cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
+				if (cpps_detach == NULL)
+				{
+					printf("Free Module¡¾%s¡¿ faild.\r\n", libname.c_str());
+				}
+				else
+				{
+					cpps_detach(c);
+				}
 
-			cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
-			if (cpps_detach == NULL)
-			{
-				printf("Free Module¡¾%s¡¿ faild.\r\n", libname.c_str());
+
+				FreeLibrary(module);
 			}
-			else
-			{
-				cpps_detach(c);
-			}
-
-
-			FreeLibrary(module);
 			c->modulelist.erase(it);
 			ret = true;
 		}
@@ -512,6 +517,7 @@ namespace cpps
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
 			def("assert", cpps_assert),
 			defvar(c,"_VERSION", CPPS_VER),
+			defvar(c,"_VERSIONNO", CPPS_VERN),
 			def("encodecpps", cpps_encodecpps),
 			def("decodecpps", cpps_decodecpps),
 			def_inside("loadlibrary", cpps_loadlibrary),

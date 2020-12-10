@@ -140,6 +140,10 @@ namespace cpps
 	{
 		return _mkdir(p.c_str());
 	}
+	cpps_integer cpps_io_rmdir(std::string p)
+	{
+		return _rmdir(p.c_str());
+	}
 	cpps_integer cpps_io_mkdirs(std::string szdir)
 	{
 		std::string strdir = szdir;
@@ -194,6 +198,68 @@ namespace cpps
 		getcwd(buffer, 4096);
 #endif
 		return buffer;
+	}
+	cpps_value cpps_io_get_stat(C* c, std::string path) {
+
+		cpps_io_stat* st = NULL;
+		cpps_value ret = newclass<cpps_io_stat>(c, &st);
+
+#ifdef WIN32
+		_stati64(path.c_str(), &st->statinfo);
+#else
+		stat(path.c_str(), &st->statinfo);
+#endif
+		return ret;
+	}
+	void cpps_real_walk(C*c,cpps_vector* vct,std::string path, bool bfindchildren) {
+		char dirNew[200];
+
+
+		path = cpps_io_string_replace(path, "\\", "/");
+
+		strcpy(dirNew, path.c_str());
+		strcat(dirNew, "/*.*");    // 在目录后面加上"\\*.*"进行第一次搜索
+
+		intptr_t handle;
+		_finddata_t findData;
+
+		handle = _findfirst(dirNew, &findData);
+		if (handle == -1)        // 检查是否成功
+			return;
+
+
+
+		do
+		{
+			strcpy(dirNew, path.c_str());
+			strcat(dirNew, "/");
+			strcat(dirNew, findData.name);
+
+			if (findData.attrib & _A_SUBDIR)
+			{
+				if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
+					continue;
+
+				vct->push_back(cpps_value(c, dirNew));
+
+				if(bfindchildren)
+					cpps_real_walk(c, vct,dirNew, bfindchildren);
+			}
+			else
+				vct->push_back(cpps_value(c, dirNew));
+
+		} while (_findnext(handle, &findData) == 0);
+
+		_findclose(handle);    // 关闭搜索句柄
+	}
+	cpps_value cpps_io_walk( C *c,std::string path,cpps_value findchildren) {
+		
+		cpps_vector* vct = NULL;
+		cpps_value ret = newclass<cpps_vector>(c, &vct);
+		
+		bool bfindchildren = findchildren.tt == CPPS_TBOOLEAN ? findchildren.value.b : true;
+		cpps_real_walk(c, vct, path, bfindchildren);
+		return ret;
 	}
 	std::string cpps_real_path()
 	{
@@ -253,9 +319,12 @@ namespace cpps
 			def("getfilenamenotext", getfilenamenotext),
 			def("getcwd", cpps_getcwd),
 			def("mkdir",cpps_io_mkdir),
+			def("rmdir",cpps_io_rmdir),
 			def("mkdirs",cpps_io_mkdirs),
 			def("getrealpath", cpps_real_path),
-			def("file_exists",cpps_io_file_exists)
+			def("file_exists",cpps_io_file_exists),
+			def_inside("walk",cpps_io_walk),
+			def_inside("stat",cpps_io_get_stat)
 		];
 
 		module(c)[
@@ -282,7 +351,26 @@ namespace cpps
 				.def("seek", &Buffer::seek)
 				.def("clear", &Buffer::clear)
 				.def("length", &Buffer::length),
-			_class<FILE>("FILE")
+			_class<FILE>("FILE"),
+			_class< cpps_io_stat>("statinfo")
+				.def("dev",&cpps_io_stat::dev)
+				.def("ino",&cpps_io_stat::ino)
+				.def("mode",&cpps_io_stat::mode)
+				.def("nlink",&cpps_io_stat::nlink)
+				.def("uid",&cpps_io_stat::uid)
+				.def("gid",&cpps_io_stat::gid)
+				.def("rdev",&cpps_io_stat::rdev)
+				.def("size",&cpps_io_stat::size)
+				.def("atime",&cpps_io_stat::atime)
+				.def("mtime",&cpps_io_stat::mtime)
+				.def("ctime",&cpps_io_stat::ctime)
+				.def("isdir",&cpps_io_stat::isdir)
+				.def("isreg",&cpps_io_stat::isreg)
+				.def("isblk",&cpps_io_stat::isblk)
+				.def("ischr",&cpps_io_stat::ischr)
+				.def("isfifo",&cpps_io_stat::isfifo)
+				.def("islink",&cpps_io_stat::islink)
+				.def("issock",&cpps_io_stat::issock)
 		];
 	}
 }

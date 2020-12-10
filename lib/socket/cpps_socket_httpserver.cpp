@@ -2,7 +2,7 @@
 #include "cpps_socket_httpserver_request.h"
 #include "cpps_socket_httpserver_controller.h"
 namespace cpps {
-
+	void cpps_string_real_tolower(std::string& s);
 	cpps_socket_httpserver::cpps_socket_httpserver()
 	{
 		ev_base = NULL;
@@ -146,6 +146,7 @@ namespace cpps {
 		try
 		{
 			//1.ÏÈÕÒÂ·ÓÉ
+			cpps_string_real_tolower(cpps_request_ptr->path);
 			cpps::object func = httpserver->gethandlefunc(cpps_request_ptr->path);
 			if (cpps::type(func) == CPPS_TFUNCTION)
 			{
@@ -168,7 +169,7 @@ namespace cpps {
 				cpps::cpps_cppsclass* cppsclass = cpps_to_cpps_cppsclass(controller_object.value);
 				if (cppsclass->iscppsclass())
 				{
-					std::string method = "Index";
+					std::string method = "index";
 					if (!controller.method.empty()) method = controller.method;
 					cpps_domain* leftdomain = NULL;
 					cpps_regvar *var = cppsclass->getvar(method, leftdomain, true);
@@ -227,25 +228,25 @@ namespace cpps {
 
 	void cpps_socket_httpserver::register_handlefunc(std::string path, cpps::object func)
 	{
+		cpps_string_real_tolower(path);
 		http_route_list[path] = func;
 	}
 
-	void cpps_socket_httpserver::register_controller(cpps::object cls)
+	void cpps_socket_httpserver::register_controller(cpps::object cls, cpps_value defaultset)
 	{
+		bool bdefaultset = defaultset.tt == CPPS_TBOOLEAN ? defaultset.value.b : false;
 		if (cpps::type(cls) == CPPS_TCLASS)
 		{
 			cpps::cpps_cppsclass* cppsclass = cpps_to_cpps_cppsclass(cls.value);
 			if (cppsclass->iscppsclass())
 			{
-				http_class_route_list[cppsclass->getclassname()] = cls;
+				std::string s = cppsclass->getclassname();
+				cpps_string_real_tolower(s);
+				http_class_route_list[s] = cls;
+				if(bdefaultset)
+					http_default_class_route = cls;
 			}
 		}
-	}
-
-	void cpps_socket_httpserver::register_controller_default(cpps::object cls)
-	{
-		http_default_class_route = cls;
-		register_controller(cls);
 	}
 
 	bool cpps_socket_httpserver::isrunning()

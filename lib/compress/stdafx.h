@@ -26,14 +26,6 @@
 #include<Windows.h>  
 #endif  
 
-#ifdef WIN32
-#define S_ISDIR(m) m & S_IFDIR
-#define S_ISREG(m) m & S_IFREG
-#define S_ISBLK(m) false
-#define S_ISCHR(m) m & S_IFCHR
-#define S_ISFIFO(m) m & _S_IFIFO
-#define S_ISLNK(m)  false
-#define S_ISSOCK(m)  false
-#endif
+
 
 // 在此处引用程序需要的其他标头

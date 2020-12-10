@@ -53,6 +53,18 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-10 更新
+
+1. 修复[]偶发找不到变量的BUG.
+
+2. 修复#include 对应文件与行号不一致的BUG
+
+3. 更新socket::httpserver path都以小写来检测
+
+4. 增加http模块 downloader类
+
+5. cppsc 支持部分命令 可以查看-h 或 -help  , 例子 cppsc -h
+
 2020-12-9 更新
 -
 

@@ -43,7 +43,6 @@ extern "C" void  cpps_attach(cpps::C* c)
 		.def("run", &cpps_socket_httpserver::run)
 		.def("register_handlefunc", &cpps_socket_httpserver::register_handlefunc)
 		.def("register_controller", &cpps_socket_httpserver::register_controller)
-		.def("register_controller_default", &cpps_socket_httpserver::register_controller_default)
 		.def("stop", &cpps_socket_httpserver::stop)
 		.def("isrunning", &cpps_socket_httpserver::isrunning),
 		_class<cpps_socket_client>("client")

@@ -116,7 +116,7 @@ namespace cpps {
 	}
 	std::string cpps_parse_object_varname(cppsbuffer& buffer) {
 		std::string ret = "";
-		while (buffer.cur() != ':') {
+		while (buffer.cur() != ':' && !cpps_parse_isspace(buffer.cur()) && !cpps_parse_isenter(buffer.cur())) {
 			ret.push_back(buffer.pop());
 		}
 		return(ret);
@@ -761,6 +761,7 @@ namespace cpps {
 			if (symblo == '[') {
 				geto->type = CPPS_OGETCHIILD;
 				child = new node(o->filename, buffer.line());
+				child->setparent(geto);
 				cpps_parse_expression(c, domain, child, root, buffer);
 				if (!child)
 					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "'[' must be followed by a parameter"));
@@ -770,6 +771,7 @@ namespace cpps {
 			}
 			else if (symblo == '.') {
 				geto->type = CPPS_OGETOBJECT;
+				child->setparent(geto);
 				child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
 				if (!child)
 					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "The variable name is required later on '.'"));
@@ -1552,7 +1554,7 @@ namespace cpps {
 		/*载入文件*/
 		std::string fileSrc;
 		cpps_load_filebuffer(path.c_str(), fileSrc);
-		buffer.append(fileSrc.c_str(),(int32) fileSrc.size());
+		buffer.append(path,fileSrc.c_str(),(int32) fileSrc.size());
 
 	}
 	void cpps_parse_dofile(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
@@ -1681,11 +1683,11 @@ namespace cpps {
 		}
 	}
 	node* cpps_parse_line(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, int32 limit) {
-		node* child = new node(o, o->filename, buffer.line());
+		node* child = new node(o, buffer.getcurfile().filename, buffer.line());
 		while (buffer.cur() == ';') buffer.pop(); /*pop空行*/
 		if (buffer.cur() == '{') {
 			if (limit & CPPS_NOT_DEFASSEMBLE) {
-				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
 			}
 			buffer.pop();
 			/* 这是个集~ */
@@ -1696,7 +1698,7 @@ namespace cpps {
 		else if (buffer.cur() == '#'){
 			/* 剔除空格 */
 			if (limit & CPPS_NOT_DEFSYSTEM) {
-				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
 			}
 			buffer.pop();
 			cpps_parse_rmspaceandenter(buffer);
@@ -1709,13 +1711,13 @@ namespace cpps {
 				cpps_parse_import(c, domain, child, root, buffer);
 			}
 			else {
-				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "parse error [%s] .", child->s.c_str()));
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "parse error [%s] .", child->s.c_str()));
 			}
 		}
 		else {
 			if (cpps_parse_isnumber(buffer.cur())) {
 				/* 首字母为 数字的话肯定有问题。想都别想。。 */
-				throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "The first letter of an expression cannot be a number '%c'", buffer.cur()));
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "The first letter of an expression cannot be a number '%c'", buffer.cur()));
 			}
 			int32 offset = buffer.offset();
 			/* 记录一下 先检测是否为表达式 */
@@ -1725,7 +1727,7 @@ namespace cpps {
 			/* 检测表达式 */
 			if (cpps_parse_isbuiltinname(child->s)) {
 				if (limit & CPPS_NOT_USEBUILTIN && child->s != "var" && child->s != "const") {
-					throw(cpps_error(o->filename, buffer.line(), cpps_error_normalerror, "builtin are not allowed"));
+					throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "builtin are not allowed"));
 				}
 				cpps_parse_builtin(c, domain, child, root, buffer, limit);
 			}
@@ -2077,7 +2079,7 @@ namespace cpps {
 		node* for3 = d->l[2];
 		node* for4 = d->l[3];
 		fordomain->isbreak = false;
-		cpps_step(c, fordomain, root, for1->l[0]);
+		if(!for1->l.empty()) cpps_step(c, fordomain, root, for1->l[0]);
 		cpps_domain* execdomain = c->domain_alloc();
 		while (true) {
 			cpps_domain* leftdomain = NULL;
@@ -2087,7 +2089,7 @@ namespace cpps {
 				break;
 			execdomain->init(fordomain, cpps_domain_type_exec);
 			execdomain->setexecdomain(fordomain);
-			cpps_step(c, execdomain, root, for4->l[0]);
+			if (!for4->l.empty())cpps_step(c, execdomain, root, for4->l[0]);
 			execdomain->destory(c);
 			cpps_gc_check_step(c);
 			if (fordomain->isbreak)
@@ -2794,7 +2796,7 @@ namespace cpps {
 			if (var) {
 				ret = var->getval();
 #ifndef NDEBUG
-				printf(" //global[%d]", d->offset);
+				//printf(" //global[%d]", d->offset);
 #endif
 			}
 		}
@@ -2803,7 +2805,7 @@ namespace cpps {
 			if (var) {
 				ret = var->getval();
 #ifndef NDEBUG
-				printf(" //self[%d]", d->offset);
+				//printf(" //self[%d]", d->offset);
 #endif
 			}
 		}
@@ -2812,7 +2814,7 @@ namespace cpps {
 			if (var) {
 				ret = var->getval();
 #ifndef NDEBUG
-				printf(" //left-class[%d]", d->offset);
+				//printf(" //left-class[%d]", d->offset);
 #endif
 				leftdomain = root->parent[1];
 			}
@@ -2822,7 +2824,7 @@ namespace cpps {
 			if (var) {
 				ret = var->getval();
 #ifndef NDEBUG
-				printf(" //left[%d]", d->offset);
+				//printf(" //left[%d]", d->offset);
 #endif
 			}
 		}
@@ -2973,7 +2975,7 @@ namespace cpps {
 					cpps_vector* pVec = (cpps_vector*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, root, domain, d->getright()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c,  domain, root, d->getright()->getleft(), leftdomain);
 					if (right.tt != CPPS_TINTEGER) {
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array must contain a number as an index.。"));
 					}

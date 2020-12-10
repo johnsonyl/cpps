@@ -13,16 +13,28 @@
 
 namespace cpps
 {
+	struct cppsbuffer_file
+	{
+		std::string filename;
+		int32		begin;
+		int32		end;
+		int32		line;
+	};
 	class cppsbuffer
 	{
 	public:
 		cppsbuffer(const char *_filename,const char* _buffer, int32 _buffersize)
 		{
-			filename = _filename;
+			cppsbuffer_file file;
+			file.filename = _filename;
+			file.begin = 0;
+			file.end = _buffersize;
+			file.line = 1;
+			files.push_back(file);
+
 			buffer.append(_buffer,_buffersize);
 			buffersize = _buffersize;
 			bufferoffset = 0;
-			l = 1;
 		}
 		char		pop()
 		{
@@ -70,12 +82,18 @@ namespace cpps
 		{
 			if (isend())
 			{
-				throw(cpps_error(filename.c_str(), l, 0, "Unknown end of file."));
+				throw(cpps_error(getcurfile().filename.c_str(), getcurfile().line, 0, "Unknown end of file."));
 			}
 			int32 ret = bufferoffset++;
 
 			if (buffer[ret] == '\n')
-				l++;
+				getcurfile().line++;
+
+			//退出最后一个
+			if (  bufferoffset > getcurfile().end) {
+				if(files.size() > 1) files.pop_back();
+			}
+
 			return buffer[ret];
 		}
 
@@ -141,19 +159,32 @@ namespace cpps
 		}
 		int32			line()
 		{
-			return l;
+			return getcurfile().line;
 		}
-		void		append(const char* _buffer, int32 _buffersize)
+		void		append(std::string _filename,const char* _buffer, int32 _buffersize)
 		{
+			cppsbuffer_file file;
+			file.filename = _filename;
+			file.begin = bufferoffset;
+			file.end = bufferoffset+_buffersize;
+			file.line = 1;
+			for (auto f : files)
+			{
+				f.end += _buffersize;
+			}
+			files.push_back(file);
+
 			buffer.insert(bufferoffset,_buffer, _buffersize);
 			buffersize += _buffersize;
 		}
+		cppsbuffer_file& getcurfile() {
+			return files.back();
+		}
 	public:
+		std::vector< cppsbuffer_file > files;
 		std::string	buffer;
-		std::string filename;
 		int32			buffersize;
 		int32			bufferoffset;
-		int32			l;
 	};
 }
 

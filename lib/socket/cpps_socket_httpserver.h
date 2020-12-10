@@ -37,8 +37,7 @@ namespace cpps {
 		cpps_socket_httpserver*					setoption(cpps::object opt);
 		cpps_socket_httpserver*					listen(cpps::C* cstate, cpps::usint16 port);
 		void									register_handlefunc(std::string path, cpps::object func);
-		void									register_controller(cpps::object cls); 
-		void									register_controller_default(cpps::object cls); 
+		void									register_controller(cpps::object cls,cpps_value defaultset); 
 		bool									isrunning();
 		virtual	void							run();
 		void									stop();
