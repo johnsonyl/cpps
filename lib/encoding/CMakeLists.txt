@@ -7,7 +7,7 @@ project(encoding)
 
 # 将源代码添加到此项目的可执行文件。
 
-IF(WIN32)
+IF(WINDOWS)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin ${PROJECT_SOURCE_DIR}/../../deps/deps/lib)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
@@ -32,7 +32,7 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
-IF(WIN32)
+IF(WINDOWS)
 	target_link_libraries(${PROJECT_NAME} cpps)
 ELSE()
 	target_link_libraries(${PROJECT_NAME} -lcpps)
