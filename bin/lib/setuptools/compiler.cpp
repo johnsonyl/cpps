@@ -18,9 +18,9 @@ var compiler(var output_name,var work_path,var option,var real_install_path,var 
 		if(plantfrom == null || plantfrom == "macos" || plantfrom == "all")
 			compiler_maker = new macoscompiler();
 	}		
-	if(!is_nocpps_build && link_type != 1)
+	if(is_nocpps_build && link_type != 1)
 	{
-		log.error("cpps Module Just Link dynamic Share library. You Can Setup nocpps : false");
+		log.error("cpps Module Just Link dynamic Share library. You Can Setup nocpps : false {is_nocpps_build} {link_type}");
 		sleep(10);return false;
 	}
 	if(!compiler_maker){

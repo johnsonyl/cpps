@@ -140,7 +140,6 @@ class unixcompiler : ccompiler
 			cmd = '{cpp} {opt} {lib_paths} -o {outfilepath} {libs} {objslist}';
 		else if(link_type == 2)
 			cmd = '{ar} {opt} {outfilepath} {objslist}';
-		println(cmd);
         var s = execmd(cmd);
 		if(len(s) > 0) { log.error(s);  return false;}
 		else println_color("compiler is done.",2); 
