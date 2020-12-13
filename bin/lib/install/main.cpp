@@ -14,12 +14,15 @@ var download(var file,var showname)
 	var progress_max = 70;
 	var x = filesize / progress_max;
 	var lastcur = 0;
+	println("file: {showname}");
+	var cl = ["/","-","\\","|"];
 	foreach(var i : xrange(1,filesize))
 	{
 		var n = toint(i / filesize * 100 );
 		var cur = toint(i / x);
 		if(cur != lastcur){
-			print("{showname}\t[");
+			if(n < 99) print(cl[(cur/20)%4]);
+			print("[");
 			foreach(var j : xrange(1,cur)){
 				print("=");	
 			}
@@ -86,15 +89,17 @@ var install()
 	}
 	file.extractall("{modulepath}/");
 	println("ok");
-	println("----------------------------------------\r\n");
+	println("\r\n----------------------------------------\r\n");
 
 	install_path = "{io.getrealpath()}lib/{modulename}/";
+	println("start compiler module files...\r\n");
+
 	dofile("{modulepath}/setup.cpp"); //compiler
 	if(compiler_result)
-		println("install {modulename} is done.");
+		println("\r\ninstall {modulename} is success.");
 	else
 	{
-		println("install {modulename} is faild. uninstall {modulename} module.");
+		println("\r\ninstall {modulename} is faild. uninstall {modulename} module.");
 		uninstall();
 	}
 
