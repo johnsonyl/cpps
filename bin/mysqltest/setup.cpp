@@ -27,6 +27,15 @@ var module_linux = {
                 library_dirs:["/usr/lib64/mysql"],
                 define_macros:[]
                 };
+
+var module_macos = { 
+                platfrom:"macos",
+                sources :['src/cpps_mysql.cpp','src/cpps_mysql_record.cpp',"src/cpps_mysql_result.cpp","src/mysql.cpp"],
+                include_dirs:["/usr/local/opt/mysql-client/include"],
+                libraries:["mysqlclient","ssl","crypto"],
+                library_dirs:["/usr/local/opt/mysql-client/lib"],
+                define_macros:[]
+                };
                 
 
 
@@ -42,7 +51,7 @@ setuptools::setup({
     url:"https://github.com/johnsonyl/mysqlexaple",
     packages:setuptools::find_packages(),
     platfrom:"all", // windows or linux or macos or all
-    ext_modules:[module_windows,module_linux],
+    ext_modules:[module_windows,module_linux,module_macos],
     cpps_requires:'>=1.0',
 });
 

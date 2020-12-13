@@ -1238,7 +1238,7 @@ namespace cpps
 			typedef cpps::cpps_converter<bool> convert;
 			ret.tt = CPPS_TBOOLEAN;
 			ret.value.b =  convert::apply(a) && convert::apply(cpps_calculate_expression(c, domain, root, d->l[1], leftdomain));
-
+			break;
 		}
 		case CPPS_SYMBOL_TYPE_OR:
 		{

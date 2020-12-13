@@ -7,6 +7,7 @@
 #include <lib/setuptools/compiler.cpp>
 #include <lib/setuptools/msccompiler.cpp>
 #include <lib/setuptools/unixcompiler.cpp>
+#include <lib/setuptools/macoscompiler.cpp>
 
 
 namespace setuptools{
@@ -29,16 +30,32 @@ namespace setuptools{
 		}
 		else if (type == "install")
 		{
-			println_color("compiler",1);
 			var work_path = "{io.getrealpath()}lib/{option["name"]}";
 
 			if(option["ext_modules"] != null){
+				var curos = "";
+				if(sys.platform == "win64" || sys.platform == "win32")
+					curos = "windows";
+				else if(sys.platform == "linux32" || sys.platform == "linux64")
+					curos = "linux";
+				else if(sys.platform == "macos32" || sys.platform == "macos64")
+					curos = "macos";
+				var taros = option["platfrom"];
+				if(taros != null && curos != taros && taros != "all")
+				{
+					log.error("The Module Don't Support {curos} Platfrom. Stop Compiler.");
+					sleepexit(10);
+				}
+				
 				foreach(var module: option["ext_modules"]){
 					var output_name = option["name"];
 					if(module["output_name"]){
 						output_name = module["output_name"];
 					}
-					compiler(output_name,work_path,module);
+					var taros = module["platfrom"];
+					
+					if(taros == null || curos == taros || taros == "all")
+						compiler(output_name,work_path,module);
 				}
 			}
 		}

@@ -453,7 +453,7 @@ namespace cpps
 	{
 		char abs_path[1024];
 		memset(abs_path, 0, 1024);
-#ifdef _WIN32
+#if defined _WIN32
 		GetModuleFileNameA(NULL, abs_path, 1024);
 		size_t cnt = strlen(abs_path);
 		if (cnt != 0) {
@@ -466,7 +466,7 @@ namespace cpps
 			}
 		}
 		
-#else
+#elif defined LINUX
 		size_t cnt = readlink("/proc/self/exe", abs_path, 1024);//获取可执行程序的绝对路径
 		if (cnt < 0 || cnt >= 1024)
 		{
@@ -475,6 +475,18 @@ namespace cpps
 		//最后一个'/' 后面是可执行程序名，去掉devel/lib/m100/exe，只保留前面部分路径
 
 		for (size_t i = cnt; i >= 0; --i)
+		{
+			if (abs_path[i] == '/')
+			{
+				abs_path[i + 1] = '\0';
+				break;
+			}
+		}
+#elif defined __APPLE__
+		usint32 size = 1024;
+		_NSGetExecutablePath(abs_path, &size);
+
+		for (size_t i = (size_t)size; i >= 0; --i)
 		{
 			if (abs_path[i] == '/')
 			{

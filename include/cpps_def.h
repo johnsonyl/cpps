@@ -25,9 +25,9 @@
 #endif
 #elif defined __APPLE__
 #ifdef _X86_
-#define CPPS_CURRENT_PLANTFORM "apple32"
+#define CPPS_CURRENT_PLANTFORM "macos32"
 #else
-#define CPPS_CURRENT_PLANTFORM "apple64"
+#define CPPS_CURRENT_PLANTFORM "macos64"
 #endif
 #else
 #define CPPS_CURRENT_PLANTFORM "unknow OS system."
@@ -288,7 +288,7 @@ namespace cpps
 #include <sys/uio.h>
 #include <dlfcn.h>
 #include <dirent.h>
-
+#include <mach-o/dyld.h>
 
 #elif defined _WIN32 
 

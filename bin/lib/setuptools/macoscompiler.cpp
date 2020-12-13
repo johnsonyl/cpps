@@ -1,6 +1,6 @@
-class unixcompiler : ccompiler
+class macoscompiler : ccompiler
 {
-	unixcompiler()
+	macoscompiler()
 	{
 
 	}
@@ -12,21 +12,21 @@ class unixcompiler : ccompiler
         var cpp_macros ;
         var ldflags_shared = ["-fPIC","-shared"];
         if(!debug){
-            cpp_flags = ["-fPIC","-Wfatal-errors","-std=c++17","-Wno-format-y2k","-fpermissive","-std=gnu++0x","-Wformat-contains-nul","-Wno-unused-function","-O3","-Wall"];
-            cpp_macros = ["-DLINUX","-D_FILE_OFFSET_BITS=64","-DNDEBUG"];
+            cpp_flags = ["-fPIC","-Wfatal-errors","-std=c++17","-Wno-format-y2k","-fpermissive","-std=gnu++0x","-Wno-unused-function","-O3","-Wall"];
+            cpp_macros = ["-D__APPLE__","-D_FILE_OFFSET_BITS=64","-DNDEBUG"];
         }
         else{
-            cpp_flags = ["-Wfatal-errors","-std=c++17","-Wno-format-y2k","-fpermissive","-std=gnu++0x","-Wformat-contains-nul","-Wno-unused-function","-O0","-Wall","-g","-ggdb"];
-            cpp_macros = ["-DLINUX","-D_FILE_OFFSET_BITS=64","-DDEBUG"];
+            cpp_flags = ["-Wfatal-errors","-std=c++17","-Wno-format-y2k","-fpermissive","-std=gnu++0x","-Wno-unused-function","-O0","-Wall","-g","-ggdb"];
+            cpp_macros = ["-D__APPLE__","-D_FILE_OFFSET_BITS=64","-DDEBUG"];
         }
         var arch = "x64";
-		if(sys.platform == "linux64" )
+		if(sys.platform == "macos64" )
 			arch = "x64";
-		else if(sys.platform == "linux32")
+		else if(sys.platform == "macos32")
 			arch = "x86"
 
         if(arch == "x64")
-            cpp_flags.push_back("-m64");
+            cpp_flags.push_back("-m64 -arch x86_64");
 
         if(define_macros != null){
 			foreach(var macros:define_macros){
@@ -34,7 +34,7 @@ class unixcompiler : ccompiler
 			}
 		}
 
-        var complier_base_libs = ["-lcpps","-lm","-lpthread","-lrt","-ldl"];
+        var complier_base_libs = ["-lcpps","-lm","-lpthread","-ldl"];
         if(libraries != null){
 			foreach(var lib:libraries){
 				complier_base_libs.push_back('"-l{lib}"');
@@ -52,7 +52,7 @@ class unixcompiler : ccompiler
 
 
 		//base deps include
-		var base_deps_include_cpps = '/usr/local/include';
+		var base_deps_include_cpps = '/usr/include';
 		var complier_base_includes = ['-I{base_include_cpps}','-I{base_deps_include_cpps}'];
 		if(include_dirs != null){
 			foreach(var inc:include_dirs){
@@ -66,8 +66,15 @@ class unixcompiler : ccompiler
 		if(string.endswith(base_lib_cpps,"\\"))
 			string.pop_back(base_lib_cpps,1);
         string.replace(base_lib_cpps,"\\","/");
+        //baselibpath
 
-        var complier_base_lib_path = ['-L{base_lib_cpps}','-L/lib','-L/usr/local/lib','-L/usr/lib','-L/usr/local/lib64','-L/usr/lib64'];
+        var base_lib_bin_cpps = '{work_path}../../../bin';
+		base_lib_bin_cpps = io.normpath(base_lib_bin_cpps);
+		if(string.endswith(base_lib_bin_cpps,"\\"))
+			string.pop_back(base_lib_bin_cpps,1);
+        string.replace(base_lib_bin_cpps,"\\","/");
+
+        var complier_base_lib_path = ['-L{base_lib_cpps}','-L{base_lib_bin_cpps}','-L/usr/local/lib','-L/usr/lib'];
 		if(library_dirs != null){
 			foreach(var libpath:library_dirs){
 				complier_base_lib_path.push_back('-L{libpath}');
@@ -103,12 +110,12 @@ class unixcompiler : ccompiler
         	if(len(s) > 0 ) { println_color(s,1);}
         }
 
-        println_color("Linking CXX shared library {output_name}.so",3);
+        println_color("Linking CXX shared library {output_name}.dylib",3);
         var opt = string.join(" ",ldflags_shared);
         var libs = string.join(" ",complier_base_libs);
         var lib_paths = string.join(" ",complier_base_lib_path);
         var objslist = string.join(" ",objs);
-		var cmd = '{cpp} {opt} {lib_paths} -o {work_path}{output_name}.so {libs} {objslist}';
+		var cmd = '{cpp} {opt} {lib_paths} -o {work_path}{output_name}.dylib {libs} {objslist}';
         var s = execmd(cmd);
 		if(len(s) > 0)  println_color(s,1);
 		else println_color("compiler is done.",2); 

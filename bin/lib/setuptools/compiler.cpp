@@ -4,13 +4,20 @@
 var compiler(var output_name,var work_path,var option)
 {
 	var compiler_maker = null;
+	var plantfrom = option["platfrom"] ;
+	
 	if(sys.platform == "win64" || sys.platform == "win32"){
-		if(option["platfrom"] != "windows") return -1;
-		compiler_maker = new mscompiler();
-	}else if(sys.platform == "linux32" || sys.platform == "linux64"){
-		if(option["platfrom"] != "linux") return -1;
-		compiler_maker = new unixcompiler();
+		if(plantfrom == null || plantfrom == "windows" || plantfrom == "all")
+			compiler_maker = new mscompiler();
 	}
+	else if(sys.platform == "linux32" || sys.platform == "linux64"){
+		if(plantfrom == null || plantfrom == "linux" || plantfrom == "all")
+			compiler_maker = new unixcompiler();
+	}
+	else if(sys.platform == "macos32" || sys.platform == "macos64"){
+		if(plantfrom == null || plantfrom == "macos" || plantfrom == "all")
+			compiler_maker = new macoscompiler();
+	}		
 	if(!compiler_maker){
 		log.error("Unknow platfrom. Stop Compiler.");
 		sleepexit(10);
