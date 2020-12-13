@@ -486,6 +486,19 @@ namespace cpps
 		usint32 size = 1024;
 		_NSGetExecutablePath(abs_path, &size);
 
+		//mac os 下返回的不是真实地址而是软连接地址.
+		//需要读取软连接的地址真实地址
+		struct stat statinfo;
+		lstat(abs_path, &statinfo);
+		if (S_ISLNK(statinfo.st_mode))
+		{
+			size = readlink(abs_path, abs_path, 1024);
+			if (size < 0 || size >= 1024)
+			{
+				return "";
+			}
+		}
+
 		for (size_t i = (size_t)size; i >= 0; --i)
 		{
 			if (abs_path[i] == '/')
@@ -494,6 +507,9 @@ namespace cpps
 				break;
 			}
 		}
+		
+
+
 #endif
 		
 		return abs_path;

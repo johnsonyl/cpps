@@ -89,6 +89,7 @@ namespace cpps
 		char**																		application_argv;
 		node*																		curnode;
 		bool																		buildoffset;
+		bool																		disabled_non_def_var;
 		std::unordered_map<std::string, cpps_module_data*>							savemoduledatas;
 	};
 }

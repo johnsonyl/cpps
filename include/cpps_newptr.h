@@ -19,16 +19,25 @@ namespace cpps
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p);
 	void cpps_call_parent_class_default_constructor(C* c, node* n, cpps_cppsclass* parent_cppsclass, cpps_domain* domain, cpps_domain* root, cpps_domain* leftdomain);
 	void cpps_step_newclassvar_reg_baselassvar(cpps_cppsclass* cppsclass, C* c, cpps_cppsclassvar* cppsclassvar, cpps_domain* root);
+	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
+	object					doclassfunction(C* c, cpps_domain* leftdomain, object func);
 	//可以增加到GC的PTR
+	
+	
+
 	template<class T>
-	cpps_cppsclassvar*		newclass(C *c, T ** ret)
+	inline cpps_value		newclass(C *c, T ** ret)
 	{
+		bool isstr = cpps_is_string<T>().b;
 		cpps_cppsclassvar *var = cpps_class_singleton<T*>::instance()->getcls()->create(c,true);
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, var);
 		*ret = (T *)var->getclsptr();
-		return var;
+		cpps_value retv( var);
+		if (isstr) retv.tt = CPPS_TSTRING;
+		return retv;
 	}
+	
 	inline cpps_cppsclassvar* newcppsclasvar(C* c, cpps::cpps_cppsclass* cppsclass)
 	{
 		cpps_cppsclassvar* cppsclassvar = cppsclass->create(c);

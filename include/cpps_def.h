@@ -141,6 +141,7 @@
 #define CPPS_ODEFVAR_LAMBDA_FUNC 56 //定义函数
 #define CPPS_ODEFASYNCVAR		 57 //定义协程函数
 #define CPPS_OAWAIT				58 //await 等待异步函数
+#define CPPS_ODEFEXTERNVAR		 59 //extern变量
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误

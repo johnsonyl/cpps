@@ -2978,13 +2978,14 @@ namespace cpps {
 		}
 		cpps_gc_remove_barrier(c, &v);
 	}
-	void cpps_calculate_expression_varname(cpps_domain*& leftdomain, cpps_domain* domain, node* d, cpps_value& ret) {
+	void cpps_calculate_expression_varname(C*c,cpps_domain*& leftdomain, cpps_domain* domain, node* d, cpps_value& ret) {
 		cpps_regvar* v = (leftdomain ? leftdomain : domain)->getvar(d->s, leftdomain);
 		if (v) {
 			ret = v->getval();
 		}
 		else {
-			printf("Warning:  got a not existent variable of [%s].  line: %d file: %s\n", d->s.c_str(), d->line, d->filename.c_str());
+			if(!c->disabled_non_def_var)
+				printf("Warning:  got a not existent variable of [%s].  line: %d file: %s\n", d->s.c_str(), d->line, d->filename.c_str());
 		}
 	}
 	void cpps_calculate_expression_lambda(C*c,cpps_domain* domain,cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
@@ -3252,7 +3253,7 @@ namespace cpps {
 			cpps_calculate_expression_await(c, domain, root, d, leftdomain, ret);
 		}
 		else if (d->type == CPPS_VARNAME) {
-			cpps_calculate_expression_varname(leftdomain, domain, d, ret);
+			cpps_calculate_expression_varname(c,leftdomain, domain, d, ret);
 		}
 		else if (d->type == CPPS_VARNAME_LAMBDA) {
 			cpps_calculate_expression_lambda(c,domain,root, d, leftdomain, ret);
@@ -3322,6 +3323,7 @@ namespace cpps {
 		}
 		if (func.tt == CPPS_TFUNCTION) {
 			cpps_function* f = func.value.func;
+			if (f->funcname == "isset") c->disabled_non_def_var = true;
 			cpps_domain* execdomain = c->domain_alloc();
 			execdomain->init(domain, cpps_domain_type_func);
 			execdomain->setexecdomain(domain);
@@ -3358,6 +3360,7 @@ namespace cpps {
 					if (!execdomain)
 						execdomain = c->_G;
 					ret = cpps_execute_callfunction(c, f, execdomain, filename, line, funcname, params);
+					c->disabled_non_def_var = false;
 				}
 			}
 			cpps_regvar* v = cpps_node_to_regver(domain, d->getleft(), false);

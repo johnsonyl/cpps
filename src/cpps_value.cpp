@@ -180,6 +180,26 @@ namespace cpps
 		return false;
 	}
 
+	cpps_value::cpps_value(C* c, const char* s)
+	{
+		tt = CPPS_TSTRING;
+
+		std::string* str = NULL;
+		cpps_value ret = newclass<std::string>(c, &str);
+		str->append(s);
+		value.domain = ret.value.domain;
+	}
+
+	cpps_value::cpps_value(C* c, const std::string& s)
+	{
+		tt = CPPS_TSTRING;
+
+		std::string* str;
+		cpps_value ret = newclass<std::string>(c, &str);
+		str->append(s.begin(), s.end());
+		value.domain = ret.value.domain;
+	}
+
 	size_t cpps_value::hash::operator()(const cpps_value& _Keyval) const
 	{
 

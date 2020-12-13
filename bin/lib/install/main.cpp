@@ -2,6 +2,11 @@
 #import "http"
 
 var args = getargs();
+var compiler_result = false;
+var install_path = "";
+var build_type = isdebug();
+var modulename = args[2];
+if(modulename == "" || modulename == null) exit(0); 
 
 var download(var file,var showname)
 {
@@ -34,7 +39,6 @@ var download(var file,var showname)
 
 var install()
 {
-	var modulename = args[2];
 	var modulepath = "lib/{modulename}";
 	var exists = io.file_exists(modulepath);
 	if(exists)
@@ -77,20 +81,27 @@ var install()
 	var file = tarfile.open(targzfilepath,"r:gz",102400000);
 	if(!file) {
 		println("faild");
+		uninstall();
 		exit(0);
 	}
 	file.extractall("{modulepath}/");
 	println("ok");
 	println("----------------------------------------\r\n");
-	dofile("{modulepath}/setup.cpp"); //compiler
-	println("install {modulename} is done.");
 
-	exit(0);
+	install_path = "{io.getrealpath()}lib/{modulename}/";
+	dofile("{modulepath}/setup.cpp"); //compiler
+	if(compiler_result)
+		println("install {modulename} is done.");
+	else
+	{
+		println("install {modulename} is faild. uninstall {modulename} module.");
+		uninstall();
+	}
+
 }
 
 var uninstall()
 {
-	var modulename = args[2];
 	var modulepath = "lib/{modulename}";
 	var list = io.walk(modulepath);
 	println("start uninstall {modulename}...");

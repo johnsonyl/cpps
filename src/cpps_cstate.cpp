@@ -102,6 +102,7 @@ namespace cpps
 	}
 	C::C(int argc, char** argv)
 	{
+		disabled_non_def_var = false;
 		o = NULL;
 		_G = NULL;
 		curnode = NULL;

@@ -35,6 +35,30 @@ namespace cpps
 
 	public:
 		bool b;
+	}; 
+	
+	template<class T>
+	class cpps_is_string
+	{
+	public:
+		cpps_is_string()
+		{
+			b = false;
+		}
+	public:
+		bool b;
+	};
+	template<>
+	class cpps_is_string<std::string>
+	{
+	public:
+		cpps_is_string()
+		{
+			b = true;
+		}
+
+	public:
+		bool b;
 	};
 
 	

@@ -47,6 +47,7 @@ setuptools::setup({
     author_email:"mysqltest@mysqltest.com",
     description:"A mysql example ext librarie.",
     long_description:long_description,
+    debug:false,
     long_description_content_type:"text/markdown",
     url:"https://github.com/johnsonyl/mysqlexaple",
     packages:setuptools::find_packages(),

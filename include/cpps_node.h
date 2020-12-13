@@ -22,6 +22,7 @@ namespace cpps
 		node_var_type_var,
 		node_var_type_constvar,
 		node_var_type_asyncvar,
+		node_var_type_externvar,
 	};
 	struct node
 	{

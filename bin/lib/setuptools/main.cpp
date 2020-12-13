@@ -19,19 +19,36 @@ namespace setuptools{
 		if(args.size() == 3){
 			type = args[2];
 			if(args[1] == "-install"){
-				type = "install";
+				type = "build";
 			}
 		}
 		if(type == ""){
 			log.error("you need input param [dist,install]");
-			sleepexit(10);
+			return false;
 		}else if(type == "dist"){
 			dist(option);
 		}
-		else if (type == "install")
+		else if (type == "build")
 		{
-			var work_path = "{io.getrealpath()}lib/{option["name"]}";
+			var work_path = io.getcwd(); //工作目录
+			var real_install_path = "{work_path}/dist/"; //编译目录
+			var real_build_type = option["debug"];
+			var link_type = 1; // 1. dynamic Share library 2.Stand library 3.executable  2 or 3 only be used when nocpps is compiled!
 
+
+			var is_nocpps_build = false;
+			if(isset(install_path)) {
+				real_install_path = install_path;
+				work_path = install_path;
+			}
+			if(isset(build_type))
+				real_build_type = build_type;
+			if( option["link_type"] != null)
+				link_type = option["link_type"];
+
+			if( option["nocpps"] != null)
+				is_nocpps_build =  option["nocpps"];
+			
 			if(option["ext_modules"] != null){
 				var curos = "";
 				if(sys.platform == "win64" || sys.platform == "win32")
@@ -44,7 +61,7 @@ namespace setuptools{
 				if(taros != null && curos != taros && taros != "all")
 				{
 					log.error("The Module Don't Support {curos} Platfrom. Stop Compiler.");
-					sleepexit(10);
+					return false;
 				}
 				
 				foreach(var module: option["ext_modules"]){
@@ -54,10 +71,15 @@ namespace setuptools{
 					}
 					var taros = module["platfrom"];
 					
-					if(taros == null || curos == taros || taros == "all")
-						compiler(output_name,work_path,module);
+					if(taros == null || curos == taros || taros == "all"){
+						var code = compiler(output_name,work_path,module,real_install_path,real_build_type,is_nocpps_build,link_type);
+						if(code == false){
+							return false;
+						}
+					}
 				}
 			}
+			if(isset(compiler_result)) compiler_result = true; //返回通知编译结果.
 		}
 		
 	}

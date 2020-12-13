@@ -23,8 +23,6 @@ namespace cpps
 	struct cpps_vector;
 	struct cpps_map;
 	struct cpps_unordered_map;
-	template<class T>
-	cpps_cppsclassvar*		newclass(C *c, T ** ret);
 	struct cpps_value
 	{
 		cpps_value()
@@ -94,24 +92,8 @@ namespace cpps
 			tt = CPPS_TREGVAR;
 			value.value = v;
 		}
-		cpps_value(C*c, const char* s)
-		{
-			tt = CPPS_TSTRING;
-
-			std::string *str = NULL;
-			cpps_value ret = newclass<std::string>(c, &str);
-			str->append(s);
-			value.domain = ret.value.domain;
-		}
-		cpps_value(C*c,const std::string& s)
-		{
-			tt = CPPS_TSTRING;
-
-			std::string *str;
-			cpps_value ret = newclass<std::string>(c, &str);
-			str->append(s.begin(),s.end());
-			value.domain = ret.value.domain;
-		}
+		cpps_value(C*c, const char* s);
+		cpps_value(C*c,const std::string& s);
 		~cpps_value()
 		{
 

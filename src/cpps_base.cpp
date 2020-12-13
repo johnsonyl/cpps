@@ -8,6 +8,17 @@ namespace cpps
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc);
 	std::string getfilenamenotext(std::string str);
 	std::string cpps_rebuild_filepath(std::string path);
+	bool cpps_base_isdebug() {
+#ifdef NDEBUG
+		return false;
+#else
+		return true;
+#endif
+	}
+	bool cpps_base_isset(cpps_value v)
+	{
+		return v.tt != CPPS_TNIL;
+	}
 	cpps_integer cpps_base_len(object b)
 	{
 		cpps_integer ret = 0;
@@ -467,6 +478,8 @@ namespace cpps
 		}
 		CloseHandle(hRead);
 
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
 
 
 
@@ -536,6 +549,8 @@ namespace cpps
 			def("objtype", cpps_base_objtype),
 			def("system", cpps_base_system),
 			def("len", cpps_base_len),
+			def("isset", cpps_base_isset),
+			def("isdebug", cpps_base_isdebug),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
 			def("assert", cpps_assert),
 			defvar(c,"_VERSION", CPPS_VER),
