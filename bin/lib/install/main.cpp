@@ -51,8 +51,8 @@ var install()
 	//post 请求 获取压缩包地址 与 config.json地址
 	print("loading module info...");
 	println("ok");
-	var jsonfilepath = "tmp/testlib-YOUR-USERNAME-HERE-0.0.1-windows.json";
-	var targzfilepath = "tmp/testlib-YOUR-USERNAME-HERE-0.0.1-windows.tar.gz";
+	var jsonfilepath = "tmp/mysqltest-johnsonyl-0.0.1-all.json";
+	var targzfilepath = "tmp/mysqltest-johnsonyl-0.0.1-all.tar.gz";
 	//2.downloader 下载 json 与 tar.gz
 	println("start downloading.");
 	println("----------------------------------------\r\n");
@@ -82,6 +82,7 @@ var install()
 	file.extractall("{modulepath}/");
 	println("ok");
 	println("----------------------------------------\r\n");
+	dofile("{modulepath}/setup.cpp"); //compiler
 	println("install {modulename} is done.");
 
 	exit(0);

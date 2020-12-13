@@ -23,7 +23,10 @@ static inline bool is_base64(unsigned char c)
 	return (isalnum(c) || (c == '+') || (c == '/'));
 }
 
-
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#endif
 std::string base64_encode_cuc(unsigned char const* bytes_to_encode, size_t in_len)
 {
 
@@ -120,17 +123,15 @@ std::string base64_decode(cpps_value v)
 	return ret;
 }
 
-
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic pop
 #endif
+cpps_export_void cpps_attach(cpps::C* c)
 {
 
 	cpps::cpps_init_cpps_class(c);
 
-	module(c, "base64")[
+	cpps::_module(c, "base64")[
 		def("encode",base64_encode),
 		def("decode",base64_decode)
 	];
@@ -139,20 +140,8 @@ extern "C" void  cpps_attach(cpps::C* c)
 
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void cpps_detach(cpps::C * c)
 {
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

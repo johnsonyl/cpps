@@ -97,15 +97,15 @@ namespace cpps
 				switch (res)
 				{
 				case CURLE_UNSUPPORTED_PROTOCOL:
-					printf("不支持的协议,由URL的头部指定\n");
+					printf("CURLE_UNSUPPORTED_PROTOCOL\n");
 				case CURLE_COULDNT_CONNECT:
-					printf("不能连接到remote主机或者代理\n");
+					printf("CURLE_COULDNT_CONNECT\n");
 				case CURLE_HTTP_RETURNED_ERROR:
-					printf("http返回错误\n");
+					printf("CURLE_HTTP_RETURNED_ERROR\n");
 				case CURLE_READ_ERROR:
-					printf("读本地文件错误\n");
+					printf("CURLE_READ_ERROR\n");
 				default:
-					printf("返回值:%d\n", res);
+					printf("downloader error code:%d\n", res);
 				}
 				curl_easy_cleanup(curl);
 				return false;

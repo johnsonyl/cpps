@@ -53,6 +53,15 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-13 更新
+-
+
+1.调整module注册改为统一cpps::_module()
+
+2.所有库已可以在macos-clang下编译.终于三大平台都通了.
+
+3.setuptools 半成品.已经接近尾声了.
+
 2020-12-11 更新
 -
 

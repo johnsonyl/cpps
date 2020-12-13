@@ -9,7 +9,7 @@ namespace cpps
 
 	void cpps_regarray(C *c)
 	{
-		module(c)[
+		cpps::_module(c)[
 			_class<cpps_vector>("vector")
 				.def("push_back", &cpps_vector::push_back)
 				.def("push_front", &cpps_vector::push_front)
@@ -26,6 +26,7 @@ namespace cpps
 				.def("resize", &cpps_vector::resize)
 				.def("clear", &cpps_vector::clear)
 				.def("size", &cpps_vector::size)
+				.def("has", &cpps_vector::has)
 		];
 	}
 }

@@ -65,7 +65,7 @@ static inline JSONCPP_STRING codePointToUTF8(unsigned int cp) {
           WideCharToMultiByte(CP_UTF8, 0, src, -1, dest, len, NULL, NULL);
           result = dest;
 
-#elif LINUX
+#else
           std::string curLocale = setlocale(LC_ALL, NULL);
           setlocale(LC_ALL, "zh_CN.utf8");
 

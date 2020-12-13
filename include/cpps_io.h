@@ -35,7 +35,7 @@ namespace cpps
 		bool		 isfifo() { return S_ISFIFO(statinfo.st_mode); }
 		bool		 islink() { return S_ISLNK(statinfo.st_mode); }
 		bool		 issock() { return S_ISSOCK(statinfo.st_mode); }
-#ifdef WIN32
+#ifdef _WIN32
 		struct _stat64 statinfo;
 #else 
 		struct stat statinfo;

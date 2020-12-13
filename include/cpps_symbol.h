@@ -74,9 +74,16 @@ namespace cpps
 		//	symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
 		//	symbolfuncname = funcname;
 		//}
-		cpps_symbol(byte prio, byte paramnum, byte paramlimit, int8 type)
+		cpps_symbol(byte prio, byte paramnum, byte paramlimit, byte type)
 		{
-			symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#endif
+			symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 0x4) | paramlimit;
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic pop
+#endif
 			symboltype = type;
 		}
 	};

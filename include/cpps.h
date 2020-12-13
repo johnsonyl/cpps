@@ -35,7 +35,6 @@
 #include "cpps_function.h"
 #include "cpps_classvar.h"
 #include "cpps_class.h"
-#include "cpps_jit_compiler.h"
 #include "cpps_cppsfunction.h"
 #include "cpps_lambda_function.h"
 #include "cpps_is_void.h"

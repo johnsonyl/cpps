@@ -7,7 +7,7 @@ project(mysql)
 
 # 将源代码添加到此项目的可执行文件。
 
-IF(WIN32)
+IF(WINDOWS)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin ${PROJECT_SOURCE_DIR}/../../deps/deps/lib)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
@@ -18,7 +18,13 @@ IF(WIN32)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
-ELSE()
+
+	
+ELSEIF(MACOS)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/opt/mysql-client/include )
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/local/opt/mysql-client/lib)
+	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
+ELSEIF(LINUX)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/local/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/lib /usr/local/lib /usr/local/lib64 /usr/lib64 /usr/lib64/mysql)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
@@ -32,8 +38,10 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
-IF(WIN32)
+IF(WINDOWS)
 	target_link_libraries(${PROJECT_NAME} cpps libmysql mysqlclient mysqlservices)
-ELSE()
+ELSEIF(MACOS)
+	target_link_libraries(${PROJECT_NAME} -lcpps -lmysqlclient -lpthread -lz -lm -lssl -lcrypto -ldl)
+ELSEIF(LINUX)
 	target_link_libraries(${PROJECT_NAME} -lcpps -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl)
 ENDIF()

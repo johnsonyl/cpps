@@ -20,16 +20,12 @@ cpps_value cpps_mysql_connect(cpps::C *c,cpps::object option)
 	if (!cpps_mysql_ptr->connect(c, option)) return nil;
 	return cpps_mysql_var;
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void  cpps_attach(cpps::C* c)
 {
 
 	cpps::cpps_init_cpps_class(c);
    
-	module(c, "mysql")[
+	cpps::_module(c, "mysql")[
 		def_inside("connect", cpps_mysql_connect),
 		_class<cpps_mysql>("mysql")
 		.def("close",&cpps_mysql::close)
@@ -47,20 +43,8 @@ extern "C" void  cpps_attach(cpps::C* c)
 	];
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

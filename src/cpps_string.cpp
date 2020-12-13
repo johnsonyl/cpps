@@ -153,7 +153,7 @@ namespace cpps
 	}
 	void cpps_string_real_tolower(std::string& s) {
 		for (size_t i = 0;i < s.size(); ++i){
-			s[i] = tolower(s[i]);
+			s[i] = (char)tolower((int)s[i]);
 		}
 	}
 	cpps_value cpps_string_lower(cpps_value v)
@@ -166,7 +166,7 @@ namespace cpps
 
 	void cpps_string_real_toupper(std::string& s) {
 		for (size_t i = 0; i < s.size(); ++i) {
-			s[i] = toupper(s[i]);
+			s[i] = (char)toupper((int)s[i]);
 		}
 	}
 	cpps_value cpps_string_upper(cpps_value v)
@@ -175,6 +175,24 @@ namespace cpps
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		cpps_string_real_toupper(*tmpStr);
 		return v;
+	}
+	
+	void cpps_string_pop_back(cpps_value s, cpps_integer c) {
+
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
+		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+		for (cpps_integer i = 0; i < c; i++) {
+			tmpStr->pop_back();
+		}
+	}
+	bool cpps_string_endswith(cpps_value s,std::string end) {
+
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
+		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+		size_t pos = tmpStr->rfind(end);
+		if (pos == std::string::npos) return false;
+		if (pos + end.size() == tmpStr->size()) return true;
+		return false;
 	}
 	cpps_value cpps_string_trim(cpps_value s)
 	{
@@ -201,6 +219,31 @@ namespace cpps
 
 		tmpStr->erase(0, tmpStr->find_first_not_of(" "));
 		return s;
+	}
+	std::string cpps_string_real_join(std::string sep, std::vector<std::string> & vec) {
+		std::string ret;
+		for (auto s : vec) {
+			ret += s;
+			ret += sep;
+		}
+		return ret;
+	}
+	std::string cpps_string_join(std::string sep, cpps_vector* vec) {
+		std::string ret;
+		for (auto s : vec->realvector()) {
+			ret += cpps_to_string(s);
+			ret += sep;
+		}
+		return ret;
+	}
+	std::string cpps_string_between(std::string front, std::string before, cpps_vector* vec) {
+		std::string ret;
+		for (auto s : vec->realvector()) {
+			ret += front;
+			ret += cpps_to_string(s);
+			ret += before;
+		}
+		return ret;
 	}
 	cpps_value cpps_string_rtrim(cpps_value s)
 	{
@@ -297,7 +340,7 @@ namespace cpps
 	}
 	void cpps_regstring(C *c)
 	{
-		module(c,"string")[
+		cpps::_module(c,"string")[
 			def("find", cpps_string_find),
 			def("rfind", cpps_string_rfind),
 			def("length", cpps_string_len),
@@ -316,6 +359,10 @@ namespace cpps
 			def("trim", cpps_string_trim),
 			def("ltrim", cpps_string_ltrim),
 			def("rtrim", cpps_string_rtrim),
+			def("join", cpps_string_join),
+			def("between", cpps_string_between),
+			def("endswith", cpps_string_endswith),
+			def("pop_back", cpps_string_pop_back),
 			def("regex_match", cpps_string_regex_match),
 			def("regex_replace", cpps_string_regex_replace),
 			def_inside("chr",cpps_string_chr),

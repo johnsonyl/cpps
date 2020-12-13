@@ -96,18 +96,14 @@ std::string  encode(cpps::cpps_value src, cpps::usint8 encoding)
 
 using namespace cpps;
 using namespace std;
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void cpps_attach(cpps::C* c)
 {
 
 	cpps::cpps_init_cpps_class(c);
 
 	str_normalize_init();
 
-	module(c, "encoding")[
+	cpps::_module(c, "encoding")[
 		def("encode", encode),
 		defvar(c,"UTF8", CPPS_ENCODING_UTF8),
 		defvar(c,"GBK", CPPS_ENCODING_GBK)
@@ -117,20 +113,8 @@ extern "C" void  cpps_attach(cpps::C* c)
 
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

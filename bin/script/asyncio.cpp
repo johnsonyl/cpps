@@ -1,4 +1,3 @@
-system("chcp 65001"); //use utf8 string
 
 async var test()
 {
@@ -13,6 +12,8 @@ async var test1()
 	println("do test1 function");
 	await asyncio.sleep(1000);
 	println("do test1 function done");
+	var a ;
+	a.asd();
 	return "test1";
 }
 var test_call_back(var task,var context)
@@ -35,7 +36,15 @@ async var main(){
 	}
 	println("state:{ret.state()}");
 	println(ret.result());
-	println(await task2);
+	try{
+		println(await task2);	
+	}
+	catch(var e)
+	{
+		println("{e.geterrstr()} line:{e.getline()} file:{e.getfile()}");
+		println(e.callstack());
+	}
+	
 	task1.cleanup();// asyncio.wait or asyncio.wait_for need cleanup.
 	//task2.cleanup(); // crash here..  await will cleanup it.
 

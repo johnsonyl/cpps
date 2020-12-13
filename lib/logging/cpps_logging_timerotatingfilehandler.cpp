@@ -35,8 +35,7 @@ namespace cpps {
 			openfile();/*尝试重新打开*/
 			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		}
-		fprintf(file, msg.c_str());
-		fprintf(file, "\r\n");
+		fprintf(file,"%s\r\n", msg.c_str());
 		fflush(file);
 
 		checkchangefilename();

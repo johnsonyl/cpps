@@ -22,13 +22,13 @@ namespace cpps
 	}
 	void cpps_regdebug(C *c)
 	{
-		module(c,"debug")[
+		cpps::_module(c,"debug")[
 			def_inside("open", cpps_debug_open),
 			def_inside("close", cpps_debug_close),
 			def_inside("log", cpps_debug_log),
 			def_inside("breakpoint",cpps_debug_breakpoint)
 		];
-		module(c)[
+		cpps::_module(c)[
 			_class<cpps_trycatch_error>("cpps_trycatch_error")
 			.def("geterrno", &cpps_trycatch_error::geterrno)
 			.def("geterrstr", &cpps_trycatch_error::geterrstr)

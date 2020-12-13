@@ -7,8 +7,9 @@
 */
 
 // If compiling with MFC, you might want to add #include "StdAfx.h"
-
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "sha1.h"
 
 #define SHA1_MAX_FILE_BUFFER (32 * 20 * 820)
@@ -264,7 +265,7 @@ std::string CSHA1::hex_digest()
 	char s[41];
 	::memset(s, 0, 41);
 
-	for (int i = 0; i < 20; i++)
+	for (size_t i = 0; i < 20; i++)
 		sprintf(s + i * 2, "%02x", m_digest[i]);
 
 	s[40] = '\0';

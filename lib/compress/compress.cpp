@@ -29,15 +29,11 @@ cpps_value cpps_compress_zipfile_open(C*c,std::string filepath, cpps_value pwd,c
 	return ret;
 }
 
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void  cpps_attach(cpps::C* c)
 {
 
 	cpps::cpps_init_cpps_class(c);
-	module(c, "zlib")[
+    cpps::_module(c, "zlib")[
         def_inside("compress", cpps_compress_zlib_compress),
         def_inside("decompress", cpps_compress_zlib_decompress),
         def("adler32", cpps_compress_zlib_adler32),
@@ -45,12 +41,12 @@ extern "C" void  cpps_attach(cpps::C* c)
         defvar(c,"ZLIB_VERSION",ZLIB_VERSION),
         def("ZLIB_RUNTIME_VERSION", zlibVersion)
 	]; 
-    module(c, "gzip")[
+    cpps::_module(c, "gzip")[
 		def_inside("compress", cpps_compress_gzip_compress),
 		def_inside("decompress", cpps_compress_gzip_decompress)
 	];
 
-    module(c, "tarfile")[
+    cpps::_module(c, "tarfile")[
         _class< cpps_tarfile>("tarfile")
             .def("open",&cpps_tarfile::open)
             .def_inside("getmembers",&cpps_tarfile::getmembers)
@@ -71,7 +67,7 @@ extern "C" void  cpps_attach(cpps::C* c)
         def_inside("open", cpps_compress_tarfile_open)
     ];
 
-	module(c, "zipfile")[
+    cpps::_module(c, "zipfile")[
 		_class< cpps_zipfile>("zipfile")
 			.def("open", &cpps_zipfile::open)
 			.def_inside("infolist", &cpps_zipfile::infolist)
@@ -101,20 +97,8 @@ extern "C" void  cpps_attach(cpps::C* c)
 
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

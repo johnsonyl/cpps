@@ -381,11 +381,7 @@ cpps_logger* cpps_getlogger(C* c,std::string name)
 	if (it != loggerslist.end()) return it->second;
 	return NULL;
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void  cpps_attach(cpps::C* c)
 {
 
 	cpps::cpps_init_cpps_class(c);
@@ -393,7 +389,7 @@ extern "C" void  cpps_attach(cpps::C* c)
 	cpps_logging_data* data = new cpps_logging_data();
 	c->setmoduledata("logging", data);
 
-	module(c, "logging")[
+	cpps::_module(c, "logging")[
 		_class< cpps_logger >("Logger")
 			.def("addhandler",&cpps_logger::addhandler)
 			.def("removehandler",&cpps_logger::removehandler)
@@ -449,23 +445,11 @@ extern "C" void  cpps_attach(cpps::C* c)
 
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
 	delete data;
 	c->setmoduledata("logging", NULL);
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

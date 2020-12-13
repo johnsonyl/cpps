@@ -21,7 +21,7 @@ extern "C" void  cpps_attach(cpps::C* c)
 
 	cpps::cpps_init_cpps_class(c);
 
-	module(c)[
+	cpps::_module(c)[
 		def("demotest", demotest)
 	];
 }

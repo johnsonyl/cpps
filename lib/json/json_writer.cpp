@@ -171,7 +171,10 @@ static bool isAnyCharRequiredQuoting(char const* s, size_t n) {
   }
   return false;
 }
-
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
 static unsigned int utf8ToCodepoint(const char*& s, const char* e) {
   const unsigned int REPLACEMENT_CHARACTER = 0xFFFD;
 
@@ -224,7 +227,9 @@ static unsigned int utf8ToCodepoint(const char*& s, const char* e) {
 
   return REPLACEMENT_CHARACTER;
 }
-
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic pop
+#endif
 static const char hex2[] =
   "000102030405060708090a0b0c0d0e0f"
   "101112131415161718191a1b1c1d1e1f"
@@ -274,7 +279,7 @@ JSONCPP_STRING UTF82WCS(const char* szU8)
 
 	delete[] wszString;
 	wszString = NULL;
-#elif LINUX
+#else
     std::string curLocale = setlocale(LC_ALL, NULL);
     setlocale(LC_ALL, "zh_CN.utf8");
     int wcsLen = mbstowcs(NULL, szU8, 0) + 1;
@@ -315,7 +320,7 @@ JSONCPP_STRING ANSI2WCS(const char* szU8)
 		delete[] pTemp;
 		pTemp = NULL;
 	}
-#elif LINUX
+#else
     JSONCPP_STRING unicodeString;
 
     std::string curLocale = setlocale(LC_ALL, NULL);

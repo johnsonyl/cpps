@@ -406,7 +406,7 @@ int main(argc,argv)
                 zi.dosDate = 0;
                 zi.internal_fa = 0;
                 zi.external_fa = 0;
-                filetime(filenameinzip,&zi.tmz_date,&zi.dosDate);
+                filetime((char*)filenameinzip,&zi.tmz_date,&zi.dosDate);
 
 /*
                 err = zipOpenNewFileInZip(zf,filenameinzip,&zi,

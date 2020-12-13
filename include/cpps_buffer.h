@@ -15,6 +15,11 @@ namespace cpps
 {
 	struct cppsbuffer_file
 	{
+		cppsbuffer_file() {
+			begin = 0;
+			end = 0;
+			line = 0;
+		}
 		std::string filename;
 		int32		begin;
 		int32		end;
@@ -32,7 +37,7 @@ namespace cpps
 			file.line = 1;
 			files.push_back(file);
 
-			buffer.append(_buffer,_buffersize);
+			buffer.append(_buffer,(size_t)_buffersize);
 			buffersize = _buffersize;
 			bufferoffset = 0;
 		}
@@ -86,7 +91,7 @@ namespace cpps
 			}
 			int32 ret = bufferoffset++;
 
-			if (buffer[ret] == '\n')
+			if (buffer[(size_t)ret] == '\n')
 				getcurfile().line++;
 
 			//退出最后一个
@@ -94,7 +99,7 @@ namespace cpps
 				if(files.size() > 1) files.pop_back();
 			}
 
-			return buffer[ret];
+			return buffer[(size_t)ret];
 		}
 
 		char		cur()
@@ -138,12 +143,12 @@ namespace cpps
 
 		char		realcur()
 		{
-			return buffer[bufferoffset];
+			return buffer[(size_t)bufferoffset];
 		}
 
 		char		at(int32 off)
 		{
-			return buffer[off];
+			return buffer[(size_t)off];
 		}
 		int32			offset()
 		{
@@ -174,7 +179,7 @@ namespace cpps
 			}
 			files.push_back(file);
 
-			buffer.insert(bufferoffset,_buffer, _buffersize);
+			buffer.insert((size_t)bufferoffset,_buffer, (size_t)_buffersize);
 			buffersize += _buffersize;
 		}
 		cppsbuffer_file& getcurfile() {

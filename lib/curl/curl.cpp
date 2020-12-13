@@ -231,17 +231,13 @@ cpps_integer     cpps_curl_easy_setopt(cpps_curl* curl, cpps_integer option, cpp
     }
     return ret;
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void  cpps_attach(cpps::C* c)
 {
     curl_global_init(CURL_GLOBAL_ALL);
 
 	cpps::cpps_init_cpps_class(c);
 
-    module(c, "curl")[
+    cpps::_module(c, "curl")[
         _class<cpps_curl>("CURL")
             .def("getdata", &cpps_curl::getdata)
             .def("getheader", &cpps_curl::getheader)
@@ -718,21 +714,9 @@ extern "C" void  cpps_attach(cpps::C* c)
 
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
     curl_global_cleanup();
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

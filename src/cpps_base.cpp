@@ -8,6 +8,34 @@ namespace cpps
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc);
 	std::string getfilenamenotext(std::string str);
 	std::string cpps_rebuild_filepath(std::string path);
+	cpps_integer cpps_base_len(object b)
+	{
+		cpps_integer ret = 0;
+		if (type(b) == CPPS_TSTRING)
+		{
+			std::string* s = cpps_get_string(b.value);
+			ret = (cpps_integer)s->size();
+		}
+		else if (type(b) == CPPS_TCLASSVAR)
+		{
+			if (b.value.value.domain->domainname == "vector")
+			{
+				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
+				ret = (cpps_integer)v->size();
+			}
+			else if (b.value.value.domain->domainname == "map")
+			{
+				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
+				ret = (cpps_integer)v->size();
+			}
+			else if (b.value.value.domain->domainname == "unordered_map")
+			{
+				cpps_unordered_map* v = cpps_converter<cpps_unordered_map*>::apply(b.value);
+				ret = (cpps_integer)v->size();
+			}
+		}
+		return ret;
+	}
 	void cpps_base_printf(object b)
 	{
 		if (type(b) == CPPS_TNUMBER)
@@ -86,7 +114,7 @@ namespace cpps
 		}
 		else
 		{
-			cout << "暂时不支持 '" << type_s(b).c_str() << "' 类型的输出.";
+			cout << "not support  '" << type_s(b).c_str() << "' type..";
 		}
 	}
 	void cpps_base_printfln(object b)
@@ -168,7 +196,7 @@ namespace cpps
 		}
 		else
 		{
-			cout << "暂时不支持 '" << type_s(b).c_str() << "' 类型的输出." << endl;
+			cout << "not support   '" << type_s(b).c_str() << "' type." << endl;
 		}
 	}
 
@@ -227,7 +255,7 @@ namespace cpps
 	}
 	void cpps_base_setconsoletitle(std::string title)
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		SetConsoleTitleA(title.c_str());
 #endif
 	}
@@ -236,101 +264,8 @@ namespace cpps
 	{
 		assert(b);
 	}
-	bool cpps_decodecpps(std::string file, std::string outfile)
-	{
-		FILE *pfile = fopen(file.c_str(), "rb+");
-		if (pfile)
-		{
-			long cur = ftell(pfile);
-			fseek(pfile, 0, SEEK_END);
-			cpps_integer size = ftell(pfile);
-			fseek(pfile, cur, SEEK_SET);
 
-			char *pBuffer = new char[size + 1];
-			memset(pBuffer, 0, size + 1);
-			fread(pBuffer, size, 1, pfile);
-			fclose(pfile);
-			std::string fileSrc = pBuffer;
-			if (fileSrc.substr(0, 11) == "cpps_encode")
-			{
-				std::string decode;
-				for (size_t i = 11; i < fileSrc.size(); i++)
-				{
-					decode.append(1, fileSrc[i] - CPPS_ENCODE_CPPS_KEY);
-				}
-				fileSrc = decode;
-			}
-
-			FILE *poutfile = fopen(outfile.c_str(), "wb+");
-			if (poutfile)
-			{
-				fwrite(fileSrc.c_str(), fileSrc.size(), 1, poutfile);
-				fclose(poutfile);
-			}
-
-			delete[] pBuffer;
-			return true;
-		}
-		return false;
-
-	}
-	bool cpps_encodecpps(std::string file,std::string outfile)
-	{
-		FILE *pfile = fopen(file.c_str(), "rb+");
-		if(pfile)
-		{
-			long cur = ftell(pfile);
-			fseek(pfile, 0, SEEK_END);
-			cpps_integer size = ftell(pfile);
-			fseek(pfile, cur, SEEK_SET);
-
-			char *pBuffer = new char[size + 1];
-			fread(pBuffer, size, 1, pfile);
-			fclose(pfile);
-
-			std::string outbuffer = "cpps_encode";
-			for (cpps_integer i = 0; i < size; i++)
-			{
-				outbuffer.append(1,pBuffer[i] + CPPS_ENCODE_CPPS_KEY);
-			}
-			FILE *poutfile = fopen(outfile.c_str(), "wb+");
-			if (poutfile)
-			{
-				fwrite(outbuffer.c_str(), outbuffer.size(), 1, poutfile);
-				fclose(poutfile);
-			}
-
-			delete[] pBuffer;
-			return true;
-		}
-		return false;
-	}
-	struct ThreadParameter
-	{
-		C*c;
-		cpps_value func;
-		cpps_value value;
-#ifdef WIN32
-		HANDLE eventFinish;
-#endif
-
-	};
-	void		gc_cleanup(C *c, int tid);
-	static unsigned int threadFunction(void *p)
-	{
-		ThreadParameter*param = (ThreadParameter*)p;
-		C*c = param->c;
-		cpps_value func = param->func;
-		cpps_value value = param->value;
-#ifdef WIN32
-		SetEvent(param->eventFinish);
-#endif
-		cpps_try
-		object ret = dofunction(c, func, value);
-		cpps_catch
-		gc_cleanup(c, GetCurrentThreadId());
-		return 0;
-	}
+	
 	
 	bool	cpps_loadlibrary(C *c,std::string libname)
 	{
@@ -339,7 +274,7 @@ namespace cpps
 
 		if (c->modulelist.find(libname) != c->modulelist.end()) return true;
 		bool sv = false;
-#ifdef WIN32
+#ifdef _WIN32
 
 		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
 		if (!fpath.empty())
@@ -348,7 +283,7 @@ namespace cpps
 			std::string libfuncname = "cpps_attach";
 			if (module == NULL)
 			{
-				printf("Load module【%s】 faild.\r\n", libname.c_str());
+				printf("Load module [%s] faild.\r\n", libname.c_str());
 				FreeLibrary(module);
 				return false;
 			}
@@ -357,7 +292,7 @@ namespace cpps
 			if (cpps_attach == NULL)
 			{
 				FreeLibrary(module);
-				printf("Load module 【%s】 faild\r\n", libname.c_str());
+				printf("Load module [%s] faild\r\n", libname.c_str());
 				return false;
 			}
 
@@ -366,35 +301,38 @@ namespace cpps
 
 			cpps_attach(c);
 
-
-#elif LINUX
-
+		}
+#else
+#if defined LINUX
 		fpath = cpps_rebuild_filepath(path + "lib" + (libname + ".so"));
+#elif defined __APPLE__
+		fpath = cpps_rebuild_filepath(path + "lib" + (libname + ".dylib"));
+#endif
 		if (!fpath.empty())
 		{
-			HMODULE module = dlopen(fpath.c_str(), RTLD_LAZY);
-			if (module == NULL)
+			HMODULE mod = dlopen(fpath.c_str(), RTLD_LAZY);
+			if (mod == NULL)
 			{
 				printf("dlopen [%s]:%s faild\r\n", libname.c_str(), dlerror());
 				return false;
 			}
 			dlerror();
-			CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
+			CPPS_ST_API* api = (CPPS_ST_API*)dlsym(mod, "LIBAPI");
 			if (api == NULL)
 			{
-				dlclose(module);
+				dlclose(mod);
 				printf("dlsym [LIBAPI] faild\r\n");
 				return false;
 			}
 
-			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, mod));
 			sv = true;
 
 			api->cpps_attach(c);
 
 
-#endif
 		}
+#endif
 		fpath = cpps_rebuild_filepath(path + "main.cpp");
 		if (!fpath.empty())
 		{
@@ -422,7 +360,7 @@ namespace cpps
 
 		if (c->modulelist.find(libname) == c->modulelist.end()) return true;
 
-#ifdef WIN32
+#ifdef _WIN32
 
 		bool ret = false;
 		std::unordered_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
@@ -450,7 +388,7 @@ namespace cpps
 		}
 		return ret;
 
-#elif LINUX
+#else
 		bool ret = false;
 		std::unordered_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
 		if (it != c->modulelist.end())
@@ -463,7 +401,7 @@ namespace cpps
 			CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
 			if (api == NULL)
 			{
-				printf("dlsym 【LIBAPI】 faild\r\n");
+				printf("dlsym [LIBAPI] faild\r\n");
 			}
 			else
 			{
@@ -489,12 +427,93 @@ namespace cpps
 		}
 		return ret;
 	}
+#if defined _WIN32
+	std::string cpps_base_win_execmd(std::string pszCmd)
+	{
+		// 创建匿名管道
+		SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
+		HANDLE hRead, hWrite;
+		if (!CreatePipe(&hRead, &hWrite, &sa, 0))
+		{
+			return "";
+		}
+
+		// 设置命令行进程启动信息(以隐藏方式启动命令并定位其输出到hWrite
+		STARTUPINFO si = { sizeof(STARTUPINFO) };
+		GetStartupInfo(&si);
+		si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+		si.wShowWindow = SW_HIDE;
+		si.hStdError = hWrite;
+		si.hStdOutput = hWrite;
+
+		// 启动命令行
+		PROCESS_INFORMATION pi;
+		if (!CreateProcessA(NULL, (LPSTR)pszCmd.c_str(), NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
+		{
+			return "";
+		}
+
+		// 立即关闭hWrite
+		CloseHandle(hWrite);
+
+		// 读取命令行返回值
+		std::string strRetTmp;
+		char buff[4096] = { 0 };
+		DWORD dwRead = 0;
+		strRetTmp = buff;
+		while (memset(buff, 0, sizeof(buff)),ReadFile(hRead, buff, 4095, &dwRead, NULL))
+		{
+			strRetTmp += buff;
+		}
+		CloseHandle(hRead);
+
+
+
+
+		return strRetTmp;
+	}
+#endif
+	std::string cpps_base_execmd(C* c, std::string cmd)
+	{
+#if defined _WIN32
+		return cpps_base_win_execmd(cmd);
+#else
+		FILE *fp = popen(cmd.c_str(), "r");
+		if (!fp) {
+			return "";
+		}
+		std::string strRetTmp;
+		char buf[1024] = { 0 };
+
+		while (memset(buf, 0, sizeof(buf)), fgets(buf, sizeof(buf) - 1, fp) != 0) {
+			strRetTmp += buf;
+		}
+		pclose(fp);
+		return strRetTmp;
+#endif
+	}
+	void cpps_base_environ_set(std::string k,::string v)
+	{
+#if defined _WIN32
+		std::string setv = k + "=" + v;
+		_putenv(setv.c_str());
+#else
+		setenv(k.c_str(), v.c_str(), 1);
+#endif
+	}
+	std::string cpps_base_environ_get(std::string k)
+	{
+		char* pathvar;
+		pathvar = getenv(k.c_str());
+		if (!pathvar) return "";
+		return pathvar;
+	}
 	void cpps_regbase(C *c)
 	{
-		module(c)[
+		cpps::_module(c)[
 			_class<std::string>("String")
 		];
-		module(c)[
+		cpps::_module(c)[
 			_class<C>("C_STATE"),
 			def("printf", cpps_base_printf),
 			def("print", cpps_base_printf),
@@ -504,7 +523,9 @@ namespace cpps
 			def("sleep", cpps_base_sleep),
 			def("Sleep", cpps_base_sleep),
 			def("tonumber", cpps_base_tonumber),
+			def("double", cpps_base_tonumber),
 			def("toint", cpps_base_tointeger),
+			def("int", cpps_base_tointeger),
 			def("tostring", cpps_base_tostring),
 			def("isstring", cpps_base_isstring),
 			def("isint", cpps_base_isint),
@@ -514,15 +535,38 @@ namespace cpps
 			def("isfunction", cpps_base_isfunction),
 			def("objtype", cpps_base_objtype),
 			def("system", cpps_base_system),
+			def("len", cpps_base_len),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
 			def("assert", cpps_assert),
 			defvar(c,"_VERSION", CPPS_VER),
 			defvar(c,"_VERSIONNO", CPPS_VERN),
-			def("encodecpps", cpps_encodecpps),
-			def("decodecpps", cpps_decodecpps),
 			def_inside("loadlibrary", cpps_loadlibrary),
 			def_inside("freelibrary", cpps_freelibrary),
-			def_inside("getargs", cpps_getargs)
+			def_inside("getargs", cpps_getargs),
+			def_inside("execmd",cpps_base_execmd)
+		];
+		cpps::_module(c, "ot")[
+			defvar(c,"int", CPPS_TINTEGER),
+			defvar(c,"bool", CPPS_TBOOLEAN),
+			defvar(c,"string", CPPS_TSTRING),
+			defvar(c,"classvar", CPPS_TCLASSVAR),
+			defvar(c,"function", CPPS_TFUNCTION),
+			defvar(c,"domain", CPPS_TDOMAIN),
+			defvar(c,"ptr", CPPS_TREGVAR),
+			defvar(c,"number", CPPS_TNUMBER),
+			defvar(c,"nil", CPPS_TNIL),
+			defvar(c,"lambda", CPPS_TLAMBDAFUNCTION)
+		];
+
+		cpps::_module(c, "environ")[
+			def("get",cpps_base_environ_get),
+			def("set",cpps_base_environ_set)
+		];
+		cpps::_module(c, "sys")[
+			defvar(c, "platform", CPPS_CURRENT_PLANTFORM),
+			defvar(c, "builder_version", CPPS_BUILDER_VERSION),
+			defvar(c, "version", CPPS_VER),
+			defvar(c, "versionno", CPPS_VERN)
 		];
 
 	}

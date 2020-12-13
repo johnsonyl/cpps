@@ -4,7 +4,7 @@ namespace cpps {
 	
 	void	cpps_reglambdafunction(C* c)
 	{
-		module(c)[
+		cpps::_module(c)[
 		_class<cpps_lambda_function>("CPPS_LAMBDA_FUNCTION")
 		];
 	}

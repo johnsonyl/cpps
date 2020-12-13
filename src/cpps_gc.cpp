@@ -274,7 +274,7 @@ namespace cpps
 	{
 		//c->gclock.lock();
 		std::string ret = "";
-#ifdef WIN32
+#ifdef _WIN32
 
 		char buffer[1024];
 		sprintf(buffer,"gen0 memory %I64d b\n", c->getgen0size());
@@ -304,7 +304,7 @@ namespace cpps
 	}
 	void cpps_reggc(C *c)
 	{
-		module(c,"GC")[
+		cpps::_module(c,"GC")[
 			def_inside("Collect", cpps_gc_check_gen0),
 			def_inside("CollectAll", cpps_gc_check_gen1),
 			def_inside("gcinfo", gcinfo)

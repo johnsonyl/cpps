@@ -11,15 +11,58 @@
 //@website		:	http://cpps.wiki
 //==================================
 
-#define CPPS_VER		"1.0.0 Build [2020-12-09 13:05:00]"
+#if defined _WIN32
+#ifdef _X86_
+#define CPPS_CURRENT_PLANTFORM "win32"
+#else
+#define CPPS_CURRENT_PLANTFORM "win64"
+#endif
+#elif defined LINUX
+#ifdef _X86_
+#define CPPS_CURRENT_PLANTFORM "linux32"
+#else
+#define CPPS_CURRENT_PLANTFORM "linux64"
+#endif
+#elif defined __APPLE__
+#ifdef _X86_
+#define CPPS_CURRENT_PLANTFORM "apple32"
+#else
+#define CPPS_CURRENT_PLANTFORM "apple64"
+#endif
+#else
+#define CPPS_CURRENT_PLANTFORM "unknow OS system."
+#endif
+
+
+
+#if defined _MSC_VER
+#define CPPS_BUILDER_VERSION_MAKE2(a,b) a # b " " CPPS_CURRENT_PLANTFORM
+#define CPPS_BUILDER_VERSION_MAKE(a,b) CPPS_BUILDER_VERSION_MAKE2(a,b)
+#define CPPS_BUILDER_VERSION	CPPS_BUILDER_VERSION_MAKE("MSC v.", _MSC_VER)
+#elif defined __APPLE__
+#define CPPS_BUILDER_VERSION_MAKE2(a,b,c,d) a # b "." # c "." # d " " CPPS_CURRENT_PLANTFORM
+#define CPPS_BUILDER_VERSION_MAKE(a,b,c,d) CPPS_BUILDER_VERSION_MAKE2(a,b,c,d)
+#define CPPS_BUILDER_VERSION CPPS_BUILDER_VERSION_MAKE("clang gcc-",__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__)
+#elif defined __GNUC__
+#define CPPS_BUILDER_VERSION_MAKE2(a,b,c,d,e) a # b "." # c "." # d " glibcxx-" # e " " CPPS_CURRENT_PLANTFORM
+#define CPPS_BUILDER_VERSION_MAKE(a,b,c,d,e) CPPS_BUILDER_VERSION_MAKE2(a,b,c,d,e)
+#define CPPS_BUILDER_VERSION CPPS_BUILDER_VERSION_MAKE("gcc-",__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__,__GLIBCXX__)
+#else
+#define  CPPS_BUILDER_VERSION ""
+#endif
+
+#define CPPS_VER		"1.0.0 Build 20201209 [" CPPS_BUILDER_VERSION "]"
 #define CPPS_VERN		1000
 #define CPPS_NAME		"CPPS"
+#ifndef M_PI
 #define M_PI				3.14159265358979323846
+#endif
 #define CPPS_GEN1_CHECKSIZE			(1024 * 1024 * 128)  // 128 M
 #define CPPS_GEN0_CHECKSIZE			(CPPS_GEN1_CHECKSIZE / 8 * 3)
 #define CPPS_GEN0_CHECKCOUNT		512
 #define CPPS_BARRIER_CHECKCOUNT		64
 #define CPPS_ENCODE_CPPS_KEY	0x1f
+
 
 #define CPPS_TNIL		0
 #define CPPS_TINTEGER	1	
@@ -167,7 +210,7 @@ catch(cpps_trycatch_error e)\
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
-	std::cout << " " << stack->f << "	The " << stack->l << " line	function：" << stack->func << std::endl; \
+	std::cout << " " << stack->f << "	The " << stack->l << " line	function:" << stack->func << std::endl; \
 }\
 	c->resume();\
 }\
@@ -179,7 +222,7 @@ catch(cpps_trycatch_error e)\
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
-	std::cout << " " << stack->f << "	The " << stack->l << " line	function：" << stack->func << std::endl; \
+	std::cout << " " << stack->f << "	The " << stack->l << " line	function:" << stack->func << std::endl; \
 }\
 	c->resume();\
 }\
@@ -190,7 +233,7 @@ catch (const char* s)\
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
 	cpps::cpps_stack *stack = *it; \
-	std::cout << " " << stack->f << "	The " << stack->l << " line	function：" << stack->func << std::endl; \
+	std::cout << " " << stack->f << "	The " << stack->l << " line	function:" << stack->func << std::endl; \
 }\
 	c->resume();\
 }
@@ -216,8 +259,9 @@ namespace cpps
 	typedef	unsigned long long	usint64;
 }
 
-//一些linux下需要的头文件
-#ifndef _WIN32
+
+
+#if defined LINUX
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -229,14 +273,58 @@ namespace cpps
 #include <dlfcn.h>
 #include <dirent.h>
 
+
+
+#elif defined __APPLE__
+
+#define _XOPEN_SOURCE 600
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/mman.h>
+#include <sys/stat.h> 
+#include <unistd.h>
+#include <sys/uio.h>
+#include <dlfcn.h>
+#include <dirent.h>
+
+
+#elif defined _WIN32 
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#define WIN32_LEAN_AND_MEAN	
+#include <windows.h>
+#include <time.h>
+#include <direct.h>
+#include <Process.h>
+#include <corecrt_io.h>
+#ifdef _WIN32
+#define S_ISDIR(m) m & S_IFDIR
+#define S_ISREG(m) m & S_IFREG
+#define S_ISBLK(m) false
+#define S_ISCHR(m) m & S_IFCHR
+#define S_ISFIFO(m) m & _S_IFIFO
+#define S_ISLNK(m)  false
+#define S_ISSOCK(m)  false
+#endif
+#define cpps_export_void extern "C" _declspec(dllexport) void __stdcall
+#define cpps_export_finish 
+
+#endif //_WIN32
+
+//一些非windows下定义
+#ifndef _WIN32
 #ifndef FALSE  
-	#define FALSE   0
+#define FALSE   0
 #endif
 #ifndef TRUE  
-	#define TRUE    1
+#define TRUE    1
 #endif
 #ifndef NULL  
-	#define NULL    0
+#define NULL    0
 #endif
 
 #define MAXUINT64   ((usint64)~((int64)0))
@@ -248,43 +336,21 @@ typedef void* HMODULE;
 #define _mkdir(p) mkdir(p,S_IRWXU)
 #define _rmdir(p) rmdir(p)
 
+#define  cpps_export_void extern "C" void
+#define cpps_export_finish extern "C" const CPPS_ST_API  LIBAPI = {\
+cpps_attach,\
+cpps_detach,\
+};
 
-#include <pthread.h>
-inline unsigned int GetCurrentThreadId()
-{
-	return pthread_self();
-}
 
-namespace cpps { class C; }
+namespace cpps { struct C; }
 
 typedef struct {
 	void   (*cpps_attach)(cpps::C*);
 	void   (*cpps_detach)(cpps::C*);
 } CPPS_ST_API;
 
-
-
-#else
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
 #endif
-#define WIN32_LEAN_AND_MEAN	
-#include <windows.h>
-#include <time.h>
-#include <direct.h>
-#include <Process.h>
-#include <corecrt_io.h>
-#ifdef WIN32
-#define S_ISDIR(m) m & S_IFDIR
-#define S_ISREG(m) m & S_IFREG
-#define S_ISBLK(m) false
-#define S_ISCHR(m) m & S_IFCHR
-#define S_ISFIFO(m) m & _S_IFIFO
-#define S_ISLNK(m)  false
-#define S_ISSOCK(m)  false
-#endif
-#endif
-
 
 #include <iostream>
 #include <stdio.h>
@@ -305,7 +371,7 @@ namespace cpps
 {
 	struct C;
 }
-#ifdef WIN32
+#ifdef _WIN32
 typedef void(__stdcall*cpps_attach_func)(cpps::C *c);
 typedef void(__stdcall*cpps_detach_func)(cpps::C *c);
 #else

@@ -4,7 +4,7 @@ namespace cpps
 {
 	void cpps_console_clearcolor()
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 #else
@@ -13,7 +13,7 @@ namespace cpps
 	}
 	void cpps_console_color(cpps_integer color)
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		WORD tcolor[] = {0, 4,2,6,3,5,11 };
 		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		SetConsoleTextAttribute(handle, tcolor[color%7]);
@@ -24,7 +24,7 @@ namespace cpps
 
 	void cpps_console_clear()
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		system("cls");
 #else
 		system("clear");
@@ -33,7 +33,7 @@ namespace cpps
 	}
 	void cpps_regconsole(C* c)
 	{
-		module(c,"console")[
+		cpps::_module(c,"console")[
 			def("color", cpps_console_color),
 			def("clearcolor", cpps_console_clearcolor),
 			def("clear", cpps_console_clear)

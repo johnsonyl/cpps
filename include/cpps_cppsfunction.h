@@ -10,7 +10,7 @@
 //@Description	:	Cppsº¯Êı´¦Àí
 //@website		:	http://cpps.wiki
 //==================================
-#ifdef WIN32
+#ifdef _WIN32
 #if defined _M_X64 || defined _M_IX86
 #ifdef _M_X64
 extern "C" void __stdcall		call_native_func(cpps::usint64 a, cpps::C *c, cpps::cpps_domain *domain, cpps::cpps_stack *stack);
@@ -80,7 +80,7 @@ namespace cpps
 			cpps_domain* funcdomain = c->domain_alloc();
 			funcdomain->init(domain, cpps_domain_type_exec);
 			funcdomain->setexecdomain(prevdomain);
-			funcdomain->resize(varcount);
+			funcdomain->resize((usint16)varcount);
 			if (lambdastacklist) {
 				for (size_t i = 0; i < lambdastacklist->size(); i++)
 					(*(funcdomain->stacklist))[i] = (*(lambdastacklist))[i];

@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include <cpps.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 #include <WinSock2.h>
 #endif
@@ -16,19 +16,15 @@ using namespace std;
 #include "cpps_socket_httpserver.h"
 #include "cpps_socket_httpserver_request.h"
 
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void  cpps_attach(cpps::C* c)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	WSADATA wsadata;
 	WSAStartup(0x0202, &wsadata);
 #endif
 	cpps::cpps_init_cpps_class(c);
 
-	module(c,"socket")[
+	cpps::_module(c,"socket")[
 		_class<cpps_socket_server>("server")
 		.def("setoption", &cpps_socket_server::setoption)
 		.def_inside("listen", &cpps_socket_server::listen)
@@ -64,23 +60,11 @@ extern "C" void  cpps_attach(cpps::C* c)
 	];
 
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	WSACleanup();
 #endif
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

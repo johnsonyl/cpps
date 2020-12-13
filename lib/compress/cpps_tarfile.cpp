@@ -301,26 +301,27 @@ namespace cpps {
 
 	std::string cpps_tarfile_getusername()
 	{
-#if defined LINUX   //linux system  
-		uid_t userid;
-		struct passwd* pwd;
-		userid = getuid();
-		pwd = getpwuid(userid);
-		return pwd->pw_name;
-
-#elif defined _WIN32  //windows system  
+#if defined _WIN32   //linux system  
 		const int MAX_LEN = 100;
 		char szBuffer[MAX_LEN];
 		DWORD len = MAX_LEN;
 		GetUserName(szBuffer, &len);     //用户名保存在szBuffer中,len是用户名的长度  
 		return szBuffer;
-#else
-		return "";
+#elif defined LINUX  
+		uid_t userid;
+		struct passwd* pwd;
+		userid = getuid();
+		pwd = getpwuid(userid);
+		return pwd->pw_name;
+#elif defined __APPLE__
+		return getlogin();
 #endif
 	}
 
 	std::string cpps_tarfile_getgroupname() {
-#if defined LINUX   //linux system  
+#if defined _WIN32
+		return cpps_tarfile_getusername();
+#elif defined LINUX  
 		uid_t gid;
 		gid = getgid();
 		struct group* g = getgrgid(gid);
@@ -328,8 +329,8 @@ namespace cpps {
 			return g->gr_name;
 		}
 		return "";
-#elif defined WIN32
-		return cpps_tarfile_getusername();
+#elif defined __APPLE__
+		return "staff"; //
 #endif
 	}
 

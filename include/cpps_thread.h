@@ -11,7 +11,7 @@
 //@website		:	http://cpps.wiki
 //==================================
 
-#ifndef WIN32
+#ifndef _WIN32
 
 #include <netinet/in.h>
 #include <pthread.h>

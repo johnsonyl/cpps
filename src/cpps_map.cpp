@@ -7,7 +7,7 @@ namespace cpps
 
 	void cpps_regmap(C *c)
 	{
-		module(c)[
+		cpps::_module(c)[
 			_class<cpps_map_node>("cpps_map_node")
 				.def("first", &cpps_map_node::first)
 				.def("second", &cpps_map_node::second),

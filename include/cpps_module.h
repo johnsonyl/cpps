@@ -163,10 +163,8 @@ namespace cpps
 	};
 
 
-	static cpps_module module(C *c, std::string _domain = "")
-	{
-		return cpps_module(c, _domain);
-	}
+	cpps_module _module(C* c, std::string _domain = "");
+
 
 }
 

@@ -125,7 +125,7 @@ namespace cpps
 	}
 	void cpps_regmath(C *c)
 	{
-		module(c,"math")[
+		cpps::_module(c,"math")[
 			def("abs", cpps_math_abs64),
 			def("srand", cpps_math_srand),
 			def("rand", cpps_math_rand),

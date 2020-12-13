@@ -268,7 +268,10 @@ public:
 private:
 	// Private SHA-1 transformation
 	void Transform(UINT_32* pState, const UINT_8* pBuffer);
-
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-private-field"
+#endif
 	// Member variables
 	UINT_32 m_state[5];
 	UINT_32 m_count[2];
@@ -279,6 +282,10 @@ private:
 
 	UINT_8 m_workspace[64];
 	SHA1_WORKSPACE_BLOCK* m_block; // SHA1 pointer to the byte array above
+
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic pop
+#endif
 };
 
 #endif // SHA1_H_A545E61D43E9404E8D736869AB3CBFE7

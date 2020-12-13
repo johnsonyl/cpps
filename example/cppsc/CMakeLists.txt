@@ -6,15 +6,21 @@ cmake_minimum_required (VERSION 3.8)
 project(cppsc)
 
 # 将源代码添加到此项目的可执行文件。
-message(${PROJECT_SOURCE_DIR})
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include)
-LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin)
+
+if(WINDOWS)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include)
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin)
+else()
+	message(${PROJECT_SOURCE_DIR}/../../include)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/local/include)
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/lib /usr/local/lib /usr/lib64)
+endif()
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 
-IF(WIN32)
+IF(WINDOWS)
 	
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin)
@@ -31,11 +37,15 @@ ENDIF()
 
 add_executable (${PROJECT_NAME} ${SRC_LIST})
 
-IF(WIN32)
+if(WINDOWS)
 	target_link_libraries(${PROJECT_NAME} cpps)
-ELSE()
+elseif(LINUX)
 	target_link_libraries(${PROJECT_NAME} -lrt -ldl -lm -lpthread -lcpps)
-
+elseif(MACOS)
+	target_link_libraries(${PROJECT_NAME} -ldl -lm -lpthread -lcpps)
+endif()
+if(WINDOWS)
+else()
 	add_custom_command(TARGET cppsc
 	  POST_BUILD 
 	  COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/local/bin/cppsc
@@ -44,4 +54,4 @@ ELSE()
 #	不在安装 cppsc 到系统目录,需要手动建立软连接.
 # 	install(TARGETS cppsc
 #	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/local/bin/)
-ENDIF()
+endif()

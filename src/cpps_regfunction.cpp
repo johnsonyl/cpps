@@ -51,7 +51,7 @@ namespace cpps
 			fmt.replace(i, take.size(), newstr);
 			break;
 		case 's':
-			newstr = transformat(take, cpps_value(c, *cpps_get_string(v)));
+			newstr = transformat(take, cpps_value(c, cpps_to_string(v)));
 			fmt.replace(i, take.size(), newstr);
 			break;
 		default:

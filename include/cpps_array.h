@@ -94,6 +94,14 @@ namespace cpps
 		{
 			_vec.clear();
 		}
+		bool			has(cpps_value v)
+		{
+			for (auto &v2 : _vec)
+			{
+				if (v2 == v) return true;
+			}
+			return false;
+		}
 		cpps_integer	size()
 		{
 			return (cpps_integer)_vec.size();

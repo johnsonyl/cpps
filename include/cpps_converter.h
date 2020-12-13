@@ -62,7 +62,7 @@ namespace cpps
 	def_cpps_number_cast(unsigned long, integer);
 
 	def_cpps_number_cast(cpps_integer, integer);
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef _M_X64
 	def_cpps_number_cast(size_t, integer);
 #endif
@@ -338,7 +338,7 @@ namespace cpps
 	def_cpps_cpp_to_cpps_number_cast(unsigned long, integer);
 
 	def_cpps_cpp_to_cpps_number_cast(cpps_integer, integer);
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef _M_X64
 	def_cpps_cpp_to_cpps_number_cast(size_t, integer);
 #endif

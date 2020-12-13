@@ -8,7 +8,7 @@ project(socket)
 # 将源代码添加到此项目的可执行文件。
 message(${PROJECT_SOURCE_DIR})
 
-IF(WIN32)
+IF(WINDOWS)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin ${PROJECT_SOURCE_DIR}/../../deps/deps/lib)
 
@@ -24,7 +24,11 @@ IF(WIN32)
 
 
 
-ELSE()
+ELSEIF(MACOS)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/opt/libevent/include )
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/local/lib)
+	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
+ELSEIF(LINUX)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../bin  /lib /usr/lib /usr/lib64)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
@@ -36,8 +40,10 @@ file(GLOB_RECURSE CURRENT_HEADERS  *.h)
 source_group("Include" FILES ${CURRENT_HEADERS}) 
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
-IF(WIN32)
+IF(WINDOWS)
 	target_link_libraries(${PROJECT_NAME} ws2_32 winmm wldap32 wsock32 Iphlpapi cpps libcrypto libevent libevent_core libevent_extras libevent_openssl libssl zdll zlib )
-ELSE()
+ELSEIF(MACOS)
+	target_link_libraries(${PROJECT_NAME} -lcpps -levent -levent_pthreads -ldl -lm -lpthread)
+ELSEIF(LINUX)
 	target_link_libraries(${PROJECT_NAME} -lcpps -levent -levent_pthreads -lrt -ldl -lm -lpthread)
 ENDIF()

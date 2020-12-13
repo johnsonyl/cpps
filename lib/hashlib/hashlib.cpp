@@ -15,16 +15,12 @@ using namespace std;
 #include "sha1.h"
 #include "sha2.h"
 
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void  cpps_attach(cpps::C* c)
 {
 
 	cpps::cpps_init_cpps_class(c);
 
-	module(c, "hashlib")[
+	cpps::_module(c, "hashlib")[
 		_class<MD5>("md5")
 		.def("update",&MD5::cpps_update)
 		.def("hexdigest",&MD5::hex_digest)
@@ -62,20 +58,8 @@ extern "C" void  cpps_attach(cpps::C* c)
 
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

@@ -11,7 +11,7 @@
 //@website		:	http://cpps.wiki
 //==================================
 
-#ifndef WIN32
+#ifndef _WIN32
 
 #include <netinet/in.h>
 #include <pthread.h>
@@ -23,7 +23,7 @@ namespace cpps
 
 	class  cpps_lock
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		//变量定义
 	private:
 		CRITICAL_SECTION					thread_lock;					//临界变量

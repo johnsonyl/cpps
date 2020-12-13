@@ -20,7 +20,7 @@ namespace cpps
 	}
 	void cpps_regrange(C* c)
 	{
-		module(c)[
+		cpps::_module(c)[
 		_class<cpps_range>("RANGE"),
 		def_inside("xrange",cpps_xrange),
 		def_inside("nrange",cpps_nrange)

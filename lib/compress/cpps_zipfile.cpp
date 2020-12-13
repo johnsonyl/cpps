@@ -342,7 +342,8 @@ namespace cpps
 		if (smode == "w" || smode == "x" || smode == "a") {
 
 			std::string sarcname = arcname.tt == CPPS_TSTRING ? cpps_to_string(arcname) : "";
-			zip_fileinfo zi = { 0 };
+			zip_fileinfo zi;
+			memset(&zi,0, sizeof(zip_fileinfo));
 			
 			
 			int err = zipOpenNewFileInZip3_64(zipfile, sarcname.empty() ? cpps_io_getfilename(filepath).c_str() : sarcname.c_str(), &zi, NULL, 0, NULL, 0, NULL, nlevel != 0 ? Z_DEFLATED : 0, (int)nlevel, 0,-MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY,

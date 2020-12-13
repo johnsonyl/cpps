@@ -16,17 +16,13 @@
 
 using namespace cpps;
 using namespace std;
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void cpps_attach(cpps::C* c)
 {
     curl_global_init(CURL_GLOBAL_ALL);
 
 	cpps::cpps_init_cpps_class(c);
 
-	module(c, "http")[
+    cpps::_module(c, "http")[
         _class<cpps_http_request>("httprequest")
             .def("setcookiesfile",&cpps_http_request::setcookiesfile)
             .def("setproxy",&cpps_http_request::setproxy)
@@ -51,21 +47,9 @@ extern "C" void  cpps_attach(cpps::C* c)
 
    
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C * c)
 {
     curl_global_cleanup();
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish

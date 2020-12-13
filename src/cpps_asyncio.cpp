@@ -75,7 +75,7 @@ namespace cpps {
 		loop->setcstate(c);
 		c->setmoduledata("asyncio", (cpps_module_data*)loop);
 
-		module(c, "asyncio")[
+		cpps::_module(c, "asyncio")[
 			_class<cpps_async_object>("ASYNC_OBJECT"),
 			_class<cpps_async_loop>("ASYNC_LOOP")
 				.def_inside("run_until_complete", &cpps_async_loop::run_until_complete),

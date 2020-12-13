@@ -67,7 +67,8 @@ using ::std::wstring;
 #include <experimental/coroutine>
 #else
 #if defined(__APPLE__) && defined(__MACH__)
-#define _XOPEN_SOURCE
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #include <ucontext.h>
 #else
 #include <ucontext.h>
@@ -396,4 +397,7 @@ namespace cpps {
 
 	}
 }
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic pop
+#endif
 #endif //CPPS_COROUTINE_H_

@@ -19,14 +19,14 @@ namespace cpps
 	{
 		object()
 		{
-			
+
 		}
-		
 		object(cpps_value v)
 		{
 			value = v;
 		}
 
+	
 
 		template<class Type>
 		object(C*c,Type v)
@@ -58,31 +58,8 @@ namespace cpps
 		cpps_value	value;
 	};
 
-	static int32		type(object o)
-	{
-		return o.value.tt;
-	}
-	static std::string type_s(object o)
-	{
-		switch (type(o))
-		{
-		case CPPS_TNIL:
-			return "nil";
-		case CPPS_TINTEGER:
-			return "integer";
-		case CPPS_TNUMBER:
-			return "number";
-		case CPPS_TBOOLEAN:
-			return "boolean";
-		case CPPS_TSTRING:
-			return "string";
-		case CPPS_TCLASSVAR:
-			return "userdata";
-		case CPPS_TFUNCTION:
-			return "function";
-		}
-		return "unknow";
-	}
+	int32		type(object o);
+	std::string type_s(object o);
 }
 
 #endif // CPPS_OBJECT_CPPS_HEAD_

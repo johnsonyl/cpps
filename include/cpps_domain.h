@@ -45,7 +45,7 @@ namespace cpps
 		{
 
 		}
-		virtual cpps_cppsclassvar *	create()
+		virtual cpps_cppsclassvar *	create(C* c, bool alloc = true)
 		{
 			return NULL;
 		}
