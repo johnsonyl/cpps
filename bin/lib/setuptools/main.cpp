@@ -64,15 +64,15 @@ namespace setuptools{
 					return false;
 				}
 				
-				foreach(var module: option["ext_modules"]){
+				foreach(var mod: option["ext_modules"]){
 					var output_name = option["name"];
-					if(module["output_name"]){
-						output_name = module["output_name"];
+					if(mod["output_name"]){
+						output_name = mod["output_name"];
 					}
-					var taros = module["platfrom"];
+					var taros = mod["platfrom"];
 					
 					if(taros == null || curos == taros || taros == "all"){
-						var code = compiler(output_name,work_path,module,real_install_path,real_build_type,is_nocpps_build,link_type);
+						var code = compiler(output_name,work_path,mod,real_install_path,real_build_type,is_nocpps_build,link_type);
 						if(code == false){
 							return false;
 						}

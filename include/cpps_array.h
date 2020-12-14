@@ -76,6 +76,10 @@ namespace cpps
 		{
 			return _begin != _vec.end();
 		}
+		bool			empty()
+		{
+			return _vec.empty();
+		}
 		void			next()
 		{
 			if (_begin != _vec.end())

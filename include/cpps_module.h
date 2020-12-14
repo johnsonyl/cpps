@@ -140,7 +140,7 @@ namespace cpps
 				cpps_regvar * v = domain->getvar(_domain,leftdomain);
 				if (!v)
 				{
-					cpps_domain *temp_domain = new cpps_domain(NULL, cpps_domain_type_root,"root");//创建根节点域
+					cpps_domain *temp_domain = new cpps_domain(c->_G, cpps_domain_type_module, _domain.c_str());//创建根节点域
 
 
 					v = new cpps_regvar();//_G 为根节点

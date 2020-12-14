@@ -1,13 +1,7 @@
 #import "setuptools"
 
 
-var long_description = "";
-var file = io.fopen("README.md","r");
-if(file){
-	var buffer = new Buffer();
-	io.fread(file,buffer,io.fsize(file));
-	long_description = buffer.tostring();
-}
+var long_description = io.readfile("README.md");
 
 
 var module_windows = { 

@@ -78,7 +78,7 @@ namespace cpps
 			if (b.value.value.domain->domainname == "vector")
 			{
 				cout << "[";
-				cpps_vector *v = cpps_converter<cpps_vector*>::apply(b.value);
+				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
@@ -92,7 +92,7 @@ namespace cpps
 			else if (b.value.value.domain->domainname == "map")
 			{
 				cout << "{";
-				cpps_map *v = cpps_converter<cpps_map*>::apply(b.value);
+				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
@@ -108,7 +108,7 @@ namespace cpps
 			else if (b.value.value.domain->domainname == "unordered_map")
 			{
 				cout << "{";
-				cpps_unordered_map *v = cpps_converter<cpps_unordered_map*>::apply(b.value);
+				cpps_unordered_map* v = cpps_converter<cpps_unordered_map*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
@@ -121,7 +121,7 @@ namespace cpps
 				}
 				cout << "}";
 			}
-			
+
 		}
 		else
 		{
@@ -156,11 +156,11 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TCLASSVAR)
 		{
-			
+
 			if (b.value.value.domain->domainname == "vector")
 			{
 				cout << "[";
-				cpps_vector *v = cpps_converter<cpps_vector*>::apply(b.value);
+				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
@@ -174,7 +174,7 @@ namespace cpps
 			else if (b.value.value.domain->domainname == "map")
 			{
 				cout << "{";
-				cpps_map *v = cpps_converter<cpps_map*>::apply(b.value);
+				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
@@ -190,7 +190,7 @@ namespace cpps
 			else if (b.value.value.domain->domainname == "unordered_map")
 			{
 				cout << "{";
-				cpps_unordered_map *v = cpps_converter<cpps_unordered_map*>::apply(b.value);
+				cpps_unordered_map* v = cpps_converter<cpps_unordered_map*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
@@ -235,6 +235,14 @@ namespace cpps
 	bool cpps_base_isstring(cpps_value v)
 	{
 		return v.tt == CPPS_TSTRING;
+	}
+	bool cpps_base_isvector(cpps_value v)
+	{
+		return (v.isdomain() && v.value.domain->domainname == "vector");
+	}
+	bool cpps_base_ismap(cpps_value v)
+	{
+		return (v.isdomain() && (v.value.domain->domainname == "map" || v.value.domain->domainname == "unordered_map"));
 	}
 	bool cpps_base_isint(cpps_value v)
 	{
@@ -543,6 +551,8 @@ namespace cpps
 			def("isstring", cpps_base_isstring),
 			def("isint", cpps_base_isint),
 			def("isbool", cpps_base_isbool),
+			def("isvector", cpps_base_isvector),
+			def("ismap", cpps_base_ismap),
 			def("isnull", cpps_base_isnull),
 			def("isnumber", cpps_base_isnumber),
 			def("isfunction", cpps_base_isfunction),

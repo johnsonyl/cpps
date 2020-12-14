@@ -30,7 +30,19 @@ var dist(var option){
 
 	var projectpath = "{option["name"]}/";
 
-	var count = option["packages"].size();
+	var count = 0;
+	foreach(var filename : option["packages"]){
+		var pos = string.find(filename,"./");
+		var filename2 = filename;
+		if(pos == 0){
+			filename2 = string.substr(filename,2,string.npos);
+		}
+		pos = string.find(filename2,"dist");
+		if(pos == 0){
+			continue;
+		}
+		count++;
+	}
 	var idx = 1;
 	foreach(var filename : option["packages"]){
 		var pos = string.find(filename,"./");
@@ -56,5 +68,4 @@ var dist(var option){
 	print("saving compressed file...");
 	file.close();
 	println_color("success!",2);
-	exit(0);
 }

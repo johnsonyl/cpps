@@ -46,8 +46,10 @@ namespace cpps
 
 		return v;
 	}
-	cpps_value cpps_string_split(C *c, cpps_value v, std::string v2)
+	cpps_value cpps_string_split(C *c, cpps_value v, std::string v2,cpps_value count)
 	{
+		cpps_integer ncount = -1;
+		if (count.tt == CPPS_TINTEGER) ncount = count.value.integer;
 		cpps_vector *vec;
 		cpps_value ret = newclass<cpps_vector>(c,&vec);
 
@@ -67,6 +69,8 @@ namespace cpps
 			s.append(a, strlen(a) - strlen(b));
 
 			vec->push_back(cpps_value(c,s));
+
+			if (ncount != -1 && vec->size() > ncount) break;
 
 			//如果到了结尾那就出去吧。
 			if (strlen(b) == 0 || strlen(b) == 1) break;

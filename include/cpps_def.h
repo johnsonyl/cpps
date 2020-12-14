@@ -141,7 +141,7 @@
 #define CPPS_ODEFVAR_LAMBDA_FUNC 56 //定义函数
 #define CPPS_ODEFASYNCVAR		 57 //定义协程函数
 #define CPPS_OAWAIT				58 //await 等待异步函数
-#define CPPS_ODEFEXTERNVAR		 59 //extern变量
+#define CPPS_OMODULE			59 //模块
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误
@@ -174,6 +174,7 @@ enum
 	cpps_domain_type_class,		//类的域
 	cpps_domain_type_classvar,		//类的域
 	cpps_domain_type_namespace,		//名空间
+	cpps_domain_type_module,		//名空间
 	cpps_domain_type_trycatch,		//trycatch
 	cpps_domain_type_foreach,		//foreach
 	//cpps_domain_type_
@@ -292,6 +293,12 @@ namespace cpps
 #include <mach-o/dyld.h>
 
 #elif defined _WIN32 
+
+#ifdef __cplusplus
+#pragma warning(disable:26495)   //disable unicode code page warning
+#pragma warning(disable:6011)   //disable NULL PTR USED warning
+#pragma warning(disable:4819)   //disable unicode code page warning
+#endif
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS

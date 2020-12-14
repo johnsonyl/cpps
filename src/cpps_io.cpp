@@ -56,12 +56,30 @@ namespace cpps
 #endif
 		return ret;
 	}
+	
 	cpps_integer cpps_io_size(FILE *file)
 	{
 		long cur = ftell(file);
 		fseek(file, 0, SEEK_END);
 		cpps_integer ret = ftell(file);
 		fseek(file, cur, SEEK_SET);
+		return ret;
+	}
+	std::string cpps_io_readfile(std::string filepath)
+	{
+		std::string ret;
+		FILE* file = cpps_io_open(filepath, "rb");
+		if (file)
+		{
+			cpps_integer size = cpps_io_size(file);
+			char* buf = new char[size];
+			memset(buf, 0, size);
+			fread(buf, size, 1, file);
+			fclose(file);
+			ret.append(buf, size);
+			delete[] buf;
+			buf = NULL;
+		}
 		return ret;
 	}
 	void		cpps_io_read(FILE *file, Buffer *buf, cpps_integer len)
@@ -519,6 +537,7 @@ namespace cpps
 		cpps::_module(c,"io")[
 			def_inside("getc",cpps_io_getc),
 			def("fopen",cpps_io_open),
+			def("readfile",cpps_io_readfile),
 			def("fsize", cpps_io_size),
 			def("fread", cpps_io_read),
 			def("getlines", cpps_io_getlines),

@@ -1,13 +1,7 @@
 #import "setuptools"
 
 
-var long_description = "";
-var file = io.fopen("README.md","r");
-if(file){
-	var buffer = new Buffer();
-	io.fread(file,buffer,io.fsize(file));
-	long_description = buffer.tostring();
-}
+var long_description = io.readfile("README.md");
 
 /*
 如果你需要编译多平台,请指定platfrom 告知编译器使用哪套方案. 可以根据不同平台传递不同的目录地址

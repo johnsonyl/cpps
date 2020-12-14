@@ -50,6 +50,10 @@ namespace cpps
 		{
 			return _begin != _map.end();
 		}
+		bool			empty()
+		{
+			return _map.empty();
+		}
 		void			next()
 		{
 			if (_begin != _map.end())
@@ -109,6 +113,7 @@ namespace cpps
 		void			erase(cpps_value k);
 		void			begin();
 		bool			end();
+		bool			empty();
 		void			next();
 		cpps_value		it();
 		void			pop();

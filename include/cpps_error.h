@@ -29,6 +29,7 @@ enum
 	cpps_error_arrayeerror = 12,
 	cpps_error_trycatherror = 13,
 	cpps_error_asyncerror = 14,
+	cpps_error_moduleerror = 14,
 };
 
 

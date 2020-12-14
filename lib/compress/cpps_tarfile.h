@@ -77,7 +77,7 @@ namespace cpps {
 		cpps_tarfile_info* gettarinfo(C* c, std::string name,cpps_value arcname);
 	public:
 		size_t filesize;
-		std::unordered_map<std::string, cpps_tarfile_info* >	file_list;
+		std::vector<cpps_tarfile_info* >	file_list;
 		Byte* decompress_file_buffer;
 		std::string realmode;
 		std::string compresstype;

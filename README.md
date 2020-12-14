@@ -53,6 +53,103 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-15 更新
+
+1.增加smtp模块,可以发邮件了.
+
+2.增加htmlparser模块.
+
+3.增加quotedprintable模块,用于邮件encode
+
+4.增加io.readfile函数, vector map增加empty函数, 增加string.cut函数切割文本.
+
+5.增加脚本定义module模块,可以在c++模块基础上扩展脚本模块.
+
+6.修复tar打包顺序错误问题导致其他解压缩软件报错
+
+7.移除一些windows的警告.
+
+
+```
+#import "smtp"
+
+//基础版本 
+var code = smtp.sendmail({
+			host:"smtp.aliyun.com",                     //必填
+            port:25,                                    //必填
+			username:"********@aliyun.com",            //必填
+			pwd:"**********",                            //必填
+			content:"<a>hello</a>",                    //必填
+            subject:"hello",                           //必填
+			messageid:"{time.gettime()}@aliyun.com",      //按这个格式换下
+			to:[
+                ["88481106@qq.com","名字"],             //2种格式
+            ],
+            onread:[](var s){
+                println(s);
+            }
+		});
+println(code);
+
+
+//旗舰版本
+// smtp.sendmail({
+// 			host:"smtp.aliyun.com",                     //必填
+//             port:25,                                    //必填
+// 			username:"********@aliyun.com",            //必填
+// 			pwd:"*********",                            //必填
+//             ssl:false,
+//             timeout:30,
+// 			mailfrom:"*********@aliyun.com",
+// 			from:"******@aliyun.com",
+// 			sender:"johnson",
+// 			content:"<a>hello</a>",                    //必填
+//             subject:"hello",                           //必填
+//             verbose:true,
+//             encoding:2,
+// 			boundary:smtp.makeboundary(),
+// 			messageid:"{time.gettime()}@aliyun.com",      //按这个格式换下
+// 			charset:"UTF-8",
+// 			tls:false,
+// 			to:[
+//                 ["88481106@qq.com","名字"],             //2种格式
+//                 "14827@qq.com"
+//             ],
+// 			cc:[],
+// 			bcc:[],
+// 			headers:{
+// 				GUID:"MakeGUID", //自定义邮件头
+// 			},
+// 			attachments:{ //附件
+// 				aaa.txt:{
+// 					type:"text/plain", 
+// 					id:"content-id-test",
+// 					content:"aaaa",
+// 				},
+//                 bbb.txt:{
+// 					type:"application/x-msdownload", 
+// 					id:"content-id-test",
+// 					content:"bbbb",
+// 				}
+// 			}
+// 		});
+```
+
+```
+脚本扩展模块例子
+
+module sys
+{
+   var test()
+   {
+		println("sys.test()");
+   }
+}
+
+sys.test();
+
+```
+
 2020-12-14 更新
 -
 

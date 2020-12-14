@@ -22,6 +22,7 @@ namespace cpps
 				.def("begin", &cpps_vector::begin)
 				.def("end", &cpps_vector::end)
 				.def("next", &cpps_vector::next)
+				.def("empty", &cpps_vector::empty)
 				.def("it", &cpps_vector::it)
 				.def("resize", &cpps_vector::resize)
 				.def("clear", &cpps_vector::clear)

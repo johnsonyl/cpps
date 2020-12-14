@@ -129,7 +129,7 @@ namespace cpps {
 		return(ret);
 	}
 	bool cpps_parse_isbuiltinname(std::string s) {
-		return(s == "if" || s == "const" ||s == "async" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring");
+		return(s == "if" || s == "const" ||s == "async" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "module" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring");
 	}
 	bool cpps_is_not_use_var_name(std::string s) {
 		return(cpps_parse_isbuiltinname(s) || s == "true" || s == "catch" || s == "null" || s == "nil" || s == "NULL" || s == "false" || s == "map" || s == "vector" || s == "math" || s == "string" || s == "time" || s == "io" || s == "GC" || s == "unordered_map");
@@ -415,6 +415,51 @@ namespace cpps {
 			}
 			buffer.pop();
 		}
+	}
+	void cpps_parse_module(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer, int32 limit) {
+		child->type = CPPS_OMODULE;
+		child->offset = 0;
+		child->offsettype = 0;
+		child->varsize = 0;
+		child->size = 0;
+		cpps_parse_rmspaceandenter(buffer);
+		child->s = cpps_parse_varname(buffer);
+
+		if (root->type != CPPS_ROOT)
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "module must be in a root node."));
+
+		if (c->buildoffset) {
+			if (root->type == CPPS_ROOT)
+				/* 根节点.. */ {
+				child->offset = root->size++;
+				child->offsettype = CPPS_OFFSET_TYPE_GLOBAL;
+				root->regnode(child->s, child);
+			}
+		}
+		/* 剔除空格 */
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != '{')
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "'{' was detected for module. Please check."));
+		buffer.pop();
+		while (!buffer.isend()) {
+			/* 剔除回车. */
+			cpps_parse_rmspaceandenter(buffer);
+			/* 是否到最后了. */
+			if (buffer.cur() == '}') {
+				break;
+			}
+			if (buffer.isend()) {
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "'}' was detected for module. Please check."));
+			}
+			cpps_parse_line(c, domain, child, child, buffer, CPPS_NOT_DEFASSEMBLE);
+		}
+		/* 剔除空格 */
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != '}') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "'}' was detected for module. Please check."));
+		}
+		buffer.pop();
+		/* pop } */
 	}
 	void cpps_parse_namespace(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer, int32 limit) {
 		child->type = CPPS_ONAMESPACE;
@@ -1681,6 +1726,9 @@ namespace cpps {
 		else if (child->s == "namespace") {
 			cpps_parse_namespace(c, domain, child, root, buffer, limit);
 		}
+		else if (child->s == "module"){
+			cpps_parse_module(c, domain, child, root, buffer, limit);
+		}
 		else if (child->s == "try") {
 			cpps_parse_trycatch(c, domain, child, root, buffer, limit);
 		}
@@ -2259,18 +2307,54 @@ namespace cpps {
 		cpps_domain* leftdomain;
 		cpps_regvar* v = domain->getvar(d->s, leftdomain, false);
 		cpps_domain* ns = NULL;
-		if (!v || (v->getval().isdomain() && v->getval().value.domain->domainType != cpps_domain_type_namespace)) {
-			ns = new cpps_domain(domain, cpps_domain_type_namespace, d->s);
-			v = new cpps_regvar();
-			v->setvarname(d->s);
-			v->setval(cpps_value(ns));
-			domain->regvar(c, v);
+
+		if (v && (v->getval().isdomain() && v->getval().value.domain->domainType == cpps_domain_type_namespace))
+		{
+			ns = v->getval().value.domain;
+			cpps_step_all(c, CPPS_SINGLERET, ns, root, d);
+			return;
+		}
+
+		if(v)
+			throw(cpps_error(d->filename, d->line, cpps_error_normalerror, "%s is defined but this is not namespace.", d->s.c_str()));
+
+		ns = new cpps_domain(domain, cpps_domain_type_namespace, d->s);
+		v = new cpps_regvar();
+		v->setvarname(d->s);
+		v->setval(cpps_value(ns));
+		domain->regvar(c, v);
+		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
+			c->_G->regidxvar(d->offset, v);
+		}
+		cpps_step_all(c, CPPS_SINGLERET, ns, root, d);
+	}
+	void cpps_step_module(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
+		cpps_domain* leftdomain;
+		cpps_domain* _Gdomain = c->_G;
+		cpps_regvar* v = c->_G->getvar(d->s, leftdomain, false);
+		cpps_domain* ns = NULL;
+
+		if (v && (v->getval().isdomain() && v->getval().value.domain->domainType == cpps_domain_type_module))
+		{
+			ns = v->getval().value.domain;
+
 			if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 				c->_G->regidxvar(d->offset, v);
 			}
+
+			cpps_step_all(c, CPPS_SINGLERET, ns, root, d);
+			return;
 		}
-		else {
-			ns = v->getval().value.domain;
+		if (v) 
+			throw(cpps_error(d->filename, d->line, cpps_error_moduleerror, "%s is defined but this is not module.", d->s.c_str()));
+
+		ns = new cpps_domain(_Gdomain, cpps_domain_type_module, d->s);
+		v = new cpps_regvar();
+		v->setvarname(d->s);
+		v->setval(cpps_value(ns));
+		_Gdomain->regvar(c, v);
+		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
+			c->_G->regidxvar(d->offset, v);
 		}
 		cpps_step_all(c, CPPS_SINGLERET, ns, root, d);
 	}
@@ -2677,6 +2761,9 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_ONAMESPACE) {
 			cpps_step_namespace(c, domain, root, d);
+		}
+		else if (d->type == CPPS_OMODULE) {
+			cpps_step_module(c, domain, root, d);
 		}
 		else if (d->type == CPPS_OTRYCATCH) {
 			cpps_step_trycath(c, domain, root, d);

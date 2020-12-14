@@ -126,7 +126,7 @@ namespace cpps {
 				info->buf = decompress_file_buffer + pos;
 				info->header = *header;
 
-				file_list.insert(std::unordered_map<std::string, cpps_tarfile_info* >::value_type(info->header.name, info));
+				file_list.push_back( info);
 
 
 				pos += file_block_count * block_size;
@@ -139,10 +139,13 @@ namespace cpps {
 	cpps_tarfile_info* cpps_tarfile::getmember(std::string name)
 	{
 		cpps_tarfile_info* ret = NULL;
-		auto it = file_list.find(name);
-		if (it != file_list.end()) {
-			ret = it->second;
+		for (auto it : file_list) {
+			if (name == it->header.name) {
+				ret = it;
+				break;
+			}
 		}
+		
 		return ret;
 	}
 
@@ -152,7 +155,7 @@ namespace cpps {
 		cpps_value ret = newclass<cpps_vector>(c, &vec);
 		vec->realvector().reserve(file_list.size());
 		for (auto it : file_list) {
-			vec->realvector().push_back(cpps_cpp_to_cpps_converter<cpps_tarfile_info*>::apply(c,it.second));
+			vec->realvector().push_back(cpps_cpp_to_cpps_converter<cpps_tarfile_info*>::apply(c,it));
 		}
 		return ret;
 	}
@@ -173,7 +176,7 @@ namespace cpps {
 		}
 		else {
 			for (auto it : file_list) {
-				cpps_tarfile_info* info = it.second;
+				cpps_tarfile_info* info = it;
 				real_extract(info, spath, true, bnumeric_owner);
 			}
 		}
@@ -234,7 +237,7 @@ namespace cpps {
 			
 			for (auto it : file_list)
 			{
-				cpps_tarfile_info* info = it.second;
+				cpps_tarfile_info* info = it;
 				size_t file_block_count = (info->file_size + block_size - 1) / block_size * block_size;
 				char* tmpbuffer = new char[file_block_count];
 				memset(tmpbuffer, 0, file_block_count);
@@ -294,7 +297,7 @@ namespace cpps {
 		cpyinfo->file_size = info->file_size;
 		cpyinfo->header = info->header;
 		cpyinfo->needdelete = info->needdelete;
-		file_list.insert(std::unordered_map<std::string, cpps_tarfile_info* >::value_type(cpyinfo->header.name, cpyinfo));
+		file_list.push_back(cpyinfo);
 		info->needdelete = false; //½»»»¿ØÖÆÈ¨
 	}
 

@@ -21,7 +21,7 @@ var download(var file,var showname)
 		var n = toint(i / filesize * 100 );
 		var cur = toint(i / x);
 		if(cur != lastcur){
-			if(n < 99) print(cl[(cur/20)%4]);
+			if(n < 99) print("{cl[(cur/20)%4]} ");
 			print("[");
 			foreach(var j : xrange(1,cur)){
 				print("=");	

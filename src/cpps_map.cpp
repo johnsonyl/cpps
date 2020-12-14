@@ -21,6 +21,7 @@ namespace cpps
 				.def("next", &cpps_map::next)
 				.def("it", &cpps_map::it)
 				.def("key", &cpps_map::key)
+				.def("empty", &cpps_map::empty)
 				.def("clear", &cpps_map::clear)
 				.def("size", &cpps_map::size),
 			_class<cpps_unordered_map>("unordered_map")
@@ -33,6 +34,7 @@ namespace cpps
 				.def("next", &cpps_unordered_map::next)
 				.def("it", &cpps_unordered_map::it)
 				.def("key", &cpps_unordered_map::key)
+				.def("empty", &cpps_unordered_map::empty)
 				.def("clear", &cpps_unordered_map::clear)
 				.def("size", &cpps_unordered_map::size)
 		];
@@ -100,6 +102,11 @@ namespace cpps
 	bool cpps_unordered_map::end()
 	{
 		return _begin != _map.end();
+	}
+
+	bool cpps_unordered_map::empty()
+	{
+		return _map.empty();
 	}
 
 	void cpps_unordered_map::next()

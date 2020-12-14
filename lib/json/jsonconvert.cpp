@@ -29,6 +29,9 @@ Json::Value cppstojsonvalue(cpps::object obj)
 	case CPPS_TFUNCTION:
 		ret = std::string("func@") + obj.value.value.func->getfuncname();
 		break;
+	case CPPS_TLAMBDAFUNCTION:
+		ret = std::string("func@") + obj.value.value.func->getfuncname();
+		break;
 	case CPPS_TCLASSVAR:
 	{
 		cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.value.domain->parent[0];
@@ -132,7 +135,7 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 		if (v.asString().find("func@") == 0)
 		{
 			cpps::object func = _G(c)[v.asString().substr(5)];
-			if (cpps::type(func) == CPPS_TFUNCTION)
+			if (cpps::type(func) == CPPS_TFUNCTION || cpps::type(func) == CPPS_TLAMBDAFUNCTION)
 			{
 				return func;
 			}
