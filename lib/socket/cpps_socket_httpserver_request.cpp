@@ -40,6 +40,15 @@ namespace cpps {
 	{
 		return paramslist[k];
 	}
+	std::string cpps_socket_httpserver_request::get(std::string k)
+	{
+		return getlist[k];
+	}
+	
+	std::string cpps_socket_httpserver_request::post(std::string k)
+	{
+		return postlist[k];
+	}
 
 	std::string cpps_socket_httpserver_request::getheader(std::string k)
 	{

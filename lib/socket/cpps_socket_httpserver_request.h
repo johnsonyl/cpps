@@ -28,6 +28,8 @@ namespace cpps {
 		void		append(std::string s);
 		void		send(cpps_integer n,std::string msg);
 		std::string getparam(std::string k);
+		std::string get(std::string k);
+		std::string post(std::string k);
 		std::string getheader(std::string k);
 		std::string getpath();
 		std::string geturi();
@@ -36,6 +38,8 @@ namespace cpps {
 		std::string	path;
 		std::string uri;
 		PARAMSLIST	paramslist;
+		PARAMSLIST	getlist;
+		PARAMSLIST	postlist;
 		PARAMSLIST	input_headerslist;
 		std::string scheme;
 		std::string userinfo;

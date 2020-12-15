@@ -53,6 +53,28 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-15 更新2
+
+1. socket模块httpserver的 request增加 get post接口可以分别取get post对应变量
+
+2.增加serializer序列化模块,可以将类对象序列化成vector或者map. 也可以反序列化回对象.
+
+```
+class ABC{
+    var a = 10;
+    var b = 20;
+    var c = "123123";
+}
+
+var a = new ABC();
+
+var l = serializer.encode(a,serializer.map);
+
+var a2 = serializer.decode(ABC,l);
+println(a2.b);
+
+```
+
 2020-12-15 更新
 
 1.增加smtp模块,可以发邮件了.
@@ -148,6 +170,20 @@ module sys
 
 sys.test();
 
+```
+
+```
+var html = io.readfile("test.html");
+
+var parser = new htmlparser::parser();
+var element = parser.parse(html);
+if(element)
+{
+    println(element.text());
+}
+```
+
+```
 ```
 
 2020-12-14 更新

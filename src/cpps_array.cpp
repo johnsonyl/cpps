@@ -12,6 +12,9 @@ namespace cpps
 		cpps::_module(c)[
 			_class<cpps_vector>("vector")
 				.def("push_back", &cpps_vector::push_back)
+				.def("add", &cpps_vector::push_back)
+				.def("append", &cpps_vector::push_back)
+				.def("assign", &cpps_vector::assign)
 				.def("push_front", &cpps_vector::push_front)
 				.def("pop_back", &cpps_vector::pop_back)
 				.def("pop_front", &cpps_vector::pop_front)

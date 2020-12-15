@@ -26,6 +26,10 @@ namespace cpps
 		{
 			_vec.push_back(v);
 		}
+		void			assign(cpps_vector* v)
+		{
+			_vec.assign(v->realvector().begin(), v->realvector().end());
+		}
 		void			pop_back()
 		{
 			_vec.pop_back();

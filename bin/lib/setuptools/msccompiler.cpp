@@ -210,7 +210,10 @@ class mscompiler : ccompiler
 		if(is_nocpps_build) complier_base_includes.clear();
 		if(include_dirs != null){
 			foreach(var inc:include_dirs){
-				complier_base_includes.push_back('/I"{real_path}../deps/deps/{inc}"');
+				if(io.isabspath(inc))
+					complier_base_includes.push_back('/I"{inc}"');
+				else
+					complier_base_includes.push_back('/I"{work_path}{inc}"');
 			}
 		}
 	
@@ -235,7 +238,9 @@ class mscompiler : ccompiler
 		if(is_nocpps_build) complier_base_lib_path.clear();
 		if(library_dirs != null){
 			foreach(var libpath:library_dirs){
-				var tmppath = "{real_path}{libpath}";
+				var tmppath = "{work_path}{libpath}";
+				if(io.isabspath(libpath))
+					tmppath = libpath;
 				tmppath = io.normpath(tmppath);
 				complier_base_lib_path.push_back('/LIBPATH:"{tmppath}"');
 			}

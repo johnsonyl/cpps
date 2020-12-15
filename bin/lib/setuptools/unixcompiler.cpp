@@ -63,7 +63,11 @@ class unixcompiler : ccompiler
 		
 		if(include_dirs != null){
 			foreach(var inc:include_dirs){
-				complier_base_includes.push_back('-I{inc}');
+				if(io.isabspath(inc))
+					complier_base_includes.push_back('-I{inc}');
+				else
+					complier_base_includes.push_back('-I{work_path}{inc}');
+
 			}
 		}
         
@@ -79,7 +83,10 @@ class unixcompiler : ccompiler
 
 		if(library_dirs != null){
 			foreach(var libpath:library_dirs){
-				complier_base_lib_path.push_back('-L{libpath}');
+				var tmppath = "{work_path}{libpath}";
+				if(io.isabspath(libpath))
+					tmppath = libpath;
+				complier_base_lib_path.push_back('-L{tmppath}');
 			}
 		}
 

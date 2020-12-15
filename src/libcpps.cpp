@@ -2173,7 +2173,7 @@ namespace cpps {
 		var->setval(v);
 		var->varName = buildlambda() + "foreach-list";
 		foreachdomain->regvar(c, var);
-		if (v.tt == CPPS_ONIL)
+		if (v.tt == CPPS_TNIL)
 			return;
 		if (v.isdomain() && v.value.domain->domainname == "vector") {
 			cpps_vector* vec = cpps_converter<cpps_vector*>::apply(v);

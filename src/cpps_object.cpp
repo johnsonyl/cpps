@@ -6,6 +6,7 @@ namespace cpps
 
 	cpps::int32 type(object o)
 	{
+		if (o.value.tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
 		return o.value.tt;
 	}
 

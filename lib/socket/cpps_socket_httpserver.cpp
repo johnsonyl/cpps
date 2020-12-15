@@ -114,6 +114,7 @@ namespace cpps {
 
 			for (struct evkeyval* header = params.tqh_first; header; header = header->next.tqe_next) {
 				cpps_request_ptr->paramslist.insert(PARAMSLIST::value_type(header->key, header->value));
+				cpps_request_ptr->getlist.insert(PARAMSLIST::value_type(header->key, header->value));
 			}
 		}
 		
@@ -137,6 +138,7 @@ namespace cpps {
 
 			for (struct evkeyval* header = post_params.tqh_first; header; header = header->next.tqe_next) {
 				cpps_request_ptr->paramslist.insert(PARAMSLIST::value_type(header->key, header->value));
+				cpps_request_ptr->postlist.insert(PARAMSLIST::value_type(header->key, header->value));
 			}
 
 			delete[] ib_buffer;

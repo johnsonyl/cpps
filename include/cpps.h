@@ -67,4 +67,6 @@
 #include "cpps_console.h"
 #include "cpps_reg_cpps_class.h"
 
+#include "cpps_api.h"
+
 #endif // CPPS_CPPS_HEAD_

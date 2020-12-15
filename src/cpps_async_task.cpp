@@ -114,7 +114,7 @@ namespace cpps {
 
 	void cpps_async_task::call_done_callback(C* c)
 	{
-		if(callback_func.tt == CPPS_TFUNCTION)
+		if(callback_func.tt == CPPS_TFUNCTION || callback_func.tt == CPPS_TLAMBDAFUNCTION)
 			dofunction(c, callback_func, this,callback_context);
 	}
 

@@ -88,10 +88,10 @@ namespace cpps
 
 			//l 的0 代表返回值列表 1.代表参数列表
 
-			if (o->size() > params->l.size())
-			{
-				throw("The number of parameters does not match");
-			}
+			//if (o->size() > params->l.size())
+			//{
+				//throw("The number of parameters does not match");
+			//}
 
 			for (size_t i = 0; i < params->l.size(); i++)
 			{

@@ -529,6 +529,71 @@ namespace cpps
 		if (!pathvar) return "";
 		return pathvar;
 	}
+	cpps_value cpps_base_serializer_encode(C*c,cpps_value v,cpps_value tp)
+	{
+		if (v.tt != CPPS_TCLASSVAR) return nil;
+		cpps_integer serializer_type = 1;//1. serializer.vector 2.serializer.map
+		if (tp.tt == CPPS_TINTEGER) serializer_type = tp.value.integer;
+		cpps_cppsclassvar* classvar = (cpps_cppsclassvar*)v.value.domain;
+
+
+		cpps_value ret;
+		if (serializer_type == 1) {
+			cpps_vector* vct;
+			ret = newclass<cpps_vector>(c, &vct);
+			for (auto var : *classvar->stacklist) 
+				vct->push_back(var->getval());
+		}
+		else if(serializer_type == 2){
+			cpps_map* m;
+			ret = newclass<cpps_map>(c, &m);
+			for (auto var : classvar->varList)
+				if(var.first != "this")
+					m->insert(cpps_value(c,var.first),var.second->getval());
+		}
+		return ret;
+
+	}
+	cpps_value cpps_base_serializer_decode(C* c, cpps_value cls, cpps_value v)
+	{
+		cpps_value ret;
+
+		if (cls.tt != CPPS_TCLASS) return nil;
+		cpps_cppsclass* cppsclass = (cpps_cppsclass*)cls.value.domain;
+
+		if (cpps_base_isvector(v)) {
+			cpps_vector* vct = cpps_to_cpps_vector(v);
+			cpps_cppsclassvar *v = newcppsclasvar(c, cppsclass);
+			if (vct->size() == v->stacklist->size())
+			{
+				size_t c = vct->size();
+				
+				for (size_t i = 0; i < c; i++) {
+					cpps_regvar* regv = (*(v->stacklist))[i];
+					regv->setval(vct->realvector()[i]);
+				}
+				ret = v;
+			}
+		}
+		else if(cpps_base_ismap(v)){
+			cpps_map* m = cpps_to_cpps_map(v);
+			cpps_cppsclassvar* v = newcppsclasvar(c, cppsclass);
+			if (m->size() == v->stacklist->size())
+			{
+				for (auto it : m->realmap()) {
+					cpps_domain* leftdomain = NULL;
+					cpps_regvar * regv = v->getvar(cpps_to_string(it.first), leftdomain, false);
+					if (regv)
+					{
+						regv->setval(it.second);
+					}
+				}
+				ret = v;
+			}
+
+		}
+		return ret;
+	}
 	void cpps_regbase(C *c)
 	{
 		cpps::_module(c)[
@@ -586,6 +651,12 @@ namespace cpps
 		cpps::_module(c, "environ")[
 			def("get",cpps_base_environ_get),
 			def("set",cpps_base_environ_set)
+		];
+		cpps::_module(c, "serializer")[
+			def_inside("encode",cpps_base_serializer_encode),
+			def_inside("decode",cpps_base_serializer_decode),
+			defvar(c,"vector",1),
+			defvar(c,"map",2)
 		];
 		cpps::_module(c, "sys")[
 			defvar(c, "platform", CPPS_CURRENT_PLANTFORM),

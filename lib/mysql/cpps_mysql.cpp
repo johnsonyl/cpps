@@ -63,65 +63,71 @@ namespace cpps
 		proc += "(";
 
 		cpps_vector* vec = cpps_to_cpps_vector(params);
+		static cpps_vector tmp_empty_vector; //empty 
+		if (!vec)
+			vec = &tmp_empty_vector;
+
 	
 		std::vector< MYSQL_BIND > paramlist;
 		std::vector< MYSQL_BINDDATA > paramDatalist;
+		if (vec->size() > 0) {
+			paramlist.resize(vec->size());
+			paramDatalist.resize(vec->size());
 
-		paramlist.resize(vec->size());
-		paramDatalist.resize(vec->size());
+			memset(paramlist.data(), 0, sizeof(MYSQL_BIND) * vec->size());
 
-		memset(paramlist.data(), 0, sizeof(MYSQL_BIND) * vec->size());
+			//填充参数数据
+			for (size_t i = 0; i < vec->realvector().size(); i++)
+			{
+				paramlist[i].buffer = paramDatalist[i].buff;
+				paramlist[i].length = &paramDatalist[i].length;
+				paramlist[i].is_null = &paramDatalist[i].is_null;
 
-		//填充参数数据
-		for (size_t i = 0; i < vec->realvector().size(); i++)
-		{
-			paramlist[i].buffer = paramDatalist[i].buff;
-			paramlist[i].length = &paramDatalist[i].length;
-			paramlist[i].is_null = &paramDatalist[i].is_null;
+				cpps_value& v = vec->realvector()[i];
+				paramDatalist[i].is_null = false;
+				if (v.tt == CPPS_TBOOLEAN)
+				{
+					bool n = v.value.b;
+					memcpy(paramDatalist[i].buff, (const void*)&n, sizeof(bool));
+					paramDatalist[i].length = sizeof(bool);
+					paramlist[i].buffer_type = MYSQL_TYPE_TINY;
+					paramlist[i].buffer_length = sizeof(bool);
+				}
+				else if (v.tt == CPPS_TINTEGER)
+				{
+					cpps_integer n = v.value.integer;
+					memcpy(paramDatalist[i].buff, (const void*)&n, sizeof(cpps_integer));
+					paramDatalist[i].length = sizeof(cpps_integer);
+					paramlist[i].buffer_type = MYSQL_TYPE_LONGLONG;
+					paramlist[i].buffer_length = sizeof(cpps_integer);
+				}
+				else if (v.tt == CPPS_TNUMBER)
+				{
+					cpps_number n = v.value.number;
+					memcpy(paramDatalist[i].buff, (const void*)&n, sizeof(cpps_number));
+					paramDatalist[i].length = sizeof(cpps_number);
+					paramlist[i].buffer_type = MYSQL_TYPE_DOUBLE;
+					paramlist[i].buffer_length = sizeof(cpps_number);
+				}
+				else if (v.tt == CPPS_TSTRING)
+				{
+					std::string* s = cpps_get_string(v);
+					memcpy(paramDatalist[i].buff, (const void*)s->c_str(), s->size());
+					paramDatalist[i].length = (unsigned long)s->size();
+					paramlist[i].buffer_type = MYSQL_TYPE_VAR_STRING;
+					paramlist[i].buffer_length = (unsigned long)s->size();
+				}
+				else
+				{
+					paramDatalist[i].is_null = true;
+				}
+				if (i != 0)
+					proc += ",";
 
-			cpps_value& v = vec->realvector()[i];
-			paramDatalist[i].is_null = false;
-			if (v.tt == CPPS_TBOOLEAN)
-			{
-				bool n = v.value.b;
-				memcpy(paramDatalist[i].buff, (const void*)&n, sizeof(bool));
-				paramDatalist[i].length = sizeof(bool);
-				paramlist[i].buffer_type = MYSQL_TYPE_TINY;
-				paramlist[i].buffer_length = sizeof(bool);
+				proc += "?";
 			}
-			else if(v.tt == CPPS_TINTEGER)
-			{
-				cpps_integer n = v.value.integer;
-				memcpy(paramDatalist[i].buff, (const void*)&n, sizeof(cpps_integer));
-				paramDatalist[i].length = sizeof(cpps_integer);
-				paramlist[i].buffer_type = MYSQL_TYPE_LONGLONG;
-				paramlist[i].buffer_length = sizeof(cpps_integer);
-			}
-			else if (v.tt == CPPS_TNUMBER)
-			{
-				cpps_number n = v.value.number;
-				memcpy(paramDatalist[i].buff, (const void*)&n, sizeof(cpps_number));
-				paramDatalist[i].length = sizeof(cpps_number);
-				paramlist[i].buffer_type = MYSQL_TYPE_DOUBLE;
-				paramlist[i].buffer_length = sizeof(cpps_number);
-			}
-			else if(v.tt == CPPS_TSTRING)
-			{
-				std::string *s = cpps_get_string(v);
-				memcpy(paramDatalist[i].buff, (const void*)s->c_str(), s->size());
-				paramDatalist[i].length = (unsigned long)s->size();
-				paramlist[i].buffer_type = MYSQL_TYPE_VAR_STRING;
-				paramlist[i].buffer_length = (unsigned long)s->size();
-			}
-			else
-			{
-				paramDatalist[i].is_null = true;
-			}
-			if (i != 0)
-				proc += ",";
-
-			proc += "?";
 		}
+		
 
 		proc += ");";
 
@@ -146,13 +152,15 @@ namespace cpps
 				return nil;
 			}
 		}
-
-		//传入参数
-		if (mysql_stmt_bind_param(mysql_stmt, paramlist.data()))
-		{
-			seterror(mysql_stmt_error(mysql_stmt));
-			return nil;
+		if (paramlist.size() > 0) {
+			//传入参数
+			if (mysql_stmt_bind_param(mysql_stmt, paramlist.data()))
+			{
+				seterror(mysql_stmt_error(mysql_stmt));
+				return nil;
+			}
 		}
+		
 
 		//执行语句
 		if (mysql_stmt_execute(mysql_stmt))

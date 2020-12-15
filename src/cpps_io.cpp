@@ -301,7 +301,10 @@ namespace cpps
 				return;
 			}
 		}
-		vct.push_back(path.substr(0, 1));
+		if (path[0] == '/')
+			vct.push_back(path.substr(0, 1));
+		else
+			vct.push_back("");
 		vct.push_back(path);
 	}
 	cpps_value cpps_io_splitdrive(C* c, std::string path) {
@@ -314,6 +317,13 @@ namespace cpps
 		vct->push_back(cpps_value(c, realvct[0]));
 		vct->push_back(cpps_value(c, realvct[1]));
 		return ret;
+	}
+	bool cpps_io_isabspath(std::string path)
+	{
+		std::vector<std::string> realvct;
+		cpps_io_real_splitdrive(realvct, path);
+
+		return (realvct.size() == 2 && !realvct[0].empty());
 	}
 	std::string cpps_io_normpath(std::string path)
 	{
@@ -559,6 +569,7 @@ namespace cpps
 			def("isdir",cpps_io_isdir),
 			def("isfile",cpps_io_isfile),
 			def("normpath",cpps_io_normpath),
+			def("isabspath", cpps_io_isabspath),
 			def_inside("splitdrive", cpps_io_splitdrive),
 			def("getrealpath", cpps_real_path),
 			def("file_exists",cpps_io_file_exists),

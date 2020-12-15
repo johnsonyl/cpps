@@ -46,6 +46,34 @@ namespace cpps
 
 		return v;
 	}
+	cpps_value cpps_string_cut(C* c, cpps_value v, cpps_integer count) {
+		cpps_vector* vec;
+		cpps_value ret = newclass<cpps_vector>(c, &vec);
+
+
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)v.value.domain;
+		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+		size_t ncount = (size_t)count;
+		size_t FileSize = tmpStr->size();
+		size_t MsgPart = 0;
+		size_t pos1 = 0;
+		for (size_t j = 0; j < FileSize / ncount + 1; j++)
+		{
+			size_t res = FileSize - pos1 < ncount ? FileSize - pos1 : ncount;
+			if (res != 0)
+			{
+				std::string *s;
+				cpps_value sv = newclass<std::string>(c, &s);
+				s->append(tmpStr->c_str() + pos1, res);
+				vec->push_back(sv);
+				pos1 += res;
+				
+			}
+		}
+
+		return ret;
+	}
 	cpps_value cpps_string_split(C *c, cpps_value v, std::string v2,cpps_value count)
 	{
 		cpps_integer ncount = -1;
@@ -351,6 +379,7 @@ namespace cpps
 			def("strlen", cpps_string_strlen),
 			def("replace", cpps_string_replace),
 			def_inside("split", cpps_string_split),
+			def_inside("cut", cpps_string_cut),
 			def("strcut", cpps_string_strcut),
 			def_inside("strcuts", cpps_string_strcuts),
 			def("empty", cpps_string_empty),

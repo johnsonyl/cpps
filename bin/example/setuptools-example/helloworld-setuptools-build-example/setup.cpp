@@ -1,19 +1,13 @@
 #import "setuptools"
 
 
-var long_description = "";
-var file = io.fopen("README.md","r");
-if(file){
-	var buffer = new Buffer();
-	io.fread(file,buffer,io.fsize(file));
-	long_description = buffer.tostring();
-}
+var long_description = io.readfile("README.md");
 
 
 var module1 = { 
                 platfrom:"all",
                 sources :["src/main.cpp"],
-                include_dirs:[],
+                include_dirs:["inc"],
                 libraries:[],
                 library_dirs:[],
                 define_macros:[]
