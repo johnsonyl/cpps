@@ -243,6 +243,7 @@ namespace cpps
 			cpps_integer		integer;	// int
 			int32				b;			// bool
 			cpps_cppsclassvar	*str;		//string
+			std::vector<std::string> *vars;	// mulit return var;
 		};
 		Value					value;		//Öµ¡£
 

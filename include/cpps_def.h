@@ -76,6 +76,7 @@
 #define CPPS_TCLASS		9	//定义类
 #define CPPS_TCLASSVAR  10  //类的对象
 #define CPPS_TLAMBDAFUNCTION	11
+#define CPPS_TMULTIRETURN	12
 
 #define CPPS_SINGLERET		0
 #define CPPS_MUNITRET		1
@@ -142,6 +143,8 @@
 #define CPPS_ODEFASYNCVAR		 57 //定义协程函数
 #define CPPS_OAWAIT				58 //await 等待异步函数
 #define CPPS_OMODULE			59 //模块
+#define CPPS_VARNAMES			60 //模块
+#define CPPS_MULTIVAR			61 //模块
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误

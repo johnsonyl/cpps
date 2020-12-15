@@ -564,7 +564,7 @@ namespace cpps
 		if (cpps_base_isvector(v)) {
 			cpps_vector* vct = cpps_to_cpps_vector(v);
 			cpps_cppsclassvar *v = newcppsclasvar(c, cppsclass);
-			if (vct->size() == v->stacklist->size())
+			if (vct->realvector().size() == v->stacklist->size())
 			{
 				size_t c = vct->size();
 				
@@ -578,7 +578,7 @@ namespace cpps
 		else if(cpps_base_ismap(v)){
 			cpps_map* m = cpps_to_cpps_map(v);
 			cpps_cppsclassvar* v = newcppsclasvar(c, cppsclass);
-			if (m->size() == v->stacklist->size())
+			if (m->realmap().size() == v->stacklist->size())
 			{
 				for (auto it : m->realmap()) {
 					cpps_domain* leftdomain = NULL;

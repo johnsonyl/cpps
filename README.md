@@ -53,6 +53,27 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-16 更新
+
+1. 增加支持多返回值.
+
+```
+var func2()
+{
+    return "sadf";
+}
+var func1()
+{
+    return 1,2,func2();
+}
+
+var [a,b,e] = func1();
+
+println(a);
+println(b);
+println(e);
+```
+
 2020-12-15 更新2
 
 1. socket模块httpserver的 request增加 get post接口可以分别取get post对应变量

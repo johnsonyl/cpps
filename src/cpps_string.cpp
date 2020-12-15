@@ -56,7 +56,6 @@ namespace cpps
 
 		size_t ncount = (size_t)count;
 		size_t FileSize = tmpStr->size();
-		size_t MsgPart = 0;
 		size_t pos1 = 0;
 		for (size_t j = 0; j < FileSize / ncount + 1; j++)
 		{
