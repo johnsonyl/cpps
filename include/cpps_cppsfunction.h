@@ -81,9 +81,18 @@ namespace cpps
 			funcdomain->init(domain, cpps_domain_type_exec);
 			funcdomain->setexecdomain(prevdomain);
 			funcdomain->resize((usint16)varcount);
-			if (lambdastacklist) {
-				for (size_t i = 0; i < lambdastacklist->size(); i++)
-					(*(funcdomain->stacklist))[i] = (*(lambdastacklist))[i];
+			if (lambdastacklist ) {
+				assert(funcdomain->stacklist->size() >= lambdastacklist->size());
+				if (funcdomain->stacklist->size() >= lambdastacklist->size()) {
+					for (size_t i = 0; i < lambdastacklist->size(); i++) {
+						cpps_regvar* regvar = (*(lambdastacklist))[i];
+						(*(funcdomain->stacklist))[i] = (*(lambdastacklist))[i];
+						if (regvar)
+						{
+							funcdomain->regvar(c, regvar);
+						}
+					}
+				}
 			}
 
 			//l 的0 代表返回值列表 1.代表参数列表

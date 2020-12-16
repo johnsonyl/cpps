@@ -22,7 +22,7 @@ namespace cpps
 		retType r = call_member<retType>(c_state, domain, o, c, f);
 		if (!cpps_cpp_to_cpps_converter<retType>::match(c_state, r))
 		{
-			throw(cpps_error("0", 0, 0, "Convert failed"));
+			throw(cpps_error("0", 0, 0, "%s is not defined to script, conversion failed.",typeid(retType).name()));
 		}
 		ret = cpps_cpp_to_cpps_converter<retType>::apply(c_state,r); //c++的返回值 只有可以转换的才可以
 	}

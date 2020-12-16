@@ -26,7 +26,7 @@ namespace cpps
 		static R		apply(cpps_value obj)
 		{
 			if(!match(obj))
-				throw(cpps_error("0", 0, 0, "Convert failed"));
+				throw(cpps_error("0", 0, 0, "%s is not defined to script, conversion failed.", typeid(R).name()));
 
 			if (obj.tt == CPPS_TNIL) return NULL;
 

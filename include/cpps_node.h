@@ -251,7 +251,7 @@ namespace cpps
 		int8 varsize;	//类变量计数 (只包含变量) 前提是类
 		int16 offset;	//自身偏移
 		int8 offsettype; //偏移类型 0 global 1 left 2 self
-		usint16 size;	//子节点数量 ( 只包含类 名空间 函数 , 非类情况下包含变量) 65535个节点还不够吗?
+		int16 size;	//子节点数量 ( 只包含类 名空间 函数 , 非类情况下包含变量) 65535个节点还不够吗?
 
 		std::unordered_map<std::string, node*>		*varlist; //为了运行提速,牺牲解释速度.
 		void regnode(std::string& s, node* n)

@@ -37,7 +37,7 @@ var dist(var option){
 		if(pos == 0){
 			filename2 = string.substr(filename,2,string.npos);
 		}
-		pos = string.find(filename2,"dist");
+		pos = string.find(filename2,"dist/");
 		if(pos == 0){
 			continue;
 		}

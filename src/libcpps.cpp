@@ -366,6 +366,11 @@ namespace cpps {
 			throw(cpps_error(str->filename, buffer.line(), cpps_error_varnotnumber, "Variable names cannot use reserved keywords."));
 		}
 
+		
+	}
+
+	void cpps_parse_var_buildoffset(C* c, node* root, node* str, cpps_node_domain* domain)
+	{
 		if (c->buildoffset) {
 			if (root->type == CPPS_ROOT)
 				/* 根节点.. */ {
@@ -425,6 +430,9 @@ namespace cpps {
 				buffer.pop();//pop [
 				str->type = CPPS_MULTIVAR;
 
+				if (root->type == CPPS_OCLASS || root->type == CPPS_ONAMESPACE  )
+					throw(cpps_error(str->filename, buffer.line(), cpps_error_varnotnumber, "Multiple return value variables cannot be defined in a class or namespace."));
+
 				node* childstr = new node(str, child->filename, buffer.line());
 				childstr->type = CPPS_VARNAMES;
 				while (!buffer.isend())
@@ -433,6 +441,7 @@ namespace cpps {
 					str2->type = CPPS_VARNAME;
 					cpps_parse_var_varname(buffer, str2, c, root, domain);
 					cpps_parse_rmspaceandenter(buffer);
+					cpps_parse_var_buildoffset(c, root, str2, domain);
 					if (buffer.cur() != ',')
 						break;
 					buffer.pop();
@@ -451,6 +460,8 @@ namespace cpps {
 			else {
 				cpps_parse_var_varname(buffer, str, c, root, domain);
 				cpps_parse_var_right(c, domain, str, root, buffer, limit, vartype);
+				cpps_parse_var_buildoffset(c, root, str, domain);
+
 			}
 
 			
@@ -614,6 +625,11 @@ namespace cpps {
 			if (param->s.empty()) {
 				throw(cpps_error(param->filename, buffer.line(), cpps_error_varnotnumber, "The object of new must have a type."));
 			}
+			param->offset = 0;
+			param->offsettype = 0;
+			param->varsize = 0;
+			param->size = 0;
+
 			node* lastNode = param;
 			/* 是否使用名空间 */
 			while (!buffer.isend()) {
@@ -654,7 +670,8 @@ namespace cpps {
 				/* var a = new A(){} */
 				cpps_parse_rmspaceandenter(buffer);
 				if (buffer.cur() == '{') {
-					node* setv = cpps_parse_new_setv(c, domain, param, root, buffer);
+					param->setparent(root);
+					node* setv = cpps_parse_new_setv(c, domain, param, root, buffer); //root 修改成newvar node 但是这里取不到变量数量呀. 应该取类才对.
 					param->add(setv);
 				}
 			}
@@ -781,6 +798,7 @@ namespace cpps {
 	}
 	node* cpps_parse_new_setv(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer) {
 		node* bracket = new node(o->filename, buffer.line());
+		bracket->setparent(o);
 		bracket->type = CPPS_ONEW_SETV;
 		buffer.pop();
 		/* pop { */
@@ -977,17 +995,31 @@ namespace cpps {
 			node* str = new node(lamdbavar, param->filename, buffer.line());
 			str->s = buildlambda();
 			str->type = CPPS_VARNAME;
+
+			//加快运行速度
+			if (c->buildoffset) {
+				node* r = cpps_get_root_node(root);
+				str->offset = r->size++;
+				str->offsettype = CPPS_OFFSET_TYPE_GLOBAL;
+			}
+
 			node* lambda = new node(str, param->filename, buffer.line());
 			lambda->type = CPPS_ODEFVAR_LAMBDA_FUNC;
 			lambda->size = 0;
 			if (root->type == CPPS_ODEFVAR_LAMBDA_FUNC || root->type == CPPS_ODEFVAR_FUNC){
 				lambda->size = root->size;/*为了兼容闭包*/
 			}
+			usint16 takesize = lambda->size;
 			cpps_parse_def_function(c, domain, lambda, lambda, buffer);
 			/* 定义了一个函数 */
 			node* lambdaparam = new node(param->filename, buffer.line());
 			lambdaparam->type = CPPS_VARNAME_LAMBDA;
 			lambdaparam->s = str->s;
+			if (c->buildoffset) {
+				lambdaparam->offset = str->offset;
+				lambdaparam->offsettype = str->offsettype;
+			}
+			lambdaparam->size = takesize; //记录当时使用时它父类长度.
 			lambdaparam->setparent(lastopnode);
 			lambdaparam = cpps_parse_last_func(c, buffer, lastopnode, lambdaparam, domain, root);
 			lastopnode->l.push_back(lambdaparam);
@@ -2166,11 +2198,9 @@ namespace cpps {
 		else if(d->l.size() > 1){
 			ret_value.tt = CPPS_TMULTIRETURN;
 			ret_value.value.multiv = new std::vector<cpps_value>();
-			size_t ii = 0;
 			for (auto nn : d->l) {
-				cpps_value vv = cpps_calculate_expression(c, domain, root, d->l[ii], leftdomain);
+				cpps_value vv = cpps_calculate_expression(c, domain, root, nn, leftdomain);
 				ret_value.value.multiv->push_back(vv);
-				ii++;
 			}
 		}
 		cpps_domain* cpps_func_domain = domain;
@@ -2772,6 +2802,9 @@ namespace cpps {
 			cppsclassvar->regvar(NULL, v);
 			cpps_domain* takedomain2 = leftdomain;
 			leftdomain = cppsclassvar;
+
+			
+
 			/* 数组特殊处理. */
 			if (d->s == "vector" && d->getleft()) {
 				cpps_vector* array = static_cast<cpps_vector*>(cppsclassvar->getclsptr());
@@ -2785,17 +2818,23 @@ namespace cpps {
 					node* n = d->l[2];
 					if (n && n->type == CPPS_ONEW_SETV) {
 						node* rr = n;
+						cpps_domain* execdomain = c->domain_alloc();
 						for (size_t i = 0; i < rr->l.size(); i++) {
 							node* k = rr->l[i]->getleft();
-							cpps_domain* takedomain = leftdomain;
-							leftdomain = NULL;
-							cpps_value v = cpps_calculate_expression(c, domain, root, rr->l[i]->getright()->getleft(), leftdomain);
+
+							//execdomain->init(cppsclassvar, cpps_domain_type_func);
+						//	execdomain->setexecdomain(cppsclassvar);
+							cpps_domain* takedomain3 = NULL;
+							cpps_value v = cpps_calculate_expression(c, domain, root, rr->l[i]->getright()->getleft(), takedomain3);
 							/* m->insert(cpps_value(c, k->s), v); */
 							cpps_regvar* var = cppsclassvar->getvar(k->s, leftdomain);
 							if (var)
 								var->setval(v);
-							leftdomain = takedomain;
+							//execdomain->destory(c);
+
 						}
+
+						c->domain_free(execdomain);
 					}
 				}
 				node* n = d->getright();
@@ -3198,7 +3237,13 @@ namespace cpps {
 		}
 	}
 	void cpps_calculate_expression_lambda(C*c,cpps_domain* domain,cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
-		cpps_regvar* v = c->_G->getvar(d->s, leftdomain);
+		cpps_regvar* v = NULL;
+		if (d->offset != -1) {
+			v = c->_G->getregidxvar(d->offset);
+		}
+		else {
+			v = c->_G->getvar(d->s, leftdomain);
+		}
 		if (v) {
 			/* printf(domain->domainName.c_str()); */
 			cpps_lambda_function* func;
@@ -3206,13 +3251,21 @@ namespace cpps {
 			func->c = c;
 			func->setrealfunc((cpps_cppsfunction*)v->getval().value.func);
 			if (root->parent[0] && root->parent[0]->domainType == cpps_domain_type_func && root->stacklist) {
-				func->stacklist = new std::vector<cpps_regvar*>();
-				for (auto no : *(root->stacklist)){
-					if (no && no->closeure) {
-						func->stacklist->push_back(no);
-						no->closeureusecount++;//计数
-					}else{
-						func->stacklist->push_back(NULL);//占位
+				size_t c = d->size;
+				if (c > 0) {
+					func->stacklist = new std::vector<cpps_regvar*>();
+
+					//check
+					assert(d->size <= root->stacklist->size());
+					for (size_t i = 0; i < c; i++) {
+						auto no = (*(root->stacklist))[i];
+						if (no && no->closeure) {
+							func->stacklist->push_back(no);
+							no->closeureusecount++;//计数
+						}
+						else {
+							func->stacklist->push_back(NULL);//占位
+						}
 					}
 				}
 			}

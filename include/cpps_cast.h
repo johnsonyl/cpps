@@ -20,7 +20,7 @@ namespace cpps
 
 		if (!converter::match((o.value)))
 		{
-			throw(cpps_error("0", 0, 0, "Convert failed"));
+			throw(cpps_error("0", 0, 0, "%s is not defined to script, conversion failed.", typeid(T).name()));
 		}
 
 		return converter::apply((o.value));

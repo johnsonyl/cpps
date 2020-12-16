@@ -89,7 +89,7 @@ namespace cpps
 				R r = f(fmt.c_str());
 				if (!cpps_cpp_to_cpps_converter<R>::match(c, r))
 				{
-					throw(cpps_error("0", 0, 0, "Convert failed"));
+					throw(cpps_error("0", 0, 0, "%s is not defined to script, conversion failed.", typeid(R).name()));
 				}
 				*ret = cpps_cpp_to_cpps_converter<R>::apply(c, r); //c++的返回值 只有可以转换的才可以
 			}

@@ -33,7 +33,7 @@ namespace cpps
 		{
 			if (!cpps_cpp_to_cpps_converter<Type>::match(c,v))
 			{
-				throw(cpps_error("0", 0, 0, "Convert failed"));
+				throw(cpps_error("0", 0, 0, "%s is not defined to script, conversion failed.",typeid(Type).name()));
 			}
 
 			value = cpps_cpp_to_cpps_converter<Type>::apply(c,v);
@@ -45,8 +45,7 @@ namespace cpps
 			if(value.isdomain() )
 			{
 				cpps_domain* leftdomain = NULL;
-
-				cpps_regvar* var = value.value.domain->getvar(k,leftdomain);
+				cpps_regvar* var = value.value.domain->getvar(k,leftdomain,false);
 				if (var)
 				{
 					ret = var->getval();

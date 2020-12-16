@@ -273,13 +273,21 @@ namespace cpps {
 
 	cpps::object cpps_socket_httpserver::gethandlefunc(std::string path)
 	{
-		cpps::object ret = http_route_list[path];
+		cpps::object ret;
+		auto it = http_route_list.find(path);
+		if (it != http_route_list.end()) {
+			ret = it->second;
+		}
 		return ret;
 	}
 
 	cpps::object cpps_socket_httpserver::getcontroller(std::string controllername)
 	{
-		cpps::object ret = http_class_route_list[controllername];
+		cpps::object ret;
+		auto it = http_class_route_list.find(controllername);
+		if (it != http_class_route_list.end()) {
+			ret = it->second;
+		}
 		return ret;
 	}
 
