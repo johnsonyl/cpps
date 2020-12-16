@@ -22,6 +22,9 @@ namespace cpps
 		{
 			_begin = _vec.begin();
 		}
+		virtual ~cpps_vector() {
+			_vec.clear();
+		}
 		void			push_back(cpps_value v)
 		{
 			_vec.push_back(v);

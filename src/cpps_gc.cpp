@@ -26,9 +26,8 @@ namespace cpps
 		//新增到老生代
 		c->getgen1()->insert(p);
 	}
-	void cpps_gc_check_gen_value(C*c, cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck);
-
-	void cpps_gc_check_child(cpps_value &v, C* c, bool checkchild, std::unordered_set<cpps_cppsclassvar *> * oldgen, std::unordered_set<cpps_cppsclassvar *> * newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck)
+	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck);
+	void cpps_gc_check_child(const cpps_value &v, C* c, bool checkchild, std::unordered_set<cpps_cppsclassvar *> * oldgen, std::unordered_set<cpps_cppsclassvar *> * newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck)
 	{
 		for (std::unordered_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList.begin(); it != v.value.domain->varList.end(); ++it)
 		{
@@ -40,7 +39,7 @@ namespace cpps
 		}
 	}
 	//
-	void cpps_gc_check_gen_value(C*c, cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck)
+	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck)
 	{
 		if (v.tt == CPPS_TCLASSVAR)
 		{
@@ -54,7 +53,7 @@ namespace cpps
 				std::vector<cpps_value>& realvector = pVector->realvector();//2019-12-14 防止外部正在调用begin 导致数据错乱
 				for (std::vector<cpps_value>::iterator it = realvector.begin(); it != realvector.end(); ++it)
 				{
-					cpps_value value = *it;
+					const cpps_value& value = *it;
 					cpps_gc_check_gen_value(c, value, checkchild, oldgen, newgen, size, isCheck);
 				}
 				std::unordered_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
@@ -74,8 +73,8 @@ namespace cpps
 				std::map<cpps_value, cpps_value>& realmap = pMap->realmap();
 				for (std::map<cpps_value, cpps_value>::iterator it = realmap.begin(); it != realmap.end(); ++it)
 				{
-					cpps_value value0 = it->first;
-					cpps_value value1 = it->second;
+					const cpps_value& value0 = it->first;
+					const cpps_value& value1 = it->second;
 
 					cpps_gc_check_gen_value(c, value0, checkchild, oldgen, newgen, size, isCheck);
 					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);
@@ -97,8 +96,8 @@ namespace cpps
 				std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap = pMap->realmap();
 				for (std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator it = realmap.begin(); it != realmap.end(); ++it)
 				{
-					cpps_value value0 = it->first;
-					cpps_value value1 = it->second;
+					const cpps_value &value0 = it->first;
+					const cpps_value &value1 = it->second;
 
 					cpps_gc_check_gen_value(c, value0, checkchild, oldgen, newgen, size, isCheck);
 					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);
@@ -150,7 +149,7 @@ namespace cpps
 
 		std::unordered_set<cpps_cppsclassvar *> isCheck;
 	
-		cpps_value value = c->_G;
+		const cpps_value value = c->_G;
 		size_t tmp = c->getgen1size();
 		cpps_gc_check_child(value, c, true, c->getgen0(), c->getgen1(), tmp, isCheck);
 		c->setgen1size(tmp);
@@ -167,15 +166,33 @@ namespace cpps
 		}
 
 
-
-		//释放gen0里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
-			it != c->getgen0()->end(); ++it)
-		{
-			cpps_cppsclassvar * pClsVar = *it;
-			pClsVar->destory(c);
-			delete pClsVar;
+		bool hasdelete = true;
+		usint32 cc = 0;
+		while (hasdelete && cc < 10 ) {
+			hasdelete = false;
+			auto it = c->getgen0()->begin();
+			while ( it != c->getgen0()->end() ) {
+				cpps_cppsclassvar* pClsVar = *it;
+				assert(pClsVar->count() >= 0);
+				if (pClsVar->count() <= 0) {
+					pClsVar->destory(c);
+					delete pClsVar;
+					hasdelete = true;
+					it = c->getgen0()->erase(it);
+				}
+				else
+					++it;
+			}
+			cc++;
 		}
+
+		for (auto it : *c->getgen0()) {
+			cpps_cppsclassvar* pClsVar = it;
+			tempoldgen.insert(pClsVar);
+			tempoldgensize += pClsVar->size();
+		}
+		
+
 		c->getgen0()->clear();
 		*(c->getgen0()) = tempoldgen;
 		c->setgen0size(tempoldgensize);
@@ -210,27 +227,60 @@ namespace cpps
 
 
 
-
-		//释放gen0里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
-			it != c->getgen0()->end(); ++it)
-		{
-			cpps_cppsclassvar * pClsVar = *it;
-			pClsVar->destory(c);
-			delete pClsVar;
+		bool hasdelete = true;
+		usint32 cc = 0;
+		while (hasdelete && cc < 5) {
+			hasdelete = false;
+			auto it = c->getgen0()->begin();
+			while (it != c->getgen0()->end()) {
+				cpps_cppsclassvar* pClsVar = *it;
+				assert(pClsVar->count() >= 0);
+				if (pClsVar->count() <= 0) {
+					pClsVar->destory(c);
+					delete pClsVar;
+					hasdelete = true;
+					it = c->getgen0()->erase(it);
+				}
+				else
+					++it;
+			}
+			cc++;
 		}
+		for (auto it : *c->getgen0()) {
+			cpps_cppsclassvar* pClsVar = it;
+			tempoldgen.insert(pClsVar);
+			tempoldgensize += pClsVar->size();
+		}
+
 		c->getgen0()->clear();
 		*(c->getgen0()) = tempoldgen;
 		c->setgen0size(tempoldgensize);
 
 
 		//释放gen1里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin();
-			it != c->getgen1()->end(); ++it)
-		{
-			cpps_cppsclassvar * pClsVar = *it;
-			pClsVar->destory(c);
-			delete pClsVar;
+		hasdelete = true;
+		cc = 0;
+		while (hasdelete && cc < 5) {
+			hasdelete = false;
+			auto it = c->getgen1()->begin();
+			while (it != c->getgen1()->end()) {
+				cpps_cppsclassvar* pClsVar = *it;
+				assert(pClsVar->count() >= 0);
+				if (pClsVar->count() <= 0) {
+					pClsVar->destory(c);
+					delete pClsVar;
+					hasdelete = true;
+					it = c->getgen1()->erase(it);
+				}
+				else
+					++it;
+			}
+			cc++;
+		}
+		for (auto it : *c->getgen1()) {
+			cpps_cppsclassvar* pClsVar = it;
+			newgen.insert(pClsVar);
+			newgensize += pClsVar->size();
 		}
 		c->getgen1()->clear();
 		*(c->getgen1()) = newgen;

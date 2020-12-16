@@ -28,7 +28,7 @@ namespace cpps
 	void					cpps_step(C * c, cpps_domain *domain, cpps_domain* root, node* d);
 	void					cpps_step_all(C * c, int32 retType, cpps_domain* domain, cpps_domain* root, node *o );
 
-	void					make_values(C *c, cpps_domain *domain, cpps_domain *root, node *d, std::vector<cpps_value> &params, cpps_domain* execdomain);
+	void					make_values(C *c, cpps_domain *domain, cpps_domain *root, node *d, std::vector<cpps_value> &params);
 	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
 	void					cpps_gc_remove_barrier(C*c, cpps_regvar *v);
 	void					cpps_gc_check_step(C * c);
@@ -157,14 +157,10 @@ namespace cpps
 			c->domain_free(funcdomain);
 
 
-			cpps_regvar v;
-			v.setvarname("ret");
-			v.setval(*ret);
-			cpps_gc_add_barrier(c, &v);
+			
 
 			cpps_gc_check_step(c);
 
-			cpps_gc_remove_barrier(c, &v);
 		}
 		void	setasync(bool b) {
 			nasync = b;

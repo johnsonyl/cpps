@@ -251,32 +251,45 @@ namespace cpps
 	{
 		std::string *str;
 		ret = newclass<std::string>(c, &str);
-		ret.tt = CPPS_TSTRING;
 		str->append(a.tt == CPPS_TSTRING ? *cpps_get_string(a) : cpps_to_string(a));
 		str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
 
 	}
 
-	void cpps_strcatassignment(cpps_value &a, cpps_value &b,cpps_value &ret)
+	void cpps_strcatassignment(C*c,cpps_value &a, cpps_value &b,cpps_value &ret)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
 			return;
 		}
 
-		a.value.value->tt = CPPS_TSTRING;
+		if (a.value.value->tt == CPPS_TSTRING) {
+			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)a.value.value->value.domain;
+			std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+			if (b.tt == CPPS_TREGVAR)
+			{
+				tmpStr->append(*cpps_get_string(*(b.value.value)));
+			}
+			else
+			{
+				tmpStr->append(*cpps_get_string(b));
+			}
 
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.value->value.domain;
-		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-		if (b.tt == CPPS_TREGVAR)
-		{
-			tmpStr->append(*cpps_get_string(*(b.value.value)));
 		}
-		else
-		{
-			tmpStr->append(*cpps_get_string(b));
+		else {
+			std::string* tmpStr = NULL;
+			*(a.value.value) = newclass<std::string>(c, &tmpStr);
+			if (b.tt == CPPS_TREGVAR)
+			{
+				tmpStr->append(*cpps_get_string(*(b.value.value)));
+			}
+			else
+			{
+				tmpStr->append(*cpps_get_string(b));
+			}
 		}
 
+		
 		ret = *(a.value.value);
 	}
 	
@@ -416,13 +429,13 @@ namespace cpps
 				{
 					std::string* str;
 					cpps_value ret = newclass<std::string>(c, &str);
-					ret.tt = CPPS_TSTRING;
 
 
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.value->value.domain;
 					std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
 
 					str->append(tmpStr->c_str());
+
 					*(a.value.value) = ret;
 				}
 
@@ -447,7 +460,6 @@ namespace cpps
 				{
 					std::string* str;
 					cpps_value ret = newclass<std::string>(c, &str);
-					ret.tt = CPPS_TSTRING;
 
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.domain;
 					std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
@@ -471,7 +483,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 		cpps_value& v = *(a.value.value);
-
+		v.decruse();
 
 		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -516,7 +528,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 		cpps_value& v = *(a.value.value);
-
+		v.decruse();
 
 		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -561,7 +573,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 		cpps_value& v = *(a.value.value);
-
+		v.decruse();
 
 		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -605,7 +617,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 		cpps_value& v = *(a.value.value);
-
+		v.decruse();
 
 		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -1250,7 +1262,7 @@ namespace cpps
 		case CPPS_SYMBOL_TYPE_STRCATASSIGNMENT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
-			cpps_strcatassignment(a, b, ret);
+			cpps_strcatassignment(c,a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_TERNARYOPERATOR:

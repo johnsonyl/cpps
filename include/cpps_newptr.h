@@ -20,7 +20,7 @@ namespace cpps
 	void cpps_call_parent_class_default_constructor(C* c, node* n, cpps_cppsclass* parent_cppsclass, cpps_domain* domain, cpps_domain* root, cpps_domain* leftdomain);
 	void cpps_step_newclassvar_reg_baselassvar(cpps_cppsclass* cppsclass, C* c, cpps_cppsclassvar* cppsclassvar, cpps_domain* root);
 	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
-	object					doclassfunction(C* c, cpps_domain* leftdomain, object func);
+	object					doclassfunction(C* c, object leftdomain, object func);
 	//可以增加到GC的PTR
 	
 	
@@ -38,7 +38,7 @@ namespace cpps
 		return retv;
 	}
 	
-	inline cpps_cppsclassvar* newcppsclasvar(C* c, cpps::cpps_cppsclass* cppsclass)
+	inline cpps_value newcppsclasvar(C* c, cpps::cpps_cppsclass* cppsclass)
 	{
 		cpps_cppsclassvar* cppsclassvar = cppsclass->create(c);
 		/* 将类对象里面的变量创建出来 */
@@ -48,14 +48,15 @@ namespace cpps
 			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar,cppsclassvar, cppsclass->o->getright());
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, cppsclassvar);
-		cpps_regvar* v = new cpps_regvar();
-		v->setvarname("this");
-		v->setval(cpps_value(cppsclassvar)); //域列表会copy进去
-		v->setconst(true);
-		cppsclassvar->regvar(NULL, v);
+		//cpps_regvar* v = new cpps_regvar();
+		//v->setvarname("this");//修改成关键字.
+		//v->setval(cpps_value(cppsclassvar)); //域列表会copy进去
+		//v->setconst(true);
+		//cppsclassvar->regvar(NULL, v);
 		//执行0参数构造函数
 		cpps_domain* leftdomain = NULL;
 		cpps_regvar* var = cppsclassvar->getvar("constructor", leftdomain);
+		cpps_value cppsclassvar_val(cppsclassvar);
 		if (var && var->getval().tt == CPPS_TFUNCTION){
 			node n("",0);
 			leftdomain = cppsclassvar;
@@ -64,10 +65,10 @@ namespace cpps
 			}
 			cpps_function* f = var->getval().value.func;
 			if (f->getparamcount() == 0){
-				doclassfunction(c, cppsclassvar, var->getval());
+				doclassfunction(c, cppsclassvar_val, var->getval());
 			}
 		}
-		return cppsclassvar;
+		return cppsclassvar_val;
 	}
 }
 

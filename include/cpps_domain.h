@@ -170,7 +170,7 @@ namespace cpps
 				for (std::unordered_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
 				{
 					cpps_regvar* v = it->second;
-					if (!v->closeure && v->closeureusecount > 0) { /*闭包不删除,但是必须有人使用*/
+					if (!v->closeure || v->closeureusecount <= 0) { /*闭包不删除,但是必须有人使用*/
 						cpps_gc_remove_barrier(c, v);
 						if (v->stackdomain) {
 							v->stackdomain->removeidxvar(v->offset);
@@ -186,6 +186,7 @@ namespace cpps
 				stacklist->clear();
 				stacklist = NULL;
 			}
+			funcRet.decruse();
 			funcRet.tt = CPPS_TNIL;
 			isbreak = false;
 			parent[0] = NULL;

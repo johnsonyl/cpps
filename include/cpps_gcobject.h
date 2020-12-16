@@ -18,6 +18,7 @@ namespace cpps
 		cpps_gcobject()
 		{
 			gclevel = 0;
+			gc_usecount = 0;
 		}
 		virtual ~cpps_gcobject()
 		{
@@ -31,7 +32,17 @@ namespace cpps
 		{
 			return gclevel;
 		}
+		void									incruse() {
+			gc_usecount++;
+		}
+		void									decruse() {
+			gc_usecount--;
+		}
+		int32									count() {
+			return gc_usecount;
+		}
 		char gclevel;//0 新手，1 元老 2.永恒（不知道有没有用）
+		int32		gc_usecount; //usecount;
 	};
 }
 #endif // CPPS_GCOBJECT_CPPS_HEAD_

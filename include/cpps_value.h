@@ -25,90 +25,32 @@ namespace cpps
 	struct cpps_unordered_map;
 	struct cpps_value
 	{
-		cpps_value()
-		{
-			tt = CPPS_TNIL;
-			value.number = 0;
-		}
-		
-		cpps_value(const cpps_number n)
-		{
-			tt = CPPS_TNUMBER;
-			value.number = n;
-		}
-		cpps_value(const cpps_integer i)
-		{
-			tt = CPPS_TINTEGER;
-			value.integer = i;
-		}
-
+		cpps_value();
+		cpps_value(const cpps_value& v);
+		cpps_value(const cpps_number n);
+		cpps_value(const cpps_integer i);
 #ifdef _WIN32
-		cpps_value(const unsigned __int64 i)
-		{
-			tt = CPPS_TINTEGER;
-			value.integer = i;
-		}
-
+		cpps_value(const unsigned __int64 i);
 #else
-		cpps_value(const long unsigned int i)
-		{
-			tt = CPPS_TINTEGER;
-			value.integer = i;
-		}
+		cpps_value(const long unsigned int i);
 #endif
-		cpps_value(const bool b)
-		{
-			tt = CPPS_TBOOLEAN;
-			value.b = b;
-		}
-		cpps_value(cpps_function* f)
-		{
-			tt = CPPS_TFUNCTION;
-			value.func = f;
-		}
-
-		cpps_value(cpps_domain* d)
-		{
-			tt = CPPS_TDOMAIN;
-			value.domain = d;
-		}
-		cpps_value(cpps_cppsclass* d)
-		{
-			tt = CPPS_TCLASS;
-			value.domain = (cpps_domain*)(d);
-		}
-		cpps_value(cpps_cppsclassvar* d)
-		{
-			tt = CPPS_TCLASSVAR;
-			value.domain = (cpps_domain*)(d);
-		}
-// 		cpps_value(cpps_regvar* v)
-// 		{
-// 			tt = CPPS_TREGVAR;
-// 			value.var = v;
-// 		}
-		cpps_value(cpps_value* v)
-		{
-			tt = CPPS_TREGVAR;
-			value.value = v;
-		}
+		cpps_value(const bool b);
+		cpps_value(cpps_function* f);
+		cpps_value(cpps_domain* d);
+		cpps_value(cpps_cppsclass* d);
+		cpps_value(cpps_cppsclassvar* d);
+		cpps_value(cpps_value* v);
 		cpps_value(C*c, const char* s);
 		cpps_value(C*c,const std::string& s);
-		~cpps_value()
-		{
-
-		}
+		~cpps_value();
 		//为了可以当map的key 需要实现 < > == 3个函数
 		bool				operator < (const cpps_value &right) const;
-
 		bool				operator >(const cpps_value &right) const;
-
 		bool				operator == (const cpps_value &right) const;
-		
-		bool				isdomain()
-		{
-			return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR;
-		}
+		cpps_value&			operator=(const cpps_value& v);
+		void				decruse();
+		void				incruse();
+		bool				isdomain();
 
 		struct hash
 		{	

@@ -183,21 +183,136 @@ namespace cpps
 	cpps_value::cpps_value(C* c, const char* s)
 	{
 		tt = CPPS_TSTRING;
-
 		std::string* str = NULL;
 		cpps_value ret = newclass<std::string>(c, &str);
 		str->append(s);
 		value.domain = ret.value.domain;
+		incruse();
 	}
 
 	cpps_value::cpps_value(C* c, const std::string& s)
 	{
 		tt = CPPS_TSTRING;
-
 		std::string* str;
 		cpps_value ret = newclass<std::string>(c, &str);
 		str->append(s.begin(), s.end());
 		value.domain = ret.value.domain;
+		incruse();
+	}
+
+	cpps_value::cpps_value(cpps_value* v)
+	{
+		tt = CPPS_TREGVAR;
+		value.value = v;
+	}
+
+	cpps_value::cpps_value(cpps_cppsclassvar* d)
+	{
+		tt = CPPS_TCLASSVAR;
+		value.domain = (cpps_domain*)(d);
+		incruse();
+	}
+
+	cpps_value::cpps_value(cpps_cppsclass* d)
+	{
+		tt = CPPS_TCLASS;
+		value.domain = (cpps_domain*)(d);
+	}
+
+	cpps_value::cpps_value(cpps_domain* d)
+	{
+		tt = CPPS_TDOMAIN;
+		value.domain = d;
+	}
+
+	cpps_value::cpps_value(cpps_function* f)
+	{
+		tt = CPPS_TFUNCTION;
+		value.func = f;
+	}
+
+	cpps_value::cpps_value(const bool b)
+	{
+		tt = CPPS_TBOOLEAN;
+		value.b = b;
+	}
+
+	cpps_value::cpps_value(const cpps_integer i)
+	{
+		tt = CPPS_TINTEGER;
+		value.integer = i;
+	}
+
+	cpps_value::cpps_value(const cpps_number n)
+	{
+		tt = CPPS_TNUMBER;
+		value.number = n;
+	}
+
+	cpps_value::cpps_value()
+	{
+		tt = CPPS_TNIL;
+		value.integer = 0;
+	}
+
+	cpps_value::cpps_value(const cpps_value& v)
+	{
+		tt = v.tt;
+		value = v.value;
+		incruse();
+	}
+#ifdef _WIN32
+
+	cpps_value::cpps_value(const unsigned __int64 i)
+	{
+		tt = CPPS_TINTEGER;
+		value.integer = i;
+	}
+#else
+	cpps_value::cpps_value(const long unsigned int i)
+	{
+		tt = CPPS_TINTEGER;
+		value.integer = i;
+	}
+#endif
+
+	cpps_value::~cpps_value()
+	{
+		decruse();
+		tt = CPPS_TNIL;
+		value.integer = 0;
+	}
+
+	cpps::cpps_value& cpps_value::operator=(const cpps_value& v)
+	{
+		// ±ÜÃâ×Ô¸³Öµ
+		if (this != &v)
+		{
+			decruse();
+			tt = v.tt;
+			value = v.value;
+			incruse();
+		}
+
+		return *this;
+	}
+
+
+	void cpps_value::decruse()
+	{
+		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING)
+			value.domain->decruse();
+	}
+
+	void cpps_value::incruse()
+	{
+		if ( tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING)
+			value.domain->incruse();
+	}
+
+	bool cpps_value::isdomain()
+	{
+		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR;
 	}
 
 	size_t cpps_value::hash::operator()(const cpps_value& _Keyval) const

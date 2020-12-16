@@ -257,7 +257,7 @@ namespace cpps
 				var = it->second;
 
 			ret.value.domain = var;
-
+			ret.value.domain->incruse();
 
 			return ret;
 		}

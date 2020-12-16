@@ -178,7 +178,7 @@ namespace cpps {
 					if (var) //找到method了.
 					{
 						//创建变量.
-						cpps_cppsclassvar* cppsclassvar = newcppsclasvar(httpserver->c, cppsclass);
+						cpps::object cppsclassvar = newcppsclasvar(httpserver->c, cppsclass);
 						doclassfunction(httpserver->c, cppsclassvar, var->getval(), cpps_request_var);
 						return;
 					}

@@ -294,7 +294,7 @@ bool cpps_create_logger_with_config(C*c,cpps::object config)
 			cpps_vector* loggers_handlers = cpps_to_cpps_vector(cpps_map_get_value(config, "handlers"));
 			if (loggers_handlers)
 			{
-				for (auto n2 : loggers_handlers->realvector())
+				for (auto& n2 : loggers_handlers->realvector())
 				{
 					std::string n2s = cpps_to_string(n2);
 					cpps_map* handler_config = cpps_to_cpps_map(handlers->find(n2));

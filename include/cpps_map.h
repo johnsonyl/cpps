@@ -20,6 +20,9 @@ namespace cpps
 
 	struct cpps_map
 	{
+		virtual ~cpps_map() {
+			_map.clear();
+		}
 		void			insert(cpps_value k, cpps_value v)
 		{
 			_map.insert(std::map<cpps_value, cpps_value>::value_type(k, v));
@@ -107,6 +110,8 @@ namespace cpps
 
 	struct cpps_unordered_map
 	{
+
+		virtual ~cpps_unordered_map();
 		void			insert(cpps_value k, cpps_value v);
 		cpps_value		find(cpps_value k);
 		cpps_value&		cpps_find(const cpps_value & k);

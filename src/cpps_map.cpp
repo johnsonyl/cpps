@@ -41,6 +41,11 @@ namespace cpps
 	}
 	
 
+	cpps_unordered_map::~cpps_unordered_map()
+	{
+		_map.clear();
+	}
+
 	void cpps_unordered_map::insert(cpps_value k, cpps_value v)
 	{
 		_map.insert(std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::value_type(k, v));

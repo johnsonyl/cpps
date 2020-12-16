@@ -31,17 +31,12 @@ namespace cpps
 
 				c->pop_stack();
 				c->stack_free(stack);
-				//¼ì²âgc
-				//if ( c->getcallstack()->size() == 0)
-			/*	{
-					cpps_gc_check_step(c);
-				}*/
 
 			}
 		}
 		return ret;
 	}
-	object doclassfunction(C *c,cpps_domain *leftdomain, object func)
+	object doclassfunction(C *c, object domain, object func)
 	{
 		cpps_value ret;
 
@@ -59,7 +54,7 @@ namespace cpps
 				std::vector<cpps_value> paramlist;
 
 
-				cpps_domain *execdomain = leftdomain;
+				cpps_domain *execdomain = domain.value.value.domain;
 
 				cpps_stack* stack = c->stack_alloc();
 				stack->init("", 0, f->funcname.c_str());
@@ -69,11 +64,6 @@ namespace cpps
 
 				c->pop_stack();
 				c->stack_free( stack);
-				//¼ì²âgc
-				//if ( c->getcallstack()->size() == 0)
-			/*	{
-					cpps_gc_check_step(c);
-				}*/
 
 			}
 		}

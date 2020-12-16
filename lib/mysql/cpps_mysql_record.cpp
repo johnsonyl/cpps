@@ -9,7 +9,7 @@ namespace cpps
 
 	cpps_mysql_record::~cpps_mysql_record()
 	{
-
+		record_values.clear();
 	}
 
 	void cpps_mysql_record::add(cpps_value k, cpps_value v)

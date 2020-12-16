@@ -2771,7 +2771,7 @@ namespace cpps {
 		}
 	}
 	void cpps_calculate_expression_newvar(cpps_domain* domain, node* d, C* c, cpps_domain* root, cpps_domain*& leftdomain, cpps_value& ret) {
-		ret.tt = CPPS_TCLASSVAR;
+		
 		cpps_regvar* v = domain->getvar(d->s, leftdomain);
 		if (!v)
 			throw(cpps_error(d->filename, d->line, cpps_error_normalerror, "[%s] not found or not defined", d->s.c_str()));
@@ -2793,13 +2793,13 @@ namespace cpps {
 			/* 将新创建出来的添加到新生区稍后检测要不要干掉 */
 			cpps_gc_add_gen0(c, cppsclassvar);
 			ret = cpps_value(cppsclassvar);
-			cpps_regvar* v = new cpps_regvar();
-			/* _G 为根节点 */
-			v->setvarname("this");
-			v->setval(ret);
-			/* 域列表会copy进去 */
-			v->setconst(true);
-			cppsclassvar->regvar(NULL, v);
+			//cpps_regvar* v = new cpps_regvar();
+			///* _G 为根节点 */
+			//v->setvarname("this");
+			//v->setval(ret);
+			///* 域列表会copy进去 */
+			//v->setconst(true);
+			//cppsclassvar->regvar(NULL, v);
 			cpps_domain* takedomain2 = leftdomain;
 			leftdomain = cppsclassvar;
 
@@ -2977,7 +2977,7 @@ namespace cpps {
 		}
 		return(v);
 	}
-	void make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, std::vector<cpps_value>& params, cpps_domain* execdomain) {
+	void make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, std::vector<cpps_value>& params) {
 		char	index = 65;
 		size_t	size = d->l.size();
 		params.reserve(size);
@@ -2987,11 +2987,6 @@ namespace cpps {
 			cpps_value	value = cpps_calculate_expression(c, domain, root, d->l[i], leftdomain);
 			params.push_back(value);
 			index++;
-			cpps_regvar* v = new cpps_regvar;
-			v->setval(value);
-			v->varName = "p";
-			v->varName.push_back(index);
-			execdomain->regvar(c, v);
 		}
 	}
 	cpps_regvar* cpps_node_to_regver(cpps_domain* domain, node* d, bool isgetRight = true) {
@@ -3171,7 +3166,6 @@ namespace cpps {
 		c->domain_free(execdomain);
 	}
 	void cpps_calculate_expression_ostr(cpps_value& ret, node* d, cpps_domain*& leftdomain, C* c, cpps_domain* domain, cpps_domain* root) {
-		ret.tt = CPPS_TSTRING;
 		std::string* str = (std::string*) d->value.str->getclsptr();
 		str->clear();
 		for (size_t i = 0; i < d->l.size(); i++) {
@@ -3189,17 +3183,13 @@ namespace cpps {
 		}
 		std::string* retstr = NULL;
 		ret = newclass<std::string>(c, &retstr);
-		ret.tt = CPPS_TSTRING;
 		retstr->append(*str);
 
 	}
 	void cpps_calculate_expression_array(cpps_value& ret, C* c, node* d, cpps_domain*& leftdomain, cpps_domain* domain, cpps_domain* root) {
 		cpps_vector* vec = NULL;
 		ret = newclass<cpps_vector>(c, &vec);
-		cpps_regvar v;
-		v.setvarname("ret");
-		v.setval(ret);
-		cpps_gc_add_barrier(c, &v);
+	
 		for (size_t i = 0; i < d->l.size(); i++) {
 			cpps_domain* takedomain = leftdomain;
 			leftdomain = NULL;
@@ -3207,15 +3197,11 @@ namespace cpps {
 			vec->push_back(v);
 			leftdomain = takedomain;
 		}
-		cpps_gc_remove_barrier(c, &v);
 	}
 	void cpps_calculate_expression_object(cpps_value& ret, C* c, node* d, cpps_domain*& leftdomain, cpps_domain* domain, cpps_domain* root) {
 		cpps_map* m = NULL;
 		ret = newclass<cpps_map>(c, &m);
-		cpps_regvar v;
-		v.setvarname("ret");
-		v.setval(ret);
-		cpps_gc_add_barrier(c, &v);
+		
 		for (size_t i = 0; i < d->l.size(); i++) {
 			node* k = d->l[i]->getleft();
 			cpps_domain* takedomain = leftdomain;
@@ -3224,7 +3210,6 @@ namespace cpps {
 			m->insert(cpps_value(c, k->s), v);
 			leftdomain = takedomain;
 		}
-		cpps_gc_remove_barrier(c, &v);
 	}
 	void cpps_calculate_expression_varname(C*c,cpps_domain*& leftdomain, cpps_domain* domain, node* d, cpps_value& ret) {
 		cpps_regvar* v = (leftdomain ? leftdomain : domain)->getvar(d->s, leftdomain);
@@ -3586,21 +3571,13 @@ namespace cpps {
 		if (func.tt == CPPS_TFUNCTION) {
 			cpps_function* f = func.value.func;
 			if (f->funcname == "isset") c->disabled_non_def_var = true;
-			cpps_domain* execdomain = c->domain_alloc();
-			execdomain->init(domain, cpps_domain_type_func);
-			execdomain->setexecdomain(domain);
 			std::vector<cpps_value> params;
 			cpps_value		isNeedC;
 			if (f->getIsNeedC()) {
 				isNeedC = cpps_cpp_to_cpps_converter<C*>::apply(c, c);
 				params.push_back(isNeedC);
-				cpps_regvar* v = new cpps_regvar;
-				v->setval(isNeedC);
-				std::string pc = "pc";
-				v->setvarname(pc);
-				execdomain->regvar(c, v);
 			}
-			make_values(c, domain, root, d->getright(), params, execdomain);
+			make_values(c, domain, root, d->getright(), params);
 			std::string	filename = d->getright()->filename;
 			std::string	funcname = f->getfuncname();
 			int32		line = d->getright()->line;
@@ -3629,8 +3606,6 @@ namespace cpps {
 			if (v && v->varName == "debug" && d->getleft()->getright()->s == "breakpoint") {
 				cpps_debug_breakpoint(c, domain, root, d);
 			}
-			execdomain->destory(c);
-			c->domain_free(execdomain);
 		}
 		else {
 			/* 需要一个函数，但是他不是！！！！ */
