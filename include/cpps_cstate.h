@@ -23,20 +23,10 @@ namespace cpps
 	struct cpps_cppsclassvar;
 	struct cpps_stack
 	{
-		cpps_stack(){
-			memset(f, 0, 64);
-			memset(func, 0, 64);
-			l = 0;
-		}
-		void	init(const char* pf, int32 pl, const char *pfunc)
-		{
-			strcpy(f, pf);
-			strcpy(func, pfunc);
-			l = pl;
-		}
-
-		std::vector<cpps_value> *createparams();
-		cpps_value *create_cpps_value();
+		cpps_stack();
+		void						init(const char* pf, int32 pl, const char *pfunc);
+		std::vector<cpps_value> *	createparams();
+		cpps_value *				create_cpps_value();
 		char		 f[64];
 		char		 func[64];
 		int32			l;

@@ -37,6 +37,20 @@ namespace cpps
 		if (isstr) retv.tt = CPPS_TSTRING;
 		return retv;
 	}
+
+	inline cpps_value cpps_new_tmp_string(const std::string& tmp) {
+		cpps_cppsclassvar* var = cpps_class_singleton<std::string*>::instance()->getcls()->create(NULL, false);
+		var->setclsptr((void*)&tmp);
+		cpps_value retv(var);
+		retv.tt = CPPS_TSTRING;
+		return retv;
+	}
+	inline	void	cpps_delete_tmp_string(cpps_value& v) {
+		cpps_cppsclassvar* var = (cpps_cppsclassvar*)v.value.domain;
+		v = nil;
+		delete var;
+		var = NULL;
+	}
 	
 	inline cpps_value newcppsclasvar(C* c, cpps::cpps_cppsclass* cppsclass)
 	{

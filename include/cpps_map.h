@@ -20,89 +20,30 @@ namespace cpps
 
 	struct cpps_map
 	{
-		virtual ~cpps_map() {
-			_map.clear();
-		}
-		void			insert(cpps_value k, cpps_value v)
-		{
-			_map.insert(std::map<cpps_value, cpps_value>::value_type(k, v));
-		}
-		cpps_value		find(cpps_value k)
-		{
-			cpps_value ret;
-			std::map<cpps_value, cpps_value>::iterator it = _map.find(k);
-			if (it != _map.end())
-			{
-				ret = it->second;
-			}
-			return ret;
-		}
-		cpps_value&		cpps_find(cpps_value k)
+		virtual ~cpps_map();
+		void				insert(cpps_value k, cpps_value v);
+		cpps_value			find(cpps_value k);
+		cpps_value&			cpps_find(cpps_value k);
+		void				erase(cpps_value k);
+		void				begin();
+		bool				end();
+		bool				empty();
+		void				next();
+		cpps_value			it();
+		void				pop();
+		cpps_value			key();
+		void				clear();
+		cpps_integer		size();
+		cpps_value&		operator[](cpps_value k)
 		{
 			return _map[k];
 		}
-		void			erase(cpps_value k)
-		{
-			_map.erase(k);
-		}
-		void			begin()
-		{
-			_begin = _map.begin();
-		}
-		bool			end()
-		{
-			return _begin != _map.end();
-		}
-		bool			empty()
-		{
-			return _map.empty();
-		}
-		void			next()
-		{
-			if (_begin != _map.end())
-				++_begin;
-		}
-		cpps_value			it()
-		{
-			cpps_value ret;
-			if (_begin != _map.end())
-			{
-				ret = _begin->second;
-			}
-			return ret;
-		}
-		void			pop()
-		{
-			_begin = _map.erase(_begin);
-		}
-		cpps_value			key()
-		{
-			cpps_value ret;
-			if (_begin != _map.end())
-			{
-				ret = _begin->first;
-			}
-			return ret;
-		}
-		void			clear()
-		{
-			_map.clear();
-		}
-		cpps_integer	size()
-		{
-			return (cpps_integer)_map.size();
-		}
-		cpps_value&		operator [] (cpps_value k)
-		{
-			return _map[k];
-		}
-		std::map<cpps_value, cpps_value>& realmap()
-		{
-			return _map;
-		}
+		std::map<cpps_value, cpps_value>& realmap();
 	private:
 		std::map<cpps_value, cpps_value> _map;
 		std::map<cpps_value, cpps_value>::iterator _begin;
+	public:
+		void set(cpps_value key_val, cpps_value value);
 	};
 
 	
@@ -125,18 +66,17 @@ namespace cpps
 		cpps_value		key();
 		void			clear();
 		cpps_integer	size();
+		void			set(cpps_value key_val, cpps_value value);
 
 		cpps_value&		operator [] (cpps_value k)
 		{
 			return _map[k];
 		}
-		std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap()
-		{
-			return _map;
-		}
+		std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap();
 	private:
 		std::unordered_map<cpps_value, cpps_value, cpps_value::hash> _map;
 		std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator _begin;
+	public:
 	};
 
 	void	cpps_regmap(C *c);

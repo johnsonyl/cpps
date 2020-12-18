@@ -286,13 +286,12 @@ namespace cpps
 	cpps::cpps_value& cpps_value::operator=(const cpps_value& v)
 	{
 		// 避免自赋值
-		if (this != &v)
-		{
-			decruse();
-			tt = v.tt;
-			value = v.value;
-			incruse();
-		}
+		assert(this != &v);
+		if (v.tt == CPPS_TCLASSVAR || v.tt == CPPS_TSTRING)
+			v.value.domain->incruse(); //先增后减
+		decruse();
+		tt = v.tt;
+		value = v.value;
 
 		return *this;
 	}
@@ -304,7 +303,7 @@ namespace cpps
 			value.domain->decruse();
 	}
 
-	void cpps_value::incruse()
+	 void cpps_value::incruse()
 	{
 		if ( tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING)
 			value.domain->incruse();

@@ -53,6 +53,161 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-18 更新
+-
+
+1.调整代码结构.
+
+2.增加c++部分 cpps::object 支持.(C++ 调用 脚本)
+
+```
+c++ page
+
+#include <iostream>
+#include "cpps.h"
+
+using namespace cpps;
+using namespace std;
+
+namespace cpps { std::string cpps_io_getfilepath(std::string str);std::string cpps_rebuild_filepath(std::string path);std::string cpps_real_path(); }
+
+class CppClassTest
+{
+public:
+	void	testFunc()
+	{
+		printf("%s", "CppClassTest::testFunc");
+	}
+};
+int32 main(int argc,char **argv)
+{
+	std::string path = "main.cpp";
+
+	if (argc >= 2) {
+		path = argv[1];
+	}
+
+
+
+	path = cpps_rebuild_filepath(path);
+#ifdef WIN32
+	SetCurrentDirectoryA(cpps_io_getfilepath(path).c_str());
+#else
+	chdir(cpps_io_getfilepath(path).c_str());
+#endif
+
+
+	C* c = cpps::create(argc,argv);
+
+	cpps::_module(c)[
+		_class<CppClassTest>("CppClassTest")
+			.def("testFunc",&CppClassTest::testFunc)
+	];
+
+	_CPPS_TRY
+	cpps::dofile(c, path.c_str());
+
+	/*
+	// script page
+
+	class Agent
+	{
+		var val;
+		var test()
+		{
+			println(val);
+		}
+	}
+
+	var a = [1,2,3,4,1000];
+
+	var b = { a:1 , b:2 ,c:3};
+	
+	*/
+
+	//loop vector
+	cpps::object a = cpps::object::globals(c)["a"];
+	for (cpps::object v : cpps::object::vector(a))
+	{
+		cpps_integer val = v.toint();
+		cout << val << endl;
+	}
+	//print vector a value
+	cpps::object vv = a[4];
+	cout << "a[4] = " << object_cast<cpps_integer>(vv) << endl; 
+	a.set(4, cpps::object::create(c, 2000));
+	vv = a[4];
+	cout << "a[4] = " << object_cast<cpps_integer>(vv) << endl;
+
+
+
+
+	//loop map
+	cpps::object b = cpps::object::globals(c)["b"];
+	for (auto v : cpps::object::map(b))
+	{
+		std::string key = object_cast<std::string>(v.first); // object_cast or std::string key = object(v.first).tostring();
+		cpps_integer val = cpps::object(v.second).toint();
+
+		cout << key << ":" << val << endl;
+	}
+	//print map a value.
+	cpps::object bb = b["b"];
+	cout << "b['b'] = " << object_cast<cpps_integer>(bb) << endl;
+	b.set("b", cpps::object::create(c, 2000)); // It's Work.
+
+	b.set("z", cpps::object::create(c, 2000)); //  It doesn't work. Because z doesn't exist
+	cpps::object bz = b["z"];
+
+	cout << "doesn't work b['z'] type = " << cpps::type_s(bz) << endl;
+
+	cpps::object key = cpps::object::create(c, "z");
+	b.set(key, cpps::object::create(c, 2000));  // It's Work. z must be created.
+
+	bz = b["z"];
+	cout << " It's Work b['z'] = " << object_cast<cpps_integer>(bz) << endl;
+
+
+
+	bb = b["b"];
+	cout << "b['b'] = " << object_cast<cpps_integer>(bb) << endl;
+
+	//CPP cannot create new variables for script fields
+
+
+	//new script class var ,and set dofunction.
+	cpps::object Agent = cpps::object::globals(c)["Agent"];
+	if (Agent.isclass())
+	{
+		cpps::object Agentvar = cpps::object::create_with_classvar(c, Agent);
+		Agentvar.set("val", cpps::object::create(c, "this is string.") );
+		cpps::object testfunc = Agentvar["test"];
+		if (testfunc.isfunction())
+		{
+			cpps::doclassfunction(c, Agentvar,testfunc);
+		}
+	}
+
+
+	//new cpp class var
+	CppClassTest* ptr = NULL; //You don't need to delete it. it has GC to delete it.
+	cpps::object cppclassvar = cpps::object::create_with_new_cppclassvar< CppClassTest >(c, &ptr);
+	ptr->testFunc(); //you can cpp do something .
+
+	cpps::object testFunc = cppclassvar["testFunc"];
+	if (testFunc.isfunction()) {
+		cpps::doclassfunction(c, cppclassvar, testFunc); //or get function and call it.
+	}
+
+	_CPPS_CATCH;
+
+
+	cpps::close(c);
+
+	return 0;
+}
+```
+
 2020-12-17 更新
 -
 

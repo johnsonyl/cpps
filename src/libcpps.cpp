@@ -365,7 +365,7 @@ namespace cpps {
 		if (cpps_is_not_use_var_name(str->s)) {
 			throw(cpps_error(str->filename, buffer.line(), cpps_error_varnotnumber, "Variable names cannot use reserved keywords."));
 		}
-
+		cpps_parse_rmspaceandenter(buffer);
 		
 	}
 
@@ -612,8 +612,7 @@ namespace cpps {
 	node* cpps_parse_var_param(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, bool findparent) {
 		node* param = new node(o->filename, buffer.line());
 		param->type = CPPS_VARNAME;
-		if (cpps_parse_isnumber(buffer.cur()))
-			/* 首位是个字母 */
+		if (cpps_parse_isnumber(buffer.cur()))/* 首位是个字母 */
 			throw(cpps_error(o->filename, buffer.line(), cpps_error_varnotnumber, "Variable cannot start with a number."));
 		param->s = cpps_parse_varname(buffer);
 		if (param->s == "new"){
@@ -708,7 +707,7 @@ namespace cpps {
 					param->type = CPPS_OOFFSET;
 					param->offset = t->offset;
 					param->offsettype = t->offsettype;
-					if (closure && t->offsettype == CPPS_OFFSET_TYPE_SELF){ /*先做一个初版闭包,只要可能被lambda染指则不会被释放.哪怕错杀一千...*/
+					if (closure && t->offsettype == CPPS_OFFSET_TYPE_SELF){ /*整理修改可能是闭包变量并且增加了计数,当没有使用的时候它就会被释放了..*/
 						t->closure = true; //闭包创建永不删除
 					}
 				}
@@ -880,7 +879,11 @@ namespace cpps {
 			}
 			else if (symblo == '.') {
 				geto->type = CPPS_OGETOBJECT;
-				child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
+
+				//child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
+				child = new node(o->filename, buffer.line());
+				child->type = CPPS_VARNAME;
+				cpps_parse_var_varname(buffer, child, c, root, domain);
 				child->setparent(geto);
 				if (!child)
 					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "The variable name is required later on '.'"));
@@ -901,7 +904,10 @@ namespace cpps {
 					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "namespace requires double ':'"));
 				buffer.pop();
 				geto->type = CPPS_OGETOBJECT;
-				child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
+				//child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
+				child = new node(o->filename, buffer.line());
+				child->type = CPPS_VARNAME;
+				cpps_parse_var_varname(buffer, child, c, root, domain);
 				if (!child)
 					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "namespace:: need a name is required later."));
 			}
@@ -1231,16 +1237,24 @@ namespace cpps {
 	}
 	void cpps_parse_dofunction(C* c, cpps_node_domain* domain, node* param, node* root, cppsbuffer& buffer) {
 		char ch = 0;
-		/* 剔除空格 */
-		cpps_parse_rmspaceandenter(buffer);
+
+		size_t cc = 0;
+
 		while (!buffer.isend()) {
+			cpps_parse_rmspaceandenter(buffer);
 			ch = buffer.cur();
 			if (ch == ')') {
 				buffer.pop();
 				return;
 			}
-			if (ch == ',')
+
+			
+
+			if (cc > 0 && ch == ',')
 				buffer.pop();
+			else if (cc > 0)
+				return;
+			cc++;
 			/* 剔除空格 */
 			cpps_parse_rmspaceandenter(buffer);
 			cpps_parse_expression(c, domain, param, root, buffer);
@@ -3212,7 +3226,13 @@ namespace cpps {
 		}
 	}
 	void cpps_calculate_expression_varname(C*c,cpps_domain*& leftdomain, cpps_domain* domain, node* d, cpps_value& ret) {
-		cpps_regvar* v = (leftdomain ? leftdomain : domain)->getvar(d->s, leftdomain);
+
+		cpps_regvar* v = NULL;
+		if (leftdomain)
+			v = leftdomain->getvar(d->s, leftdomain, true, true);
+		else
+			v = domain->getvar(d->s, leftdomain);
+
 		if (v) {
 			ret = v->getval();
 		}
@@ -3295,18 +3315,18 @@ namespace cpps {
 					ret = pMap->find(right);
 				}
 				else {
-					cpps_domain* execdomain = c->domain_alloc();
+					/*cpps_domain* execdomain = c->domain_alloc();
 					execdomain->init(left.value.domain, cpps_domain_type_exec);
 					leftdomain = left.value.domain;
 					ret = cpps_calculate_expression(c, execdomain, root, d->getright()->getleft(), leftdomain);
 					execdomain->destory(c);
-					c->domain_free(execdomain);
+					c->domain_free(execdomain);*/
 				}
 			}
-			else if (left.tt == CPPS_TDOMAIN) {
+		/*	else if (left.tt == CPPS_TDOMAIN) {
 				leftdomain = left.value.domain;
 				ret = cpps_calculate_expression(c, left.value.domain, root, d->getright(), leftdomain);
-			}
+			}*/
 		}
 		else {
 			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
@@ -3353,8 +3373,8 @@ namespace cpps {
 			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
 		}
 	}
-	void cpps_calculate_expression_quotevarname(cpps_domain* domain, node* d, cpps_value& ret) {
-		cpps_regvar* v = getregvar(domain, d);
+	void cpps_calculate_expression_quotevarname(C* c, cpps_domain*& leftdomain, cpps_domain* domain, node* d, cpps_value& ret) {
+		cpps_regvar* v = (leftdomain ? leftdomain : domain)->getvar(d->s, leftdomain);
 		if (v) {
 			cpps_value tmp = v->getval();
 			ret = cpps_value(v->isconst() ? (&tmp) : (&v->getval()));
@@ -3402,11 +3422,11 @@ namespace cpps {
 					ret = cpps_value(&t);
 				}
 				else {
-					cpps_regvar* v = getregvar(left.value.domain, d->getright()->getleft());
+					/*cpps_regvar* v = getregvar(left.value.domain, d->getright()->getleft());
 					if (v) {
 						cpps_value tmp = v->getval();
 						ret = cpps_value(v->isconst() ? (&tmp) : (&v->getval()));
-					}
+					}*/
 				}
 			}
 		}
@@ -3515,7 +3535,7 @@ namespace cpps {
 			cpps_calculate_expression_getobject(c, domain, root, d, leftdomain, ret);
 		}
 		else if (d->type == CPPS_QUOTEVARNAME) {
-			cpps_calculate_expression_quotevarname(domain, d, ret);
+			cpps_calculate_expression_quotevarname(c, leftdomain, domain, d, ret);
 		}
 		else if (d->type == CPPS_QUOTEGETCHIILD) {
 			cpps_calculate_expression_quotegetchild(c, domain, root, d, leftdomain, ret);

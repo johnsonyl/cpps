@@ -3,7 +3,7 @@
 namespace cpps
 {
 
-	
+	cpps_value cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain);
 	CPPS_SYMBOL_MAP		symbolmap;						//操作符表
 	CPPS_SYMBOL_MAP		leftsymbolmap;					//左操作符表
 	bool				symbolleftasso[MAXSYMBOLPRIO];	//操作符是否左结合

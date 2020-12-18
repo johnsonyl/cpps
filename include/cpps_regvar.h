@@ -18,45 +18,22 @@ namespace cpps
 	struct cpps_domain;
 	struct cpps_regvar
 	{
-		cpps_regvar()
-		{
-			nconst = 0;
-			offset = -1;
-			offsettype = -1;
-			closeure = false;
-			closeureusecount = 0;
-			stackdomain = NULL;
-		}
+		cpps_regvar();
 		~cpps_regvar();
-		void	setvarname(std::string n)
-		{
-			varName = n;
-		}
-
-		void setval(cpps_value v);
-		cpps_value& getval()
-		{
-			return value;
-		}
-
-		int8 isconst()
-		{
-			return nconst;
-		}
-		void setconst(int8 c)
-		{
-			nconst = c;
-		}
+		void					setvarname(std::string n);
+		void					setval(cpps_value v);
+		cpps_value&				getval();
+		int8					isconst();
+		void					setconst(int8 c);
 	public:
-		cpps_value			value;
-		std::string			varName;
-		int8				nconst;
-
-		int32				offset;
-		int32				offsettype;
-		bool				closeure;
-		int32				closeureusecount;
-		cpps_domain*		stackdomain;
+		cpps_value				value;
+		std::string				varName;
+		int8					nconst;
+		int32					offset;
+		int32					offsettype;
+		bool					closeure;
+		int32					closeureusecount;
+		cpps_domain*			stackdomain;
 	};
 
 	

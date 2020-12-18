@@ -244,6 +244,10 @@ namespace cpps
 	{
 		return (v.isdomain() && (v.value.domain->domainname == "map" || v.value.domain->domainname == "unordered_map"));
 	}
+	bool cpps_base_is_unorderd_map(cpps_value v)
+	{
+		return (v.isdomain() && (v.value.domain->domainname == "unordered_map"));
+	}
 	bool cpps_base_isint(cpps_value v)
 	{
 		return v.tt == CPPS_TINTEGER;
@@ -259,6 +263,14 @@ namespace cpps
 	bool cpps_base_isnull(cpps_value v)
 	{
 		return v.tt == CPPS_TNIL;
+	}
+	bool cpps_base_isclassvar(cpps_value v)
+	{
+		return v.tt == CPPS_TCLASSVAR;
+	}
+	bool cpps_base_isclass(cpps_value v)
+	{
+		return v.tt == CPPS_TCLASS;
 	}
 	bool cpps_base_isfunction(cpps_value v)
 	{
@@ -621,6 +633,8 @@ namespace cpps
 			def("isnull", cpps_base_isnull),
 			def("isnumber", cpps_base_isnumber),
 			def("isfunction", cpps_base_isfunction),
+			def("isclassvar", cpps_base_isclassvar),
+			def("isclass", cpps_base_isclass),
 			def("objtype", cpps_base_objtype),
 			def("system", cpps_base_system),
 			def("len", cpps_base_len),

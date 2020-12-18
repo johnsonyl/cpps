@@ -32,7 +32,348 @@ namespace cpps
 		return "unknow";
 	}
 
+	cpps_integer object::size()
+	{
+		cpps_integer ret = 0;
+
+		if (cpps_base_is_unorderd_map(value)) {
+			cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+			ret = m->size();
+		}
+		else if (cpps_base_ismap(value)) {
+			cpps_map* m = cpps_to_cpps_map(value);
+			ret = m->size();
+		}
+		else if (cpps_base_isvector(value)){
+			cpps_vector* vct = cpps_to_cpps_vector(value);
+			ret = vct->size();
+		}
+		else if (cpps_base_isstring(value)) {
+			std::string* str = cpps_get_string(value);
+			ret = (cpps_integer)str->size();
+		}
+		return ret;
+	}
+
+	bool object::is_unorderd_map()
+	{
+		return cpps_base_is_unorderd_map(value);
+	}
+
+	bool object::ismap()
+	{
+		return cpps_base_ismap(value);
+	}
+
+	bool object::isstring()
+	{
+		return cpps_base_isstring(value);
+	}
+
+	bool object::isvector()
+	{
+		return cpps_base_isvector(value);
+	}
+
+	bool object::isint()
+	{
+		return cpps_base_isint(value);
+	}
+
+	bool object::isnumber()
+	{
+		return cpps_base_isnumber(value);
+	}
+
+	bool object::isnull()
+	{
+		return cpps_base_isnull(value);
+	}
+
+	bool object::isfunction()
+	{
+		return cpps_base_isfunction(value);
+	}
+
+	bool object::isclass()
+	{
+		return cpps_base_isclass(value);
+	}
+
+	bool object::isclassvar()
+	{
+		return cpps_base_isclassvar(value);
+	}
+
+	std::string object::tostring()
+	{
+		return object_cast<std::string>(*this);
+	}
+
+	cpps_integer object::toint()
+	{
+		return object_cast<cpps_integer>(*this);
+	}
+
+	cpps_number object::tonumber()
+	{
+		return object_cast<cpps_number>(*this);
+	}
+
+	bool object::tobool()
+	{
+		return object_cast<bool>(*this);
+	}
+
+	void object::clear()
+	{
+		if (cpps_base_is_unorderd_map(value)) {
+			cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+			m->clear();
+		}
+		else if (cpps_base_ismap(value)) {
+			cpps_map* m = cpps_to_cpps_map(value);
+			m->clear();
+		}
+		else if (cpps_base_isvector(value)) {
+			cpps_vector* vct = cpps_to_cpps_vector(value);
+			vct->clear();
+		}
+	}
+
+	bool object::empty()
+	{
+		if (cpps_base_is_unorderd_map(value)) {
+			cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+			return m->empty();
+		}
+		else if (cpps_base_ismap(value)) {
+			cpps_map* m = cpps_to_cpps_map(value);
+			return m->empty();
+		}
+		else if (cpps_base_isvector(value)) {
+			cpps_vector* vct = cpps_to_cpps_vector(value);
+			return vct->empty();
+		}
+		return true;
+	}
+
+	void object::insert(object key, object val)
+	{
+		if (cpps_base_is_unorderd_map(value)) {
+			cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+			m->insert(key.value, val.value);
+		}
+		else if (cpps_base_ismap(value)) {
+			cpps_map* m = cpps_to_cpps_map(value);
+			m->insert(key.value, val.value);
+		}
+	}
 
 
+	void object::set(object key, object val)
+	{
+		if (cpps_base_is_unorderd_map(value)) {
+			cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+			cpps_value& takeval = m->cpps_find(key.value);
+			takeval = val.value;
+		}
+		else if (cpps_base_ismap(value)) {
+			cpps_map* m = cpps_to_cpps_map(value);
+			cpps_value& takeval = m->cpps_find(key.value);
+			takeval = val.value;;
+		}
+	}
+
+	void object::set(std::string key, object val)
+	{
+		if (cpps_base_is_unorderd_map(value)) {
+			cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+			cpps_value key_val = cpps_new_tmp_string(key);
+			m->set(key_val, val.value);
+			cpps_delete_tmp_string(key_val);
+		}
+		else if (cpps_base_ismap(value)) {
+			cpps_map* m = cpps_to_cpps_map(value);
+			cpps_value key_val = cpps_new_tmp_string(key);
+			m->set(key_val, val.value);
+			cpps_delete_tmp_string(key_val);
+		}
+		else if (value.isdomain()) {
+			cpps_domain* leftdomain = NULL;
+			cpps_regvar* var = value.value.domain->getvar(key, leftdomain, true, true);
+			if (var) {
+				var->setval(val.value);
+			}
+		}
+	}
+
+	void object::set(cpps_integer key, object val)
+	{
+		if (value.isdomain()) {
+			if (cpps_base_isvector(value)) {
+				cpps_vector* vct = cpps_to_cpps_vector(value);
+				vct->realvector()[(size_t)key] = val.value;
+			}
+			else if (cpps_base_is_unorderd_map(value)) {
+				cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+				cpps_value key_val(key);
+				cpps_value& takeval = m->cpps_find(key_val);
+				takeval = val.value;
+			}
+			else if (cpps_base_ismap(value)) {
+				cpps_map* m = cpps_to_cpps_map(value);				
+				cpps_value key_val(key);
+				cpps_value& takeval = m->cpps_find(key_val);
+				takeval = val.value;
+			}
+		}
+	}
+
+	void object::push_back(object& val)
+	{
+		if (cpps_base_isvector(value)) {
+			cpps_vector* vct = cpps_to_cpps_vector(value);
+			vct->push_back(val.value);
+		}
+	}
+
+	object::object(cpps_value v):value(v)
+	{
+		
+	}
+
+	object::object()
+	{
+
+	}
+
+	object object::globals(C* c)
+	{
+		return object(cpps_value(c->_G));
+	}
+
+	object		object::operator[](const std::string k)
+	{
+		cpps_value ret;
+		if (value.isdomain()) {
+
+			if (cpps_base_is_unorderd_map(value)) {
+				cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+				cpps_value key = cpps_new_tmp_string(k);
+				ret = m->find(key);
+				cpps_delete_tmp_string(key);
+			}
+			else if (cpps_base_ismap(value)) {
+				cpps_map* m = cpps_to_cpps_map(value);
+				cpps_value key = cpps_new_tmp_string(k);
+				ret = m->find(key);
+				cpps_delete_tmp_string(key);
+			}
+			else {
+				cpps_domain* leftdomain = NULL;
+				cpps_regvar* var = value.value.domain->getvar(k, leftdomain, true,true);
+				if (var) {
+					ret = var->getval();
+				}
+			}
+		}
+		return static_cast<object>(ret);
+	}
+	object		object::operator[](const cpps_integer k)
+	{
+		cpps_value ret;
+		if (value.isdomain()) {
+
+			if (cpps_base_isvector(value)) {
+				cpps_vector* vct = cpps_to_cpps_vector(value);
+				ret = vct->at(k);
+			}
+			else if (cpps_base_is_unorderd_map(value)) {
+				cpps_unordered_map* m = cpps_to_cpps_unordered_map(value);
+				ret = m->find(cpps_value(k));
+			}
+			else if (cpps_base_ismap(value)) {
+				cpps_map* m = cpps_to_cpps_map(value);
+				ret = m->find(cpps_value(k));
+			}
+		}
+		return static_cast<object>(ret);
+	}
+	
+	cpps::object& object::operator=(const cpps_value k)
+	{
+		value = k;
+		return *this;
+	}
+
+	object object::create_with_unordered_map(C* c)
+	{
+		cpps_create_class_var(cpps_unordered_map, c, cpps_value_map, cpps_map_ptr);
+		return  static_cast<object>(cpps_value_map );
+	}
+	object object::create_with_map(C* c)
+	{
+		cpps_create_class_var(cpps_map, c, cpps_value_map, cpps_map_ptr);
+		return  static_cast<object>(cpps_value_map);
+	}
+	object object::create_with_vector(C* c)
+	{
+		cpps_create_class_var(cpps_vector, c, cpps_value_vector, cpps_vector_ptr);
+		return  static_cast<object>(cpps_value_vector);
+	}
+
+	object object::create_with_classvar(C* c, object __classobject)
+	{
+		cpps::cpps_cppsclass* cppsclass = cpps_to_cpps_cppsclass(__classobject.value);
+		if(cppsclass->iscppsclass())
+			return newcppsclasvar(c, cppsclass);
+		return nil;
+	}
+
+	object::vector::vector(object& obj)
+	{
+		_vec = cpps_to_cpps_vector(obj.value);
+	}
+
+	std::vector<cpps_value>::iterator object::vector::begin()
+	{
+		return _vec->realvector().begin();
+	}
+
+	std::vector<cpps_value>::iterator object::vector::end()
+	{
+		return _vec->realvector().end();
+	}
+
+	object::map::map(object& obj)
+	{
+		_map = cpps_to_cpps_map(obj.value);
+	}
+
+	std::map<cpps_value, cpps_value>::iterator object::map::begin()
+	{
+		return _map->realmap().begin();
+	}
+
+	std::map<cpps_value, cpps_value>::iterator object::map::end()
+	{
+		return _map->realmap().end();
+	}
+
+	object::unordered_map::unordered_map(object& obj)
+	{
+		_map = cpps_to_cpps_unordered_map(obj.value);
+	}
+
+	std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator object::unordered_map::begin()
+	{
+		return _map->realmap().begin();
+	}
+
+	std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator object::unordered_map::end()
+	{
+		return _map->realmap().end();
+	}
 
 }

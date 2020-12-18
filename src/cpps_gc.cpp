@@ -165,7 +165,10 @@ namespace cpps
 			cpps_gc_check_gen_value(c, v->getval(), true, c->getgen0(), &tempoldgen, tempoldgensize, isCheck);
 		}
 
-
+		/*
+		因为GC对象很多都是关联性,只有释放了主节点,子节点才会释放.
+		所以牺牲一些效率,多遍历几次. 才可以真正清理出那些需要被释放的对象.
+		*/
 		bool hasdelete = true;
 		usint32 cc = 0;
 		while (hasdelete && cc < 10 ) {

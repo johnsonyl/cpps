@@ -59,24 +59,6 @@ namespace cpps
 		{
 			ret = it->second;
 		}
-		if (false)
-		{
-			printf("=================================================:");
-
-			printf("notfind:");
-			cpps_base_printf(k);
-			printf("\n");
-
-			std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator it = _map.begin();
-			for (; it != _map.end(); ++it)
-			{
-				printf("key:");
-				cpps_base_printf(it->first);
-				printf("value:");
-				cpps_base_printf(it->second);
-				printf("\n");
-			}
-		}
 		return ret;
 	}
 
@@ -153,6 +135,121 @@ namespace cpps
 	cpps_integer cpps_unordered_map::size()
 	{
 		return (cpps_integer)_map.size();
+	}
+
+	std::unordered_map<cpps::cpps_value, cpps::cpps_value, cpps::cpps_value::hash>& cpps_unordered_map::realmap()
+	{
+		return _map;
+	}
+
+	void cpps_unordered_map::set(cpps_value key_val, cpps_value value)
+	{
+		std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator it = _map.find(key_val);
+		if (it != _map.end())
+		{
+			it->second = value;
+		}
+	}
+
+	cpps_map::~cpps_map()
+	{
+		_map.clear();
+	}
+
+	void cpps_map::insert(cpps_value k, cpps_value v)
+	{
+		_map.insert(std::map<cpps_value, cpps_value>::value_type(k, v));
+	}
+
+	cpps::cpps_value cpps_map::find(cpps_value k)
+	{
+		cpps_value ret;
+		std::map<cpps_value, cpps_value>::iterator it = _map.find(k);
+		if (it != _map.end())
+		{
+			ret = it->second;
+		}
+		return ret;
+	}
+
+	cpps::cpps_value& cpps_map::cpps_find(cpps_value k)
+	{
+		return _map[k];
+	}
+
+	void cpps_map::erase(cpps_value k)
+	{
+		_map.erase(k);
+	}
+
+	void cpps_map::begin()
+	{
+		_begin = _map.begin();
+	}
+
+	bool cpps_map::end()
+	{
+		return _begin != _map.end();
+	}
+
+	bool cpps_map::empty()
+	{
+		return _map.empty();
+	}
+
+	void cpps_map::next()
+	{
+		if (_begin != _map.end())
+			++_begin;
+	}
+
+	cpps::cpps_value cpps_map::it()
+	{
+		cpps_value ret;
+		if (_begin != _map.end())
+		{
+			ret = _begin->second;
+		}
+		return ret;
+	}
+
+	void cpps_map::pop()
+	{
+		_begin = _map.erase(_begin);
+	}
+
+	cpps::cpps_value cpps_map::key()
+	{
+		cpps_value ret;
+		if (_begin != _map.end())
+		{
+			ret = _begin->first;
+		}
+		return ret;
+	}
+
+	void cpps_map::clear()
+	{
+		_map.clear();
+	}
+
+	cpps_integer cpps_map::size()
+	{
+		return (cpps_integer)_map.size();
+	}
+
+	std::map<cpps::cpps_value, cpps::cpps_value>& cpps_map::realmap()
+	{
+		return _map;
+	}
+
+	void cpps_map::set(cpps_value key_val, cpps_value value)
+	{
+		std::map<cpps_value, cpps_value>::iterator it = _map.find(key_val);
+		if (it != _map.end())
+		{
+			it->second = value;
+		}
 	}
 
 }

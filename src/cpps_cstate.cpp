@@ -148,7 +148,21 @@ namespace cpps
 		return new cpps_value();
 	}
 
-	std::vector<cpps_value> * cpps_stack::createparams()
+	cpps_stack::cpps_stack()
+	{
+		memset(f, 0, 64);
+		memset(func, 0, 64);
+		l = 0;
+	}
+
+	void cpps_stack::init(const char* pf, int32 pl, const char* pfunc)
+	{
+		strcpy(f, pf);
+		strcpy(func, pfunc);
+		l = pl;
+	}
+
+	std::vector<cpps_value>* cpps_stack::createparams()
 	{
 		return new std::vector<cpps_value>();
 	}

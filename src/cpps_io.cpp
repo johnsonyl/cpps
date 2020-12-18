@@ -623,4 +623,210 @@ namespace cpps
 				.def("issock",&cpps_io_stat::issock)
 		];
 	}
+
+	Buffer::Buffer()
+	{
+		buff = NULL;
+		offset = 0;
+		buffsize = 0;
+	}
+
+	Buffer::~Buffer()
+	{
+		clear();
+	}
+
+	void Buffer::read(Buffer* out, cpps_integer len)
+	{
+		out->_write(getbuffer(), length());
+	}
+
+	cpps::Buffer* Buffer::write(Buffer* buf, cpps_integer len)
+	{
+		_write(buf->getbuffer(), len);
+		return this;
+	}
+
+	char* Buffer::_read(char* out, cpps_integer len)
+	{
+		if (length() + len > buffsize) return NULL;
+
+		char* ret = getbuffer() + length();
+		if (out)
+		{
+			memcpy(out, ret, (size_t)len);
+		}
+		seek(length() + len);
+		return ret;
+	}
+
+	void Buffer::_write(const char* buf, cpps_integer len)
+	{
+		realloc(length() + len);
+		memcpy(getbuffer() + length(), buf, (size_t)len);
+		seek(length() + len);
+	}
+
+	std::string Buffer::tostring()
+	{
+		std::string ret;
+		ret.append(getbuffer(), buffsize);
+		return ret;
+	}
+
+	cpps_integer Buffer::tointeger()
+	{
+		std::string str = tostring();
+		cpps_integer ret;
+		cpps_str2i64(str.c_str(), &ret);
+		return ret;
+	}
+
+	cpps_number Buffer::tonumber()
+	{
+		std::string str = tostring();
+		cpps_number ret;
+		cpps_str2d(str.c_str(), &ret);
+		return ret;
+	}
+
+	cpps_integer Buffer::readint8()
+	{
+		signed char ret = 0;
+		_read((char*)&ret, sizeof(signed char));
+		return ret;
+	}
+
+	cpps_integer Buffer::readint16()
+	{
+		short ret = 0;
+		_read((char*)&ret, sizeof(short));
+		return ret;
+	}
+
+	cpps_integer Buffer::readint32()
+	{
+		int32 ret = 0;
+		_read((char*)&ret, sizeof(int32));
+		return ret;
+	}
+
+	cpps_integer Buffer::readint()
+	{
+		cpps_integer ret = 0;
+		_read((char*)&ret, sizeof(cpps_integer));
+		return ret;
+	}
+
+	cpps_number Buffer::readnumber()
+	{
+		cpps_number ret = 0;
+		_read((char*)&ret, sizeof(cpps_number));
+		return ret;
+	}
+
+	std::string Buffer::readstring(cpps_integer len)
+	{
+		std::string ret;
+		ret.resize(len);
+		_read((char*)ret.c_str(), len);
+		return ret;
+	}
+
+	bool Buffer::readbool()
+	{
+		bool ret = false;
+		_read((char*)&ret, sizeof(bool));
+		return ret;
+	}
+
+	cpps::Buffer* Buffer::writeint8(signed char i)
+	{
+		_write((char*)&i, sizeof(signed char));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writeint16(short i)
+	{
+		_write((char*)&i, sizeof(short));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writeint32(int32 i)
+	{
+		_write((char*)&i, sizeof(int32));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writeint(cpps_integer i)
+	{
+		_write((char*)&i, sizeof(cpps_integer));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writenumber(cpps_number i)
+	{
+		_write((char*)&i, sizeof(cpps_number));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writestring(std::string s)
+	{
+		_write(s.c_str(), s.size());
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writebool(bool b)
+	{
+		_write((char*)&b, sizeof(bool));
+		return this;
+	}
+
+	void Buffer::seek(cpps_integer s)
+	{
+		if (s == -1)
+			offset = buffsize;
+		else
+			offset = s;
+	}
+
+	cpps_integer Buffer::length()
+	{
+		return offset;
+	}
+
+	char* Buffer::getbuffer()
+	{
+		return buff;
+	}
+
+	void Buffer::clear()
+	{
+		if (buff) delete[] buff;
+		buff = NULL;
+		buffsize = 0;
+		offset = 0;
+	}
+
+	void Buffer::realloc(cpps_integer s)
+	{
+		if (buffsize >= s)
+		{
+			buffsize = s;
+			return;
+		}
+		size_t newsize = static_cast<size_t>(s);
+		char* newbuff = new char[newsize + 1];
+		memset(newbuff, 0, (size_t)newsize + 1);
+
+		if (buff)
+		{
+			memcpy(newbuff, buff, (size_t)buffsize);
+			delete[] buff;
+		}
+
+		buff = newbuff;
+		buffsize = s;
+	}
+
 }

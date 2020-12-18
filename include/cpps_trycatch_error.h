@@ -8,20 +8,18 @@ public:
 	cpps_trycatch_error(cpps_error e);
 	~cpps_trycatch_error();
 
-	cpps::cpps_value	getvalue() { return value; }
+	cpps::cpps_value		getvalue() { return value; }
+	int						geterrno() { return erron; }
+	std::string				getfile() { return file; }
+	int						getline() { return line; }
+	std::string				geterrstr() { return s; }
+	std::string				callstack() { return callstackstr; }
 
-	cpps::cpps_value value;
-
-	int		geterrno() { return erron; }
-	std::string getfile() { return file; }
-	int		getline() { return line; }
-	std::string geterrstr() { return s; }
-	std::string callstack() { return callstackstr; }
-
-	int erron;
-	std::string file;
-	int line;
-	std::string s;
-	std::string callstackstr;
+	int						erron;
+	std::string				file;
+	int						line;
+	std::string				s;
+	std::string				callstackstr;
+	cpps::cpps_value		value;
 };
 

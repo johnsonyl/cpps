@@ -18,114 +18,28 @@ namespace cpps
 
 	struct cpps_vector
 	{
-		cpps_vector()
-		{
-			_begin = _vec.begin();
-		}
-		virtual ~cpps_vector() {
-			_vec.clear();
-		}
-		void			push_back(cpps_value v)
-		{
-			_vec.push_back(v);
-		}
-		void			assign(cpps_vector* v)
-		{
-			_vec.assign(v->realvector().begin(), v->realvector().end());
-		}
-		void			pop_back()
-		{
-			_vec.pop_back();
-		}
-		void			push_front(cpps_value v)
-		{
-			_vec.insert(_vec.begin(),v);
-		}
-		void			pop_front()
-		{
-			_vec.erase(_vec.begin());
-		}
-		void			insert(cpps_integer idx, cpps_value v)
-		{
-			_vec.insert(_vec.begin() + idx, v);
-		}
-		cpps_value		at(cpps_integer idx)
-		{
-			if (idx < 0 || idx >= size())
-			{
-				throw(cpps_error("0", 0, 0, "Vector is out of bounds!"));
-				return cpps::nil;
-			}
-			return _vec[((size_t)idx)];
-		}
-		cpps_value&		cpps_at(cpps_integer idx)
-		{
-			if (idx < 0 || idx >= size())
-			{
-				throw(cpps_error("0", 0, 0, "Vector is out of bounds!"));
-				return cpps::nil;
-			}
-			return _vec[(usint32)idx];
-		}
-		void			erase(cpps_integer idx)
-		{
-			_vec.erase(_vec.begin() + idx);
-		}
-		void			pop()
-		{
-			_begin = _vec.erase(_begin);
-		}
-		void			begin()
-		{
-			_begin = _vec.begin();
-		}
-		bool			end()
-		{
-			return _begin != _vec.end();
-		}
-		bool			empty()
-		{
-			return _vec.empty();
-		}
-		void			next()
-		{
-			if (_begin != _vec.end())
-				++_begin;
-		}
-		cpps_value			it()
-		{
-			cpps_value ret;
-			if (_begin != _vec.end())
-			{
-				ret = *_begin;
-			}
-			return ret;
-		}
-		void			clear()
-		{
-			_vec.clear();
-		}
-		bool			has(cpps_value v)
-		{
-			for (auto &v2 : _vec)
-			{
-				if (v2 == v) return true;
-			}
-			return false;
-		}
-		cpps_integer	size()
-		{
-			return (cpps_integer)_vec.size();
-		}
-
-		void			resize(cpps_integer s)
-		{
-			_vec.resize((size_t)s);
-		}
-		std::vector<cpps_value>&	realvector()
-		{
-			return _vec;
-		}
+		cpps_vector();
+		virtual ~cpps_vector();
+		void								push_back(cpps_value v);
+		void								assign(cpps_vector* v);
+		void								pop_back();
+		void								push_front(cpps_value v);
+		void								pop_front();
+		void								insert(cpps_integer idx, cpps_value v);
+		cpps_value							at(cpps_integer idx);
+		cpps_value&							cpps_at(cpps_integer idx);
+		void								erase(cpps_integer idx);
+		void								pop();
+		void								begin();
+		bool								end();
+		bool								empty();
+		void								next();
+		cpps_value							it();
+		void								clear();
+		bool								has(cpps_value v);
+		cpps_integer						size();
+		void								resize(cpps_integer s);
+		std::vector<cpps_value>&			realvector();
 	private:
 		std::vector<cpps_value>				_vec;
 		std::vector<cpps_value>::iterator	_begin;
