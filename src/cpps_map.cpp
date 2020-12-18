@@ -17,6 +17,7 @@ namespace cpps
 				.def("erase", &cpps_map::erase)
 				.def("pop", &cpps_map::pop)
 				.def("begin", &cpps_map::begin)
+				.def("has", &cpps_map::has)
 				.def("end", &cpps_map::end)
 				.def("next", &cpps_map::next)
 				.def("it", &cpps_map::it)
@@ -30,6 +31,7 @@ namespace cpps
 				.def("erase", &cpps_unordered_map::erase)
 				.def("pop", &cpps_unordered_map::pop)
 				.def("begin", &cpps_unordered_map::begin)
+				.def("has", &cpps_unordered_map::has)
 				.def("end", &cpps_unordered_map::end)
 				.def("next", &cpps_unordered_map::next)
 				.def("it", &cpps_unordered_map::it)
@@ -84,6 +86,16 @@ namespace cpps
 	void cpps_unordered_map::begin()
 	{
 		_begin = _map.begin();
+	}
+
+	bool cpps_unordered_map::has(cpps_value k)
+	{
+		std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator it = _map.find(k);
+		if (it != _map.end())
+		{
+			return true;
+		}
+		return false;
 	}
 
 	bool cpps_unordered_map::end()
@@ -185,6 +197,16 @@ namespace cpps
 	void cpps_map::begin()
 	{
 		_begin = _map.begin();
+	}
+
+	bool cpps_map::has(cpps_value k)
+	{
+		std::map<cpps_value, cpps_value>::iterator it = _map.find(k);
+		if (it != _map.end())
+		{
+			return true;
+		}
+		return false;
 	}
 
 	bool cpps_map::end()

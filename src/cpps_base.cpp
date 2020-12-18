@@ -550,7 +550,7 @@ namespace cpps
 
 
 		cpps_value ret;
-		if (serializer_type == 1) {
+		if (serializer_type == 1 && classvar->stacklist) {
 			cpps_vector* vct;
 			ret = newclass<cpps_vector>(c, &vct);
 			for (auto var : *classvar->stacklist) 
@@ -560,7 +560,6 @@ namespace cpps
 			cpps_map* m;
 			ret = newclass<cpps_map>(c, &m);
 			for (auto var : classvar->varList)
-				if(var.first != "this")
 					m->insert(cpps_value(c,var.first),var.second->getval());
 		}
 		return ret;

@@ -12,6 +12,7 @@
 //==================================
 
 
+
 namespace cpps
 {
 	struct cpps_domain;
@@ -23,29 +24,60 @@ namespace cpps
 	{
 		struct vector
 		{
-			vector(object& obj);
-			std::vector<cpps_value>::iterator begin();
-			std::vector<cpps_value>::iterator end();
+			vector(object obj);
+			std::vector<cpps_value>::iterator			begin();
+			std::vector<cpps_value>::iterator			end();
+			object		operator[](const cpps_integer k);
 			cpps_vector* _vec;
 		};
 		struct map
 		{
-			map(object& obj);
-			std::map<cpps_value, cpps_value>::iterator begin();
-			std::map<cpps_value, cpps_value>::iterator end();
+			map(C*cstate,object obj);
+			std::map<cpps_value, cpps_value>::iterator	begin();
+			std::map<cpps_value, cpps_value>::iterator	end();
+			template<class T>
+			bool										has(const T k) {
+				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
+				return _map->has(key);
+			}
+			template<class T>
+			object		operator[](const T k) {
+				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
+				cpps_value& value = _map->cpps_find(key);
+				return cpps_value(&value);
+			}
+
 			cpps_map* _map;
+			C* c;
 		};
 		struct unordered_map
 		{
-			unordered_map(object& obj);
-			std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator begin();
-			std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator end();
+			unordered_map(C* cstate, object obj);
+			std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator	begin();
+			std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator	end();
+			template<class T>
+			bool																	has(const T k) {
+				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
+				return _map->has(key);
+			}
+			template<class T>
+			object		operator[](const T& k) {
+				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
+				cpps_value& value = _map->cpps_find(key);
+				return cpps_value(&value);
+			}
 			cpps_unordered_map* _map;
+			C* c;
 		};
 		object();
+		object(const object &k);
 		object(cpps_value v);
 
 		
+
+
+		// define global var.
+		static void define(C* c, std::string varname, object v = object());
 		//create object.
 		//class C is required because the string needs GC.
 		//
@@ -54,7 +86,7 @@ namespace cpps
 		static object	create_with_vector(C* c);
 		static object	create_with_classvar(C* c,object __classobject);
 		template<class T>
-		static object	create_with_new_cppclassvar(C* c, T** ptr) {
+		static object	create_with_cppclassvar(C* c, T** ptr) {
 			return newclass<T>(c, ptr);
 		}
 		template<class Type>
@@ -62,31 +94,30 @@ namespace cpps
 			return object(c, v);
 		}
 		object&		operator=(const cpps_value k);
-
+		object&		operator=(const object& k);
 		//_G root node.
 		static object globals(C* c);
 
 
 		//check
-		bool is_unorderd_map();
-		bool ismap();
-		bool isstring();
-		bool isvector();
-		bool isint();
-		bool isnumber();
-		bool isnull();
-		bool isfunction();
-		bool isclass();
-		bool isclassvar();
+		bool					isunorderd_map();
+		bool					ismap();
+		bool					isstring();
+		bool					isvector();
+		bool					isint();
+		bool					isnumber();
+		bool					isnull();
+		bool					isfunction();
+		bool					isclass();
+		bool					isclassvar();
 
 		//convert
-		std::string	 tostring();
-		cpps_integer toint();
-		cpps_number  tonumber();
-		bool		 tobool();
+		std::string				tostring();
+		cpps_integer			toint();
+		cpps_number				tonumber();
+		bool					tobool();
 
 
-		// 
 		//vector ,map ,unorderd_map ,string .
 		cpps_integer	size();
 		//vector map unorderd_map only.

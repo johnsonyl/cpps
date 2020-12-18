@@ -26,6 +26,7 @@ namespace cpps
 		cpps_value&			cpps_find(cpps_value k);
 		void				erase(cpps_value k);
 		void				begin();
+		bool				has(cpps_value k);
 		bool				end();
 		bool				empty();
 		void				next();
@@ -58,6 +59,7 @@ namespace cpps
 		cpps_value&		cpps_find(const cpps_value & k);
 		void			erase(cpps_value k);
 		void			begin();
+		bool			has(cpps_value k);
 		bool			end();
 		bool			empty();
 		void			next();
