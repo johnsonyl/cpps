@@ -11,7 +11,7 @@
 //@website		:	http://cpps.wiki
 //==================================
 
-
+#include "cpps_map.h"
 
 namespace cpps
 {
@@ -20,6 +20,9 @@ namespace cpps
 	struct cpps_map;
 	struct cpps_unordered_map;
 	
+	template<class T>
+	inline cpps_value		newclass(C* c, T** ret);
+
 	struct object
 	{
 		struct vector
