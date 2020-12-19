@@ -1,4 +1,4 @@
-#include "cpps.h"
+#include "cpps/cpps.h"
 
 namespace cpps
 {
@@ -94,13 +94,7 @@ namespace cpps
 		cpps_map* ret = (cpps_map*)cppsclassvar->getclsptr();
 		return ret;
 	}
-	cpps_unordered_map* cpps_to_cpps_unordered_map(cpps_value obj)
-	{
-		if (!obj.isdomain()) return NULL;
-		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
-		cpps_unordered_map* ret = (cpps_unordered_map*)cppsclassvar->getclsptr();
-		return ret;
-	}
+
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj)
 	{
 		if (!obj.isdomain()) return NULL;

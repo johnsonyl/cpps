@@ -53,6 +53,16 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-20 更新
+
+1.移除stl的map unordered_map使用https://github.com/greg7mdp/parallel-hashmap   (极力推荐)
+
+2.调整macos安装目录/usr/local/opt/cpps
+
+3.移动头文件到include/cpps 中,修改包含头文件为 #include <cpps/cpps.h>
+
+4.修复已知BUG.
+
 2020-12-19 更新
 -
 

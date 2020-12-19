@@ -101,7 +101,7 @@
   SHA1(A million repetitions of "a" in Unicode LE) =
     C4609560 A108A0C6 26AA7F2B 38A65566 739353C5
 */
-#include <cpps.h>
+#include <cpps/cpps.h>
 
 #ifndef SHA1_H_A545E61D43E9404E8D736869AB3CBFE7
 #define SHA1_H_A545E61D43E9404E8D736869AB3CBFE7

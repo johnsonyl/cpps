@@ -1,6 +1,6 @@
 #ifndef cpps_tarfile_h__
 #define cpps_tarfile_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <zlib.h>
 #include "cpps_tarfile_info.h"
 namespace cpps {

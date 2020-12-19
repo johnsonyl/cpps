@@ -1,7 +1,7 @@
 #ifndef cpps_socket_httpserver_h__
 #define cpps_socket_httpserver_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/listener.h>
@@ -26,7 +26,7 @@ namespace cpps {
 		cpps::object		exceptionfunc;
 		cpps::object		notfoundfunc;
 	};
-	typedef std::unordered_map<std::string, cpps::object> http_route;
+	typedef phmap::flat_hash_map<std::string, cpps::object> http_route;
 	class cpps_socket_httpserver
 	{
 	public:

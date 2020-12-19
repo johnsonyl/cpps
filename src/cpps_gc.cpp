@@ -1,4 +1,4 @@
-#include "cpps.h"
+#include "cpps/cpps.h"
 
 namespace cpps
 {
@@ -29,7 +29,7 @@ namespace cpps
 	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck);
 	void cpps_gc_check_child(const cpps_value &v, C* c, bool checkchild, std::unordered_set<cpps_cppsclassvar *> * oldgen, std::unordered_set<cpps_cppsclassvar *> * newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck)
 	{
-		for (std::unordered_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList.begin(); it != v.value.domain->varList.end(); ++it)
+		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList.begin(); it != v.value.domain->varList.end(); ++it)
 		{
 			cpps_regvar *var = it->second;
 			if (var->getval().tt == CPPS_TCLASSVAR|| var->getval().tt == CPPS_TSTRING)
@@ -70,34 +70,11 @@ namespace cpps
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_map *pMap = (cpps_map*)pClsVar->getclsptr();
-				std::map<cpps_value, cpps_value>& realmap = pMap->realmap();
-				for (std::map<cpps_value, cpps_value>::iterator it = realmap.begin(); it != realmap.end(); ++it)
+				cpps_hash_map& realmap = pMap->realmap();
+				for (cpps_hash_map::iterator it = realmap.begin(); it != realmap.end(); ++it)
 				{
 					const cpps_value& value0 = it->first;
 					const cpps_value& value1 = it->second;
-
-					cpps_gc_check_gen_value(c, value0, checkchild, oldgen, newgen, size, isCheck);
-					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);
-
-				}
-				std::unordered_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
-				if (it != oldgen->end())
-				{
-					oldgen->erase(it);
-					newgen->insert(pClsVar);
-					size += pClsVar->size();
-					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
-				}
-			}
-			else if (v.value.domain->getdomainname() == "unordered_map")
-			{
-				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
-				cpps_unordered_map *pMap = (cpps_unordered_map*)pClsVar->getclsptr();
-				std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap = pMap->realmap();
-				for (std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator it = realmap.begin(); it != realmap.end(); ++it)
-				{
-					const cpps_value &value0 = it->first;
-					const cpps_value &value1 = it->second;
 
 					cpps_gc_check_gen_value(c, value0, checkchild, oldgen, newgen, size, isCheck);
 					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);

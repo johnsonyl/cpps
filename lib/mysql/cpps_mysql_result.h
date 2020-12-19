@@ -2,7 +2,7 @@
 #define cpps_mysql_result_h__
 
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 
 namespace cpps {
 

@@ -1,7 +1,7 @@
 #ifndef cpps_cpps_zipfile_info_h__
 #define cpps_cpps_zipfile_info_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include "minizip/zip.h"
 #include "minizip/unzip.h"
 

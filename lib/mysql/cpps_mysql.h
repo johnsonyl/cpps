@@ -1,7 +1,7 @@
 #ifndef cpps_mysql_h__
 #define cpps_mysql_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <mysql/mysql.h>
 
 namespace cpps {

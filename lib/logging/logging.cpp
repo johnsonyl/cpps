@@ -4,7 +4,7 @@
 #include "stdafx.h"
 
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -23,7 +23,7 @@ using namespace std;
 
 struct cpps_logging_data :public cpps_module_data
 {
-	std::unordered_map<std::string, cpps_logger*> loggerslist;
+	phmap::flat_hash_map<std::string, cpps_logger*> loggerslist;
 	cpps_logger* defaultlogger = NULL;
 };
 
@@ -185,7 +185,7 @@ cpps_logging_handler* cpps_create_logging_handler(C* c, std::string cls, cpps_ma
 bool cpps_create_logger(C* c, cpps::object config)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	phmap::flat_hash_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	for (auto n : loggerslist) {
@@ -217,7 +217,7 @@ bool cpps_create_logger(C* c, cpps::object config)
 		logger->addhandler(handler);
 
 		defaultlogger = logger;
-		loggerslist.insert(std::unordered_map<std::string, cpps_logger*>::value_type("root", logger));
+		loggerslist.insert(phmap::flat_hash_map<std::string, cpps_logger*>::value_type("root", logger));
 	}
 	else /*说明有自己的列表*/
 	{
@@ -238,7 +238,7 @@ bool cpps_create_logger(C* c, cpps::object config)
 			logger->addhandler(handler);
 
 			defaultlogger = logger;
-			loggerslist.insert(std::unordered_map<std::string, cpps_logger*>::value_type(cpps_to_string(n), logger));
+			loggerslist.insert(phmap::flat_hash_map<std::string, cpps_logger*>::value_type(cpps_to_string(n), logger));
 		}
 	}
 	return true;
@@ -251,7 +251,7 @@ bool cpps_create_logger_with_file(C* c, cpps::object filepath)
 bool cpps_create_logger_with_config(C*c,cpps::object config)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	phmap::flat_hash_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	cpps_map* m = cpps_to_cpps_map(config.value);
@@ -315,7 +315,7 @@ bool cpps_create_logger_with_config(C*c,cpps::object config)
 			logger->logger_name = logger_name;
 			//filters还不知道咋用
 			if (logger_name == "root") defaultlogger = logger;
-			loggerslist.insert(std::unordered_map<std::string, cpps_logger*>::value_type(logger_name, logger));
+			loggerslist.insert(phmap::flat_hash_map<std::string, cpps_logger*>::value_type(logger_name, logger));
 		}
 	}
 	return true;
@@ -373,11 +373,11 @@ void cpps_logging_critical(C* c, std::string msg)
 cpps_logger* cpps_getlogger(C* c,std::string name)
 {
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
-	std::unordered_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
+	phmap::flat_hash_map<std::string, cpps_logger*>& loggerslist = data->loggerslist;
 	cpps_logger*& defaultlogger = data->defaultlogger;
 
 	if (name == "root" || name == "") return defaultlogger;
-	std::unordered_map<std::string, cpps_logger*>::iterator it = loggerslist.find(name);
+	phmap::flat_hash_map<std::string, cpps_logger*>::iterator it = loggerslist.find(name);
 	if (it != loggerslist.end()) return it->second;
 	return NULL;
 }

@@ -1,6 +1,6 @@
 #ifndef cpps_zipfile_h__
 #define cpps_zipfile_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <zlib.h>
 #include "cpps_zipfile_info.h"
 #include "minizip/zip.h"
@@ -87,7 +87,7 @@ namespace cpps {
 		char file_comment[READ_SIZE];
 		ZPOS64_T filecomment_length;
 		unz_global_info64 global_info;
-		std::unordered_map<std::string, cpps_zipfile_info*>	file_list;
+		phmap::flat_hash_map<std::string, cpps_zipfile_info*>	file_list;
 		zipFile zipfile;
 		cpps_integer nlevel;
 	};

@@ -103,7 +103,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <string>
 
 class SHA224

@@ -1,7 +1,7 @@
 #ifndef cpps_socket_h__
 #define cpps_socket_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/listener.h>

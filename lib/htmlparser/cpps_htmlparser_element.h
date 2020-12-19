@@ -1,7 +1,7 @@
 #ifndef cpps_cpps_htmlparser_element_h__
 #define cpps_cpps_htmlparser_element_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include "html_parser.hpp"
 
 namespace cpps{

@@ -1,12 +1,12 @@
 #ifndef cpps_http_request_h__
 #define cpps_http_request_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <curl/curl.h>
 #include <unordered_map>
 
 namespace cpps
 {
-	typedef std::unordered_map<std::string, std::string> HEADERSLIST;
+	typedef phmap::flat_hash_map<std::string, std::string> HEADERSLIST;
 	class cpps_http_request
 	{
 	public:

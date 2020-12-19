@@ -1,6 +1,6 @@
 #ifndef cpps_logging_handler_h__
 #define cpps_logging_handler_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <thread>
 #include <vector>
 #include <chrono>

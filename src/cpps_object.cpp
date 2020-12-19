@@ -1,4 +1,4 @@
-#include "cpps.h"
+#include "cpps/cpps.h"
 
 namespace cpps
 {
@@ -37,11 +37,7 @@ namespace cpps
 	{
 		cpps_integer ret = 0;
 
-		if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-			cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-			ret = m->size();
-		}
-		else if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_base_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			ret = m->size();
 		}
@@ -54,11 +50,6 @@ namespace cpps
 			ret = (cpps_integer)str->size();
 		}
 		return ret;
-	}
-
-	bool object::isunorderd_map()
-	{
-		return cpps_base_is_unorderd_map(SAFE_VALUE);
 	}
 
 	bool object::ismap()
@@ -130,11 +121,7 @@ namespace cpps
 	void object::clear()
 	{
 
-		if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-			cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-			m->clear();
-		}
-		else if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_base_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			m->clear();
 		}
@@ -151,11 +138,7 @@ namespace cpps
 	bool object::empty()
 	{
 
-		if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-			cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-			return m->empty();
-		}
-		else if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_base_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			return m->empty();
 		}
@@ -172,11 +155,7 @@ namespace cpps
 
 	void object::insert(object key, object val)
 	{
-		if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-			cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-			m->insert(key.value, val.value);
-		}
-		else if (cpps_base_ismap(SAFE_VALUE)) {
+	if (cpps_base_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			m->insert(key.value, val.value);
 		}
@@ -185,12 +164,7 @@ namespace cpps
 
 	void object::set(object key, object val)
 	{
-		if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-			cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-			cpps_value& takeval = m->cpps_find(key.value);
-			takeval = val.value;
-		}
-		else if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_base_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			cpps_value& takeval = m->cpps_find(key.value);
 			takeval = val.value;;
@@ -199,13 +173,7 @@ namespace cpps
 
 	void object::set(std::string key, object val)
 	{
-		if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-			cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-			cpps_value key_val = cpps_new_tmp_string(key);
-			m->set(key_val, val.value);
-			cpps_delete_tmp_string(key_val);
-		}
-		else if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_base_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			cpps_value key_val = cpps_new_tmp_string(key);
 			m->set(key_val, val.value);
@@ -226,12 +194,6 @@ namespace cpps
 			if (cpps_base_isvector(SAFE_VALUE)) {
 				cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 				vct->realvector()[(size_t)key] = val.value;
-			}
-			else if (cpps_base_is_unorderd_map(value)) {
-				cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-				cpps_value key_val(key);
-				cpps_value& takeval = m->cpps_find(key_val);
-				takeval = val.value;
 			}
 			else if (cpps_base_ismap(SAFE_VALUE)) {
 				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
@@ -310,13 +272,7 @@ namespace cpps
 		cpps_value ret;
 		if (SAFE_VALUE.isdomain()) {
 
-			if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-				cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-				cpps_value key = cpps_new_tmp_string(k);
-				ret = m->find(key);
-				cpps_delete_tmp_string(key);
-			}
-			else if (cpps_base_ismap(SAFE_VALUE)) {
+			if (cpps_base_ismap(SAFE_VALUE)) {
 				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 				cpps_value key = cpps_new_tmp_string(k);
 				ret = m->find(key);
@@ -342,10 +298,6 @@ namespace cpps
 				cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 				ret = vct->at(k);
 			}
-			else if (cpps_base_is_unorderd_map(SAFE_VALUE)) {
-				cpps_unordered_map* m = cpps_to_cpps_unordered_map(SAFE_VALUE);
-				ret = m->find(cpps_value(k));
-			}
 			else if (cpps_base_ismap(SAFE_VALUE)) {
 				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 				ret = m->find(cpps_value(k));
@@ -360,11 +312,6 @@ namespace cpps
 		return *this;
 	}
 
-	object object::create_with_unordered_map(C* c)
-	{
-		cpps_create_class_var(cpps_unordered_map, c, cpps_value_map, cpps_map_ptr);
-		return  static_cast<object>(cpps_value_map );
-	}
 	object object::create_with_map(C* c)
 	{
 		cpps_create_class_var(cpps_map, c, cpps_value_map, cpps_map_ptr);
@@ -411,30 +358,17 @@ namespace cpps
 		c = cstate;
 	}
 
-	std::map<cpps_value, cpps_value>::iterator object::map::begin()
+	cpps_hash_map::iterator object::map::begin()
 	{
 		return _map->realmap().begin();
 	}
 
-	std::map<cpps_value, cpps_value>::iterator object::map::end()
+	cpps_hash_map::iterator object::map::end()
 	{
 		return _map->realmap().end();
 	}
 
-	object::unordered_map::unordered_map(C*cstate,object obj)
-	{
-		_map = cpps_to_cpps_unordered_map(obj.value);
-		c = cstate;
-	}
+	
 
-	std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator object::unordered_map::begin()
-	{
-		return _map->realmap().begin();
-	}
-
-	std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator object::unordered_map::end()
-	{
-		return _map->realmap().end();
-	}
 
 }

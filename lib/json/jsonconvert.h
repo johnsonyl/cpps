@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 
 
 std::string cppstojson(cpps::object obj);

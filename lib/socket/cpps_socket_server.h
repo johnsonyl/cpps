@@ -1,7 +1,7 @@
 #ifndef cpps_socket_server_h__
 #define cpps_socket_server_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <string>
 #include <unordered_map>
 #include <event2/event.h>
@@ -41,7 +41,7 @@ namespace cpps {
 	};
 
 	class cpps_socket_server_client;
-	typedef std::unordered_map<cpps_integer, cpps_socket_server_client*> socket_list;
+	typedef phmap::flat_hash_map<cpps_integer, cpps_socket_server_client*> socket_list;
 	class cpps_socket_server : public cpps_socket_event_callback
 	{
 	public:

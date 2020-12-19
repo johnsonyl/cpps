@@ -1,6 +1,6 @@
 ﻿
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <iostream>
 #include <string>
 #include <curl/curl.h>

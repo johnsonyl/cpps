@@ -32,6 +32,11 @@ elseif (MACOS)
 		add_definitions(-D__APPLE__ -D_FILE_OFFSET_BITS=64 -DDEBUG)
 		message("debug build")
 	endif()
+
+	
+	# TODO: 如有需要，请添加测试并安装目标。
+	set(CMAKE_INSTALL_PREFIX /usr/local/opt/cpps)
+
 elseif (LINUX)
 	#default release.
 	if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
@@ -50,10 +55,10 @@ elseif (LINUX)
 		message("debug build")
 	endif()
 	
+	# TODO: 如有需要，请添加测试并安装目标。
+	set(CMAKE_INSTALL_PREFIX /usr/local)
 ENDIF()
 
-# TODO: 如有需要，请添加测试并安装目标。
-set(CMAKE_INSTALL_PREFIX /usr)
 
 # 包含子项目。
 add_subdirectory ("src")

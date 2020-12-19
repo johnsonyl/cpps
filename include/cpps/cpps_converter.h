@@ -243,7 +243,7 @@ namespace cpps
 
 			ret.tt = CPPS_TCLASSVAR;
 			
-			std::unordered_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
 			cpps_cppsclassvar* var;
 			if (it == c->_class_map_classvar.end())
 			{

@@ -1,6 +1,6 @@
 #ifndef cpps_logger_message_h__
 #define cpps_logger_message_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 
 namespace cpps
 {

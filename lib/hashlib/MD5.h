@@ -47,7 +47,7 @@ documentation and/or software.
 using namespace std;
 #include <iostream>
 using namespace std;
-#include <cpps.h>
+#include <cpps/cpps.h>
 
 class MD5 {
 

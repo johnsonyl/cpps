@@ -57,27 +57,6 @@ Json::Value cppstojsonvalue(cpps::object obj)
 				}
 			}
 		}
-		else if (cls->getclassname() == "unordered_map")
-		{
-			ret = Json::Value(Json::objectValue);
-			cpps::cpps_unordered_map *m = cpps::object_cast<cpps::cpps_unordered_map*>(obj);
-			for (m->begin(); m->end(); m->next())
-			{
-				cpps::cpps_value k = m->key();
-				cpps::cpps_value v = m->it();
-
-				Json::Value v2 = cppstojsonvalue(v);
-
-				if (k.tt == CPPS_TSTRING)
-				{
-					ret[cpps_to_string(k)] = v2;
-				}
-				else if (k.tt == CPPS_TINTEGER)
-				{
-					ret[json_itos_func(k.value.integer)] = v2;
-				}
-			}
-		}
 		else if (cls->getclassname() == "vector")
 		{
 			ret = Json::Value(Json::arrayValue);

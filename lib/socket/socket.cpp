@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include <cpps.h>
+#include <cpps/cpps.h>
 #ifdef _WIN32
 #include <Windows.h>
 #include <WinSock2.h>

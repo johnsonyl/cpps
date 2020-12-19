@@ -253,14 +253,14 @@ namespace cpps
 		int8 offsettype; //偏移类型 0 global 1 left 2 self
 		int16 size;	//子节点数量 ( 只包含类 名空间 函数 , 非类情况下包含变量) 65535个节点还不够吗?
 
-		std::unordered_map<std::string, node*>		*varlist; //为了运行提速,牺牲解释速度.
+		phmap::flat_hash_map<std::string, node*>		*varlist; //为了运行提速,牺牲解释速度.
 		void regnode(std::string& s, node* n)
 		{
 			if (varlist == NULL) //需要在添加
 			{
-				varlist = new std::unordered_map<std::string, node*>();
+				varlist = new phmap::flat_hash_map<std::string, node*>();
 			}
-			varlist->insert(std::unordered_map<std::string, node*>::value_type(s, n));
+			varlist->insert(phmap::flat_hash_map<std::string, node*>::value_type(s, n));
 		}
 		void unregnode(std::string& s)
 		{
@@ -273,7 +273,7 @@ namespace cpps
 		{
 			if (varlist != NULL) //需要在添加
 			{
-				std::unordered_map<std::string, node*>::iterator it = varlist->find(s);
+				phmap::flat_hash_map<std::string, node*>::iterator it = varlist->find(s);
 				if (it != varlist->end())
 				{
 					return it->second;

@@ -1,6 +1,6 @@
 #ifndef cpps_gzip_h__
 #define cpps_gzip_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <zlib.h>
 
 

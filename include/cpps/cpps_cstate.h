@@ -70,8 +70,8 @@ namespace cpps
 		size_t																		gen1size;//老生代当前占内存大小（字节）
 		size_t																		lastgensize;
 		std::string																	(*func)(std::string &);
-		std::unordered_map<std::string, HMODULE>									modulelist;
-		std::unordered_map<void*, cpps_cppsclassvar*>								_class_map_classvar;
+		phmap::flat_hash_map<std::string, HMODULE>									modulelist;
+		phmap::flat_hash_map<void*, cpps_cppsclassvar*>								_class_map_classvar;
 		bool																		debug;
 		cpps_object_pool<cpps::cpps_domain>											domain_pool;
 		cpps_object_pool<cpps::cpps_stack>											stack_pool;
@@ -80,7 +80,7 @@ namespace cpps
 		node*																		curnode;
 		bool																		buildoffset;
 		bool																		disabled_non_def_var;
-		std::unordered_map<std::string, cpps_module_data*>							savemoduledatas;
+		phmap::flat_hash_map<std::string, cpps_module_data*>							savemoduledatas;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

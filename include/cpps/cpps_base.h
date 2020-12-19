@@ -17,7 +17,6 @@ namespace cpps
 	void	cpps_regbase(C *c);
 
 	//public function
-	bool cpps_base_is_unorderd_map(cpps_value v);
 	bool cpps_base_ismap(cpps_value v);
 	bool cpps_base_isstring(cpps_value v);
 	bool cpps_base_isvector(cpps_value v);

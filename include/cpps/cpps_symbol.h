@@ -53,7 +53,7 @@ namespace cpps
 
 	};
 	struct cpps_symbol;
-	typedef	std::map<std::string, cpps_symbol*> CPPS_SYMBOL_MAP;
+	typedef	phmap::flat_hash_map<std::string, cpps_symbol*> CPPS_SYMBOL_MAP;
 
 	struct cpps_symbol
 	{

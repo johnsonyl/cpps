@@ -2,7 +2,7 @@
 //
 #include "stdafx.h"
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <zlib.h>
 #include "cpps_zlib.h"
 #include "cpps_gzip.h"

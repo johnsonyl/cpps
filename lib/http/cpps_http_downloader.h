@@ -1,7 +1,7 @@
 #ifndef cpps_cpps_http_downloader_h__
 #define cpps_cpps_http_downloader_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <curl/curl.h>
 
 namespace cpps{

@@ -1,4 +1,4 @@
-#include "cpps.h"
+#include "cpps/cpps.h"
 
 namespace cpps
 {
@@ -95,7 +95,7 @@ namespace cpps
 				var->setval(f->value);
 			}
 			varList.erase(var->varName);
-			varList.insert(std::unordered_map<std::string, cpps_regvar*>::value_type(var->varName, var));
+			varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(var->varName, var));
 			f = f->next;
 		} while (f);
 	}
@@ -104,7 +104,7 @@ namespace cpps
 	{
 		cpps_regvar* ret = NULL;
 		if (hasVar) {
-			std::unordered_map<std::string, cpps_regvar*>::iterator it = varList.find(s);
+			phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.find(s);
 			if (it != varList.end())
 			{
 				ret = it->second;
@@ -143,7 +143,7 @@ namespace cpps
 	void cpps_domain::regvar(C* c, cpps_regvar* v)
 	{
 		hasVar = true;
-		varList.insert(std::unordered_map<std::string, cpps_regvar*>::value_type(v->varName, v));
+		varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(v->varName, v));
 		if (c != NULL && this != c->_G) cpps_gc_add_barrier(c, v);
 	}
 
@@ -161,7 +161,7 @@ namespace cpps
 	void cpps_domain::destory(C* c)
 	{
 		if (hasVar) {
-			for (std::unordered_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
+			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
 			{
 				cpps_regvar* v = it->second;
 				if (!v->closeure || v->closeureusecount <= 0) { /*闭包不删除,但是必须有人使用*/
@@ -233,9 +233,9 @@ namespace cpps
 	{
 		if (parentclassoffset == NULL)
 		{
-			parentclassoffset = new std::map<cpps_domain*, int32>();
+			parentclassoffset = new phmap::flat_hash_map<cpps_domain*, int32>();
 		}
-		parentclassoffset->insert(std::map<cpps_domain*, int32>::value_type(parentclass, off));
+		parentclassoffset->insert(phmap::flat_hash_map<cpps_domain*, int32>::value_type(parentclass, off));
 	}
 
 	void cpps_domain::resize(usint16 size)

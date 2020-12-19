@@ -1,7 +1,7 @@
 #ifndef cpps_socket_httpserver_request_h__
 #define cpps_socket_httpserver_request_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <event2/event.h>
 #include <event2/bufferevent.h>
 #include <event2/listener.h>
@@ -16,7 +16,7 @@
 
 namespace cpps {
 
-	typedef std::unordered_map<std::string, std::string> PARAMSLIST;
+	typedef phmap::flat_hash_map<std::string, std::string> PARAMSLIST;
 	class cpps_socket_httpserver_request
 	{
 	public:

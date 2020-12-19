@@ -1,12 +1,12 @@
 #ifndef cpps_mysql_record_h__
 #define cpps_mysql_record_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <unordered_map>
 
 namespace cpps
 {
-	typedef std::unordered_map<std::string, cpps_value> RECORD_VALUES;
+	typedef phmap::flat_hash_map<std::string, cpps_value> RECORD_VALUES;
 	class cpps_mysql_record
 	{
 	public:

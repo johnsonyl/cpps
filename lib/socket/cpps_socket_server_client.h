@@ -1,6 +1,6 @@
 #ifndef cpps_socket_server_client_h__
 #define cpps_socket_server_client_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include "cpps_socket.h"
 
 namespace cpps {

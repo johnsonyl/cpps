@@ -34,7 +34,7 @@ ADD_LIBRARY (cpps STATIC ${SRC_LIST} ${CURRENT_HEADERS})
 IF (LINUX)
 	target_link_libraries(${PROJECT_NAME} -lrt -ldl -lm -lpthread)
 		
-	install(FILES ${CURRENT_HEADERS} DESTINATION include)
+	install(FILES ${CURRENT_HEADERS} DESTINATION include/cpps)
 
 	install(TARGETS cpps
 	RUNTIME DESTINATION bin
@@ -44,7 +44,7 @@ IF (LINUX)
 ELSEIF(MACOS)
 	target_link_libraries(${PROJECT_NAME} -ldl -lm -lpthread)
 		
-	install(FILES ${CURRENT_HEADERS} DESTINATION include)
+	install(FILES ${CURRENT_HEADERS} DESTINATION include/cpps)
 
 	install(TARGETS cpps
 	RUNTIME DESTINATION bin

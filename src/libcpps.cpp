@@ -1,4 +1,4 @@
-#include "cpps.h"
+#include "cpps/cpps.h"
 namespace cpps {
 	/* 内部 */
 	struct     cpps_value;
@@ -132,7 +132,7 @@ namespace cpps {
 		return(s == "if" || s == "const" ||s == "async" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "module" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring");
 	}
 	bool cpps_is_not_use_var_name(std::string s) {
-		return(cpps_parse_isbuiltinname(s) || s == "true" || s == "catch" || s == "null" || s == "nil" || s == "NULL" || s == "false" || s == "map" || s == "vector" || s == "math" || s == "string" || s == "time" || s == "io" || s == "GC" || s == "unordered_map");
+		return(cpps_parse_isbuiltinname(s) || s == "true" || s == "catch" || s == "null" || s == "nil" || s == "NULL" || s == "false" || s == "map" || s == "vector" || s == "math" || s == "string" || s == "time" || s == "io" || s == "GC");
 	}
 	std::string cpps_parse_loadinterger16(cppsbuffer& buffer) {
 		std::string ret = "";
@@ -1137,8 +1137,18 @@ namespace cpps {
 		}
 		if (op->symbol && op->symbol->getparamnum() == 1) {
 			if (leftoproot != NULL) {
-				leftopparent->addtoleft(p);
-				p = leftoproot;
+
+				if (leftoproot->symbol->getprio() <= op->symbol->getprio())
+				{
+					op->addtoleft(p);
+					p = op;
+					op = leftoproot;
+				}
+				else {
+					leftopparent->addtoleft(p);
+					p = leftoproot;
+				}
+
 			}
 			op->addtoleft(p);
 			p = op;
@@ -1160,9 +1170,22 @@ namespace cpps {
 			}
 		}
 		cpps_parse_rmspaceandenter(buffer);
-		op->addtoleft(p);
+		
 		node* take = op;
 		if (leftoproot != NULL) {
+			if (leftoproot->symbol->getprio() <= op->symbol->getprio())
+			{
+				op->addtoleft(leftoproot);
+				leftopparent->addtoleft(p);
+			}
+			else {
+				op->addtoleft(p);
+				leftopparent->addtoleft(op);
+				op = leftoproot;
+			}
+		}
+		else {
+			op->addtoleft(p);
 			leftopparent->addtoleft(op);
 			op = leftoproot;
 		}
@@ -2368,35 +2391,9 @@ namespace cpps {
 				for1_v->setval(ret);
 			cpps_map* vmap = cpps_converter<cpps_map*>::apply(v);
 			if (vmap) {
-				std::map<cpps_value, cpps_value>& realmap = vmap->realmap();
-				std::map<cpps_value, cpps_value>::iterator	it = realmap.begin();
-				std::map<cpps_value, cpps_value>::iterator	itend = realmap.end();
-				cpps_domain* execdomain = c->domain_alloc();
-				for (; it != itend; ++it) {
-					mapnode->_first = it->first;
-					mapnode->_second = it->second;
-					execdomain->init(foreachdomain, cpps_domain_type_exec);
-					execdomain->setexecdomain(foreachdomain);
-					cpps_step(c, execdomain, root, for4->l[0]);
-					execdomain->destory(c);
-					cpps_gc_check_step(c);
-					if (foreachdomain->isbreak)
-						break;
-					/* 需要跳出循环 */
-				}
-				c->domain_free(execdomain);
-			}
-		}
-		else if (v.isdomain() && v.value.domain->domainname == "unordered_map") {
-			cpps_map_node* mapnode;
-			cpps_value	ret = newclass<cpps_map_node>(c, &mapnode);
-			if (for1_v)
-				for1_v->setval(ret);
-			cpps_unordered_map* vmap = cpps_converter<cpps_unordered_map*>::apply(v);
-			if (vmap) {
-				std::unordered_map<cpps_value, cpps_value, cpps_value::hash>& realmap = vmap->realmap();
-				std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator	it = realmap.begin();
-				std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator	itend = realmap.end();
+				cpps_hash_map& realmap = vmap->realmap();
+				cpps_hash_map::iterator	it = realmap.begin();
+				cpps_hash_map::iterator	itend = realmap.end();
 				cpps_domain* execdomain = c->domain_alloc();
 				for (; it != itend; ++it) {
 					mapnode->_first = it->first;
@@ -2622,12 +2619,12 @@ namespace cpps {
 	}
 	void cpps_step_class_reg_baseclass_idx_offset(cpps_cppsclass* cppsclass, cpps_cppsclass* parentclass, int32 takeoff) {
 		/*复制父类所有的函数哟. */
-		for (std::unordered_map<std::string, cpps_regvar*>::iterator it2 = parentclass->varList.begin(); it2 != parentclass->varList.end(); ++it2) {
+		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it2 = parentclass->varList.begin(); it2 != parentclass->varList.end(); ++it2) {
 			if (it2->first != "constructor")
 				/*不复制构造函数.. */ {
 				cppsclass->varList.erase(it2->first);
 				cppsclass->hasVar = true;
-				cppsclass->varList.insert(std::unordered_map<std::string, cpps_regvar*>::value_type(it2->first, it2->second));
+				cppsclass->varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(it2->first, it2->second));
 			}
 		}
 		cppsclass->setidxoffset(parentclass, takeoff);
@@ -3011,7 +3008,7 @@ namespace cpps {
 		if (d->type == CPPS_QUOTEGETCHIILD) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "unordered_map" && v->getval().value.domain->getdomainname() != "vector") {
+				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -3019,7 +3016,7 @@ namespace cpps {
 		else if (d->type == CPPS_QUOTEGETOBJECT) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "unordered_map" && v->getval().value.domain->getdomainname() != "vector") {
+				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -3027,7 +3024,7 @@ namespace cpps {
 		else if (d->type == CPPS_OGETOBJECT) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR) && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "unordered_map" && v->getval().value.domain->getdomainname() != "vector") {
+				if ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR) && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -3035,7 +3032,7 @@ namespace cpps {
 		else if (d->type == CPPS_OGETCHIILD) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "unordered_map" && v->getval().value.domain->getdomainname() != "vector") {
+				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -3305,15 +3302,6 @@ namespace cpps {
 					leftdomain = takedomain;
 					ret = pMap->find(right);
 				}
-				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "unordered_map") {
-					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
-					cpps_unordered_map* pMap = (cpps_unordered_map*)cppsclassvar->getclsptr();
-					cpps_domain* takedomain = leftdomain;
-					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
-					leftdomain = takedomain;
-					ret = pMap->find(right);
-				}
 				else {
 					/*cpps_domain* execdomain = c->domain_alloc();
 					execdomain->init(left.value.domain, cpps_domain_type_exec);
@@ -3410,16 +3398,6 @@ namespace cpps {
 					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
 					leftdomain = takedomain;
 					ret = cpps_value(&pMap->cpps_find(right));
-				}
-				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "unordered_map") {
-					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
-					cpps_unordered_map* pMap = (cpps_unordered_map*)cppsclassvar->getclsptr();
-					cpps_domain* takedomain = leftdomain;
-					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
-					leftdomain = takedomain;
-					cpps_value& t = pMap->cpps_find(right);
-					ret = cpps_value(&t);
 				}
 				else {
 					/*cpps_regvar* v = getregvar(left.value.domain, d->getright()->getleft());

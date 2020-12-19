@@ -1,4 +1,4 @@
-#include "cpps.h"
+#include "cpps/cpps.h"
 
 using namespace std;
 
@@ -37,11 +37,6 @@ namespace cpps
 			else if (b.value.value.domain->domainname == "map")
 			{
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
-				ret = (cpps_integer)v->size();
-			}
-			else if (b.value.value.domain->domainname == "unordered_map")
-			{
-				cpps_unordered_map* v = cpps_converter<cpps_unordered_map*>::apply(b.value);
 				ret = (cpps_integer)v->size();
 			}
 		}
@@ -93,22 +88,6 @@ namespace cpps
 			{
 				cout << "{";
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
-				if (v)
-				{
-					for (v->begin(); v->end(); v->next())
-					{
-						cpps_base_printf(v->key());
-						cout << ":";
-						cpps_base_printf(v->it());
-						cout << ",";
-					}
-				}
-				cout << "}";
-			}
-			else if (b.value.value.domain->domainname == "unordered_map")
-			{
-				cout << "{";
-				cpps_unordered_map* v = cpps_converter<cpps_unordered_map*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
@@ -187,22 +166,6 @@ namespace cpps
 				}
 				cout << "}";
 			}
-			else if (b.value.value.domain->domainname == "unordered_map")
-			{
-				cout << "{";
-				cpps_unordered_map* v = cpps_converter<cpps_unordered_map*>::apply(b.value);
-				if (v)
-				{
-					for (v->begin(); v->end(); v->next())
-					{
-						cpps_base_printf(v->key());
-						cout << ":";
-						cpps_base_printf(v->it());
-						cout << ",";
-					}
-				}
-				cout << "}";
-			}
 			cout << endl;
 		}
 		else
@@ -242,11 +205,7 @@ namespace cpps
 	}
 	bool cpps_base_ismap(cpps_value v)
 	{
-		return (v.isdomain() && (v.value.domain->domainname == "map" || v.value.domain->domainname == "unordered_map"));
-	}
-	bool cpps_base_is_unorderd_map(cpps_value v)
-	{
-		return (v.isdomain() && (v.value.domain->domainname == "unordered_map"));
+		return (v.isdomain() && (v.value.domain->domainname == "map"));
 	}
 	bool cpps_base_isint(cpps_value v)
 	{
@@ -327,7 +286,7 @@ namespace cpps
 				return false;
 			}
 
-			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, module));
+			c->modulelist.insert(phmap::flat_hash_map<std::string, HMODULE>::value_type(libname, module));
 			sv = true;
 
 			cpps_attach(c);
@@ -356,7 +315,7 @@ namespace cpps
 				return false;
 			}
 
-			c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, mod));
+			c->modulelist.insert(phmap::flat_hash_map<std::string, HMODULE>::value_type(libname, mod));
 			sv = true;
 
 			api->cpps_attach(c);
@@ -368,7 +327,7 @@ namespace cpps
 		if (!fpath.empty())
 		{
 			if(!sv)
-				c->modulelist.insert(std::unordered_map<std::string, HMODULE>::value_type(libname, NULL));
+				c->modulelist.insert(phmap::flat_hash_map<std::string, HMODULE>::value_type(libname, NULL));
 			std::string fileSrc;
 			cpps_load_filebuffer(fpath.c_str(), fileSrc);
 			node* o = loadbuffer(c,  fileSrc, fpath);
@@ -394,7 +353,7 @@ namespace cpps
 #ifdef _WIN32
 
 		bool ret = false;
-		std::unordered_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
+		phmap::flat_hash_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
 		if (it != c->modulelist.end())
 		{
 			HMODULE module = it->second;
@@ -421,7 +380,7 @@ namespace cpps
 
 #else
 		bool ret = false;
-		std::unordered_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
+		phmap::flat_hash_map<std::string, HMODULE>::iterator it = c->modulelist.find(libname);
 		if (it != c->modulelist.end())
 		{
 			HMODULE module = it->second;

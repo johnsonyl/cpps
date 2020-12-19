@@ -2,7 +2,7 @@
 #define cpps_socket_client_h__
 #include "cpps_socket.h"
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <string>
 #include <unordered_map>
 #include <event2/event.h>

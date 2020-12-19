@@ -1,6 +1,6 @@
 #ifndef cpps_logger_config_h__
 #define cpps_logger_config_h__
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include "cpps_logging_handler.h"
 namespace cpps
 {

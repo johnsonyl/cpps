@@ -48,8 +48,8 @@ if(WINDOWS)
 else()
 	add_custom_command(TARGET cppsc
 	  POST_BUILD 
-	  COMMAND rm -rf ${CMAKE_INSTALL_PREFIX}/local/bin/cppsc
-	  COMMAND ln -s ${PROJECT_SOURCE_DIR}/../../bin/cppsc ${CMAKE_INSTALL_PREFIX}/local/bin/cppsc
+	  COMMAND rm -rf /usr/local/bin/cppsc
+	  COMMAND ln -s ${PROJECT_SOURCE_DIR}/../../bin/cppsc /usr/local/bin/cppsc
 	 )
 #	不在安装 cppsc 到系统目录,需要手动建立软连接.
 # 	install(TARGETS cppsc

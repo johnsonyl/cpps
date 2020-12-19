@@ -1,7 +1,7 @@
 #ifndef cpps_cpps_smtp_h__
 #define cpps_cpps_smtp_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 
 namespace cpps{
 

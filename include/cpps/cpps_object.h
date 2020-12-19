@@ -18,7 +18,7 @@ namespace cpps
 	struct cpps_domain;
 	struct cpps_vector;
 	struct cpps_map;
-	struct cpps_unordered_map;
+	struct cpps_map;
 	
 	template<class T>
 	inline cpps_value		newclass(C* c, T** ret);
@@ -33,13 +33,14 @@ namespace cpps
 			object		operator[](const cpps_integer k);
 			cpps_vector* _vec;
 		};
+		
 		struct map
 		{
-			map(C*cstate,object obj);
-			std::map<cpps_value, cpps_value>::iterator	begin();
-			std::map<cpps_value, cpps_value>::iterator	end();
+			map(C* cstate, object obj);
+			cpps_hash_map::iterator	begin();
+			cpps_hash_map::iterator	end();
 			template<class T>
-			bool										has(const T k) {
+			bool																	has(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
 				return _map->has(key);
 			}
@@ -49,27 +50,7 @@ namespace cpps
 				cpps_value& value = _map->cpps_find(key);
 				return cpps_value(&value);
 			}
-
 			cpps_map* _map;
-			C* c;
-		};
-		struct unordered_map
-		{
-			unordered_map(C* cstate, object obj);
-			std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator	begin();
-			std::unordered_map<cpps_value, cpps_value, cpps_value::hash>::iterator	end();
-			template<class T>
-			bool																	has(const T k) {
-				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
-				return _map->has(key);
-			}
-			template<class T>
-			object		operator[](const T& k) {
-				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
-				cpps_value& value = _map->cpps_find(key);
-				return cpps_value(&value);
-			}
-			cpps_unordered_map* _map;
 			C* c;
 		};
 		object();
@@ -84,7 +65,6 @@ namespace cpps
 		//create object.
 		//class C is required because the string needs GC.
 		//
-		static object	create_with_unordered_map(C* c);
 		static object	create_with_map(C* c);
 		static object	create_with_vector(C* c);
 		static object	create_with_classvar(C* c,object __classobject);
@@ -121,14 +101,14 @@ namespace cpps
 		bool					tobool();
 
 
-		//vector ,map ,unorderd_map ,string .
+		//vector ,map ,string .
 		cpps_integer	size();
-		//vector map unorderd_map only.
+		//vector map  only.
 		void			clear();
 		bool			empty();
 		object			operator[](const std::string k); // and domain
 		
-		//map or unordered_map only.
+		//map  only.
 		void		insert(object key,object val);
 		void		set(object key, object val); //and domain, Does not exist and can be created.  domain classvar don't use it. CPP cannot create new variables for script domain or classvar
 		void		set(std::string key, object val); // and domain ,Only variables that already exist can be set

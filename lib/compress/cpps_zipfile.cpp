@@ -69,7 +69,7 @@ namespace cpps
 				zipfile_info->filecomment_length = strlen(zipfile_info->file_comment);
 
 		
-				file_list.insert(std::unordered_map<std::string, cpps_zipfile_info*>::value_type(zipfile_info->file_name, zipfile_info));
+				file_list.insert(phmap::flat_hash_map<std::string, cpps_zipfile_info*>::value_type(zipfile_info->file_name, zipfile_info));
 				
 
 				// Go the the next entry listed in the zip file.
