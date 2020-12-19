@@ -1186,8 +1186,6 @@ namespace cpps {
 		}
 		else {
 			op->addtoleft(p);
-			leftopparent->addtoleft(op);
-			op = leftoproot;
 		}
 		if (lastopnode && lastopnode->type == CPPS_FUNCNAME && lastopnode->symbol) {
 			if (lastopnode->symbol->getparamnum() > 2)
