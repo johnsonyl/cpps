@@ -31,6 +31,8 @@ namespace cpps
 				.def("clear", &cpps_vector::clear)
 				.def("size", &cpps_vector::size)
 				.def("has", &cpps_vector::has)
+				.def_inside("where", &cpps_vector::where)
+				.def_inside("select", &cpps_vector::select)
 		];
 	}
 
@@ -157,6 +159,30 @@ namespace cpps
 	void cpps_vector::resize(cpps_integer s)
 	{
 		_vec.resize((size_t)s);
+	}
+	cpps_value cpps_vector::where(C*c,object o)
+	{
+		cpps_vector* vec;
+		cpps_value ret = newclass(c, &vec);
+		if (o.isfunction()) {
+			for (auto& v : realvector()) {
+				bool b = object_cast<bool>(dofunction(c, o, v));
+				if (b) vec->push_back(v);
+			}
+		}
+		return ret;
+	}
+	cpps_value cpps_vector::select(C* c, object o)
+	{
+		cpps_vector* vec;
+		cpps_value ret = newclass(c, &vec);
+		if (o.isfunction()) {
+			for (auto& v : realvector()) {
+				cpps_value b = object_cast<cpps_value>(dofunction(c, o, v));
+				vec->push_back(b);
+			}
+		}
+		return ret;
 	}
 
 	std::vector<cpps::cpps_value>& cpps_vector::realvector()

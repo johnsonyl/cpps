@@ -856,7 +856,7 @@ namespace cpps {
 	}
 	node* cpps_parse_last_func(C* c, cppsbuffer& buffer, node* o, node* p, cpps_node_domain* domain, node* root) {
 		/*ÓÐºóÐø */
-		while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || buffer.cur() == ':') {
+		while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':')) {
 			/*  */
 			if (buffer.cur() == '.')
 				if (cpps_parse_isnotvarname(buffer.at(buffer.offset() + 1)))

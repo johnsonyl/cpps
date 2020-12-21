@@ -22,12 +22,14 @@ namespace cpps
 	
 	cpps_integer	cpps_string_find(cpps_value v, std::string v2,cpps_integer off)
 	{
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
+		if (v.tt != CPPS_TSTRING) return std::string::npos;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		return tmpStr->find(v2,off);
 	}
 	cpps_integer	cpps_string_rfind(cpps_value v, std::string v2, cpps_integer off)
 	{
+		if (v.tt != CPPS_TSTRING) return std::string::npos;
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		return tmpStr->rfind(v2, off);
@@ -35,6 +37,7 @@ namespace cpps
 	
 	cpps_value	cpps_string_replace(cpps_value v, std::string v2, std::string v3)
 	{
+		if (v.tt != CPPS_TSTRING) return nil;
 		std::string::size_type pos = 0;
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
@@ -47,6 +50,7 @@ namespace cpps
 		return v;
 	}
 	cpps_value cpps_string_cut(C* c, cpps_value v, cpps_integer count) {
+		if (v.tt != CPPS_TSTRING) return nil;
 		cpps_vector* vec;
 		cpps_value ret = newclass<cpps_vector>(c, &vec);
 
@@ -100,6 +104,7 @@ namespace cpps
 	}
 	cpps_value cpps_string_split(C *c, cpps_value v, std::string v2,cpps_value count)
 	{
+		if (v.tt != CPPS_TSTRING) return nil;
 		cpps_integer ncount = -1;
 		if (count.tt == CPPS_TINTEGER) ncount = count.value.integer;
 		cpps_vector *vec;
@@ -149,6 +154,7 @@ namespace cpps
 	}
 	std::string	cpps_string_strcut(cpps_value v, std::string v2, std::string v3)
 	{
+		if (v.tt != CPPS_TSTRING) return "";
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)v.value.domain;
 		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
 
@@ -167,6 +173,7 @@ namespace cpps
 	cpps_value cpps_string_strcuts(C *c, cpps_value old, std::string start, std::string end)
 	{
 
+		if (old.tt != CPPS_TSTRING) return nil;
 		cpps_vector *vec;
 		cpps_value ret = newclass<cpps_vector>(c, &vec);
 
@@ -193,6 +200,7 @@ namespace cpps
 	}
 	bool	cpps_string_empty(cpps_value v)
 	{
+		if (v.tt != CPPS_TSTRING) return true;
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
@@ -200,6 +208,7 @@ namespace cpps
 	}
 	std::string	cpps_string_sub(cpps_value v,cpps_integer pos,cpps_integer n)
 	{
+		if (v.tt != CPPS_TSTRING) return "";
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		size_t tmpn = (size_t)n;
@@ -213,6 +222,7 @@ namespace cpps
 	}
 	std::string cpps_string_at(cpps_value v,cpps_integer pos)
 	{
+		if (v.tt != CPPS_TSTRING) return "";
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
@@ -229,6 +239,7 @@ namespace cpps
 	}
 	cpps_value cpps_string_lower(cpps_value v)
 	{
+		if (v.tt != CPPS_TSTRING) return nil;
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		cpps_string_real_tolower(*tmpStr);
@@ -242,6 +253,7 @@ namespace cpps
 	}
 	cpps_value cpps_string_upper(cpps_value v)
 	{
+		if (v.tt != CPPS_TSTRING) return nil;
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		cpps_string_real_toupper(*tmpStr);
@@ -250,6 +262,7 @@ namespace cpps
 	
 	void cpps_string_pop_back(cpps_value s, cpps_integer c) {
 
+		if (s.tt != CPPS_TSTRING) return;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
 		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
 		for (cpps_integer i = 0; i < c; i++) {
@@ -258,6 +271,7 @@ namespace cpps
 	}
 	bool cpps_string_startswith(cpps_value s,std::string end) {
 
+		if (s.tt != CPPS_TSTRING) return false;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
 		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
 		size_t pos = tmpStr->find(end);
@@ -266,6 +280,7 @@ namespace cpps
 		return false;
 	}
 	bool cpps_string_endswith(cpps_value s, std::string end) {
+		if (s.tt != CPPS_TSTRING) return false;
 
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
 		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
@@ -276,7 +291,8 @@ namespace cpps
 	}
 	cpps_value cpps_string_trim(cpps_value s)
 	{
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)s.value.domain;
+		if (s.tt != CPPS_TSTRING) return false;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
 		if (tmpStr->empty())
@@ -327,7 +343,8 @@ namespace cpps
 	}
 	cpps_value cpps_string_rtrim(cpps_value s)
 	{
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)s.value.domain;
+		if (s.tt != CPPS_TSTRING) return nil;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 		if (tmpStr->empty())
 		{
@@ -356,6 +373,7 @@ namespace cpps
 	*/
 	std::string cpps_string_regex_replace(cpps_value src, std::string reg,std::string pos)
 	{
+		if (src.tt != CPPS_TSTRING) return "";
 		std::regex e(reg.c_str());
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
@@ -370,7 +388,8 @@ namespace cpps
 	}
 	cpps_value cpps_string_push_back(cpps_value src, cpps_integer c)
 	{
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
+		if (src.tt != CPPS_TSTRING) return nil;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)src.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
 		tmpStr->push_back(static_cast<char>(c));
@@ -378,7 +397,8 @@ namespace cpps
 	}
 	cpps_integer cpps_string_unicode_charCodeAt(cpps_value src, cpps_integer pos)
 	{
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
+		if (src.tt != CPPS_TSTRING) return 0;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)src.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
 		if (tmpStr->size() % 2 != 0) return 0;
@@ -399,6 +419,7 @@ namespace cpps
 	}
 	cpps_integer cpps_string_charCodeAt(cpps_value src, cpps_integer pos)
 	{
+		if (src.tt != CPPS_TSTRING) return 0;
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 

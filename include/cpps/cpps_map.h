@@ -38,7 +38,9 @@ namespace cpps
 		cpps_integer	size();
 		void			set(cpps_value key_val, cpps_value value);
 
-		cpps_value&		operator [] (cpps_value k)
+		cpps_value		where(C* c, object o);
+		cpps_value		select(C* c, object o);
+		cpps_value& operator [] (cpps_value k)
 		{
 			return _map[k];
 		}

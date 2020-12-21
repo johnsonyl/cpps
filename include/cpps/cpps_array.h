@@ -39,7 +39,9 @@ namespace cpps
 		bool								has(cpps_value v);
 		cpps_integer						size();
 		void								resize(cpps_integer s);
-		std::vector<cpps_value>&			realvector();
+		cpps_value							where(C* c, object o);
+		cpps_value							select(C* c, object o);
+		std::vector<cpps_value>& realvector();
 	private:
 		std::vector<cpps_value>				_vec;
 		std::vector<cpps_value>::iterator	_begin;

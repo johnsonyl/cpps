@@ -25,6 +25,8 @@ namespace cpps
 				.def("empty", &cpps_map::empty)
 				.def("clear", &cpps_map::clear)
 				.def("size", &cpps_map::size)
+				.def_inside("where", &cpps_map::where)
+				.def_inside("select", &cpps_map::select)
 		];
 	}
 	
@@ -148,6 +150,29 @@ namespace cpps
 			it->second = value;
 		}
 	}
-
+	cpps_value cpps_map::where(C* c, object o)
+	{
+		cpps_map* vec;
+		cpps_value ret = newclass(c, &vec);
+		if (o.isfunction()) {
+			for (auto v : realmap()) {
+				bool b = object_cast<bool>(dofunction(c, o, v.first,v.second));
+				if (b) vec->insert(v.first,v.second);
+			}
+		}
+		return ret;
+	}
+	cpps_value cpps_map::select(C* c, object o)
+	{
+		cpps_map* vec;
+		cpps_value ret = newclass(c, &vec);
+		if (o.isfunction()) {
+			for (auto v : realmap()) {
+				cpps_value b = object_cast<cpps_value>(dofunction(c, o, v.first,v.second));
+				vec->insert(v.first, b);
+			}
+		}
+		return ret;
+	}
 }
 

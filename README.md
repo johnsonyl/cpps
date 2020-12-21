@@ -52,6 +52,18 @@ lib/socket 为libevent封装库 需要安装编译libevent
 
 *更新日志*：
 -
+2020-12-21 更新2
+
+1 .增加类似linq的 where select函数
+
+2. 增加一个centos下的编译批处理
+
+3. 暂时屏蔽掉curl库,因为用yum安装的libcurl版本有点老.
+
+4. 解决三元表达式某些时候错误的BUG.
+
+5. 增加hiredis&xredis支持库(未完成)
+
 
 2020-12-21 更新
 -
