@@ -58,7 +58,7 @@ lib/socket 为libevent封装库 需要安装编译libevent
 
 1.增加http模块uploader类.
 
-2.增加http模块httpserver对formdata格式的解析支持
+2.增加socket模块httpserver对formdata格式的解析支持
 
 3.增加uuid(GUID)模块
 
