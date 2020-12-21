@@ -1,4 +1,4 @@
-yum -y install zlib-devel openssl-devel curl-devel libuuid-devel mysql-devel libevent-devel gcc make cmake
+yum -y install zlib-devel openssl-devel curl-devel libuuid-devel mysql-devel libevent-devel gcc gcc-c++ make cmake
 
 cd deps
 cd hiredis
