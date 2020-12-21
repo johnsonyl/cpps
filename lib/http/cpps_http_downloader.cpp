@@ -23,11 +23,17 @@ namespace cpps
 		filepath = f;
 		remove(filepath.c_str());
 	}
+
+	void cpps_http_downloader::setcookie(std::string cookie)
+	{
+		cookiesfile = cookie;
+	}
+
 	size_t get_size_struct(void* ptr, size_t size, size_t nmemb, void* data) {
 		return (size_t)(size * nmemb);
 	}
 
-	cpps_integer get_download_size(const char* url) {
+	cpps_integer get_download_size(const char* url,std::string cookiesfile) {
 		CURL* curl;
 		CURLcode res;
 		double size = 0.0;
@@ -37,7 +43,11 @@ namespace cpps
 		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, get_size_struct);
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-
+		if (!cookiesfile.empty())
+		{
+			curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookiesfile.c_str()); // 指定cookie文件
+			curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookiesfile.c_str()); // 指定cookie文件
+		}
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
@@ -70,7 +80,7 @@ namespace cpps
 
 
 
-		fileSize = get_download_size(httpurl.c_str());
+		fileSize = get_download_size(httpurl.c_str(), cookiesfile);
 
 
 		curl = curl_easy_init();    // 初始化
@@ -81,7 +91,11 @@ namespace cpps
 				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 			}
-
+			if (!cookiesfile.empty())
+			{
+				curl_easy_setopt(curl, CURLOPT_COOKIEJAR, cookiesfile.c_str()); // 指定cookie文件
+				curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookiesfile.c_str()); // 指定cookie文件
+			}
 
 			curl_easy_setopt(curl, CURLOPT_URL, httpurl.c_str());
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, this); //将返回的http头输出到fp指向的文件

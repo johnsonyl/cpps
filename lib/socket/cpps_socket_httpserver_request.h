@@ -12,11 +12,13 @@
 #include <event2/keyvalq_struct.h>
 #include <unordered_map>
 #include <string>
+#include "cpps_socket_httpserver_request_filedata.h"
 
 
 namespace cpps {
 
 	typedef phmap::flat_hash_map<std::string, std::string> PARAMSLIST;
+	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_request_filedata*> FILEDATASLIST;
 	class cpps_socket_httpserver_request
 	{
 	public:
@@ -34,6 +36,10 @@ namespace cpps {
 		std::string getpath();
 		std::string geturi();
 		std::string getbuffer();
+		bool		isformdata();
+		std::string getboundary();
+		cpps_socket_httpserver_request_filedata* getfiledata(std::string name);
+		void parse_form_data(std::string& input_buffer);
 	public:
 		std::string	path;
 		std::string uri;
@@ -45,6 +51,7 @@ namespace cpps {
 		std::string userinfo;
 		std::string input_buffer;
 		struct evhttp_request* ev_req;
+		FILEDATASLIST filedataslist;
 	};
 }
 

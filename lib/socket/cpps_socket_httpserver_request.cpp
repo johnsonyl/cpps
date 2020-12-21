@@ -8,7 +8,10 @@ namespace cpps {
 
 	cpps_socket_httpserver_request::~cpps_socket_httpserver_request()
 	{
-
+		for (auto filedata : filedataslist) {
+			delete filedata.second;
+		}
+		filedataslist.clear();
 	}
 
 	void cpps_socket_httpserver_request::addheader(cpps::object list)
@@ -67,6 +70,84 @@ namespace cpps {
 	std::string cpps_socket_httpserver_request::getbuffer()
 	{
 		return input_buffer;
+	}
+
+	bool cpps_socket_httpserver_request::isformdata()
+	{
+		std::string content_type = getheader("Content-Type");
+		size_t pos = content_type.find("multipart/form-data");
+		if (pos != 0) return false;
+		return true;
+	}
+
+	std::string cpps_socket_httpserver_request::getboundary()
+	{
+		std::string content_type = getheader("Content-Type");
+		size_t pos = content_type.find("boundary=");
+		if (pos == std::string::npos) return "";
+		return content_type.substr(pos + strlen("boundary="));
+	}
+
+	cpps::cpps_socket_httpserver_request_filedata* cpps_socket_httpserver_request::getfiledata(std::string name)
+	{
+		cpps::cpps_socket_httpserver_request_filedata* ret = NULL;
+		auto it = filedataslist.find(name);
+		if (it != filedataslist.end()) {
+			ret = it->second;
+		}
+		return ret;
+	}
+
+	std::string	cpps_string_real_strcut(std::string& v, std::string v2, std::string v3);
+	void cpps_socket_httpserver_request::parse_form_data(std::string& input_buffer)
+	{
+		std::string boundary = std::string("--") + getboundary();
+		if (boundary.empty()) return;
+		size_t pos = 0;
+		while (pos < input_buffer.size()) {
+			pos = input_buffer.find(boundary, pos);
+			if (pos == std::string::npos) break;
+			pos += boundary.size();
+			if (pos + 2 >= input_buffer.size()) break;
+			std::string ends = input_buffer.substr(pos, 2);
+			if (ends == "--") break;
+			if (ends != "\r\n") break;
+			pos += 2;
+
+			size_t pos2 = input_buffer.find("\r\n\r\n", pos);
+			if (pos2 == std::string::npos) break;
+
+			
+
+			std::string cfg = input_buffer.substr(pos, pos2 - pos + 2);
+			pos = pos2 + strlen("\r\n\r\n");
+			std::string name_value = cpps_string_real_strcut(cfg, "name=\"", "\"");
+			std::string filename_value = cpps_string_real_strcut(cfg, "filename=\"", "\"");
+			std::string content_type = cpps_string_real_strcut(cfg, "Content-Type: ", "\r\n");
+
+
+
+			pos2 = input_buffer.find(boundary, pos);
+			if (pos2 == std::string::npos) break;
+
+			std::string value = input_buffer.substr(pos,pos2-pos);
+			pos = pos2;
+
+
+			if (!filename_value.empty()) {
+				cpps_socket_httpserver_request_filedata* filedata = new cpps_socket_httpserver_request_filedata();
+				filedata->content_type_value = content_type;
+				filedata->filename_value = filename_value;
+				filedata->name_value = name_value;
+				filedata->value_value = value;
+				filedataslist.insert(FILEDATASLIST::value_type(name_value, filedata));
+			}
+			else {
+				paramslist.insert(PARAMSLIST::value_type(name_value, value));
+				postlist.insert(PARAMSLIST::value_type(name_value, value));
+			}
+
+		}
 	}
 
 }

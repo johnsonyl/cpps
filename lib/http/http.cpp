@@ -13,6 +13,7 @@
 #include "cpps_http_request.h"
 #include "cpps_http_encode.h"
 #include "cpps_http_downloader.h"
+#include "cpps_http_uploader.h"
 
 using namespace cpps;
 using namespace std;
@@ -40,7 +41,12 @@ cpps_export_void cpps_attach(cpps::C* c)
         _class< cpps_http_downloader>("downloader")
             .def("seturl",&cpps_http_downloader::seturl)
             .def("setfilepath",&cpps_http_downloader::setfilepath)
-            .def_inside("download",&cpps_http_downloader::download)
+            .def_inside("download",&cpps_http_downloader::download),
+        _class<cpps_http_uploader>("uploader")
+            .def("addvalue", &cpps_http_uploader::addvalue)
+            .def("addfile", &cpps_http_uploader::addfile)
+            .def("setcookie", &cpps_http_uploader::setcookie)
+            .def_inside("upload", &cpps_http_uploader::upload)
 	];
 
 

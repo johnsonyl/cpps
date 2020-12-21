@@ -1972,6 +1972,13 @@ namespace cpps {
 		c->_G->regvar(NULL, v);
 		/* 将自己注册成_G.. */
 	}
+
+	void cpps_reglib(C* c)
+	{
+		std::string libmainpath = cpps_real_path() + "lib/main.cpp";
+		dofile(c, libmainpath.c_str());
+	}
+
 	cpps::C* create(int argc, char** argv) {
 		C* c = new cpps::C(argc, argv);
 		cpps_create_root_G(c);
@@ -1990,6 +1997,8 @@ namespace cpps {
 		cpps_regconsole(c);
 		cpps_reglambdafunction(c);
 		cpps_regasyncio(c);
+		cpps_reglib(c);
+
 		return(c);
 	}
 	int32 dostring(C* c, std::string str) {

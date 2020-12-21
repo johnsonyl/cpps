@@ -100,7 +100,10 @@ namespace cpps
 				}
 				cout << "}";
 			}
-
+			else
+			{
+				cout << "class <" << b.value.value.domain->domainname << ">";
+			}
 		}
 		else
 		{
@@ -165,6 +168,10 @@ namespace cpps
 					}
 				}
 				cout << "}";
+			}
+			else
+			{
+				cout << "class <" << b.value.value.domain->domainname <<">";
 			}
 			cout << endl;
 		}
@@ -237,7 +244,37 @@ namespace cpps
 	}
 	cpps_integer cpps_base_objtype(cpps_value v)
 	{
+		if (v.tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
 		return v.tt;
+	}
+	std::string cpps_base_type(cpps_value v) {
+		std::string ret = "unknow type";
+		switch (cpps_base_objtype(v))
+		{
+		case CPPS_TNIL:
+			return "nil";
+		case CPPS_TINTEGER:
+			return "integer";
+		case CPPS_TNUMBER:
+			return "number";
+		case CPPS_TBOOLEAN:
+			return "boolean";
+		case CPPS_TSTRING:
+			return "string";
+		case CPPS_TCLASS:
+		{
+			return std::string("class ") + v.value.domain->domainname;
+		}
+		case CPPS_TCLASSVAR:
+		{
+			return v.value.domain->domainname;
+		}
+		case CPPS_TFUNCTION:
+			return "function";
+		default:
+			break;
+		}
+		return ret;
 	}
 	void cpps_base_system(std::string v)
 	{
@@ -564,6 +601,46 @@ namespace cpps
 		}
 		return ret;
 	}
+	size_t partition(std::vector<cpps_value>& v, size_t begin, size_t end)
+	{
+		cpps_value pivot = v[begin];
+		size_t left = begin + 1;
+		size_t right = end;
+		while (true)
+		{
+			while (left < right && v[right] >= pivot)
+				right--;
+			while (left < right && v[left] < pivot)
+				left++;
+			if (left == right)
+				break;
+			std::swap(v[left], v[right]);
+		}
+		if (v[left] >= pivot)
+			return begin;
+		v[begin] = v[left];
+		v[left] = pivot;
+		return left;
+	}
+	void quickSort(std::vector<cpps_value>& v, size_t begin, size_t end)
+	{
+		if (begin >= end)
+			return;
+		size_t boundary = partition(v, begin, end);
+		quickSort(v, begin, boundary - 1);
+		quickSort(v, boundary + 1, end);
+	}
+	void cpps_base_sort(object v)
+	{
+		if (v.isvector()) {
+			cpps_vector* vec = cpps_to_cpps_vector(v.value);
+			quickSort(vec->realvector(), 0, vec->size() - 1);
+		}
+	}
+	void cpps_base_exit(cpps_integer exitcode)
+	{
+		exit((int)exitcode);
+	}
 	void cpps_regbase(C *c)
 	{
 		cpps::_module(c)[
@@ -575,7 +652,7 @@ namespace cpps
 			def("print", cpps_base_printf),
 			def("printfln", cpps_base_printfln),
 			def("println", cpps_base_printfln),
-			def("exit",exit),
+			def("exit", cpps_base_exit),
 			def("sleep", cpps_base_sleep),
 			def("Sleep", cpps_base_sleep),
 			def("tonumber", cpps_base_tonumber),
@@ -594,8 +671,10 @@ namespace cpps
 			def("isclassvar", cpps_base_isclassvar),
 			def("isclass", cpps_base_isclass),
 			def("objtype", cpps_base_objtype),
+			def("type", cpps_base_type),
 			def("system", cpps_base_system),
 			def("len", cpps_base_len),
+			def("sort", cpps_base_sort),
 			def("isset", cpps_base_isset),
 			def("isdebug", cpps_base_isdebug),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
@@ -632,10 +711,12 @@ namespace cpps
 		];
 		cpps::_module(c, "sys")[
 			defvar(c, "platform", CPPS_CURRENT_PLANTFORM),
+			defvar(c, "easyplatform", CPPS_CURRENT_EASYPLANTFORM),
 			defvar(c, "builder_version", CPPS_BUILDER_VERSION),
 			defvar(c, "version", CPPS_VER),
 			defvar(c, "versionno", CPPS_VERN)
 		];
+
 
 	}
 }

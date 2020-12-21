@@ -277,6 +277,30 @@ namespace cpps
 		value.integer = 0;
 	}
 
+	bool cpps_value::operator<=(const cpps_value right) const
+	{
+		if (tt == right.tt)
+		{
+			switch (tt)
+			{
+			case CPPS_TNUMBER: return value.number <= right.value.number;
+			case CPPS_TINTEGER: return value.integer <= right.value.integer;
+			case CPPS_TSTRING: {
+				cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)value.domain;
+				std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar* cppsclassvar2 = (cpps_cppsclassvar*)right.value.domain;
+				std::string* tmpStr2 = (std::string*)cppsclassvar2->getclsptr();
+
+				return (*(tmpStr)) <= (*(tmpStr2));
+			}
+			default:
+				throw(cpps_error("unknow file", 0, 0, "<=   ... It can't be used as a key.type: %d", right.tt));
+			}
+		}
+		return tt <= right.tt;
+	}
+
 	cpps::cpps_value& cpps_value::operator=(const cpps_value& v)
 	{
 		// ±ÜÃâ×Ô¸³Öµ
@@ -290,6 +314,30 @@ namespace cpps
 		return *this;
 	}
 
+
+	bool cpps_value::operator>=(const cpps_value right) const
+	{
+		if (tt == right.tt)
+		{
+			switch (tt)
+			{
+			case CPPS_TNUMBER: return value.number >= right.value.number;
+			case CPPS_TINTEGER: return value.integer >= right.value.integer;
+			case CPPS_TSTRING: {
+				cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)value.domain;
+				std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+				cpps_cppsclassvar* cppsclassvar2 = (cpps_cppsclassvar*)right.value.domain;
+				std::string* tmpStr2 = (std::string*)cppsclassvar2->getclsptr();
+
+				return (*(tmpStr)) >= (*(tmpStr2));
+			}
+			default:
+				throw(cpps_error("unknow file", 0, 0, ">=   ... It can't be used as a key.type: %d", right.tt));
+			}
+		}
+		return tt >= right.tt;
+	}
 
 	void cpps_value::decruse()
 	{

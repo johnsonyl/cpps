@@ -73,6 +73,31 @@ namespace cpps
 
 		return ret;
 	}
+	void cpps_string_real_split(std::vector<std::string>&vec, std::string &v, std::string v2,cpps_integer count)
+	{
+		size_t ncount = (size_t)count;
+		if (v.empty()) return;
+
+		const char *a = v.c_str(); const char *b;
+		while (true)
+		{
+			b = strstr(a, v2.c_str());
+
+			if (!b)	b = a + strlen(a);
+
+			std::string s;
+			s.append(a, strlen(a) - strlen(b));
+
+			vec.push_back(s);
+
+			if (count != -1 && vec.size() >= ncount) break;
+
+			//如果到了结尾那就出去吧。
+			if (strlen(b) == 0 || strlen(b) == 1) break;
+			else a = b + v2.size();
+
+		}
+	}
 	cpps_value cpps_string_split(C *c, cpps_value v, std::string v2,cpps_value count)
 	{
 		cpps_integer ncount = -1;
@@ -97,7 +122,7 @@ namespace cpps
 
 			vec->push_back(cpps_value(c,s));
 
-			if (ncount != -1 && vec->size() > ncount) break;
+			if (ncount != -1 && vec->size() >= ncount) break;
 
 			//如果到了结尾那就出去吧。
 			if (strlen(b) == 0 || strlen(b) == 1) break;
@@ -107,15 +132,30 @@ namespace cpps
 
 		return ret;
 	}
-	std::string	cpps_string_strcut(cpps_value v, std::string v2, std::string v3)
+	std::string	cpps_string_real_strcut(std::string &v, std::string v2, std::string v3)
 	{
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
-		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
-		const char * strtmp1 = strstr(tmpStr->c_str(), v2.c_str());
+		const char * strtmp1 = strstr(v.c_str(), v2.c_str());
 		if (!strtmp1) return "";
 
 		const char * strtmp2 = strstr(strtmp1 + v2.size(), v3.c_str());
+		if (!strtmp2) return "";
+
+		std::string out;
+		out.append(strtmp1 + v2.size(), strtmp2 - strtmp1 - v2.size());
+
+
+		return out;
+	}
+	std::string	cpps_string_strcut(cpps_value v, std::string v2, std::string v3)
+	{
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)v.value.domain;
+		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+		const char* strtmp1 = strstr(tmpStr->c_str(), v2.c_str());
+		if (!strtmp1) return "";
+
+		const char* strtmp2 = strstr(strtmp1 + v2.size(), v3.c_str());
 		if (!strtmp2) return "";
 
 		std::string out;
@@ -216,7 +256,16 @@ namespace cpps
 			tmpStr->pop_back();
 		}
 	}
-	bool cpps_string_endswith(cpps_value s,std::string end) {
+	bool cpps_string_startswith(cpps_value s,std::string end) {
+
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
+		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+		size_t pos = tmpStr->find(end);
+		if (pos == std::string::npos) return false;
+		if (pos == 0) return true;
+		return false;
+	}
+	bool cpps_string_endswith(cpps_value s, std::string end) {
 
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
 		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
@@ -393,6 +442,7 @@ namespace cpps
 			def("rtrim", cpps_string_rtrim),
 			def("join", cpps_string_join),
 			def("between", cpps_string_between),
+			def("startswith", cpps_string_startswith),
 			def("endswith", cpps_string_endswith),
 			def("pop_back", cpps_string_pop_back),
 			def("regex_match", cpps_string_regex_match),

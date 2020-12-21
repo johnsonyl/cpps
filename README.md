@@ -53,15 +53,35 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-21 更新
+-
+
+1.增加http模块uploader类.
+
+2.增加http模块httpserver对formdata格式的解析支持
+
+3.增加uuid(GUID)模块
+
+4.增加random模块
+
+5.增加一些常用函数io.writefile,io.filesize,io.copy,io.copydir,io.move,io.movedir,string.startswith,sort等
+
+6.增加println 和 type可以打印出类的名称
+
+7.foreach 增加range支持
+
 2020-12-20 更新
+-
 
 1.移除stl的map unordered_map使用https://github.com/greg7mdp/parallel-hashmap   (极力推荐)
+
+cpps中就统一map了,不在区分map与unordered_map.
 
 2.调整macos安装目录/usr/local/opt/cpps
 
 3.移动头文件到include/cpps 中,修改包含头文件为 #include <cpps/cpps.h>
 
-4.修复已知BUG.
+1.移除stl的map unordered_map4.修复已知BUG.
 
 2020-12-19 更新
 -

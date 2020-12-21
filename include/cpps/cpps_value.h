@@ -45,7 +45,9 @@ namespace cpps
 		~cpps_value();
 		//为了可以当map的key 需要实现 < > == 3个函数
 		bool				operator < (const cpps_value &right) const;
+		bool				operator <= (const cpps_value right) const;
 		bool				operator >(const cpps_value &right) const;
+		bool				operator >=(const cpps_value right) const;
 		bool				operator == (const cpps_value &right) const;
 		cpps_value&			operator=(const cpps_value& v);
 		void				decruse();

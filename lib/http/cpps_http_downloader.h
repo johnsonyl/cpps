@@ -15,6 +15,7 @@ namespace cpps{
 	public:
 		bool			seturl(std::string url);
 		void			setfilepath(std::string filepath);
+		void			setcookie(std::string cookie);
 
 		bool			download(cpps::C* c, cpps::object func);
 		void			close();
@@ -23,21 +24,12 @@ namespace cpps{
 	public:
 		std::string		httpurl;
 		std::string		filepath;
+		std::string		cookiesfile;
 		cpps_integer	fileSize;
 		cpps_integer	fileCurrSize;
 		cpps::C* m_c;
 		cpps::object									m_funcCallback;
 
-		//std::string										m_strProxy;
-		//std::string										m_strCookieFile;
-		//std::string										m_strDomain;
-		//int												m_nPort;
-		//int												m_nType;
-		//std::string										m_strUrl;
-		//std::string										m_strData;
-		//std::string										m_strPage;
-		//std::vector<std::string>						m_vctHeaderList;
-		//std::string										m_HeaderDatas;
 	};
 	
 }

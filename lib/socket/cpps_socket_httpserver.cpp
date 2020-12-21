@@ -102,7 +102,7 @@ namespace cpps {
 
 		if (path) cpps_request_ptr->path = path;
 		if (scheme) cpps_request_ptr->scheme = scheme;
-		if (userinfo) cpps_request_ptr->scheme = userinfo;
+		if (userinfo) cpps_request_ptr->userinfo = userinfo;
 
 		if (query)
 		{
@@ -133,14 +133,21 @@ namespace cpps {
 			evbuffer_remove(ib, ib_buffer, ibsize);
 			cpps_request_ptr->input_buffer.append(ib_buffer, ibsize);
 
-			struct evkeyvalq post_params;
-			evhttp_parse_query_str(ib_buffer, &post_params);
+			if (cpps_request_ptr->isformdata()) {
+				cpps_request_ptr->parse_form_data(cpps_request_ptr->input_buffer);
+			}
+			else {
+				struct evkeyvalq post_params;
+				evhttp_parse_query_str(ib_buffer, &post_params);
 
-			for (struct evkeyval* header = post_params.tqh_first; header; header = header->next.tqe_next) {
-				cpps_request_ptr->paramslist.insert(PARAMSLIST::value_type(header->key, header->value));
-				cpps_request_ptr->postlist.insert(PARAMSLIST::value_type(header->key, header->value));
+				for (struct evkeyval* header = post_params.tqh_first; header; header = header->next.tqe_next) {
+					cpps_request_ptr->paramslist.insert(PARAMSLIST::value_type(header->key, header->value));
+					cpps_request_ptr->postlist.insert(PARAMSLIST::value_type(header->key, header->value));
+				}
+
 			}
 
+			
 			delete[] ib_buffer;
 		}
 		cpps_stack* takestack = httpserver->c->getcallstack()->empty() ? NULL : httpserver->c->getcallstack()->at(httpserver->c->getcallstack()->size() - 1);
@@ -290,5 +297,6 @@ namespace cpps {
 		}
 		return ret;
 	}
+	
 
 }

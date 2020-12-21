@@ -6,6 +6,11 @@ namespace cpps
 
 	cpps::int32 type(object o)
 	{
+		if (o.value.tt == CPPS_TREGVAR) {
+
+			if (o.value.value.value->tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
+			return o.value.value.value->tt;
+		}
 		if (o.value.tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
 		return o.value.tt;
 	}
@@ -24,8 +29,11 @@ namespace cpps
 			return "boolean";
 		case CPPS_TSTRING:
 			return "string";
-		case CPPS_TCLASSVAR:
-			return "userdata";
+		case CPPS_TCLASSVAR: 
+		{
+			object realobj = o;
+			return realobj.value.value.domain->domainname; 
+		}
 		case CPPS_TFUNCTION:
 			return "function";
 		}

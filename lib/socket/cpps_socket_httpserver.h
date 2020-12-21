@@ -27,6 +27,7 @@ namespace cpps {
 		cpps::object		notfoundfunc;
 	};
 	typedef phmap::flat_hash_map<std::string, cpps::object> http_route;
+	class cpps_socket_httpserver_request;
 	class cpps_socket_httpserver
 	{
 	public:
@@ -55,6 +56,7 @@ namespace cpps {
 		cpps::object							http_default_class_route;
 		cpps_socket_httpserver_option			http_option;
 		bool									http_running;
+	private:
 	};
 }
 

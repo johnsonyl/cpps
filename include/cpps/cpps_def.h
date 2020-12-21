@@ -17,18 +17,21 @@
 #else
 #define CPPS_CURRENT_PLANTFORM "win64"
 #endif
+#define CPPS_CURRENT_EASYPLANTFORM "windows"
 #elif defined LINUX
 #ifdef _X86_
 #define CPPS_CURRENT_PLANTFORM "linux32"
 #else
 #define CPPS_CURRENT_PLANTFORM "linux64"
 #endif
+#define CPPS_CURRENT_EASYPLANTFORM "linux"
 #elif defined __APPLE__
 #ifdef _X86_
 #define CPPS_CURRENT_PLANTFORM "macos32"
 #else
 #define CPPS_CURRENT_PLANTFORM "macos64"
 #endif
+#define CPPS_CURRENT_EASYPLANTFORM "macos"
 #else
 #define CPPS_CURRENT_PLANTFORM "unknow OS system."
 #endif

@@ -65,6 +65,27 @@ namespace cpps
 		fseek(file, cur, SEEK_SET);
 		return ret;
 	}
+	bool cpps_io_writefile(std::string filepath, std::string content) {
+		FILE* file = cpps_io_open(filepath, "wb+");
+		if (file)
+		{
+			fwrite(content.c_str(), content.size(), 1, file);
+			fclose(file);
+			return true;
+		}
+		return false;
+	}
+	cpps_integer cpps_io_filesize(std::string filepath) {
+		FILE* file = cpps_io_open(filepath, "rb");
+		if (file)
+		{
+			fseek(file, 0, SEEK_END);
+			cpps_integer ret = ftell(file);
+			fclose(file);
+			return ret;
+		}
+		return 0;
+	}
 	std::string cpps_io_readfile(std::string filepath)
 	{
 		std::string ret;
@@ -181,10 +202,7 @@ namespace cpps
 	{
 		return _mkdir(p.c_str());
 	}
-	cpps_integer cpps_io_rmdir(std::string p)
-	{
-		return _rmdir(p.c_str());
-	}
+
 	
 	cpps_integer cpps_io_mkdirs(std::string szdir)
 	{
@@ -256,6 +274,8 @@ namespace cpps
 
 	bool cpps_io_isdir(std::string p)
 	{
+		p = cpps_io_string_replace(p, "\\", "/");
+
 #ifdef _WIN32
 		struct _stat64 statinfo;
 		_stati64(p.c_str(), &statinfo);
@@ -384,6 +404,8 @@ namespace cpps
 	}
 	bool cpps_io_isfile(std::string p)
 	{
+		p = cpps_io_string_replace(p, "\\", "/");
+
 #ifdef _WIN32
 		struct _stat64 statinfo;
 		_stati64(p.c_str(), &statinfo);
@@ -393,7 +415,82 @@ namespace cpps
 #endif
 		return S_ISREG(statinfo.st_mode);
 	}
-	void cpps_real_walk(C*c,cpps_vector* vct,std::string path, bool bfindchildren) {
+	void cpps_cpp_real_walk(std::vector<std::string>& vct,std::string path, bool bfindchildren) {
+		char dirNew[200];
+
+
+		path = cpps_io_string_replace(path, "\\", "/");
+
+		strcpy(dirNew, path.c_str());
+#if defined _WIN32
+		strcat(dirNew, "/*.*");    // 在目录后面加上"\\*.*"进行第一次搜索
+		intptr_t handle;
+		_finddata_t findData;
+
+		handle = _findfirst(dirNew, &findData);
+		if (handle == -1)        // 检查是否成功
+			return;
+
+
+
+		do
+		{
+			strcpy(dirNew, path.c_str());
+			strcat(dirNew, "/");
+			strcat(dirNew, findData.name);
+
+			if (findData.attrib & _A_SUBDIR)
+			{
+				if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
+					continue;
+
+				vct.push_back( dirNew);
+
+				if(bfindchildren)
+					cpps_cpp_real_walk( vct,dirNew, bfindchildren);
+			}
+			else
+				vct.push_back(dirNew);
+
+		} while (_findnext(handle, &findData) == 0);
+
+		_findclose(handle);    // 关闭搜索句柄
+#else
+		struct dirent* filename;    // return value for readdir()
+		DIR* dir;                   // return value for opendir()
+		dir = opendir(dirNew);
+		if (NULL == dir)
+		{
+			return;
+		}
+
+		/* read all the files in the dir ~ */
+		while ((filename = readdir(dir)) != NULL)
+		{
+
+			strcpy(dirNew, path.c_str());
+			strcat(dirNew, "/");
+			strcat(dirNew, filename->d_name);
+
+			// get rid of "." and ".."
+			if (strcmp(filename->d_name, ".") == 0 ||
+				strcmp(filename->d_name, "..") == 0)
+				continue;
+
+			
+			vct.push_back( dirNew );
+
+			struct stat s;
+			lstat(dirNew, &s);
+			if (S_ISDIR(s.st_mode))
+			{
+				if (bfindchildren)
+					cpps_cpp_real_walk(vct, dirNew, bfindchildren);
+			}
+		}
+#endif
+	}
+	void cpps_real_walk(C*c,cpps_vector* vct,std::string path, bool bfindchildren = false,bool onlydir = false) {
 		char dirNew[200];
 
 
@@ -427,7 +524,7 @@ namespace cpps
 				if(bfindchildren)
 					cpps_real_walk(c, vct,dirNew, bfindchildren);
 			}
-			else
+			else if(!onlydir)
 				vct->push_back(cpps_value(c, dirNew));
 
 		} while (_findnext(handle, &findData) == 0);
@@ -456,14 +553,18 @@ namespace cpps
 				continue;
 
 			
-			vct->push_back(cpps_value(c, dirNew));
 
 			struct stat s;
 			lstat(dirNew, &s);
 			if (S_ISDIR(s.st_mode))
 			{
+				vct->push_back(cpps_value(c, dirNew));
 				if (bfindchildren)
 					cpps_real_walk(c, vct, dirNew, bfindchildren);
+			}
+			else if (!onlydir)
+			{
+				vct->push_back(cpps_value(c, dirNew));
 			}
 		}
 #endif
@@ -475,6 +576,15 @@ namespace cpps
 		
 		bool bfindchildren = findchildren.tt == CPPS_TBOOLEAN ? findchildren.value.b : true;
 		cpps_real_walk(c, vct, path, bfindchildren);
+		return ret;
+	}
+	cpps_value cpps_io_listdir(C* c, std::string path, cpps_value findchildren) {
+
+		cpps_vector* vct = NULL;
+		cpps_value ret = newclass<cpps_vector>(c, &vct);
+
+		bool bfindchildren = findchildren.tt == CPPS_TBOOLEAN ? findchildren.value.b : true;
+		cpps_real_walk(c, vct, path, bfindchildren,true);
 		return ret;
 	}
 	std::string cpps_real_path()
@@ -542,12 +652,101 @@ namespace cpps
 		
 		return abs_path;
 	}
+
+	cpps_integer cpps_io_copy(std::string sourcefile, std::string targetfile) {
+		// int c to store one char at a time
+		sourcefile = cpps_io_string_replace(sourcefile, "\\", "/");
+		targetfile = cpps_io_string_replace(targetfile, "\\", "/");
+		
+		// declare and open files for copy
+		FILE* in_ptr = fopen(sourcefile.c_str(), "rb");
+		FILE* out_ptr = fopen(targetfile.c_str(), "wb+");
+
+		if (!in_ptr) {
+			return -1;
+		}
+
+		if (!out_ptr) {
+			return -1;
+		}
+		char tmpbuf[4096];
+		
+		size_t filesize = 0;
+		while (true) {
+			size_t size = fread(tmpbuf,1 , 4096, in_ptr);
+			if (size == 0) break;
+			fwrite(tmpbuf, size, 1, out_ptr);
+			filesize += size;
+		}
+		// close files
+		fclose(in_ptr);
+		fclose(out_ptr);
+		return filesize;
+	}
+	cpps_integer cpps_io_move(std::string sourcefile, std::string targetfile) {
+		cpps_integer ret = cpps_io_copy(sourcefile, targetfile);
+		if (ret >= 0) {
+			cpps_io_remove(sourcefile);
+			return 0;
+		}
+		return -1;
+	}
+	
+	cpps_integer cpps_io_rmdir(std::string sourcepath) {
+		sourcepath = cpps_io_string_replace(sourcepath, "\\", "/");
+
+		std::vector<std::string> files;
+		cpps_cpp_real_walk(files, sourcepath, true);
+		auto it = files.rbegin();
+		auto end = files.rend();
+		cpps_integer ret = 0;
+		for (; it != end; ++it) {
+			auto file = *it;
+			if (cpps_io_isfile(file))
+				ret = cpps_io_remove(file);
+			else if (cpps_io_isdir(file))
+				ret = _rmdir(file.c_str());
+			if (ret < 0) return ret;
+		}
+		return _rmdir(sourcepath.c_str());
+	}
+	cpps_integer cpps_io_copydir(std::string sourcepath, std::string targetpath) {
+		sourcepath = cpps_io_string_replace(sourcepath, "\\", "/");
+		targetpath = cpps_io_string_replace(targetpath, "\\", "/");
+
+		std::vector<std::string> files;
+		cpps_cpp_real_walk(files, sourcepath, true);
+		cpps_integer ret = cpps_io_mkdirs(targetpath);
+		for (auto file : files) {
+			std::string tarfile = cpps_io_string_replace(file, sourcepath, targetpath);
+			if (cpps_io_isfile(file))
+				ret = cpps_io_copy(file, tarfile);
+			else if (cpps_io_isdir(file))
+				cpps_io_mkdir(tarfile);
+			else
+				return -1;
+			if (ret < 0) return -1;
+		}
+		return 0;
+	}
+	cpps_integer cpps_io_movedir(std::string sourcepath, std::string targetpath) {
+		sourcepath = cpps_io_string_replace(sourcepath, "\\", "/");
+		targetpath = cpps_io_string_replace(targetpath, "\\", "/");
+		cpps_integer ret = 0;
+		ret = cpps_io_copydir(sourcepath, targetpath);
+		if (ret == 0) {
+			ret = cpps_io_rmdir(sourcepath);
+		}
+		return ret;
+	}
 	void cpps_regio(C *c)
 	{
 		cpps::_module(c,"io")[
 			def_inside("getc",cpps_io_getc),
 			def("fopen",cpps_io_open),
+			def("writefile",cpps_io_writefile),
 			def("readfile",cpps_io_readfile),
+			def("filesize",cpps_io_filesize),
 			def("fsize", cpps_io_size),
 			def("fread", cpps_io_read),
 			def("getlines", cpps_io_getlines),
@@ -557,6 +756,10 @@ namespace cpps
 			def("fclose", cpps_io_close),
 			def("fflush", cpps_io_fflush),
 			def("remove", cpps_io_remove),
+			def("copy", cpps_io_copy),
+			def("move", cpps_io_move),
+			def("copydir", cpps_io_copydir),
+			def("movedir", cpps_io_movedir),
 			def("rename", cpps_io_rename),
 			def("getfileext", cpps_io_getfileext),
 			def("getfilepath", cpps_io_getfilepath),
@@ -574,7 +777,15 @@ namespace cpps
 			def("getrealpath", cpps_real_path),
 			def("file_exists",cpps_io_file_exists),
 			def_inside("walk",cpps_io_walk),
-			def_inside("stat",cpps_io_get_stat)
+			def_inside("listdir",cpps_io_listdir),
+			def_inside("stat",cpps_io_get_stat),
+#ifdef _WIN32
+			defvar(c, "sep", "\\"),
+			defvar(c, "linesep", "\r\n")
+#else
+			defvar(c, "sep", "/"),
+			defvar(c, "linesep", "\n")
+#endif
 		];
 
 		cpps::_module(c)[

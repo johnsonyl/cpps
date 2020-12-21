@@ -59,6 +59,14 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def("geturi", &cpps_socket_httpserver_request::geturi)
 		.def("getpath", &cpps_socket_httpserver_request::getpath)
 		.def("getbuffer", &cpps_socket_httpserver_request::getbuffer)
+		.def("getfiledata", &cpps_socket_httpserver_request::getfiledata),
+		_class< cpps_socket_httpserver_request_filedata>("filedata")
+		.def("name", &cpps_socket_httpserver_request_filedata::name)
+		.def("filename", &cpps_socket_httpserver_request_filedata::filename)
+		.def("content_type", &cpps_socket_httpserver_request_filedata::content_type)
+		.def("getbuffer", &cpps_socket_httpserver_request_filedata::buffer)
+
+
 	];
 
 }
