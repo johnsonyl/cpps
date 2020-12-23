@@ -115,7 +115,7 @@ namespace cpps
 				cout << "class <" << b.value.value.domain->domainname << ">";
 			}
 		}
-		else if (CPPS_TMULTIRETURN)
+		else if (type(b) == CPPS_TMULTIRETURN)
 		{
 			cpps_vector* vec = cpps_to_cpps_vector(b.value);
 			cout << "[";

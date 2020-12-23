@@ -166,7 +166,6 @@ module socket
 		server.add_type("application/x-x509-user-cert","crt");
 		server.add_type("application/x-csh","csh");
 		server.add_type("text/x-script.csh","csh");
-		server.add_type("application/x-pointplus","css");
 		server.add_type("text/css","css");
 		server.add_type("text/plain","cxx");
 		server.add_type("application/x-director","dcr");
@@ -298,10 +297,6 @@ module socket
 		server.add_type("image/pjpeg","jpg");
 		server.add_type("image/x-jps","jps");
 		server.add_type("application/x-javascript","js");
-		server.add_type("application/javascript","js");
-		server.add_type("application/ecmascript","js");
-		server.add_type("text/javascript","js");
-		server.add_type("text/ecmascript","js");
 		server.add_type("image/jutvision","jut");
 		server.add_type("audio/midi","kar");
 		server.add_type("music/x-karaoke","kar");
@@ -608,6 +603,9 @@ module socket
 		server.add_type("application/x-ustar","ustar");
 		server.add_type("multipart/x-ustar","ustar");
 		server.add_type("application/octet-stream","uu");
+		server.add_type("application/octet-stream","woff");
+		server.add_type("application/octet-stream","woff2");
+		server.add_type("application/octet-stream","ttf");
 		server.add_type("text/x-uuencode","uu");
 		server.add_type("text/x-uuencode","uue");
 		server.add_type("application/x-cdlink","vcd");

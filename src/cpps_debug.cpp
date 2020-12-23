@@ -20,13 +20,18 @@ namespace cpps
 	{
 		
 	}
+	void cpps_debug_trace(C* c)
+	{
+
+	}
 	void cpps_regdebug(C *c)
 	{
 		cpps::_module(c,"debug")[
 			def_inside("open", cpps_debug_open),
 			def_inside("close", cpps_debug_close),
 			def_inside("log", cpps_debug_log),
-			def_inside("breakpoint",cpps_debug_breakpoint)
+			def_inside("breakpoint",cpps_debug_breakpoint),
+			def_inside("trace",cpps_debug_trace)
 		];
 		cpps::_module(c)[
 			_class<cpps_trycatch_error>("cpps_trycatch_error")

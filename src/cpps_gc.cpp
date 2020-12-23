@@ -26,8 +26,8 @@ namespace cpps
 		//新增到老生代
 		c->getgen1()->insert(p);
 	}
-	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck);
-	void cpps_gc_check_child(const cpps_value &v, C* c, bool checkchild, std::unordered_set<cpps_cppsclassvar *> * oldgen, std::unordered_set<cpps_cppsclassvar *> * newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck)
+	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, phmap::flat_hash_set<cpps_cppsclassvar *> *oldgen, phmap::flat_hash_set<cpps_cppsclassvar *> *newgen, size_t &size, phmap::flat_hash_set<cpps_cppsclassvar *> &isCheck);
+	void cpps_gc_check_child(const cpps_value &v, C* c, bool checkchild, phmap::flat_hash_set<cpps_cppsclassvar *> * oldgen, phmap::flat_hash_set<cpps_cppsclassvar *> * newgen, size_t &size, phmap::flat_hash_set<cpps_cppsclassvar *> &isCheck)
 	{
 		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList.begin(); it != v.value.domain->varList.end(); ++it)
 		{
@@ -39,7 +39,7 @@ namespace cpps
 		}
 	}
 	//
-	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, std::unordered_set<cpps_cppsclassvar *> *oldgen, std::unordered_set<cpps_cppsclassvar *> *newgen, size_t &size, std::unordered_set<cpps_cppsclassvar *> &isCheck)
+	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, phmap::flat_hash_set<cpps_cppsclassvar *> *oldgen, phmap::flat_hash_set<cpps_cppsclassvar *> *newgen, size_t &size, phmap::flat_hash_set<cpps_cppsclassvar *> &isCheck)
 	{
 		if (v.tt == CPPS_TCLASSVAR)
 		{
@@ -56,7 +56,7 @@ namespace cpps
 					const cpps_value& value = *it;
 					cpps_gc_check_gen_value(c, value, checkchild, oldgen, newgen, size, isCheck);
 				}
-				std::unordered_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+				phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
 				if (it != oldgen->end())
 				{
 					oldgen->erase(it);
@@ -80,7 +80,7 @@ namespace cpps
 					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);
 
 				}
-				std::unordered_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+				phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
 				if (it != oldgen->end())
 				{
 					oldgen->erase(it);
@@ -92,7 +92,7 @@ namespace cpps
 			else if (v.tt == CPPS_TCLASSVAR)
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
-				std::unordered_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+				phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
 				if (it != oldgen->end())
 				{
 					oldgen->erase(it);
@@ -110,7 +110,7 @@ namespace cpps
 		else if(v.tt == CPPS_TSTRING)
 		{
 			cpps_cppsclassvar *pClsVar = static_cast<cpps_cppsclassvar *>(v.value.domain);
-			std::unordered_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+			phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
 			if (it != oldgen->end())
 			{
 				oldgen->erase(it);
@@ -124,7 +124,7 @@ namespace cpps
 	void cpps_gc_check_gen0(C *c)
 	{
 
-		std::unordered_set<cpps_cppsclassvar *> isCheck;
+		phmap::flat_hash_set<cpps_cppsclassvar *> isCheck;
 	
 		const cpps_value value = c->_G;
 		size_t tmp = c->getgen1size();
@@ -132,10 +132,10 @@ namespace cpps
 		c->setgen1size(tmp);
 
 
-		std::unordered_set<cpps_cppsclassvar *> tempoldgen;
+		phmap::flat_hash_set<cpps_cppsclassvar *> tempoldgen;
 		size_t tempoldgensize = 0;
 
-		for (std::unordered_set<cpps_regvar*>::iterator it = c->getbarrierlist()->begin();
+		for (phmap::flat_hash_set<cpps_regvar*>::iterator it = c->getbarrierlist()->begin();
 			it != c->getbarrierlist()->end(); ++it)
 		{
 			cpps_regvar *v = *it;
@@ -183,21 +183,21 @@ namespace cpps
 	void cpps_gc_check_gen1(C *c)
 	{
 
-		std::unordered_set<cpps_cppsclassvar *> newgen;
+		phmap::flat_hash_set<cpps_cppsclassvar *> newgen;
 		size_t newgensize = 0;
-		std::unordered_set<cpps_cppsclassvar *> isCheck1;
-		std::unordered_set<cpps_cppsclassvar *> isCheck;
+		phmap::flat_hash_set<cpps_cppsclassvar *> isCheck1;
+		phmap::flat_hash_set<cpps_cppsclassvar *> isCheck;
 		cpps_value value = c->_G;
 		cpps_gc_check_child(value, c, true, c->getgen0(), &newgen, newgensize, isCheck);
 		cpps_gc_check_child(value, c, true, c->getgen1(), &newgen, newgensize, isCheck1);
 
 
 
-		std::unordered_set<cpps_cppsclassvar *> tempoldgen;
+		phmap::flat_hash_set<cpps_cppsclassvar *> tempoldgen;
 		size_t tempoldgensize = 0;
 
 		//先把新生代的检测了
-		for (std::unordered_set<cpps_regvar*>::iterator it = c->getbarrierlist()->begin();
+		for (phmap::flat_hash_set<cpps_regvar*>::iterator it = c->getbarrierlist()->begin();
 			it != c->getbarrierlist()->end(); ++it)
 		{
 			cpps_regvar *v = *it;
@@ -273,7 +273,7 @@ namespace cpps
 	void		gc_cleanup(C *c )
 	{
 		//清理当前线程的
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
+		for (phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
 			it != c->getgen0()->end(); ++it)
 		{
 			cpps_cppsclassvar * pClsVar = *it;
@@ -284,7 +284,7 @@ namespace cpps
 		c->setgen0size(0);
 
 		//释放gen1里面的内存
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin();
+		for (phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin();
 			it != c->getgen1()->end(); ++it)
 		{
 			cpps_cppsclassvar * pClsVar = *it;
@@ -320,7 +320,7 @@ namespace cpps
 		sprintf(buffer, "c->gen0.size(): %I64d \n", c->getgen0()->size());
 		ret += buffer;
 
-		for (std::unordered_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin(); it != c->getgen1()->end(); it++)
+		for (phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin(); it != c->getgen1()->end(); it++)
 		{
 			auto v = *it;
 			if (v->domainname == "String")

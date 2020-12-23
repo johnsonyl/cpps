@@ -28,9 +28,9 @@ namespace cpps
 
 		 _callstack = ret;
 	}
-	std::unordered_set<cpps_regvar*>* C::getbarrierlist()
+	phmap::flat_hash_set<cpps_regvar*>* C::getbarrierlist()
 	{
-		std::unordered_set<cpps_regvar*>*ret = &barrierList;
+		phmap::flat_hash_set<cpps_regvar*>*ret = &barrierList;
 		return ret;
 	}
 
@@ -64,15 +64,15 @@ namespace cpps
 		return savemoduledatas[modulename];
 	}
 
-	std::unordered_set<cpps_cppsclassvar*>* C::getgen0()
+	phmap::flat_hash_set<cpps_cppsclassvar*>* C::getgen0()
 	{
-		std::unordered_set<cpps_cppsclassvar*>*ret = &gen0;
+		phmap::flat_hash_set<cpps_cppsclassvar*>*ret = &gen0;
 		return ret;
 	}
 
-	std::unordered_set<cpps_cppsclassvar *>* C::getgen1()
+	phmap::flat_hash_set<cpps_cppsclassvar *>* C::getgen1()
 	{
-		std::unordered_set<cpps_cppsclassvar*>* ret = &gen1;
+		phmap::flat_hash_set<cpps_cppsclassvar*>* ret = &gen1;
 		return ret;
 	}
 	void		C::setgen0size(size_t s)

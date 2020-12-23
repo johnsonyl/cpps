@@ -3599,6 +3599,34 @@ namespace cpps {
 			c->stack_free(stack);
 		}
 	}
+	void cpps_debug_trace_domain(int kg,std::string parent,cpps_domain* root) {
+		for (auto var : root->varList)
+		{
+			cpps_value& value = var.second->getval();
+			if (!cpps_base_isfunction(value)) {
+				for (int i = 0; i < kg; i++)
+					printf(" ");
+				printf("%s%s = ", parent.c_str(), var.second->varName.c_str());
+				cpps_base_printf(value);
+				if (value.isdomain() && !value.value.domain->varList.empty())
+				{
+					for (int i = 0; i < kg; i++)
+						printf(" ");
+					printf("\r\n{\r\n");
+					cpps_domain* value_domain = value.value.domain;
+					cpps_debug_trace_domain(kg + 4, (parent.empty() ? std::string("") : (parent + ".")) + var.second->varName + ".", value_domain);
+					for (int i = 0; i < kg; i++)
+						printf(" ");
+					printf("}\r\n");
+
+				}
+				printf("\r\n");
+			}
+		}
+	}
+	void cpps_debug_trace(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
+		cpps_debug_trace_domain(0,"",root);
+	}
 	cpps_value cpps_step_callfunction(C* c, cpps_domain* domain, cpps_domain* root, cpps_value func, node* d, cpps_domain* leftdomain) {
 		cpps_value ret;
 		if (func.tt == CPPS_TLAMBDAFUNCTION) {
@@ -3644,6 +3672,9 @@ namespace cpps {
 			cpps_regvar* v = cpps_node_to_regver(domain, d->getleft(), false);
 			if (v && v->varName == "debug" && d->getleft()->getright()->s == "breakpoint") {
 				cpps_debug_breakpoint(c, domain, root, d);
+			}
+			if (v && v->varName == "debug" && d->getleft()->getright()->s == "trace") {
+				cpps_debug_trace(c, domain, root, d);
 			}
 		}
 		else {

@@ -37,8 +37,8 @@ namespace cpps
 		C():C(0,NULL){};
 		C(int argc, char** argv);
 		virtual ~C();
-		std::unordered_set<cpps_cppsclassvar *>*									getgen0();
-		std::unordered_set<cpps_cppsclassvar *>*									getgen1();
+		phmap::flat_hash_set<cpps_cppsclassvar *>*									getgen0();
+		phmap::flat_hash_set<cpps_cppsclassvar *>*									getgen1();
 		void																		setgen0size(size_t s);
 		size_t																		getgen0size();
 		void																		setgen1size(size_t s);
@@ -53,7 +53,7 @@ namespace cpps
 		void																		debugclose();
 		std::vector<cpps_stack*>*													getcallstack();
 		void																		setcallstack(std::vector<cpps_stack*>* ret);
-		std::unordered_set<cpps_regvar*>*											getbarrierlist();
+		phmap::flat_hash_set<cpps_regvar*>*											getbarrierlist();
 		cpps::cpps_domain*															domain_alloc();
 		void																		domain_free(cpps::cpps_domain* domain);
 		cpps::cpps_stack*															stack_alloc();
@@ -63,9 +63,9 @@ namespace cpps
 		node* o;
 		cpps_domain*																_G;	//根节点
 		std::vector<cpps_stack*>													*_callstack; //堆栈
-		std::unordered_set<cpps_regvar*>											barrierList; //分界List
-		std::unordered_set<cpps_cppsclassvar *>										gen0; //分界List
-		std::unordered_set<cpps_cppsclassvar *>										gen1; //分界List
+		phmap::flat_hash_set<cpps_regvar*>											barrierList; //分界List
+		phmap::flat_hash_set<cpps_cppsclassvar *>										gen0; //分界List
+		phmap::flat_hash_set<cpps_cppsclassvar *>										gen1; //分界List
 		size_t																		gen0size;//新生代当前占内存大小（字节）
 		size_t																		gen1size;//老生代当前占内存大小（字节）
 		size_t																		lastgensize;
