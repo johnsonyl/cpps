@@ -2,6 +2,7 @@
 #include "cpps_socket_httpserver_request.h"
 #include "cpps_socket_httpserver_controller.h"
 #include "cpps_socket_httpserver_session.h"
+#include "cpps_socket_httpserver_cachefile.h"
 namespace cpps {
 	void cpps_string_real_tolower(std::string& s);
 	bool cpps_io_file_exists(std::string path);
@@ -9,6 +10,7 @@ namespace cpps {
 	std::string cpps_io_readfile(std::string filepath);
 	std::string cpps_getcwd();
 	cpps_integer	cpps_time_gettime();
+	cpps_integer cpps_io_last_write_time(std::string path);
 	cpps_socket_httpserver::cpps_socket_httpserver()
 	{
 		ev_base = NULL;
@@ -52,6 +54,16 @@ namespace cpps {
 			event_base_free(ev_base);
 			ev_base = NULL;
 		}
+		for (auto session: session_list)
+		{
+			delete session.second;
+		}
+		session_list.clear();
+		for (auto cachefile: cachefile_list)
+		{
+			delete cachefile.second;
+		}
+		cachefile_list.clear();
 	}
 
 	void cpps_socket_httpserver::setcstate(cpps::C* cstate)
@@ -243,26 +255,36 @@ namespace cpps {
 				ext = "html";
 			}
 			bool b = cpps_io_file_exists(filepath);
-			if (b && ext != "cpp")
+			if (b)
 			{
 				std::string mime_type = httpserver->get_type(ext);
-				if (mime_type.empty()) {
-					mime_type = "text/plain";
+				if (!mime_type.empty()) {
+					std::string content_type = "Content-Type";
+					std::string Server = "Server";
+					std::string ServerName = "Cpps Server";
+					std::string Connection = "Connection";
+					std::string ConnectionType = "close";
+					cpps_request_ptr->real_addheader(content_type, mime_type);
+					cpps_request_ptr->real_addheader(Server, ServerName);
+					cpps_request_ptr->real_addheader(Connection, ConnectionType);
+
+					cpps_integer last_write_time = cpps_io_last_write_time(filepath);
+					auto cachefile = httpserver->get_cachefile(cpps_request_ptr->path);
+					if (cachefile == NULL )
+					{
+						cachefile = httpserver->create_cachefile(cpps_request_ptr->path, cpps_io_readfile(filepath), last_write_time);
+					}
+					if (cachefile->getlast_write_time() != last_write_time) {
+						cachefile->setcontent(cpps_io_readfile(filepath));
+					}
+
+					cpps_request_ptr->append(cachefile->getcontent());
+
+					cpps_request_ptr->send(200, "OK");
+
+					return;
 				}
-				std::string content_type = "Content-Type";
-				std::string Server = "Server";
-				std::string ServerName = "Cpps Server";
-				std::string Connection = "Connection";
-				std::string ConnectionType = "close";
-				cpps_request_ptr->real_addheader(content_type, mime_type);
-				cpps_request_ptr->real_addheader(Server, ServerName);
-				cpps_request_ptr->real_addheader(Connection, ConnectionType);
-
-				cpps_request_ptr->append(cpps_io_readfile(filepath));
-
-				cpps_request_ptr->send(200, "OK");
-
-				return;
+				
 			}
 			//4.ÕÒ²»µ½Ö´ÐÐnotfound
 			func = httpserver->http_option.notfoundfunc;
@@ -401,6 +423,28 @@ namespace cpps {
 		cpps_socket_httpserver_session* ret = NULL;
 		auto it = session_list.find(session_id);
 		if (it != session_list.end())
+		{
+			ret = it->second;
+		}
+		return ret;
+	}
+
+	cpps::cpps_socket_httpserver_cachefile* cpps_socket_httpserver::create_cachefile(std::string& filepath, std::string& content,cpps_integer last_write_time)
+	{
+		cpps_socket_httpserver_cachefile* cachefile = new cpps_socket_httpserver_cachefile();
+		cachefile->setfilepath(filepath);
+		cachefile->setcontent(content);
+		cachefile->setlast_write_time(last_write_time);
+
+		cachefile_list.insert(http_cachefile_list::value_type(filepath, cachefile));
+		return cachefile;
+	}
+
+	cpps::cpps_socket_httpserver_cachefile* cpps_socket_httpserver::get_cachefile(std::string filepath)
+	{
+		cpps_socket_httpserver_cachefile* ret = NULL;
+		auto it = cachefile_list.find(filepath);
+		if (it != cachefile_list.end())
 		{
 			ret = it->second;
 		}

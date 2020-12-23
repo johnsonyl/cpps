@@ -53,7 +53,17 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-23 更新2
+-
+
+1.增加httpserver的cachefile功能
+
+2.增加dump功能,可以自己定义类实现dump输出和返回
+
+3.恢复类this的功能,修改为关键字非成员变量.
+
 2020-12-23 更新
+-
 
 1.调整项目结构
 

@@ -27,9 +27,11 @@ namespace cpps {
 		cpps::object		notfoundfunc;
 	};
 	class cpps_socket_httpserver_session;
+	class cpps_socket_httpserver_cachefile;
 	typedef phmap::flat_hash_map<std::string, cpps::object> http_route;
 	typedef phmap::flat_hash_map<std::string, std::string> http_mime_type;
 	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_session*> http_session_list;
+	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_cachefile*> http_cachefile_list;
 	class cpps_socket_httpserver_request;
 	class cpps_socket_httpserver
 	{
@@ -53,6 +55,11 @@ namespace cpps {
 
 		cpps_socket_httpserver_session*			create_seesion(cpps::C* c);
 		cpps_socket_httpserver_session*			get_session(std::string session_id);
+
+		cpps_socket_httpserver_cachefile*		create_cachefile(std::string &filepath,std::string &content, cpps_integer last_write_time);
+		cpps_socket_httpserver_cachefile*		get_cachefile(std::string filepath);
+
+
 	public:
 		static void								generic_handler(struct evhttp_request* req, void* handler);
 	public:
@@ -66,6 +73,7 @@ namespace cpps {
 		bool									http_running;
 		http_mime_type							mime_types;
 		http_session_list						session_list;
+		http_cachefile_list						cachefile_list;
 	private:
 		object									createuuidfunc;
 

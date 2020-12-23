@@ -6,13 +6,8 @@ namespace cpps
 
 	cpps::int32 type(object o)
 	{
-		if (o.value.tt == CPPS_TREGVAR) {
-
-			if (o.value.value.value->tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
-			return o.value.value.value->tt;
-		}
-		if (o.value.tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
-		return o.value.tt;
+		if (object::real(o).value.tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
+		return object::real(o).value.tt;
 	}
 
 	std::string type_s(object o)
@@ -31,8 +26,7 @@ namespace cpps
 			return "string";
 		case CPPS_TCLASSVAR: 
 		{
-			object realobj = o;
-			return realobj.value.value.domain->domainname; 
+			return object::real(o).value.value.domain->domainname; 
 		}
 		case CPPS_TFUNCTION:
 			return "function";
@@ -125,6 +119,11 @@ namespace cpps
 		return object_cast<bool>(*this);
 	}
 
+
+	object object::toreal()
+	{
+		return SAFE_VALUE;
+	}
 
 	void object::clear()
 	{
@@ -220,7 +219,12 @@ namespace cpps
 		}
 	}
 
-	object::object(cpps_value v):value(v)
+	cpps::object object::real(object o)
+	{
+		return o.toreal();
+	}
+
+	object::object(cpps_value v) :value(v)
 	{
 		
 	}
@@ -356,7 +360,7 @@ namespace cpps
 
 	void object::vector::push_back(object v)
 	{
-		_vec->push_back(v.value);
+		_vec->push_back(object::real(v).value);
 	}
 
 	cpps::object object::vector::operator[](const cpps_integer k)
@@ -383,5 +387,10 @@ namespace cpps
 
 	
 
+
+	void object::map::insert(object key, object value)
+	{
+		_map->insert(object::real(key).value, object::real(value).value);
+	}
 
 }

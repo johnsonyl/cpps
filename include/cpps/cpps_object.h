@@ -22,9 +22,9 @@ namespace cpps
 	
 	template<class T>
 	inline cpps_value		newclass(C* c, T** ret);
-
 	struct object
 	{
+		static object real(object o);
 		struct vector
 		{
 			vector(object obj);
@@ -38,8 +38,9 @@ namespace cpps
 		struct map
 		{
 			map(C* cstate, object obj);
-			cpps_hash_map::iterator	begin();
-			cpps_hash_map::iterator	end();
+			cpps_hash_map::iterator													begin();
+			cpps_hash_map::iterator													end();
+			void																	insert(object key, object value);
 			template<class T>
 			bool																	has(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
@@ -100,6 +101,7 @@ namespace cpps
 		cpps_integer			toint();
 		cpps_number				tonumber();
 		bool					tobool();
+		object					toreal();
 
 
 		//vector ,map ,string .

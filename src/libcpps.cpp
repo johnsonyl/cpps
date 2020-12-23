@@ -675,6 +675,13 @@ namespace cpps {
 				}
 			}
 		}
+		else if (param->s == "this")
+		{
+			if (o->type == CPPS_ONIL)
+				o->type = CPPS_OTHISPARAM;
+
+			param->type = CPPS_OTHIS;
+		}
 		else if (param->s == "true" || param->s == "false") {
 			/* 这说明什么？ 说明他是个bool.. */
 			if (o->type == CPPS_ONIL)
@@ -3470,6 +3477,14 @@ namespace cpps {
 		}
 	}
 
+	void cpps_calculate_expression_this(cpps_domain* root, cpps_value& ret)
+	{
+		if (root->parent[1] && root->parent[1]->domainType == cpps_domain_type_classvar)
+		{
+			ret = cpps_value((cpps_cppsclassvar*)root->parent[1]);
+		}			
+	}
+
 	cpps_value cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain) {
 		cpps_value ret;
 		if (d->type == CPPS_OOFFSET) {
@@ -3514,6 +3529,10 @@ namespace cpps {
 			ret.tt = CPPS_TBOOLEAN;
 			ret.value.b = (d->s[0] == 't');
 			/* 首字母为t 就直接认为他是 true */
+		}
+		else if (d->type == CPPS_OTHIS)
+		{
+			cpps_calculate_expression_this(root, ret);
 		}
 		else if (d->type == CPPS_OAWAIT)
 		{

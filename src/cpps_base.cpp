@@ -42,6 +42,16 @@ namespace cpps
 		}
 		return ret;
 	}
+	object cpps_base_dump(C*c,object o) {
+		if (type(o) == CPPS_TCLASSVAR)
+		{
+			object dump = o["dump"];
+			if (dump.isfunction()){
+				return doclassfunction(c, o, dump);
+			}
+		}
+		return nil;
+	}
 	void cpps_base_printf(object b)
 	{
 		if (type(b) == CPPS_TNUMBER)
@@ -599,6 +609,7 @@ namespace cpps
 			def("print", cpps_base_printf),
 			def("printfln", cpps_base_printfln),
 			def("println", cpps_base_printfln),
+			def_inside("dump", cpps_base_dump),
 			def("exit", cpps_base_exit),
 			def("sleep", cpps_base_sleep),
 			def("Sleep", cpps_base_sleep),

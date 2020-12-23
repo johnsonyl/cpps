@@ -154,6 +154,8 @@
 #define CPPS_OMODULE			59 //模块
 #define CPPS_VARNAMES			60 //模块
 #define CPPS_MULTIVAR			61 //模块
+#define CPPS_OTHIS				62 //this关键字的重写
+#define CPPS_OTHISPARAM			63 //字符串参数
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误
