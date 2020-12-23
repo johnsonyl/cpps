@@ -35,6 +35,32 @@ namespace cpps
 		return tmpStr->rfind(v2, off);
 	}
 	
+	void	cpps_string_copyto(cpps_value src, cpps_value tar, cpps_value off,cpps_value len ) {
+		if (src.tt != CPPS_TSTRING) return ;
+		if (tar.tt != CPPS_TSTRING) return ;
+
+		size_t noff = 0;
+		size_t count = std::string::npos;
+
+		noff = cpps_base_isint(off) ? (size_t)cpps_to_integer(off) : noff;
+		count = cpps_base_isint(len) ? (size_t)cpps_to_integer(len) : count;
+
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)src.value.domain;
+		std::string* srcstr = (std::string*)cppsclassvar->getclsptr();
+		cpps_cppsclassvar* cppsclassvar2 = (cpps_cppsclassvar*)tar.value.domain;
+		std::string* tarstr = (std::string*)cppsclassvar2->getclsptr();
+
+		*tarstr = srcstr->substr(noff, count);
+
+	}
+	void	cpps_string_clear(cpps_value v) {
+		if (v.tt != CPPS_TSTRING) return ;
+
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)v.value.domain;
+		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+		tmpStr->clear();
+	}
 	cpps_value	cpps_string_replace(cpps_value v, std::string v2, std::string v3)
 	{
 		if (v.tt != CPPS_TSTRING) return nil;
@@ -206,8 +232,11 @@ namespace cpps
 
 		return tmpStr->empty();
 	}
-	std::string	cpps_string_sub(cpps_value v,cpps_integer pos,cpps_integer n)
+	std::string	cpps_string_sub(cpps_value v,cpps_integer pos,cpps_value nn)
 	{
+		size_t n = std::string::npos;
+		n = cpps_base_isint(nn) ? (size_t)cpps_to_integer(nn) : n;
+
 		if (v.tt != CPPS_TSTRING) return "";
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
@@ -447,6 +476,8 @@ namespace cpps
 			def("length", cpps_string_len),
 			def("strlen", cpps_string_strlen),
 			def("replace", cpps_string_replace),
+			def("clear", cpps_string_clear),
+			def("copyto", cpps_string_copyto),
 			def_inside("split", cpps_string_split),
 			def_inside("cut", cpps_string_cut),
 			def("strcut", cpps_string_strcut),

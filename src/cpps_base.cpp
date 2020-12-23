@@ -105,6 +105,18 @@ namespace cpps
 				cout << "class <" << b.value.value.domain->domainname << ">";
 			}
 		}
+		else if (CPPS_TMULTIRETURN)
+		{
+			cpps_vector* vec = cpps_to_cpps_vector(b.value);
+			cout << "[";
+			for (auto v : vec->realvector())
+			{
+				cpps_base_printf(v);
+				cout << ",";
+			}
+			cout << "]";
+
+		}
 		else
 		{
 			cout << "not support  '" << type_s(b).c_str() << "' type..";
@@ -112,73 +124,8 @@ namespace cpps
 	}
 	void cpps_base_printfln(object b)
 	{
-		if (type(b) == CPPS_TNUMBER)
-		{
-			double s = object_cast<double>(b);
-			cout << s << endl;
-		}
-		else if (type(b) == CPPS_TINTEGER)
-		{
-			int64 s = object_cast<int64>(b);
-			cout << s << endl;
-		}
-		else if (type(b) == CPPS_TSTRING)
-		{
-			std::string s = object_cast<std::string>(b);
-			cout << s.c_str() << endl;
-		}
-		else if (type(b) == CPPS_TBOOLEAN)
-		{
-			bool bl = object_cast<bool>(b);
-			cout << (bl ? "true" : "false") << endl;
-		}
-		else if (type(b) == CPPS_TNIL)
-		{
-			cout << "nil" << endl;
-		}
-		else if (type(b) == CPPS_TCLASSVAR)
-		{
-
-			if (b.value.value.domain->domainname == "vector")
-			{
-				cout << "[";
-				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
-				if (v)
-				{
-					for (v->begin(); v->end(); v->next())
-					{
-						cpps_base_printf(v->it());
-						cout << ",";
-					}
-				}
-				cout << "]";
-			}
-			else if (b.value.value.domain->domainname == "map")
-			{
-				cout << "{";
-				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
-				if (v)
-				{
-					for (v->begin(); v->end(); v->next())
-					{
-						cpps_base_printf(v->key());
-						cout << ":";
-						cpps_base_printf(v->it());
-						cout << ",";
-					}
-				}
-				cout << "}";
-			}
-			else
-			{
-				cout << "class <" << b.value.value.domain->domainname <<">";
-			}
-			cout << endl;
-		}
-		else
-		{
-			cout << "not support   '" << type_s(b).c_str() << "' type." << endl;
-		}
+		cpps_base_printf(b);
+		cout << endl;
 	}
 
 	void cpps_base_sleep(cpps_integer msec)

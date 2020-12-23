@@ -25,6 +25,8 @@ namespace cpps
 		cpps_value&				getval();
 		int8					isconst();
 		void					setconst(int8 c);
+		bool					issource();
+		void					setsource(bool src);
 	public:
 		cpps_value				value;
 		std::string				varName;
@@ -34,6 +36,7 @@ namespace cpps
 		bool					closeure;
 		int32					closeureusecount;
 		cpps_domain*			stackdomain;
+		bool					sourcestate;
 	};
 
 	

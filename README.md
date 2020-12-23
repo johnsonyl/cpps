@@ -52,7 +52,21 @@ lib/socket 为libevent封装库 需要安装编译libevent
 
 *更新日志*：
 -
+
+2020-12-23 更新
+
+1.调整项目结构
+
+2.增加类似django的template
+
+3.httpserver增加基础session功能
+
+4.增加完整c++17支持.
+
+5.增加msvc编译时使用预编译头,增加编译速度.
+
 2020-12-21 更新2
+-
 
 1 .增加类似linq的 where select函数
 

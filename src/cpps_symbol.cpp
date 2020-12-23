@@ -1055,7 +1055,7 @@ namespace cpps
 		symbolleftasso[8] = false;
 	}
 
-	bool cpps_parse_isleftasso(byte prio)
+	bool cpps_parse_isleftasso(usint8 prio)
 	{
 		//assert(getprio() < MAXSYMBOLPRIO);
 		return symbolleftasso[prio];

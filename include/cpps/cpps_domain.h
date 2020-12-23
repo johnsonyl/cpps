@@ -34,7 +34,7 @@ namespace cpps
 		void												regvar(C *c,cpps_regvar * v);
 		void												unregvar(C *c, cpps_regvar * v);
 		void												setexecdomain(cpps_domain *exec);
-		virtual void										destory(C *c);
+		virtual void										destory(C *c,bool isclose = false);
 		void												regidxvar(int32 offset, cpps_regvar* v);
 		void												removeidxvar(int32 offset);
 		cpps_regvar* 										getregidxvar(int32 offset);

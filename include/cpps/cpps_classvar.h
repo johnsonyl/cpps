@@ -42,7 +42,7 @@ namespace cpps
 		virtual void *getclsptr(){ return (void *)_class; }
 		virtual void setclsptr(void *p){ _class = (CLS*)p; }
 		virtual size_t size() { return sizeof(*this) + (_class ? sizeof(*_class) : 0 ); }
-		virtual void destory(C* c) {
+		virtual void destory(C* c, bool isclose = false) {
 			cpps_domain::destory(c);
 			if (_class && isallocclass())
 				c->_class_map_classvar.erase(_class);

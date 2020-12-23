@@ -354,6 +354,11 @@ namespace cpps
 		return _vec->realvector().end();
 	}
 
+	void object::vector::push_back(object v)
+	{
+		_vec->push_back(v.value);
+	}
+
 	cpps::object object::vector::operator[](const cpps_integer k)
 	{
 		cpps_value& v = _vec->realvector()[k];

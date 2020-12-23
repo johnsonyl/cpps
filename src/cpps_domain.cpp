@@ -96,7 +96,9 @@ namespace cpps
 			}
 			varList.erase(var->varName);
 			varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(var->varName, var));
+			cpps_reg* take = f;
 			f = f->next;
+			delete take;
 		} while (f);
 	}
 
@@ -158,7 +160,7 @@ namespace cpps
 		parent[1] = exec;
 	}
 
-	void cpps_domain::destory(C* c)
+	void cpps_domain::destory(C* c,bool isclose)
 	{
 		if (hasVar) {
 			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
@@ -166,11 +168,29 @@ namespace cpps
 				cpps_regvar* v = it->second;
 				if (!v->closeure || v->closeureusecount <= 0) { /*闭包不删除,但是必须有人使用*/
 					cpps_gc_remove_barrier(c, v);
-					if (v->stackdomain && v->offset != -1) {
+					if (!isclose && v->stackdomain && v->offset != -1) {
 						v->stackdomain->removeidxvar(v->offset);
 					}
-					delete v;
+					if (v->issource() && v->getval().tt == CPPS_TCLASS) {
+						cpps_cppsclass* _cls = cpps_to_cpps_cppsclass(v->getval());
+						_cls->hasVar = false;
+						_cls->destory(c, isclose);
+						delete _cls;//class 会随着变量消失而删除.
+					}
+					else if (v->issource() && v->getval().tt == CPPS_TFUNCTION)
+					{
+						cpps_function* func = (cpps_function*)v->getval().value.func;
+						delete func;//类里面的函数也要被清理
+					}
+					else if (isclose && v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this)
+					{
+						cpps_domain* domain = v->getval().value.domain;
+						domain->hasVar = false;
+						domain->destory(c, isclose);
+						delete domain;
+					}
 				}
+				delete v;
 			}
 			varList.clear();
 			hasVar = false;

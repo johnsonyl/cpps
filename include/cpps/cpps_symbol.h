@@ -12,9 +12,9 @@
 
 #define MAXSYMBOLPRIO 9 // 不得超过16
 
-#define NOLIMIT		((byte)0x00)
-#define LEFTMUSTVAR ((byte)0x80)
-#define RIGHTMUSTVAR ((byte)0x40)
+#define NOLIMIT		((usint8)0x00)
+#define LEFTMUSTVAR ((usint8)0x80)
+#define RIGHTMUSTVAR ((usint8)0x40)
 
 namespace cpps
 {
@@ -59,22 +59,22 @@ namespace cpps
 	{
 		//操作符限制,第一位表示左操作数限制，第二位表示右操作符限制
 		//第三位第四位表示参数个数，最后四位表示操作优先级
-		byte		symbollimit;		
+		usint8		symbollimit;		
 		//操作符函数
 		//std::string symbolfuncname;		//操作函数名
 		int8	symboltype;
 
-		byte getprio(){ return symbollimit & 0x0F; }
-		byte getparamnum(){ return (symbollimit >> 4) & 0x03; }
-		byte getparamleftlimit(){ return symbollimit & 0x80; }
-		byte getparamrightlimit(){ return symbollimit & 0x40; }
+		usint8 getprio(){ return symbollimit & 0x0F; }
+		usint8 getparamnum(){ return (symbollimit >> 4) & 0x03; }
+		usint8 getparamleftlimit(){ return symbollimit & 0x80; }
+		usint8 getparamrightlimit(){ return symbollimit & 0x40; }
 
 		//cpps_symbol(byte prio, byte paramnum,byte paramlimit,std::string funcname)
 		//{
 		//	symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
 		//	symbolfuncname = funcname;
 		//}
-		cpps_symbol(byte prio, byte paramnum, byte paramlimit, byte type)
+		cpps_symbol(usint8 prio, usint8 paramnum, usint8 paramlimit, usint8 type)
 		{
 #if defined(__APPLE__) && defined(__MACH__)
 #pragma clang diagnostic push
@@ -87,7 +87,7 @@ namespace cpps
 			symboltype = type;
 		}
 	};
-	bool			cpps_parse_isleftasso(byte prio);
+	bool			cpps_parse_isleftasso(usint8 prio);
 	cpps_symbol*	cpps_parse_getsymbol(std::string symbolstr, bool leftsymbol);
 	void			cpps_regsymbols(C * c);
 

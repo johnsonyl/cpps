@@ -30,6 +30,7 @@ namespace cpps
 			vector(object obj);
 			std::vector<cpps_value>::iterator			begin();
 			std::vector<cpps_value>::iterator			end();
+			void										push_back(object v);
 			object		operator[](const cpps_integer k);
 			cpps_vector* _vec;
 		};

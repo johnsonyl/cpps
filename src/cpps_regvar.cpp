@@ -24,6 +24,16 @@ namespace cpps
 		nconst = c;
 	}
 
+	bool cpps_regvar::issource()
+	{
+		return sourcestate;
+	}
+
+	void cpps_regvar::setsource(bool src)
+	{
+		sourcestate = src;
+	}
+
 	cpps_regvar::cpps_regvar()
 	{
 		nconst = 0;
@@ -32,6 +42,7 @@ namespace cpps
 		closeure = false;
 		closeureusecount = 0;
 		stackdomain = NULL;
+		sourcestate = false;
 	}
 
 	cpps_regvar::~cpps_regvar()

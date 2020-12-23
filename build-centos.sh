@@ -10,7 +10,7 @@ cd ..
 cmake .
 make
 make install
-cd lib
+cd libs
 cmake .
 make
 cd ..

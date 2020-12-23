@@ -1,4 +1,5 @@
 #include "cpps/cpps.h"
+
 namespace cpps
 {
 	std::string cpps_string_real_join(std::string sep, std::vector<std::string>& vec);
@@ -258,6 +259,14 @@ namespace cpps
 		getcwd(buffer, 4096);
 #endif
 		return buffer;
+	}
+
+	using namespace std::literals::chrono_literals;
+	cpps_integer cpps_io_last_write_time( std::string path) {
+		auto ftime = std::filesystem::last_write_time(path);
+		auto elapse = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::file_time_type::clock::now().time_since_epoch() - std::chrono::system_clock::now().time_since_epoch()).count();
+		auto systemTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count() - elapse;
+		return (cpps_integer)systemTime;
 	}
 	cpps_value cpps_io_get_stat(C* c, std::string path) {
 
@@ -779,6 +788,7 @@ namespace cpps
 			def_inside("walk",cpps_io_walk),
 			def_inside("listdir",cpps_io_listdir),
 			def_inside("stat",cpps_io_get_stat),
+			def("last_write_time",cpps_io_last_write_time),
 #ifdef _WIN32
 			defvar(c, "sep", "\\"),
 			defvar(c, "linesep", "\r\n")

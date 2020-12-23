@@ -255,7 +255,7 @@ for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != 
 
 typedef double cpps_number;
 typedef __int64 cpps_integer;
-typedef unsigned char byte;
+//typedef unsigned char byte;
 
 //long ,unsigned long,float ,double
 
@@ -373,6 +373,10 @@ typedef struct {
 #endif
 
 #include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <fstream>
+#include <filesystem>
 #include <stdio.h>
 #include <string>
 #include <vector>

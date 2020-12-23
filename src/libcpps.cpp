@@ -196,10 +196,10 @@ namespace cpps {
 		/* pop '"' */
 		node* laststr = NULL;
 		while (buffer.realcur() != endch && !buffer.isend()) {
-			char ch = buffer.realpop();
+			char lastch = buffer.realpop();
 			/* todo 解析反斜杠 */
-			ch = cpps_parse_transfer_character(ch, buffer);
-			if (ch == '{') {
+			char ch = cpps_parse_transfer_character(lastch, buffer);
+			if (lastch != '\\' && ch == '{') {
 				node* v = new node(str, o->filename, buffer.line());
 				v->type = CPPS_VARNAME;
 				cpps_parse_expression(c, domain, v, root, buffer);
@@ -787,6 +787,7 @@ namespace cpps {
 			cpps_parse_rmspaceandenter(buffer);
 			node* v = new node(n, o->filename, buffer.line());
 			cpps_parse_expression(c, domain, v, root, buffer);
+			cpps_parse_rmspaceandenter(buffer);
 			/* 是否到最后了. */
 			if (buffer.cur() == ',') {
 				buffer.pop();
@@ -846,6 +847,7 @@ namespace cpps {
 			}
 			node* n = new node(bracket, o->filename, buffer.line());
 			cpps_parse_expression(c, domain, n, root, buffer);
+			cpps_parse_rmspaceandenter(buffer);
 			/* 是否到最后了. */
 			if (buffer.cur() == ',') {
 				buffer.pop();
@@ -1420,9 +1422,9 @@ namespace cpps {
 	}
 	void cpps_parse_throw(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		/* 先检测 这个return 是否合法. */
-		if (!cpps_parse_canthrow(domain)) {
+		/*if (!cpps_parse_canthrow(domain)) {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_trycatherror, "Unknown throw. Throw must be defined after try!"));
-		}
+		}*/
 		child->type = CPPS_OTHROW;
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
@@ -2042,12 +2044,14 @@ namespace cpps {
 		delete c->o;
 		c->o = NULL;
 		/* 清理内存 */
-		c->_G->destory(c);
+		c->_G->destory(c,true);
 		c->barrierList.clear();
 		c->_callstack->clear();
 		cpps_gc_check_gen1(c);
 		//asyncio需要特殊处理
 		cpps_unregasyncio(c);
+		delete c->_G;
+		c->_G = NULL;
 		delete c;
 		return(0);
 	}
@@ -2135,7 +2139,8 @@ namespace cpps {
 					cpps_value	value = cpps_calculate_expression(c, domain, root, right->l[0], leftdomain);
 					if (value.tt == CPPS_TMULTIRETURN) {
 						size_t ii = 0;
-						for (auto vv: *value.value.multiv)
+						cpps_vector* vec = cpps_to_cpps_vector(value);
+						for (auto vv: vec->realvector())
 						{
 							if (ii < multiresult.size()) {
 								cpps_regvar* takeregvar = multiresult[ii];
@@ -2144,8 +2149,8 @@ namespace cpps {
 							ii++;
 						}
 						//就用一下
-						delete value.value.multiv;
-						value.tt = CPPS_TNIL;
+						//delete value.value.multiv;
+						value = nil;
 					}
 					else {
 						//只返回一个..
@@ -2168,10 +2173,10 @@ namespace cpps {
 						cpps_domain* leftdomain = NULL;
 						cpps_value	value = cpps_calculate_expression(c, domain, root, var->l[0], leftdomain);
 						if (value.tt == CPPS_TMULTIRETURN) {
-							cpps_value firstvalue = (*(value.value.multiv))[0];
+							cpps_value firstvalue = cpps_to_cpps_vector(value)->realvector()[0];
 							cpps_step_def_var_createvar_setval(firstvalue, v, c);
-							delete value.value.multiv;
-							value.tt = CPPS_TNIL;
+							//delete value.value.multiv;
+							value = nil;
 						}
 						else
 							cpps_step_def_var_createvar_setval(value, v, c);
@@ -2189,6 +2194,7 @@ namespace cpps {
 						v = new cpps_regvar();
 						v->setvarname(varName->s);
 						domain->regvar(c, v);
+						v->setsource(true);
 						v->setconst(true);
 						v->offset = varName->offset;
 						v->offsettype = varName->offsettype;
@@ -2240,11 +2246,13 @@ namespace cpps {
 		if(d->l.size() == 1)
 			ret_value = cpps_calculate_expression(c, domain, root, d->l[0], leftdomain);
 		else if(d->l.size() > 1){
+			cpps_vector* vec;
+			ret_value = newclass(c, &vec);
 			ret_value.tt = CPPS_TMULTIRETURN;
-			ret_value.value.multiv = new std::vector<cpps_value>();
+			//ret_value.value.multiv = new std::vector<cpps_value>();
 			for (auto nn : d->l) {
 				cpps_value vv = cpps_calculate_expression(c, domain, root, nn, leftdomain);
-				ret_value.value.multiv->push_back(vv);
+				vec->push_back(vv);
 			}
 		}
 		cpps_domain* cpps_func_domain = domain;
@@ -2339,9 +2347,10 @@ namespace cpps {
 			execdomain->init(fordomain, cpps_domain_type_exec);
 			execdomain->setexecdomain(fordomain);
 			if (!for4->l.empty())cpps_step(c, execdomain, root, for4->l[0]);
+			bool isbreak = execdomain->isbreak;
 			execdomain->destory(c);
 			cpps_gc_check_step(c);
-			if (fordomain->isbreak)
+			if (isbreak)
 				break;
 			/* 需要跳出循环 */
 			if (!for3->l.empty())
@@ -2382,9 +2391,10 @@ namespace cpps {
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
 					execdomain->setexecdomain(foreachdomain);
 					cpps_step(c, execdomain, root, for4->l[0]);
+					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
-					if (foreachdomain->isbreak)
+					if (isbreak)
 						break;
 					/* 需要跳出循环 */
 				}
@@ -2408,9 +2418,10 @@ namespace cpps {
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
 					execdomain->setexecdomain(foreachdomain);
 					cpps_step(c, execdomain, root, for4->l[0]);
+					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
-					if (foreachdomain->isbreak)
+					if (isbreak)
 						break;
 					/* 需要跳出循环 */
 				}
@@ -2429,9 +2440,10 @@ namespace cpps {
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
 					execdomain->setexecdomain(foreachdomain);
 					cpps_step(c, execdomain, root, for4->l[0]);
+					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
-					if (foreachdomain->isbreak)
+					if (isbreak)
 						break;
 					/* 需要跳出循环 */
 				}
@@ -2462,9 +2474,10 @@ namespace cpps {
 			execdomain->init(whiledomain, cpps_domain_type_exec);
 			execdomain->setexecdomain(whiledomain);
 			cpps_step_all(c, CPPS_SINGLERET, execdomain, root, while2);
+			bool isbreak = execdomain->isbreak;
 			execdomain->destory(c);
 			cpps_gc_check_step(c);
-			if (whiledomain->isbreak)
+			if (isbreak)
 				break;
 			/* 需要跳出循环 */
 		}
@@ -2646,6 +2659,7 @@ namespace cpps {
 		v->setvarname(d->s);
 		v->setconst(true);
 		v->setval(cpps_value(cppsclass));
+		v->setsource(true);
 		domain->regvar(NULL, v);
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			c->_G->regidxvar(d->offset, v);
@@ -2688,6 +2702,7 @@ namespace cpps {
 						/* 重写父类的函数 */
 						cppsclass->regvar(c, v2);
 						v2->setconst(true);
+						v2->setsource(true);
 						v2->offset = varName->offset;
 						v2->offsettype = varName->offsettype;
 						if (varName->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {

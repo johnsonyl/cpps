@@ -17,10 +17,22 @@ namespace cpps
 	struct cpps_cppsclassvar;
 	template <class C>
 	struct cpps_classvar;
+	void  cpps_destory_node(node* d);
 	struct cpps_cppsclass : public cpps_domain
 	{
 		cpps_cppsclass(std::string _classname, node *_o, cpps_domain* p, char type)
-		:cpps_domain(p,type,_classname){ o = _o;classname = _classname;	}
+			:cpps_domain(p, type, _classname) {
+			if (_o) { o = new node(); o->clone(_o); }
+			else o = NULL;
+			classname = _classname;
+		}
+		virtual ~cpps_cppsclass() {
+			if (o) {
+				cpps_destory_node(o); //«Â¿Ìnode.
+				delete o;
+				o = NULL;
+			}
+		}
 		virtual cpps_cppsclassvar *			create(C* c, bool alloc = true){ return (new cpps_cppsclassvar(getclassname(), this, cpps_domain_type_classvar, alloc)); }
 		virtual bool						iscppsclass() { return true; }
 		std::string							getclassname(){	return classname; }

@@ -106,13 +106,13 @@ namespace cpps
 			type = v->type;
 			for (auto n : v->l)
 			{
-				if (n == NULL){
+				if (n != NULL){
 					node* cpyn = new node();
 					cpyn->clone(n);
 					l.push_back(cpyn);
 				}
 				else {
-					l.push_back(n);//ռλ
+					l.push_back(NULL);//ռλ
 				}
 			}
 			filename = v->filename;
