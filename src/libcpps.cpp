@@ -58,6 +58,9 @@ namespace cpps {
 			}
 			fclose(file);
 		}
+		else {
+			throw cpps_error(cpps_error(path, 0, cpps_error_unknow, "ERROR: [%s] file load faild. ", path));
+		}
 	}
 	void cpps_gc_check_step(C* c) {
 		size_t	g0size = c->getgen0size();
