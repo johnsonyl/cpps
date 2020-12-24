@@ -31,6 +31,9 @@ namespace cpps {
 		void		addheader(cpps::object list);
 		void		append(std::string s);
 		void		send(cpps_integer n,std::string msg);
+		cpps_value paramslistfunc(C* c);
+		cpps_value getlistfunc(C* c);
+		cpps_value postlistfunc(C* c);
 		std::string getparam(std::string k);
 		std::string get(std::string k);
 		std::string post(std::string k);

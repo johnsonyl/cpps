@@ -318,21 +318,7 @@ namespace cpps
 		if (pos + end.size() == tmpStr->size()) return true;
 		return false;
 	}
-	cpps_value cpps_string_trim(cpps_value s)
-	{
-		if (s.tt != CPPS_TSTRING) return false;
-		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
-		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-		if (tmpStr->empty())
-		{
-			return s;
-		}
-
-		tmpStr->erase(0, tmpStr->find_first_not_of(" "));
-		tmpStr->erase(tmpStr->find_last_not_of(" ") + 1);
-		return s;
-	}
+	
 	cpps_value cpps_string_ltrim(cpps_value s)
 	{
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)s.value.domain;
@@ -341,8 +327,8 @@ namespace cpps
 		{
 			return s;
 		}
-
-		tmpStr->erase(0, tmpStr->find_first_not_of(" "));
+		std::string::iterator   p = find_if(tmpStr->begin(), tmpStr->end(), [](char code) { return !isspace(code); });
+		tmpStr->erase(tmpStr->begin(), p);
 		return s;
 	}
 	std::string cpps_string_real_join(std::string sep, std::vector<std::string> & vec) {
@@ -380,8 +366,24 @@ namespace cpps
 			return s;
 		}
 
-		tmpStr->erase(tmpStr->find_last_not_of(" ") + 1);
+		std::string::reverse_iterator  p = find_if(tmpStr->rbegin(), tmpStr->rend(), [](char code) { return !isspace(code); });
+		tmpStr->erase(p.base(), tmpStr->end());
 		return s;
+	}
+	cpps_value cpps_string_trim(cpps_value s)
+	{
+		if (s.tt != CPPS_TSTRING) return false;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)s.value.domain;
+		std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+		if (tmpStr->empty())
+		{
+			return s;
+		}
+
+
+		cpps_string_ltrim(cpps_string_rtrim(s));
+		return  s;
 	}
 	bool cpps_string_regex_match(std::string src, std::string reg)
 	{

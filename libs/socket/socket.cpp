@@ -17,7 +17,11 @@ using namespace std;
 #include "cpps_socket_httpserver_request.h"
 #include "cpps_socket_httpserver_session.h"
 
-namespace cpps { std::string cpps_io_readfile(std::string filepath); }
+
+namespace cpps {
+	std::string cpps_getcwd();
+	std::string cpps_io_readfile(std::string filepath); bool cpps_io_file_exists(std::string path);
+}
 
 std::string cpps_socket_prasehtml2str2(cpps::C* c, int32 & __htmltextblockidx, cpps::object::vector &vec,std::string& __s, std::string& take, std::string& __html, size_t& pos, char startsep1, char startsep2, std::string endsep)
 {
@@ -50,7 +54,26 @@ std::string cpps_socket_prasehtml2str2(cpps::C* c, int32 & __htmltextblockidx, c
 	return ret;
 }
 
-std::string  cpps_socket_prasehtml2str(cpps::C* c, std::string path, object __htmltextblock)
+inline std::string& lTrim(std::string& ss)
+{
+	std::string::iterator   p = find_if(ss.begin(), ss.end(), [](char code) { return !isspace(code); });
+	ss.erase(ss.begin(), p);
+	return  ss;
+}
+
+inline  std::string& rTrim(std::string & ss)
+{
+	std::string::reverse_iterator  p = find_if(ss.rbegin(), ss.rend(), [](char code) { return !isspace(code); });
+	ss.erase(p.base(), ss.end());
+	return   ss;
+}
+
+inline   std::string& trim(std::string & st)
+{
+	lTrim(rTrim(st));
+	return   st;
+}
+std::string  cpps_socket_prasehtml2str(cpps::C* c,cpps_socket_httpserver_request*request, std::string path, object __htmltextblock)
 {
 	cpps::object::vector vct(__htmltextblock);
 	
@@ -79,7 +102,33 @@ std::string  cpps_socket_prasehtml2str(cpps::C* c, std::string path, object __ht
 			{
 				std::string r = cpps_socket_prasehtml2str2(c, __htmltextblockidx, vct, __s, take, __html, pos, '{', '%', "%}");
 				if (!r.empty()) {
-					__s += r;
+					trim(r);
+					if (r[0] == '@')
+					{
+						if (r.starts_with("@page(")) {
+							size_t pos2 = r.rfind(')');
+							if (pos2 != std::string::npos) {
+								std::string path = cpps_getcwd() + "/" +  r.substr(strlen("@page("), pos2 - strlen("@page("));
+								if (cpps_io_file_exists(path)) {
+									std::string content = cpps_io_readfile(path);
+									size += content.size();
+									__html.insert(pos, content);
+								}
+								
+							}
+						}
+						else if (r.starts_with("@csrf_token"))
+						{
+							std::string csrftoken = request->getsession()->get("csrftoken",nil);
+							std::string csrfmiddlewaretoken = "<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />";
+							size += csrfmiddlewaretoken.size();
+							__html.insert(pos, csrfmiddlewaretoken);
+
+						}
+					}
+					else 
+						__s += r;
+					
 					continue;
 				}
 			}
@@ -151,6 +200,9 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def("setcookie", &cpps_socket_httpserver_request::setcookie)
 		.def("getcookie", &cpps_socket_httpserver_request::getcookie)
 		.def("getfiledata", &cpps_socket_httpserver_request::getfiledata)
+		.def("paramslist", &cpps_socket_httpserver_request::paramslistfunc)
+		.def("getlist", &cpps_socket_httpserver_request::getlistfunc)
+		.def("postlist", &cpps_socket_httpserver_request::postlistfunc)
 		.def("session", &cpps_socket_httpserver_request::getsession),
 		_class< cpps_socket_httpserver_request_filedata>("filedata")
 		.def("name", &cpps_socket_httpserver_request_filedata::name)

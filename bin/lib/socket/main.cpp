@@ -37,7 +37,7 @@ var 	__socket_httpserver_createuuid()
 	return sha256.hexdigest();
 }
 var __http__template__cache__ = {};
-var render(var request,var html,var data)
+var render(var request,var __html,var __data)
 {
 	request.addheader({
 		Server:"cpps Server",
@@ -49,31 +49,31 @@ var render(var request,var html,var data)
 	var __htmltextblock = [];
 	var __s = "";
 
-	var cache = __http__template__cache__.find(html);
-	if(cache == null){
-		cache = new HttpTemplateCache();
+	var __cache = __http__template__cache__.find(__html);
+	if(__cache == null){
+		__cache = new HttpTemplateCache();
 
-		foreach(var kv:data){
-			cache.__headers ..= "var {kv.first()} = data['{kv.first()}'];\n";
+		foreach(var kv:__data){
+			__cache.__headers ..= "var {kv.first()} = __data['{kv.first()}'];\n";
 		}
-		cache.htmlpath = "{io.getcwd()}/{html}";
-		cache.__s = socket.prasehtml2str(cache.htmlpath,cache.__htmltextblock);
-		cache.lastchangetime = io.last_write_time(cache.htmlpath);
-		__http__template__cache__.insert(html,cache);
+		__cache.htmlpath = "{io.getcwd()}/{__html}";
+		__cache.__s = socket.prasehtml2str(request,__cache.htmlpath,__cache.__htmltextblock);
+		__cache.lastchangetime = io.last_write_time(__cache.htmlpath);
+		__http__template__cache__.insert(__html,__cache);
 	}
 	else {
-		var lasttime = io.last_write_time(cache.htmlpath);
-		if(cache.lastchangetime != lasttime){
-			cache.__htmltextblock.clear();
-			cache.__s = socket.prasehtml2str(cache.htmlpath,cache.__htmltextblock);
-			cache.lastchangetime = lasttime;
+		var lasttime = io.last_write_time(__cache.htmlpath);
+		if(__cache.lastchangetime != lasttime){
+			__cache.__htmltextblock.clear();
+			__cache.__s = socket.prasehtml2str(request,cache.htmlpath,cache.__htmltextblock);
+			__cache.lastchangetime = lasttime;
 		}
 	}
 
-	__htmltextblock = cache.__htmltextblock;
+	__htmltextblock = __cache.__htmltextblock;
 	
-	dostring(cache.__headers);
-	dostring(cache.__s);
+	dostring(__cache.__headers);
+	dostring(__cache.__s);
 	request.send(200,"OK");
 }
 module socket
