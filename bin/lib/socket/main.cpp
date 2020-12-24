@@ -65,7 +65,7 @@ var render(var request,var __html,var __data)
 		var lasttime = io.last_write_time(__cache.htmlpath);
 		if(__cache.lastchangetime != lasttime){
 			__cache.__htmltextblock.clear();
-			__cache.__s = socket.prasehtml2str(request,cache.htmlpath,cache.__htmltextblock);
+			__cache.__s = socket.prasehtml2str(request,__cache.htmlpath,__cache.__htmltextblock);
 			__cache.lastchangetime = lasttime;
 		}
 	}
