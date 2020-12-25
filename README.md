@@ -53,6 +53,22 @@ lib/socket 为libevent封装库 需要安装编译libevent
 *更新日志*：
 -
 
+2020-12-25 更新
+-
+
+1.httpserver增加模板标签@page,@csrf_token
+
+2.完善string.trim
+
+3.cpps::object::create_with_classvar与 cpps::object::create_with_cppsclassvar调换一下名字
+
+4.修改httpserver-session存的值可以是任意cpps_value
+
+5.depens for windows 增加一些deps,mysql的lib传不到github不知道为什么.
+
+6.增加string类型有自己的函数支持了.并不需要stirng.XXX() 来操作字符串了.
+
+
 2020-12-23 更新2
 -
 
