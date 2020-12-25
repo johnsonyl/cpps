@@ -335,7 +335,7 @@ namespace cpps
 		return  static_cast<object>(cpps_value_vector);
 	}
 
-	object object::create_with_classvar(C* c, object __classobject)
+	object object::create_with_cppsclassvar(C* c, object __classobject)
 	{
 		cpps::cpps_cppsclass* cppsclass = cpps_to_cpps_cppsclass(__classobject.value);
 		if(cppsclass->iscppsclass())

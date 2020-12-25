@@ -139,7 +139,7 @@ int32 main(int argc,char **argv)
 	cpps::object Agent = cpps::object::globals(c)["Agent"];
 	if (Agent.isclass())
 	{
-		cpps::object Agentvar = cpps::object::create_with_classvar(c, Agent);
+		cpps::object Agentvar = cpps::object::create_with_cppsclassvar(c, Agent);
 		Agentvar.set("val", cpps::object::create(c, "this is string.") );
 		cpps::object testfunc = Agentvar["test"];
 		if (testfunc.isfunction())
@@ -157,7 +157,7 @@ int32 main(int argc,char **argv)
 
 	//new cpp class var
 	CppClassTest* ptr = NULL; //You don't need to delete it. it has GC to delete it.
-	cpps::object cppclassvar = cpps::object::create_with_cppclassvar< CppClassTest >(c, &ptr);
+	cpps::object cppclassvar = cpps::object::create_with_classvar< CppClassTest >(c, &ptr);
 	//ptr->testFunc(xxx); //you can do something in cpp .
 
 	cpps::object testFunc = cppclassvar["testFunc"];

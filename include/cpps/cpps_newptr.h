@@ -62,11 +62,6 @@ namespace cpps
 			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar,cppsclassvar, cppsclass->o->getright());
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, cppsclassvar);
-		//cpps_regvar* v = new cpps_regvar();
-		//v->setvarname("this");//修改成关键字.
-		//v->setval(cpps_value(cppsclassvar)); //域列表会copy进去
-		//v->setconst(true);
-		//cppsclassvar->regvar(NULL, v);
 		//执行0参数构造函数
 		cpps_domain* leftdomain = NULL;
 		cpps_regvar* var = cppsclassvar->getvar("constructor", leftdomain);

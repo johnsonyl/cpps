@@ -69,9 +69,9 @@ namespace cpps
 		//
 		static object	create_with_map(C* c);
 		static object	create_with_vector(C* c);
-		static object	create_with_classvar(C* c,object __classobject);
+		static object	create_with_cppsclassvar(C* c,object __classobject);
 		template<class T>
-		static object	create_with_cppclassvar(C* c, T** ptr) {
+		static object	create_with_classvar(C* c, T** ptr) {
 			return newclass<T>(c, ptr);
 		}
 		template<class Type>
