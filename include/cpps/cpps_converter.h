@@ -16,6 +16,7 @@ namespace cpps
 {
 	void					cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p);
 	std::string				type_s(object o);
+	struct string;
 	template<class R>
 	struct cpps_converter
 	{
@@ -34,7 +35,23 @@ namespace cpps
 			return static_cast<R>(clsvar->getclsptr());
 		}
 	};
+	template<>
+	struct cpps_converter<cpps::string*>
+	{
+		static bool	match(cpps_value obj)
+		{
+			return obj.tt == CPPS_TSTRING;
+		}
+		static cpps::string*		apply(cpps_value obj)
+		{
+			if (!match(obj))
+				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to cpps_string, cppsvalue type is %s , conversion failed.", type_s(obj).c_str()));
 
+
+			cpps_cppsclassvar* clsvar = (cpps_cppsclassvar*)obj.value.domain;
+			return static_cast<cpps::string *>(clsvar->getclsptr());
+		}
+	};
 #define def_cpps_number_cast(t,v) template<>\
 	struct cpps_converter<t>\
 	{\
@@ -359,6 +376,41 @@ namespace cpps
 		static cpps_value		apply(C *c, std::string obj)
 		{
 			return cpps_value(c,obj);
+		}
+	};
+	template<>
+	struct cpps_cpp_to_cpps_converter<cpps::string*>
+	{
+		static bool				match(C* c, cpps::string* v)
+		{
+			return true;
+		}
+		static cpps_value		apply(C* c, cpps::string* v)
+		{
+			cpps_value ret;
+			if (v == NULL) //NULL  == nil
+				return ret;
+
+			ret.tt = CPPS_TSTRING;
+
+			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+			cpps_cppsclassvar* var;
+			if (it == c->_class_map_classvar.end())
+			{
+				var = cpps_class_singleton<cpps::string*>::instance()->getcls()->create(c, false);
+				var->setclsptr((void*)v);
+
+				//将新创建出来的添加到新生区稍后检测要不要干掉
+				cpps_gc_add_gen0(c, var);
+			}
+			else
+				var = it->second;
+
+			ret.value.domain = var;
+			ret.value.domain->incruse();
+
+			return ret;
+
 		}
 	};
 	template<>

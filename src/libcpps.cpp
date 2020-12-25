@@ -931,32 +931,35 @@ namespace cpps {
 	}
 	node* cpps_parse_param(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer) {
 		char ch = buffer.cur();
+		node* p = NULL;
 		if (ch == '"') {
-			return(cpps_parse_string(c, domain, o, root, buffer, '"'));
+			p = cpps_parse_string(c, domain, o, root, buffer, '"');
 		}
 		else if (ch == '\'') {
-			return(cpps_parse_string(c, domain, o, root, buffer, '\''));
+			p = cpps_parse_string(c, domain, o, root, buffer, '\'');
 		}
 		else if (ch == '{') {
-			return(cpps_parse_object(c, domain, o, root, buffer));
+			p = cpps_parse_object(c, domain, o, root, buffer);
 		}
 		else if (ch == '[') {
-			return(cpps_parse_array(c, domain, o, root, buffer));
+			p = cpps_parse_array(c, domain, o, root, buffer);
 		}
 		else if (cpps_parse_isnumber(ch))
 			/* 数字参数   s */ {
-			return(cpps_parse_number(c, domain, o, buffer));
+			return cpps_parse_number(c, domain, o, buffer);
 		}
 		else if (!cpps_parse_isnotvarname(ch))
 			/* 变量参数 */ {
-			node* p = cpps_parse_var_param(c, domain, o, root, buffer, true);
-			p = cpps_parse_last_func(c, buffer, o, p, domain, root);
-			return(p);
+			 p = cpps_parse_var_param(c, domain, o, root, buffer, true);
 		}
 		else if (ch == '(') {
-			return(cpps_parse_bracket(c, domain, o, root, buffer));
+			p = cpps_parse_bracket(c, domain, o, root, buffer);
 		}
-		return(NULL);
+
+		if(p)
+			p = cpps_parse_last_func(c, buffer, o, p, domain, root);
+
+		return p;
 	}
 	node* cpps_parse_symbol(C* c, cpps_node_domain* domain, node* o, cppsbuffer& buffer, bool leftsymbol) {
 		std::string	symbolStr;
