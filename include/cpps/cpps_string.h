@@ -14,7 +14,10 @@
 
 namespace cpps
 {
-
+	struct string : public std::string
+	{
+		cpps_integer	cpps_size();
+	};
 	void	cpps_regstring(C *c);
 
 }

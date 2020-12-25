@@ -600,9 +600,7 @@ namespace cpps
 	}
 	void cpps_regbase(C *c)
 	{
-		cpps::_module(c)[
-			_class<std::string>("String")
-		];
+		
 		cpps::_module(c)[
 			_class<C>("C_STATE"),
 			def("printf", cpps_base_printf),

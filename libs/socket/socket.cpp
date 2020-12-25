@@ -105,7 +105,7 @@ std::string  cpps_socket_prasehtml2str(cpps::C* c,cpps_socket_httpserver_request
 					trim(r);
 					if (r[0] == '@')
 					{
-						if (r.starts_with("@page(")) {
+						if (r.find("@page(") == 0) {
 							size_t pos2 = r.rfind(')');
 							if (pos2 != std::string::npos) {
 								std::string path = cpps_getcwd() + "/" +  r.substr(strlen("@page("), pos2 - strlen("@page("));
@@ -117,10 +117,10 @@ std::string  cpps_socket_prasehtml2str(cpps::C* c,cpps_socket_httpserver_request
 								
 							}
 						}
-						else if (r.starts_with("@csrf_token"))
+						else if (r.find("@csrf_token") == 0)
 						{
-							std::string csrftoken = request->getsession()->get("csrftoken",nil);
-							std::string csrfmiddlewaretoken = "<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "' />";
+							object csrftoken = request->getsession()->get("csrftoken",nil);
+							std::string csrfmiddlewaretoken = "<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken.tostring() + "' />";
 							size += csrfmiddlewaretoken.size();
 							__html.insert(pos, csrfmiddlewaretoken);
 

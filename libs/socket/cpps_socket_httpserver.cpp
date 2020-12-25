@@ -204,7 +204,8 @@ namespace cpps {
 			if (!session) {
 				session = httpserver->create_seesion(httpserver->c);
 				cpps_request_ptr->setcookie(httpserver->SESSION_COOKIE_NAME, session->session_id, cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c,httpserver->SESSION_COOKIE_AGE));
-				cpps_request_ptr->setcookie("csrftoken", session->get("csrftoken",nil), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c,httpserver->SESSION_COOKIE_AGE));
+				object csrftoken = session->get("csrftoken", nil);
+				cpps_request_ptr->setcookie("csrftoken", csrftoken.tostring(), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c,httpserver->SESSION_COOKIE_AGE));
 			}
 			cpps_request_ptr->setsession(session);
 		}
@@ -413,7 +414,7 @@ namespace cpps {
 		cpps_socket_httpserver_session* session = new cpps_socket_httpserver_session();
 		session->session_id = sesionid;
 		session->set_expire(cpps_time_gettime() + SESSION_COOKIE_AGE);
-		session->set("csrftoken", csrf_token);
+		session->set("csrftoken", cpps_value(c,csrf_token));
 		session_list.insert(http_session_list::value_type(sesionid, session));
 		return session;
 	}

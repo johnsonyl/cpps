@@ -472,6 +472,44 @@ namespace cpps
 	}
 	void cpps_regstring(C *c)
 	{
+		cpps::_module(c)[
+			_class<cpps::string>("String")
+				.def("size", &cpps::string::cpps_size)
+				//.def("find", &cpps::string::cpps_string_find)
+				//.def("rfind", &cpps::string::cpps_string_rfind)
+				//.def("length", &cpps::string::cpps_string_len)
+				//.def("strlen", &cpps::string::cpps_string_strlen)
+				//.def("replace", &cpps::string::cpps_string_replace)
+				//.def("clear", &cpps::string::cpps_string_clear)
+				//.def("copyto", &cpps::string::cpps_string_copyto)
+				//.def_inside("split", &cpps::string::cpps_string_split)
+				//.def_inside("cut", &cpps::string::cpps_string_cut)
+				//.def("strcut", &cpps::string::cpps_string_strcut)
+				//.def_inside("strcuts", &cpps::string::cpps_string_strcuts)
+				//.def("empty", &cpps::string::cpps_string_empty)
+				//.def("substr", &cpps::string::cpps_string_sub)
+				//.def("at", &cpps::string::cpps_string_at)
+				//.def("format", &cpps::string::cpps_string_format)
+				//.def("lower", &cpps::string::cpps_string_lower)
+				//.def("upper", &cpps::string::cpps_string_upper)
+				//.def("trim", &cpps::string::cpps_string_trim)
+				//.def("ltrim", &cpps::string::cpps_string_ltrim)
+				//.def("rtrim", &cpps::string::cpps_string_rtrim)
+				//.def("join", &cpps::string::cpps_string_join)
+				//.def("between", &cpps::string::cpps_string_between)
+				//.def("startswith", &cpps::string::cpps_string_startswith)
+				//.def("endswith", &cpps::string::cpps_string_endswith)
+				//.def("pop_back", &cpps::string::cpps_string_pop_back)
+				//.def("regex_match", &cpps::string::cpps_string_regex_match)
+				//.def("regex_replace", &cpps::string::cpps_string_regex_replace)
+				//.def_inside("chr", &cpps::string::cpps_string_chr)
+				//.def("push_back", &cpps::string::cpps_string_push_back)
+				//.def("unicode_charCodeAt", &cpps::string::cpps_string_unicode_charCodeAt)
+				//.def_inside("unicode_fromCodeAt", &cpps::string::cpps_string_unicode_fromCodeAt)
+				//.def("charCodeAt", &cpps::string::cpps_string_charCodeAt)
+				//.def_inside("fromCodeAt", &cpps::string::cpps_string_fromCodeAt)
+		];
+
 		cpps::_module(c,"string")[
 			def("find", cpps_string_find),
 			def("rfind", cpps_string_rfind),
@@ -511,6 +549,11 @@ namespace cpps
 			
 		];
 
+	}
+
+	cpps_integer string::cpps_size()
+	{
+		return (cpps_integer)size();
 	}
 
 }

@@ -194,7 +194,7 @@ namespace cpps {
 	node* cpps_parse_string(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, int8 endch) {
 		node* str = new node(o->filename, buffer.line());
 		str->type = CPPS_OSTR;
-		str->value.str = cpps_class_singleton<std::string*>::instance()->getcls()->create(c, true);
+		str->value.str = cpps_class_singleton<cpps::string*>::instance()->getcls()->create(c, true);
 		buffer.pop();
 		/* pop '"' */
 		node* laststr = NULL;
@@ -1994,6 +1994,7 @@ namespace cpps {
 	cpps::C* create(int argc, char** argv) {
 		C* c = new cpps::C(argc, argv);
 		cpps_create_root_G(c);
+		cpps_regstring(c);
 		cpps_regbase(c);
 		cpps_regsymbols(c);
 		cpps_regmath(c);
@@ -2001,7 +2002,6 @@ namespace cpps {
 		cpps_regio(c);
 		cpps_regtime(c);
 		cpps_regarray(c);
-		cpps_regstring(c);
 		cpps_reggc(c);
 		cpps_regdebug(c);
 		cpps_reglock(c);
@@ -3355,7 +3355,7 @@ namespace cpps {
 	void cpps_calculate_expression_getobject(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
 		cpps_value left = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
 		if (left.tt != CPPS_TNIL) {
-			if (left.tt == CPPS_TCLASSVAR) {
+			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING ) {
 				/* cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0]; */
 				cpps_domain* execdomain = c->domain_alloc();
 				execdomain->init(c->_G, cpps_domain_type_exec);

@@ -320,7 +320,7 @@ namespace cpps
 	{
 		return true;
 	}
-	int writeInZipFile(zipFile zFile, const string& file)
+	int writeInZipFile(zipFile zFile, const std::string& file)
 	{
 		std::fstream f(file.c_str(), std::ios::binary | std::ios::in);
 		f.seekg(0, std::ios::end);

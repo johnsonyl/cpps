@@ -15,7 +15,7 @@ endif ()
 
 if (WINDOWS)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-	add_compile_options("/std:c++latest")
+	add_compile_options("/std:c++17")
 elseif (MACOS)
 	#default release.
 	if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)

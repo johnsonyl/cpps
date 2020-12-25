@@ -4,15 +4,15 @@
 #include <cpps/cpps.h>
 
 namespace cpps{
-	typedef phmap::flat_hash_map<std::string, std::string> session_values;
+	typedef phmap::flat_hash_map<std::string, cpps_value> session_values;
 	class cpps_socket_httpserver_session
 	{
 	public:
 		cpps_socket_httpserver_session();
 		virtual ~cpps_socket_httpserver_session();
 		
-		void				set(std::string key, std::string value);
-		std::string			get(std::string key, object defaultvalue);
+		void				set(std::string key, object value);
+		cpps_value			get(std::string key, object defaultvalue);
 		void				set_expire(cpps_integer time);
 		void				clear();
 		void				remove();

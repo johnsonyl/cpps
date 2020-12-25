@@ -14,16 +14,16 @@ namespace cpps
 		
 	}
 	
-	void cpps_socket_httpserver_session::set(std::string key, std::string value)
+	void cpps_socket_httpserver_session::set(std::string key, object value)
 	{
-		session_value[key] = value;
+		session_value[key] = value.value;
 	}
 
-	std::string cpps_socket_httpserver_session::get(std::string key,object defaultvalue)
+	cpps_value cpps_socket_httpserver_session::get(std::string key,object defaultvalue)
 	{
 		auto it = session_value.find(key);
-		if (it == session_value.end() && defaultvalue.isstring()) {
-			session_value.insert(session_values::value_type(key, defaultvalue.tostring()));
+		if (it == session_value.end() && !defaultvalue.isnull()) {
+			session_value.insert(session_values::value_type(key, defaultvalue.value));
 		}
 		return session_value[key];
 	}

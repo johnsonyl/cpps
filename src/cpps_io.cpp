@@ -700,6 +700,13 @@ namespace cpps
 		}
 		return -1;
 	}
+	void	cpps_io_chdir(std::string path) {
+#ifdef WIN32
+		SetCurrentDirectoryA(path.c_str());
+#else
+		chdir(path.c_str());
+#endif
+	}
 	
 	cpps_integer cpps_io_rmdir(std::string sourcepath) {
 		sourcepath = cpps_io_string_replace(sourcepath, "\\", "/");
@@ -778,6 +785,7 @@ namespace cpps
 			def("mkdir",cpps_io_mkdir),
 			def("rmdir",cpps_io_rmdir),
 			def("mkdirs",cpps_io_mkdirs),
+			def("chdir",cpps_io_chdir),
 			def("isdir",cpps_io_isdir),
 			def("isfile",cpps_io_isfile),
 			def("normpath",cpps_io_normpath),
