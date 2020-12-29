@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt: libcpps 的 CMake 项目，在此处包括源代码并定义
 # 项目特定的逻辑。
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.5)
 
 # 将源代码添加到此项目的可执行文件。
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/src  SRC_LIST)

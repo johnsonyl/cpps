@@ -127,7 +127,7 @@ namespace cpps
 		// 				*ret = stack->funcRet;//return的值反馈回去
 
 #else
-		cpps_step_all(c, CPPS_SINGLERET, funcdomain, funcdomain, context);
+		cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context);
 
 		if (ret)
 			*ret = funcdomain->funcRet;//return的值反馈回去

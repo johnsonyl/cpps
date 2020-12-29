@@ -16,11 +16,11 @@ class macoscompiler : ccompiler
         var ldflags_executable = ["-fPIC"];
         if(!debug){
             cpp_flags = ["-fPIC","-Wfatal-errors","-std=c++17","-Wno-format-y2k","-fpermissive","-std=gnu++0x","-Wno-unused-function","-O3","-Wall"];
-            cpp_macros = ["-D__APPLE__","-D_FILE_OFFSET_BITS=64","-DNDEBUG"];
+            cpp_macros = ["-D__APPLE__","-D_GLIBCXX_USE_CXX11_ABI=1","-D_FILE_OFFSET_BITS=64","-DNDEBUG"];
         }
         else{
             cpp_flags = ["-Wfatal-errors","-std=c++17","-Wno-format-y2k","-fpermissive","-std=gnu++0x","-Wno-unused-function","-O0","-Wall","-g","-ggdb"];
-            cpp_macros = ["-D__APPLE__","-D_FILE_OFFSET_BITS=64","-DDEBUG"];
+            cpp_macros = ["-D__APPLE__","-D_GLIBCXX_USE_CXX11_ABI=1","-D_FILE_OFFSET_BITS=64","-DDEBUG"];
         }
         var arch = "x64";
 		if(sys.platform == "macos64" )
@@ -37,7 +37,7 @@ class macoscompiler : ccompiler
 			}
 		}
 
-        var complier_base_libs = ["-lcpps","-lm","-lpthread","-ldl"];
+        var complier_base_libs = ["-llibcpps","-lm","-lpthread","-ldl"];
 		if(is_nocpps_build) complier_base_libs.pop_front();
 
         if(libraries != null){
@@ -78,13 +78,8 @@ class macoscompiler : ccompiler
         string.replace(base_lib_cpps,"\\","/");
         //baselibpath
 
-        var base_lib_bin_cpps = '{real_path}../bin';
-		base_lib_bin_cpps = io.normpath(base_lib_bin_cpps);
-		if(string.endswith(base_lib_bin_cpps,"\\"))
-			string.pop_back(base_lib_bin_cpps,1);
-        string.replace(base_lib_bin_cpps,"\\","/");
 
-        var complier_base_lib_path = ['-L{base_lib_cpps}','-L{base_lib_bin_cpps}','-L/usr/local/lib','-L/usr/lib'];
+        var complier_base_lib_path = ['-L{base_lib_cpps}','-L/usr/local/lib','-L/usr/lib'];
 		if(is_nocpps_build) complier_base_lib_path.clear();
 
 		if(library_dirs != null){
@@ -122,7 +117,7 @@ class macoscompiler : ccompiler
         	println_color(" Building CXX object {sources[i]} -> {sources[i]}.o",2);
 			var cmd = '{cpp} -c {macos} {opt} {inc} -o {obj} {src}';
         	var s = execmd(cmd);
-        	if(len(s) > 0 ) { println_color(s,1); }
+        	if(len(s) > 0 ) { log.warrning(s); }
         }
 
 		var opt = "";

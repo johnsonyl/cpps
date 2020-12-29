@@ -546,14 +546,14 @@ namespace cpps
 
 	cpps_integer string::cpps_string_find(std::string v2, object off)
 	{
-		size_t pos = std::string::npos;
+		size_t pos = 0;
 		if (off.isint()) pos = (size_t)off.toint();
 		return (cpps_integer)find(v2, pos);
 	}
 
 	cpps_integer string::cpps_string_rfind(std::string v2, object off)
 	{
-		size_t pos = std::string::npos;
+		size_t pos = 0;
 		if (off.isint()) pos = (size_t)off.toint();
 		return (cpps_integer)rfind(v2, pos);
 	}

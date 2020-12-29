@@ -96,7 +96,7 @@ namespace cpps
 			cpps_integer size = cpps_io_size(file);
 			char* buf = new char[size];
 			memset(buf, 0, size);
-			fread(buf, size, 1, file);
+			if (fread(buf, size, 1, file)) {};
 			fclose(file);
 			ret.append(buf, size);
 			delete[] buf;
@@ -104,10 +104,10 @@ namespace cpps
 		}
 		return ret;
 	}
-	void		cpps_io_read(FILE *file, Buffer *buf, cpps_integer len)
+	cpps_integer	cpps_io_read(FILE *file, Buffer *buf, cpps_integer len)
 	{
 		buf->realloc(buf->length() + len);
-		fread(buf->getbuffer() + buf->length(), (size_t)len, 1, file);
+		return fread(buf->getbuffer() + buf->length(), 1, (size_t)len, file);
 	}
 	std::string cpps_io_getlines(FILE *file)
 	{
@@ -256,7 +256,7 @@ namespace cpps
 #ifdef _WIN32
 		_getcwd(buffer, 4096);
 #else
-		getcwd(buffer, 4096);
+		if (getcwd(buffer, 4096)) {}
 #endif
 		return buffer;
 	}
@@ -700,11 +700,11 @@ namespace cpps
 		}
 		return -1;
 	}
-	void	cpps_io_chdir(std::string path) {
+	bool	cpps_io_chdir(std::string path) {
 #ifdef WIN32
-		SetCurrentDirectoryA(path.c_str());
+		return SetCurrentDirectoryA(path.c_str());
 #else
-		chdir(path.c_str());
+		return chdir(path.c_str());
 #endif
 	}
 	

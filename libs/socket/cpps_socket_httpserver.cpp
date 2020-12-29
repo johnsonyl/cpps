@@ -273,10 +273,12 @@ namespace cpps {
 					auto cachefile = httpserver->get_cachefile(cpps_request_ptr->path);
 					if (cachefile == NULL )
 					{
-						cachefile = httpserver->create_cachefile(cpps_request_ptr->path, cpps_io_readfile(filepath), last_write_time);
+						std::string content = cpps_io_readfile(filepath);
+						cachefile = httpserver->create_cachefile(cpps_request_ptr->path, content, last_write_time);
 					}
 					if (cachefile->getlast_write_time() != last_write_time) {
-						cachefile->setcontent(cpps_io_readfile(filepath));
+						std::string content = cpps_io_readfile(filepath);
+						cachefile->setcontent(content);
 					}
 
 					cpps_request_ptr->append(cachefile->getcontent());

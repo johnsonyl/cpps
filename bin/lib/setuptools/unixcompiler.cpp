@@ -20,7 +20,7 @@ class unixcompiler : ccompiler
         }
         else{
             cpp_flags = ["-Wfatal-errors","-std=c++17","-Wno-format-y2k","-fpermissive","-std=gnu++0x","-Wformat-contains-nul","-Wno-unused-function","-O0","-Wall","-g","-ggdb"];
-            cpp_macros = ["-DLINUX","-D_FILE_OFFSET_BITS=64","-DDEBUG"];
+            cpp_macros = ["-DLINUX","-D_GLIBCXX_USE_CXX11_ABI=1","-D_FILE_OFFSET_BITS=64","-DDEBUG"];
         }
         var arch = "x64";
 		if(sys.platform == "linux64" )
@@ -37,7 +37,7 @@ class unixcompiler : ccompiler
 			}
 		}
 
-        var complier_base_libs = ["-lcpps","-lm","-lpthread","-lrt","-ldl"];
+        var complier_base_libs = ["-llibcpps","-lm","-lpthread","-lrt","-ldl"];
 		if(is_nocpps_build) complier_base_libs.pop_front();
 
         if(libraries != null){

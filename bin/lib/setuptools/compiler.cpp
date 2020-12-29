@@ -37,6 +37,7 @@ var compiler(var output_name,var work_path,var option,var real_install_path,var 
 	compiler_maker.set_build_type(real_build_type);
 	compiler_maker.set_nocpps_build(is_nocpps_build);
 	compiler_maker.set_link_type(link_type);
+	
 
 	var code = compiler_maker.compiler(option);
 	return code;

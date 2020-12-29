@@ -24,40 +24,55 @@ namespace cpps
 	inline cpps_value		newclass(C* c, T** ret);
 	struct object
 	{
+
+		object();
+		object(const object& k);
+		object(cpps_value v);
+
 		static object real(object o);
 		struct vector
 		{
+		public:
+			static		vector							create(C* c);
+		public:
 			vector(object obj);
 			std::vector<cpps_value>::iterator			begin();
 			std::vector<cpps_value>::iterator			end();
 			void										push_back(object v);
-			object		operator[](const cpps_integer k);
+			object										toobject();
+			object										operator[](const cpps_integer k);
+		private:
 			cpps_vector* _vec;
+			cpps_value _src_value;
 		};
 		
 		struct map
 		{
+		public:
+			static map																create(C* c);
+		public:
+
 			map(C* cstate, object obj);
 			cpps_hash_map::iterator													begin();
 			cpps_hash_map::iterator													end();
 			void																	insert(object key, object value);
+			object																	toobject();
 			template<class T>
 			bool																	has(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
 				return _map->has(key);
 			}
 			template<class T>
-			object		operator[](const T k) {
+			object																	operator[](const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
 				cpps_value& value = _map->cpps_find(key);
 				return cpps_value(&value);
 			}
+		private:
+			cpps_value _src_value;
 			cpps_map* _map;
 			C* c;
 		};
-		object();
-		object(const object &k);
-		object(cpps_value v);
 
 		
 
@@ -129,7 +144,7 @@ namespace cpps
 		{
 			if (!cpps_cpp_to_cpps_converter<Type>::match(c, v))
 			{
-				throw(cpps_error("0", 0, 0, "%s is not defined to script, conversion failed.", typeid(Type).name()));
+				throw(cpps_error(__FILE__, __LINE__, 0, "%s is not defined to script, conversion failed.", typeid(Type).name()));
 			}
 
 			value = cpps_cpp_to_cpps_converter<Type>::apply(c, v);

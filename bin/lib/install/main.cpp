@@ -4,7 +4,7 @@
 var args = getargs();
 var compiler_result = false;
 var install_path = "";
-var build_type = isdebug();
+var build_type = sys.debug;
 var modulename = args[2];
 if(modulename == "" || modulename == null) exit(0); 
 
@@ -66,8 +66,8 @@ var install()
 
 	
 
-	download(jsonfilepath,"{modulename}-json");
-	download(targzfilepath,"{modulename}-tar.gz");
+	download(jsonfilepath,"io.getfilename(jsonfilepath)");
+	download(targzfilepath,"{io.getfilename(targzfilepath)}");
 
 	println("");
 	println("----------------------------------------\r\n");

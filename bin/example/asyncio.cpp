@@ -25,8 +25,8 @@ var test_call_back(var task,var context)
 async var main(){
 
 	var task1 = asyncio.create_task(test());
-	task1.set_name("自定义名字用于区分");
-	task1.add_done_callback(test_call_back,"自定义context内容");
+	task1.set_name("Custom names are used to distinguish");
+	task1.add_done_callback(test_call_back,"Custom context content");
 	var task2 = asyncio.create_task(test1());
 
 	var ret = await asyncio.wait(task1);
@@ -41,13 +41,14 @@ async var main(){
 	}
 	catch(var e)
 	{
+		println("oh,we catch some error");
 		println("{e.geterrstr()} line:{e.getline()} file:{e.getfile()}");
 		println(e.callstack());
 	}
 	
 	task1.cleanup();// asyncio.wait or asyncio.wait_for need cleanup.
 	//task2.cleanup(); // crash here..  await will cleanup it.
-
+	println("finish");
 }
 
 asyncio.run(main());

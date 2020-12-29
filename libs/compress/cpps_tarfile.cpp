@@ -73,7 +73,7 @@ namespace cpps {
 			fseek(file, 0, SEEK_SET);
 
 			Byte* source_file_buffer = new Byte[filesize];
-			fread(source_file_buffer, filesize, 1, file);
+			if (fread(source_file_buffer, filesize, 1, file)) {}
 			fclose(file);
 
 			if (compresstype.empty()) {
@@ -226,7 +226,7 @@ namespace cpps {
 		return NULL;
 	}
 
-	void cpps_tarfile::close()
+	cpps_integer cpps_tarfile::close()
 	{
 		size_t block_size = 512;
 		std::string source_file_buffer;
@@ -267,7 +267,7 @@ namespace cpps {
 				if (err != Z_OK)
 				{
 					delete[] compress_buf;
-					return;
+					return -1;
 				}
 				
 				FILE* file = fopen(takefilepath.c_str(), "wb+");
@@ -282,6 +282,7 @@ namespace cpps {
 
 		if (decompress_file_buffer) delete[] decompress_file_buffer;
 		decompress_file_buffer = NULL;
+		return save_file_buffer_size;
 	}
 
 	void cpps_tarfile::add(std::string name, cpps_value arcname, cpps_value recursive, cpps_value filter)
@@ -409,7 +410,8 @@ namespace cpps {
 			info->header.typeflag = '3';
 		}
 		strcpy(info->header.magic, TMAGIC);
-		strcpy(info->header.version, "00");
+		info->header.version[0] = '0';
+		info->header.version[1] = '0';
 		strcpy(info->header.uname, cpps_tarfile_getusername().c_str());
 		strcpy(info->header.gname, cpps_tarfile_getgroupname().c_str());
 		sprintf(info->header.devmajor, "000000 "); info->header.devmajor[7] = '\0';
@@ -426,11 +428,11 @@ namespace cpps {
 		info->buf = new Byte[statinfo.st_size];
 		FILE* file = fopen(name.c_str(), "rb");
 		if (file) {
-			fread(info->buf, statinfo.st_size, 1, file);
+			if (fread(info->buf, statinfo.st_size, 1, file)) {}
 			fclose(file);
+			info->file_size = statinfo.st_size;
 		}
 		info->needdelete = true;
-		info->file_size = statinfo.st_size;
 			
 		return info;
 

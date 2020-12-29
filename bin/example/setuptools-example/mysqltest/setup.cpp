@@ -34,19 +34,19 @@ var module_macos = {
 
 
 setuptools::setup({
-	username:"johnsonyl",
+	username:"zheng1",
+    apikey:"39ae9ae32348147b4c7a53e3a25c2bac",
     name:"mysqltest", 
     version:"0.0.1",
     author:"johnsonyl",
     author_email:"mysqltest@mysqltest.com",
     description:"A mysql example ext librarie.",
     long_description:long_description,
-    debug:false,
     long_description_content_type:"text/markdown",
     url:"https://github.com/johnsonyl/mysqlexaple",
     packages:setuptools::find_packages(),
     platfrom:"all", // windows or linux or macos or all
     ext_modules:[module_windows,module_linux,module_macos],
-    cpps_requires:'>=1.0',
+    cpps_requires:'>=1.0.0',
 });
 

@@ -144,15 +144,15 @@ class mscompiler : ccompiler
 		var compile_options;
 		var compile_options_debug;
 		if(arch == "x86"){
-			compile_options = [ '/nologo', '/EHsc' , '/Ox', '/MD', '/W3',
+			compile_options = [ '/std:c++17','/nologo', '/EHsc' , '/Ox', '/MD', '/W3',
                                      '/DNDEBUG', '/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
-			compile_options_debug = ['/nologo', '/EHsc', '/Od', '/MDd', '/W3',
+			compile_options_debug = ['/std:c++17','/nologo', '/EHsc', '/Od', '/MDd', '/W3',
                                           '/Z7', '/D_DEBUG', '/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
 		}
 		else{
-			compile_options = [ '/nologo', '/EHsc', '/Ox', '/MD', '/W3', '/GS-' ,
+			compile_options = [ '/std:c++17','/nologo', '/EHsc', '/Ox', '/MD', '/W3', '/GS-' ,
                                      '/DNDEBUG', '/EHsc','/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
-            compile_options_debug = ['/nologo', '/Od', '/MDd', '/W3', '/GS-',
+            compile_options_debug = ['/std:c++17','/nologo', '/Od', '/MDd', '/W3', '/GS-',
                                           '/Z7', '/D_DEBUG' ,'/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
 		}
 		var ldflags_shared;
@@ -185,7 +185,7 @@ class mscompiler : ccompiler
 			}
 		}
 		//baselib
-		var complier_base_libs = ['"cpps.lib"','"kernel32.lib"','"user32.lib"','"gdi32.lib"','"winspool.lib"','"shell32.lib"','"ole32.lib"','"oleaut32.lib"','"uuid.lib"','"comdlg32.lib"','"advapi32.lib"'];
+		var complier_base_libs = ['"libcpps.lib"','"kernel32.lib"','"user32.lib"','"gdi32.lib"','"winspool.lib"','"shell32.lib"','"ole32.lib"','"oleaut32.lib"','"uuid.lib"','"comdlg32.lib"','"advapi32.lib"'];
 		if(is_nocpps_build) complier_base_libs.pop_front(); //remove cpps.lib
 
 		if(libraries != null){
@@ -224,17 +224,13 @@ class mscompiler : ccompiler
 		if(string.endswith(base_lib_cpps,"\\"))
 			string.pop_back(base_lib_cpps,1);
 		
-		var base_lib_bin_cpps = '{real_path}../bin';
-		base_lib_bin_cpps = io.normpath(base_lib_bin_cpps);
-		if(string.endswith(base_lib_bin_cpps,"\\"))
-			string.pop_back(base_lib_bin_cpps,1);
 
 		var base_lib_deps_path_cpps = '{real_path}../deps/deps/lib';
 		base_lib_deps_path_cpps = io.normpath(base_lib_deps_path_cpps);
 		if(string.endswith(base_lib_deps_path_cpps,"\\"))
 			string.pop_back(base_lib_deps_path_cpps,1);
 		
-		var complier_base_lib_path = ['/LIBPATH:"{base_lib_deps_path_cpps}"','/LIBPATH:"{base_lib_cpps}"','/LIBPATH:"{base_lib_bin_cpps}"'];
+		var complier_base_lib_path = ['/LIBPATH:"{base_lib_deps_path_cpps}"','/LIBPATH:"{base_lib_cpps}"'];
 		if(is_nocpps_build) complier_base_lib_path.clear();
 		if(library_dirs != null){
 			foreach(var libpath:library_dirs){
@@ -276,9 +272,7 @@ class mscompiler : ccompiler
         	println_color(" Building CXX object {sources[i]} -> {sources[i]}.obj",2);
 			var cmd = '{cl} /c {opt} {inc} /Fo"{obj}" "{src}"';
         	var s = execmd(cmd);
-        	if(string.find(src,s) != string.npos ) { println_color(s,1);}
-        	
-
+        	if(string.find(s,"error") != string.npos ) { log.warrning(s);}
         }
 
         
@@ -317,7 +311,7 @@ class mscompiler : ccompiler
 		var cmd = '{link} {opt} {lib_paths} "/out:{outfilepath}" {libs} {objslist}';
         var s = execmd(cmd);
 		if(link_type == 1){
-			if(string.find(s,".exp") == string.npos) { log.error(s);sleep(10); return false;}
+			if(string.find(s,"error") != string.npos) { log.error(s);sleep(10); return false;}
 		}
 		else{
 			if(len(s) > 0) { log.error(s); sleep(10);return false;}

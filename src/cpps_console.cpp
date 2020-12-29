@@ -22,12 +22,12 @@ namespace cpps
 #endif
 	}
 
-	void cpps_console_clear()
+	int32 cpps_console_clear()
 	{
 #ifdef _WIN32
-		system("cls");
+		return system("cls");
 #else
-		system("clear");
+		return system("clear");
 #endif
 
 	}

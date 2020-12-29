@@ -32,7 +32,7 @@ int32 main(int argc,char **argv)
 #ifdef WIN32
 	SetCurrentDirectoryA(cpps_io_getfilepath(path).c_str());
 #else
-	chdir(cpps_io_getfilepath(path).c_str());
+	if (chdir(cpps_io_getfilepath(path).c_str())) {}
 #endif
 
 

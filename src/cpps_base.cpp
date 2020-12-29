@@ -9,10 +9,10 @@ namespace cpps
 	std::string getfilenamenotext(std::string str);
 	std::string cpps_rebuild_filepath(std::string path);
 	bool cpps_base_isdebug() {
-#ifdef NDEBUG
-		return false;
-#else
+#ifdef _DEBUG
 		return true;
+#else
+		return false;
 #endif
 	}
 	bool cpps_base_isset(cpps_value v)
@@ -233,9 +233,9 @@ namespace cpps
 		}
 		return ret;
 	}
-	void cpps_base_system(std::string v)
+	int32 cpps_base_system(std::string v)
 	{
-		system(v.c_str());
+		return system(v.c_str());
 	}
 	void cpps_base_setconsoletitle(std::string title)
 	{
@@ -329,7 +329,7 @@ namespace cpps
 			stack->init("main.cpp", 0, "import");
 
 			c->push_stack(stack);
-			cpps_step_all(c, CPPS_SINGLERET, c->_G,c->_G, o);
+			cpps_step_all(c, CPPS_MUNITRET, c->_G,c->_G, o);
 			c->pop_stack();
 
 
@@ -616,6 +616,7 @@ namespace cpps
 			def("toint", cpps_base_tointeger),
 			def("int", cpps_base_tointeger),
 			def("tostring", cpps_base_tostring),
+			def("str", cpps_base_tostring),
 			def("isstring", cpps_base_isstring),
 			def("isint", cpps_base_isint),
 			def("isbool", cpps_base_isbool),
@@ -670,7 +671,12 @@ namespace cpps
 			defvar(c, "easyplatform", CPPS_CURRENT_EASYPLANTFORM),
 			defvar(c, "builder_version", CPPS_BUILDER_VERSION),
 			defvar(c, "version", CPPS_VER),
-			defvar(c, "versionno", CPPS_VERN)
+			defvar(c, "versionno", CPPS_VERN),
+#ifdef _DEBUG
+			defvar(c, "debug", true)
+#else
+			defvar(c, "debug", false)
+#endif
 		];
 
 

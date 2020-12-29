@@ -1,7 +1,9 @@
 #import "json"
 #import "compress"
+#import "http"
 #include <lib/setuptools/logging.cpp>
 #include <lib/setuptools/dist.cpp>
+#include <lib/setuptools/upload.cpp>
 #include <lib/setuptools/colorprint.cpp>
 #include <lib/setuptools/ccompiler.cpp>
 #include <lib/setuptools/compiler.cpp>
@@ -28,11 +30,15 @@ namespace setuptools{
 		}else if(type == "dist"){
 			dist(option);
 		}
+		else if(type == "upload"){
+			var ret = dist(option);
+			if(ret) upload(option);
+		}
 		else if (type == "build")
 		{
 			var work_path = io.getcwd(); //工作目录
 			var real_install_path = "{work_path}/dist/"; //编译目录
-			var real_build_type = option["debug"];
+			var real_build_type = sys.debug;
 			var link_type = 1; // 1. dynamic Share library 2.Stand library 3.executable  2 or 3 only be used when nocpps is compiled!
 
 

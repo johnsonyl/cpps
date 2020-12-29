@@ -18,6 +18,7 @@ namespace cpps{
 		void					addfile(std::string name, std::string file, object type /*= text/plain */);
 		std::string				upload(C* cstate, std::string url,cpps::object callbackfunc);
 		void					setcookie(std::string cookie);
+		void					uploadprogress(cpps_integer now, cpps_integer total, cpps_number speed);
 		void					append(const char* data, size_t nmemb);
 	public:
 		struct					curl_httppost* formpost;
@@ -26,7 +27,10 @@ namespace cpps{
 		struct curl_slist*		headerlist;
 		std::string				retpage;
 		cpps::object			callbackfunc;
+		size_t					totalfilesize;
 		C*						c;
+		CURL* curl;
+
 	};
 	
 }

@@ -1,7 +1,7 @@
 #ifndef cpps_mysql_record_h__
 #define cpps_mysql_record_h__
 
-#include <cpps.h>
+#include <cpps/cpps.h>
 #include <unordered_map>
 
 namespace cpps

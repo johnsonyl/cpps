@@ -3,19 +3,7 @@ var dist(var option){
 	io.mkdir("dist");
 	var filename = "{option["name"]}-{option["username"]}-{option["version"]}-{option["platfrom"]}";
 	var configname = "dist/{filename}.json";
-	print("build config json file...");
-	var jsonval = json.encode(option);
-	io.remove(configname);
-	var jsonfile = io.fopen(configname,"wb+");
-	if(jsonfile){
-		io.fwrites(jsonfile,jsonval);
-		io.fclose(jsonfile);
-		println_color("success!",2);
-	}
-	else{
-		println_color("faild!",1);
-		return;
-	}
+	
 
 	var targzname = "dist/{filename}.tar.gz";
 	io.remove(targzname);
@@ -24,7 +12,7 @@ var dist(var option){
 	if(!file){
 
 		println_color("faild!",1);
-		return;	
+		return false;	
 	} 
 	println_color("success!",2);
 
@@ -38,6 +26,10 @@ var dist(var option){
 			filename2 = string.substr(filename,2,string.npos);
 		}
 		pos = string.find(filename2,"dist/");
+		if(pos == 0){
+			continue;
+		}
+		pos = string.find(filename2,"dist");
 		if(pos == 0){
 			continue;
 		}
@@ -58,7 +50,7 @@ var dist(var option){
 		print_color("[{idx}/{count}] ",4);
 		idx++;
 
-		print("{filename2} ...");
+		print("{filename} -> {filename2} ...");
 		var fileinfo = file.gettarinfo(filename,filename2);	
 		if(fileinfo){
 			file.addfile(fileinfo);
@@ -66,6 +58,28 @@ var dist(var option){
 		}
 	}
 	print("saving compressed file...");
-	file.close();
-	println_color("success!",2);
+	var sourcetargzsize = file.close();
+	if(sourcetargzsize == -1){
+		println_color("faild!",2);
+		return false;
+	}
+	else
+		println_color("success!",2);
+	
+	print("build config json file...");
+	option["sourcetargzsize"] = sourcetargzsize;
+	var jsonval = json.encode(option);
+	io.remove(configname);
+	var jsonfile = io.fopen(configname,"wb+");
+	if(jsonfile){
+		io.fwrites(jsonfile,jsonval);
+		io.fclose(jsonfile);
+		println_color("success!",2);
+	}
+	else{
+		println_color("faild!",1);
+		return false;
+	}
+
+	return true;
 }

@@ -61,8 +61,9 @@ namespace cpps {
 		FILE*			extractfile(cpps_value member);
 		/*
 		* 关闭 在写入模式下，会向归档添加两个表示结束的零数据块。
+		* 返回  压缩前原始文件大小
 		*/
-		void			close();
+		cpps_integer			close();
 		/*
 		* 不知道干啥的.
 		*/

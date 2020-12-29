@@ -55,7 +55,7 @@
 #endif
 
 #define CPPS_VER		"1.0.0 Build 20201209 [" CPPS_BUILDER_VERSION "]"
-#define CPPS_VERN		1000
+#define CPPS_VERN		10000
 #define CPPS_NAME		"CPPS"
 #ifndef M_PI
 #define M_PI				3.14159265358979323846

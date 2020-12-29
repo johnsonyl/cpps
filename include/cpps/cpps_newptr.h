@@ -63,7 +63,7 @@ namespace cpps
 		cpps_step_newclassvar_reg_baselassvar(cppsclass, c, cppsclassvar, cppsclassvar);
 		//将类对象里面的变量创建出来
 		if (cppsclass->o)
-			cpps_step_all(c, CPPS_SINGLERET, cppsclassvar,cppsclassvar, cppsclass->o->getright());
+			cpps_step_all(c, CPPS_MUNITRET, cppsclassvar,cppsclassvar, cppsclass->o->getright());
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, cppsclassvar);
 		//执行0参数构造函数

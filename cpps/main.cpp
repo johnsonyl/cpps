@@ -38,9 +38,9 @@ int32 main(int argc,char **argv)
 			path = "lib/install/main.cpp";
 			path = cpps_rebuild_filepath(path);
 #ifdef WIN32
-			SetCurrentDirectoryA(cpps_real_path().c_str());
+			if(SetCurrentDirectoryA(cpps_real_path().c_str())){}
 #else
-			chdir(cpps_real_path().c_str());
+			if (chdir(cpps_real_path().c_str())) {}
 #endif
 		}
 		else if (path == "-h" || path == "-help")
@@ -64,9 +64,9 @@ int32 main(int argc,char **argv)
 
 		path = cpps_rebuild_filepath(path);
 #ifdef WIN32
-		SetCurrentDirectoryA(cpps_io_getfilepath(path).c_str());
+		if(SetCurrentDirectoryA(cpps_io_getfilepath(path).c_str())){}
 #else
-		chdir(cpps_io_getfilepath(path).c_str());
+		if(chdir(cpps_io_getfilepath(path).c_str())){}
 #endif
 	}
 
@@ -77,7 +77,7 @@ int32 main(int argc,char **argv)
 
 
 	cpps_try
-	cpps::dofile(c, path.c_str());
+	if(!path.empty()) cpps::dofile(c, path.c_str());
 	cpps_catch
 
 	cpps::close(c);

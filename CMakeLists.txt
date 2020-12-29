@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置
 # 并包含子项目。
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.5)
 
 project ("libcpps")
 
@@ -71,18 +71,3 @@ add_subdirectory ("src")
 add_subdirectory ("cpps")
 add_subdirectory ("example/demo")
 add_subdirectory ("example/test")
-add_subdirectory ("libs/socket")
-add_subdirectory ("libs/mysql")
-add_subdirectory ("libs/curl")
-add_subdirectory ("libs/json")
-add_subdirectory ("libs/http")
-add_subdirectory ("libs/base64")
-add_subdirectory ("libs/hashlib")
-add_subdirectory ("libs/encoding")
-add_subdirectory ("libs/logging")
-add_subdirectory ("libs/compress")
-add_subdirectory ("libs/smtp")
-add_subdirectory ("libs/quotedprintable")
-add_subdirectory ("libs/htmlparser")
-add_subdirectory ("libs/xredis")
-add_subdirectory ("libs/uuid")
