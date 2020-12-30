@@ -405,6 +405,10 @@ Value::Value(double value) {
   initBasic(realValue);
   value_.real_ = value;
 }
+Value::Value(long double value) {
+  initBasic(realValue);
+  value_.real_ = (double)value;
+}
 
 Value::Value(const char* value) {
   initBasic(stringValue, true);

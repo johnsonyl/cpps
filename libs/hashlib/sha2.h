@@ -114,6 +114,8 @@ public:
     }
 public:
     void        update(std::string input) {
+		if (input.empty()) return;
+
         sha224_update(&ctx, (const unsigned char*)input.c_str(), (unsigned int)input.size());
     }
     std::string digest(){
@@ -163,6 +165,8 @@ public:
 	}
 public:
 	void        update(std::string input) {
+		if (input.empty()) return;
+
 		sha256_update(&ctx, (const unsigned char*)input.c_str(), (unsigned int)input.size());
 	}
 	std::string digest() {
@@ -212,6 +216,8 @@ public:
 	}
 public:
 	void        update(std::string input) {
+		if (input.empty()) return;
+
 		sha384_update(&ctx, (const unsigned char*)input.c_str(), (unsigned int)input.size());
 	}
 	std::string digest() {
@@ -261,6 +267,7 @@ public:
 	}
 public:
 	void        update(std::string input) {
+		if (input.empty()) return;
 		sha512_update(&ctx, (const unsigned char*)input.c_str(), (unsigned int)input.size());
 	}
 	std::string digest() {

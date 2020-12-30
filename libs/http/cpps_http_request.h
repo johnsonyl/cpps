@@ -13,7 +13,7 @@ namespace cpps
 		cpps_http_request();
 		virtual ~cpps_http_request();
 	public:
-		void				setcookiesfile(std::string cf);
+		void				setcookiefile(std::string cf);
 		void				setproxy(cpps_integer t, std::string pv);
 		void				setproxyaccount(std::string username, std::string pass);
 		void				addheaders(cpps::object h);

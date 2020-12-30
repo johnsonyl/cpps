@@ -24,7 +24,7 @@ namespace cpps
 	object					_G(C *c);
 	void					collect(C* c);//清理新生代			
 	void					collectall(C*c);//清理老生代
-	int32					close(C *c);
+	int32					close(C *&c);
 	int32					pcall(C * c, int32 retType, cpps_domain* domain, node *o);
 	int32					cpps_str2d(const char *s, cpps_number *result);
 	int32					cpps_str2i64(const char *s, cpps_integer *result);

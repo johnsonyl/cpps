@@ -15,5 +15,10 @@ namespace cpps
 	void	cpps_regasyncio(C* c);
 	void	cpps_unregasyncio(C* c);
 
+	cpps_async_loop* cpps_async_get_event_loop(C* c);
+	cpps_value cpps_async_await(C* c, cpps_value var);
+	cpps_value cpps_async_wait_for(C* c, cpps_value var, cpps_integer ms);
+	cpps_value cpps_async_create_task(C* c, cpps_async_object* obj);
+	void	cpps_async_sleep(C* c, cpps_integer ms);
 }
 #endif

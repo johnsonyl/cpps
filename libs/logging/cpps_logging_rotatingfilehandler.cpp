@@ -51,7 +51,7 @@ namespace cpps {
 		delay = d;
 	}
 
-	void cpps_logging_rotatingfilehandler::setmaxboytes(cpps_integer bytes)
+	void cpps_logging_rotatingfilehandler::setmaxbytes(cpps_integer bytes)
 	{
 		maxbytes = (size_t)bytes;
 	}

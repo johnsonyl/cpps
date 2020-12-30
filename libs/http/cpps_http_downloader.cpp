@@ -24,7 +24,7 @@ namespace cpps
 		remove(filepath.c_str());
 	}
 
-	void cpps_http_downloader::setcookie(std::string cookie)
+	void cpps_http_downloader::setcookiefile(std::string cookie)
 	{
 		cookiesfile = cookie;
 	}
@@ -104,7 +104,10 @@ namespace cpps
 			curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 			curl_easy_setopt(curl, CURLOPT_TIMEOUT, 0);
 
-
+			//写入文件吧。
+			file = fopen(filepath.c_str(), "ab+");
+			if (!file)
+				return false;
 
 			res = curl_easy_perform(curl);   // 执行
 			if (res != 0) {
@@ -122,11 +125,13 @@ namespace cpps
 					printf("downloader error code:%d\n", res);
 				}
 				curl_easy_cleanup(curl);
+				if (file) fclose(file);
 				return false;
 			}
 
 
 			curl_easy_cleanup(curl);
+			if (file) fclose(file);
 			return true;
 		}
 		return false;
@@ -140,15 +145,11 @@ namespace cpps
 	void cpps_http_downloader::append(const char* page, size_t size)
 	{
 		fileCurrSize += size;
-		//写入文件吧。
-		FILE* file = fopen(filepath.c_str(), "ab+");
-		if (file)
-		{
-			fwrite(page, size, 1, file);
-			fclose(file);
-		}
+		
+		if (file) fwrite(page, size, 1, file);
 
-		cpps::dofunction(m_c, m_funcCallback, (__int64)fileSize, (__int64)size, (__int64)fileCurrSize);
+		if(m_funcCallback.isfunction())
+			cpps::dofunction(m_c, m_funcCallback, (__int64)fileSize, (__int64)size, (__int64)fileCurrSize);
 	}
 
 }

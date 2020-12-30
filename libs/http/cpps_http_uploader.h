@@ -17,7 +17,7 @@ namespace cpps{
 		void					addvalue(std::string name, std::string value);
 		void					addfile(std::string name, std::string file, object type /*= text/plain */);
 		std::string				upload(C* cstate, std::string url,cpps::object callbackfunc);
-		void					setcookie(std::string cookie);
+		void					setcookiefile(std::string cookie);
 		void					uploadprogress(cpps_integer now, cpps_integer total, cpps_number speed);
 		void					append(const char* data, size_t nmemb);
 	public:

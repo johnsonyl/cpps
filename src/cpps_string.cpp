@@ -385,32 +385,7 @@ namespace cpps
 		cpps_string_ltrim(cpps_string_rtrim(s));
 		return  s;
 	}
-	bool cpps_string_regex_match(std::string src, std::string reg)
-	{
-		std::regex e(reg.c_str());
-		return std::regex_match(src, e);
-	}
-	/*
-	cpps_value cpps_string_regex_search(C *c,std::string src, std::string reg)
-	{
-		std::smatch *vec;
-		cpps_value ret = newclass<std::smatch>(c, &vec);
 
-		std::regex e(reg.c_str());
-		std::regex_search(src,*vec, e);
-
-		return ret;
-	}
-	*/
-	std::string cpps_string_regex_replace(cpps_value src, std::string reg,std::string pos)
-	{
-		if (src.tt != CPPS_TSTRING) return "";
-		std::regex e(reg.c_str());
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
-		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-		return std::regex_replace(*(tmpStr), e, pos);
-	}
 	cpps_value cpps_string_chr(C*c,cpps_integer ch)
 	{
 		std::string ret;
@@ -447,27 +422,7 @@ namespace cpps
 		}
 		return cpps_value(c,ret);
 	}
-	cpps_integer cpps_string_charCodeAt(cpps_value src, cpps_integer pos)
-	{
-		if (src.tt != CPPS_TSTRING) return 0;
-		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)src.value.domain;
-		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
-		if (tmpStr->size() <= size_t(pos)) return 0;
-
-		unsigned char ret = *((char*)(tmpStr->c_str() + pos));
-		return static_cast<cpps_integer>(ret);
-	}
-	cpps_value cpps_string_fromCodeAt(C*c,cpps_vector* vec)
-	{
-		std::string ret = "";
-		for (size_t i = 0; i < size_t(vec->size()); i++)
-		{
-			char code = static_cast<char>(vec->at(i).value.integer);
-			ret.push_back(code);
-		}
-		return cpps_value(c,ret);
-	}
 	void cpps_regstring(C *c)
 	{
 		cpps::_module(c)[
@@ -525,16 +480,10 @@ namespace cpps
 			def("startswith", cpps_string_startswith),
 			def("endswith", cpps_string_endswith),
 			def("pop_back", cpps_string_pop_back),
-			def("regex_match", cpps_string_regex_match),
-			def("regex_replace", cpps_string_regex_replace),
 			def_inside("chr",cpps_string_chr),
 			def("push_back", cpps_string_push_back),
 			def("unicode_charCodeAt",cpps_string_unicode_charCodeAt),
-			def_inside("unicode_fromCodeAt",cpps_string_unicode_fromCodeAt),
-			def("charCodeAt",cpps_string_charCodeAt),
-			def_inside("fromCodeAt",cpps_string_fromCodeAt)
-
-			
+			def_inside("unicode_fromCodeAt",cpps_string_unicode_fromCodeAt)
 		];
 
 	}
@@ -709,9 +658,9 @@ namespace cpps
 		return substr(off, nlen);
 	}
 
-	std::string string::cpps_string_at(cpps_integer off)
+	cpps_integer string::cpps_string_at(cpps_integer off)
 	{
-		return substr(off, 1);
+		return (cpps_integer)at(off);
 	}
 
 	std::string string::cpps_string_tolower()

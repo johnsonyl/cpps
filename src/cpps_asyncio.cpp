@@ -10,16 +10,18 @@ namespace cpps {
 	cpps_value cpps_async_run(C* c, cpps_value obj) {
 		return cpps_async_get_event_loop(c)->run_until_complete(c,obj);
 	}
-	cpps_async_task* cpps_async_await(C* c, cpps_value var) {
+	cpps_value cpps_async_await(C* c, cpps_value var) {
 		cpps_async_task* task = NULL;
+		cpps_value ret;
 		cpps_async_loop* loop = cpps_async_get_event_loop(c);
 		if (var.isdomain() && var.value.domain->domainname == "ASYNC_OBJECT") {
-			task = loop->create_task(cpps_converter<cpps_async_object*>::apply(var));
-			loop->push_task(c, task);
+			ret = loop->create_task(c,cpps_converter<cpps_async_object*>::apply(var),&task);
+			loop->push_task(c, ret);
 
 		}
 		else if (var.isdomain() && var.value.domain->domainname == "ASYNC_TASK") {
 			task = cpps_converter<cpps_async_task*>::apply(var);
+			ret = var;
 		}
 		else {
 			throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "await just support ASYNC_OBJECT or ASYNC_TASK.")); 
@@ -29,18 +31,19 @@ namespace cpps {
 			coroutine::yield(loop->ordinator);
 			status = task->state();
 		}
-		return task;
+		return ret;
 	}
-	cpps_async_task* cpps_async_wait_for(C* c, cpps_value var,cpps_integer ms) {
+	cpps_value cpps_async_wait_for(C* c, cpps_value var,cpps_integer ms) {
 		cpps_async_task* task = NULL;
+		cpps_value ret;
 		cpps_async_loop* loop = cpps_async_get_event_loop(c);
 		if (var.isdomain() && var.value.domain->domainname == "ASYNC_OBJECT") {
-			task = loop->create_task(cpps_converter<cpps_async_object*>::apply(var));
-			loop->push_task(c, task);
-
+			ret = loop->create_task(c,cpps_converter<cpps_async_object*>::apply(var),&task);
+			loop->push_task(c, ret);
 		}
 		else if (var.isdomain() && var.value.domain->domainname == "ASYNC_TASK") {
 			task = cpps_converter<cpps_async_task*>::apply(var);
+			ret = var;
 		}
 		else {
 			throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "wait_for just support ASYNC_OBJECT or ASYNC_TASK."));
@@ -55,14 +58,16 @@ namespace cpps {
 			coroutine::yield(loop->ordinator);
 			status = task->state();
 		}
-		return task;
+		return ret;
 	}
 
-	cpps_async_task* cpps_async_create_task(C* c,cpps_async_object *obj) {
+	cpps_value cpps_async_create_task(C* c,cpps_async_object *obj) {
 		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
-		cpps_async_task* task = loop->create_task(obj);
-		loop->push_task(c,task); /*加入默认执行队列*/
-		return task;
+		cpps_value ret;
+		cpps_async_task* task;
+		ret = loop->create_task(c, obj,&task);
+		loop->push_task(c,ret); /*加入默认执行队列*/
+		return ret;
 	}
 	void	cpps_async_sleep(C*c,cpps_integer ms) {
 		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
@@ -87,12 +92,10 @@ namespace cpps {
 				.def("timeout",&cpps_async_task::timeout)
 				.def("pending",&cpps_async_task::pending)
 				.def("running",&cpps_async_task::running)
-				.def("running",&cpps_async_task::running)
 				.def("set_name",&cpps_async_task::set_name)
 				.def("get_name",&cpps_async_task::get_name)
 				.def("add_done_callback",&cpps_async_task::add_done_callback)
-				.def("remove_done_callback",&cpps_async_task::remove_done_callback)
-				.def_inside("cleanup",&cpps_async_task::cleanup),
+				.def("remove_done_callback",&cpps_async_task::remove_done_callback),
 			def_inside("get_event_loop", cpps_async_get_event_loop),
 			def_inside("create_task", cpps_async_create_task),
 			def_inside("sleep", cpps_async_sleep,true),

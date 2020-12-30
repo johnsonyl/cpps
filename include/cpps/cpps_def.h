@@ -36,7 +36,11 @@
 #define CPPS_CURRENT_PLANTFORM "unknow OS system."
 #endif
 
-
+#ifdef _X86_
+#define CPPS_CURRENT_ARCH "x86"
+#else
+#define CPPS_CURRENT_ARCH "x64"
+#endif
 
 #if defined _MSC_VER
 #define CPPS_BUILDER_VERSION_MAKE2(a,b) a # b " " CPPS_CURRENT_PLANTFORM
@@ -156,6 +160,7 @@
 #define CPPS_MULTIVAR			61 //模块
 #define CPPS_OTHIS				62 //this关键字的重写
 #define CPPS_OTHISPARAM			63 //字符串参数
+#define CPPS_OYIELD				64 //字符串参数
 
 
 #define CPPS_NOERROR			0	//函数返回没有错误

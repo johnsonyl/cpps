@@ -115,6 +115,7 @@ void CSHA1::Transform(UINT_32* pState, const UINT_8* pBuffer)
 
 void CSHA1::cpps_update(std::string input)
 {
+	if (input.empty()) return;
 	const UINT_8* pbData = (const UINT_8*)input.c_str();
 	UINT_32 uLen = (UINT_32)input.size();
 	update(pbData, uLen);

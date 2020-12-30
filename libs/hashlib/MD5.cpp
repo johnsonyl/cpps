@@ -294,6 +294,8 @@ std::string MD5::hex_digest16() {
 
 void MD5::cpps_update(cpps::cpps_value v)
 {
+    if (cpps_base_isnull(v)) return;
+
     update((uint1*)cpps_get_string(v)->c_str(),(uint4) cpps_get_string(v)->size());
 }
 

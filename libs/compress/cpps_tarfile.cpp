@@ -21,12 +21,14 @@ namespace cpps {
 		close();
 	}
 
-	bool cpps_tarfile::open(std::string filepath, std::string mode, cpps_value bufsize)
+	bool cpps_tarfile::open(std::string filepath, object vmode, cpps_value bufsize)
 	{
 		if (decompress_file_buffer) {
 			return false;
 		}
 		cpps_integer nbufsize = bufsize.tt == CPPS_TINTEGER ? bufsize.value.integer : 10240;
+		std::string mode = "r";
+		if (vmode.isstring()) mode = vmode.tostring();
 
 		size_t pos = mode.find(':');
 		if (pos != std::string::npos) {

@@ -15,7 +15,7 @@ namespace cpps {
 		virtual void	pop(usint8 level, std::string& msg);
 		void			setfile(std::string name, std::string filemode);
 		void			setdelay(bool d);
-		void			setmaxboytes(cpps_integer bytes);
+		void			setmaxbytes(cpps_integer bytes);
 		void			setbackupcount(cpps_integer c);
 
 		void			checkchangefilename();

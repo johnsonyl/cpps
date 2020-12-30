@@ -3,6 +3,5 @@
 #include <cpps/cpps.h>
 
 
-std::string cppstojson(cpps::object obj);
-std::string cppstojson_type(cpps::object obj, int encodeType);
+std::string cppstojson(cpps::object obj, cpps::object encodeType);
 cpps::object jsontocpps(cpps::C *c, std::string json);

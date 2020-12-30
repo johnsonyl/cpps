@@ -107,7 +107,7 @@ namespace cpps
 		return retpage;
 	}
 
-	void cpps_http_uploader::setcookie(std::string cookie)
+	void cpps_http_uploader::setcookiefile(std::string cookie)
 	{
 		cookiesfile = cookie;
 	}

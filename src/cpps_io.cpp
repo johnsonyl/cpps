@@ -45,6 +45,12 @@ namespace cpps
 
 		return cpps_value(c,ret);
 	}
+	cpps_value cpps_io_getline(C *c)
+	{
+		std::string ret;
+		getline(std::cin, ret);
+		return cpps_value(c,ret);
+	}
 
 	
 	FILE *		cpps_io_open(std::string filepath, std::string mode)
@@ -759,6 +765,7 @@ namespace cpps
 	{
 		cpps::_module(c,"io")[
 			def_inside("getc",cpps_io_getc),
+			def_inside("getline",cpps_io_getline),
 			def("fopen",cpps_io_open),
 			def("writefile",cpps_io_writefile),
 			def("readfile",cpps_io_readfile),
@@ -797,6 +804,9 @@ namespace cpps
 			def_inside("listdir",cpps_io_listdir),
 			def_inside("stat",cpps_io_get_stat),
 			def("last_write_time",cpps_io_last_write_time),
+			defvar(c,"SEEK_END", SEEK_END),
+			defvar(c,"SEEK_CUR", SEEK_CUR),
+			defvar(c,"SEEK_SET", SEEK_SET),
 #ifdef _WIN32
 			defvar(c, "sep", "\\"),
 			defvar(c, "linesep", "\r\n")

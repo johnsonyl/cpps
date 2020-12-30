@@ -20,6 +20,7 @@ namespace cpps
 		cpps_async_task_cancelled,
 		cpps_async_task_timeouted,
 		cpps_async_task_thorw,
+		cpps_async_task_terminate,
 	};
 	struct cpps_async_task
 	{

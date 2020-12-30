@@ -412,7 +412,7 @@ cpps_export_void  cpps_attach(cpps::C* c)
 			.def("setformatter", &cpps_logging_rotatingfilehandler::setformatter)
 			.def("setfile", &cpps_logging_rotatingfilehandler::setfile)
 			.def("setdelay", &cpps_logging_rotatingfilehandler::setdelay)
-			.def("setmaxboytes", &cpps_logging_rotatingfilehandler::setmaxboytes)
+			.def("setmaxbytes", &cpps_logging_rotatingfilehandler::setmaxbytes)
 			.def("setbackupcount", &cpps_logging_rotatingfilehandler::setbackupcount)
 			.def("setlevel", &cpps_logging_rotatingfilehandler::setlevel),
 		_class< cpps_logging_timerotatingfilehandler >("TimeRotatingFileHandler")
@@ -423,8 +423,7 @@ cpps_export_void  cpps_attach(cpps::C* c)
 			.def("setbackupcount", &cpps_logging_timerotatingfilehandler::setbackupcount)
 			.def("setlevel", &cpps_logging_timerotatingfilehandler::setlevel),
 		def_inside("create_with_config",cpps_create_logger_with_config),
-		def_inside("create_with_file",cpps_create_logger_with_file),
-		def_inside("create",cpps_create_logger),
+		def_inside("create", cpps_create_logger_with_config),
 		def_inside("debug",cpps_logging_debug),
 		def_inside("info",cpps_logging_info),
 		def_inside("warning",cpps_logging_warning),

@@ -15,13 +15,14 @@ namespace cpps{
 	public:
 		bool			seturl(std::string url);
 		void			setfilepath(std::string filepath);
-		void			setcookie(std::string cookie);
+		void			setcookiefile(std::string cookie);
 
 		bool			download(cpps::C* c, cpps::object func);
 		void			close();
 		void			append(const char* page, size_t size);
 
 	public:
+		FILE* file;
 		std::string		httpurl;
 		std::string		filepath;
 		std::string		cookiesfile;

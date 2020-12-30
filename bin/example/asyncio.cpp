@@ -46,8 +46,6 @@ async var main(){
 		println(e.callstack());
 	}
 	
-	task1.cleanup();// asyncio.wait or asyncio.wait_for need cleanup.
-	//task2.cleanup(); // crash here..  await will cleanup it.
 	println("finish");
 }
 

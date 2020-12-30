@@ -123,11 +123,18 @@ namespace cpps
 	{
 		return tan(cpps_to_number(x));
 	}
+	cpps_number cpps_math_randf()
+	{
+		cpps_number ret = abs(rand_ex() % 10000000000 / 1000000001.0 - 1.0);
+		ret = ret > 1.0 ? ret / 10.0 : ret;
+		return ret;
+	}
 	void cpps_regmath(C *c)
 	{
 		cpps::_module(c,"math")[
 			def("abs", cpps_math_abs64),
 			def("srand", cpps_math_srand),
+			def("randf", cpps_math_randf),
 			def("rand", cpps_math_rand),
 			def("random", cpps_math_random),
 			def("acos", cpps_math_acos),
@@ -138,7 +145,7 @@ namespace cpps
 			def("exp", cpps_math_exp),
 			def("floor", cpps_math_floor),
 			def("fmod", cpps_math_fmod),
-			defvar(c,"huge", HUGE_VAL),
+			defvar(c,"HUGE", HUGE_VALL),
 			def("log", cpps_math_log),
 			def("max", cpps_math_max),
 			defvar(c, "maxinteger", MAXINT64),

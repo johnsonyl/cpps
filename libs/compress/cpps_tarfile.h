@@ -37,7 +37,7 @@ namespace cpps {
 		/*
 		* open 打开一个文件
 		*/
-		bool			open(std::string filepath, std::string mode,cpps_value bufsize);
+		bool			open(std::string filepath, object vmode,cpps_value bufsize);
 		/*
 		* 获取一个成员 不存在则返回空
 		*/

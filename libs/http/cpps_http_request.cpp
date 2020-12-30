@@ -15,7 +15,7 @@ namespace cpps
 	}
 
 
-	void cpps_http_request::setcookiesfile(std::string cf)
+	void cpps_http_request::setcookiefile(std::string cf)
 	{
 		cookiesfile = cf;
 	}

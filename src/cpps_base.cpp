@@ -56,7 +56,8 @@ namespace cpps
 	{
 		if (type(b) == CPPS_TNUMBER)
 		{
-			double s = object_cast<double>(b);
+			cpps_number s = object_cast<cpps_number>(b);
+			cout.precision(20);
 			cout << s;
 		}
 		else if (type(b) == CPPS_TINTEGER)
@@ -339,7 +340,42 @@ namespace cpps
 		}
 		return true;
 	}
-	bool	cpps_freelibrary(C*c, std::string libname)
+
+	void cpps_detach_library(HMODULE module,const std::string& libname, C* c)
+	{
+#ifdef _WIN32
+		std::string libfuncname = "cpps_detach";
+
+		cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
+		if (cpps_detach == NULL)
+		{
+			printf("Free Module¡¾%s¡¿ faild.\r\n", libname.c_str());
+		}
+		else
+		{
+			cpps_detach(c);
+		}
+
+
+		FreeLibrary(module);
+#else
+		dlerror();
+		CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
+		if (api == NULL)
+		{
+			printf("dlsym [LIBAPI] faild\r\n");
+		}
+		else
+		{
+			api->cpps_detach(c);
+		}
+
+
+		dlclose(module);
+#endif
+	}
+
+	bool	cpps_freelibrary(C* c, std::string libname)
 	{
 
 		if (c->modulelist.find(libname) == c->modulelist.end()) return true;
@@ -352,20 +388,8 @@ namespace cpps
 		{
 			HMODULE module = it->second;
 			if (module) {
-				std::string libfuncname = "cpps_detach";
+				cpps_detach_library(module, libname, c);
 
-				cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
-				if (cpps_detach == NULL)
-				{
-					printf("Free Module¡¾%s¡¿ faild.\r\n", libname.c_str());
-				}
-				else
-				{
-					cpps_detach(c);
-				}
-
-
-				FreeLibrary(module);
 			}
 			c->modulelist.erase(it);
 			ret = true;
@@ -378,22 +402,7 @@ namespace cpps
 		if (it != c->modulelist.end())
 		{
 			HMODULE module = it->second;
-
-
-
-			dlerror();
-			CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
-			if (api == NULL)
-			{
-				printf("dlsym [LIBAPI] faild\r\n");
-			}
-			else
-			{
-				api->cpps_detach(c);
-			}
-
-
-			dlclose(module);
+			cpps_detach_library(module, libname, c);
 			c->modulelist.erase(it);
 			ret = true;
 		}
@@ -669,6 +678,8 @@ namespace cpps
 		cpps::_module(c, "sys")[
 			defvar(c, "platform", CPPS_CURRENT_PLANTFORM),
 			defvar(c, "easyplatform", CPPS_CURRENT_EASYPLANTFORM),
+			defvar(c, "os", CPPS_CURRENT_EASYPLANTFORM),
+			defvar(c, "arch", CPPS_CURRENT_ARCH),
 			defvar(c, "builder_version", CPPS_BUILDER_VERSION),
 			defvar(c, "version", CPPS_VER),
 			defvar(c, "versionno", CPPS_VERN),

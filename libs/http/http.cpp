@@ -25,7 +25,7 @@ cpps_export_void cpps_attach(cpps::C* c)
 
     cpps::_module(c, "http")[
         _class<cpps_http_request>("httprequest")
-            .def("setcookiesfile",&cpps_http_request::setcookiesfile)
+            .def("setcookiefile",&cpps_http_request::setcookiefile)
             .def("setproxy",&cpps_http_request::setproxy)
             .def("setproxyaccount",&cpps_http_request::setproxyaccount)
             .def("addheaders",&cpps_http_request::addheaders)
@@ -40,12 +40,13 @@ cpps_export_void cpps_attach(cpps::C* c)
         def("urldecode",urldecode),
         _class< cpps_http_downloader>("downloader")
             .def("seturl",&cpps_http_downloader::seturl)
-            .def("setfilepath",&cpps_http_downloader::setfilepath)
+			.def("setfilepath", &cpps_http_downloader::setfilepath)
+			.def("setcookiefile", &cpps_http_downloader::setcookiefile)
             .def_inside("download",&cpps_http_downloader::download),
         _class<cpps_http_uploader>("uploader")
             .def("addvalue", &cpps_http_uploader::addvalue)
             .def("addfile", &cpps_http_uploader::addfile)
-            .def("setcookie", &cpps_http_uploader::setcookie)
+            .def("setcookiefile", &cpps_http_uploader::setcookiefile)
             .def_inside("upload", &cpps_http_uploader::upload)
 	];
 

@@ -12,7 +12,7 @@
 using namespace cpps;
 using namespace std;
 
-cpps_value cpps_compress_tarfile_open(C*c,std::string filepath, std::string mode, cpps_value bufsize)
+cpps_value cpps_compress_tarfile_open(C*c,std::string filepath, cpps_value mode, cpps_value bufsize)
 {
     cpps_tarfile* tarfile = NULL;
     cpps_value ret = newclass< cpps_tarfile>(c, &tarfile);
@@ -38,18 +38,27 @@ cpps_export_void  cpps_attach(cpps::C* c)
         def_inside("decompress", cpps_compress_zlib_decompress),
         def("adler32", cpps_compress_zlib_adler32),
         def("crc32", cpps_compress_zlib_crc32),
+        defvar(c,"Z_NO_COMPRESSION", Z_NO_COMPRESSION),
+        defvar(c,"Z_BEST_SPEED", Z_BEST_SPEED),
+        defvar(c,"Z_BEST_COMPRESSION", Z_BEST_COMPRESSION),
+        defvar(c,"Z_DEFAULT_COMPRESSION", Z_DEFAULT_COMPRESSION),
         defvar(c,"ZLIB_VERSION",ZLIB_VERSION),
         def("ZLIB_RUNTIME_VERSION", zlibVersion)
 	]; 
     cpps::_module(c, "gzip")[
 		def_inside("compress", cpps_compress_gzip_compress),
-		def_inside("decompress", cpps_compress_gzip_decompress)
+		def_inside("decompress", cpps_compress_gzip_decompress),
+		defvar(c, "Z_BEST_SPEED", Z_BEST_SPEED),
+		defvar(c, "Z_BEST_COMPRESSION", Z_BEST_COMPRESSION),
+		defvar(c, "Z_BEST_COMPRESSION", Z_BEST_COMPRESSION),
+		defvar(c, "Z_DEFAULT_COMPRESSION", Z_DEFAULT_COMPRESSION)
 	];
 
     cpps::_module(c, "tarfile")[
         _class< cpps_tarfile>("tarfile")
             .def("open",&cpps_tarfile::open)
             .def_inside("getmembers",&cpps_tarfile::getmembers)
+            .def("extract",&cpps_tarfile::extract)
             .def("extractall",&cpps_tarfile::extractall)
             .def("close",&cpps_tarfile::close)
             .def_inside("gettarinfo",&cpps_tarfile::gettarinfo)
@@ -63,7 +72,7 @@ cpps_export_void  cpps_attach(cpps::C* c)
             .def("isfifo",&cpps_tarfile_info::isfifo)
             .def("islnk",&cpps_tarfile_info::islnk)
             .def("issym",&cpps_tarfile_info::issym)
-            .def("isblk",&cpps_tarfile_info::isfile),
+            .def("isfile",&cpps_tarfile_info::isfile),
         def_inside("open", cpps_compress_tarfile_open)
     ];
 
@@ -72,12 +81,13 @@ cpps_export_void  cpps_attach(cpps::C* c)
 			.def("open", &cpps_zipfile::open)
 			.def_inside("infolist", &cpps_zipfile::infolist)
 			.def_inside("namelist", &cpps_zipfile::namelist)
+			.def("extract", &cpps_zipfile::extract)
 			.def("extractall", &cpps_zipfile::extractall)
 			.def("close", &cpps_zipfile::close)
 			.def_inside("read", &cpps_zipfile::read)
 			.def("write", &cpps_zipfile::write)
 			.def("getinfo", &cpps_zipfile::getinfo),
-			_class< cpps_zipfile_info>("tarfile_info")
+			_class< cpps_zipfile_info>("zipfile_info")
 			    .def("comment", &cpps_zipfile_info::comment)
 			    .def("compress_size", &cpps_zipfile_info::compress_size)
 			    .def("compress_type", &cpps_zipfile_info::compress_type)

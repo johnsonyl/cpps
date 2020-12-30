@@ -30,7 +30,7 @@ namespace cpps
 		bool			cpps_string_startswith(std::string v);
 		bool			cpps_string_endswith(std::string v);
 		std::string		cpps_string_sub(cpps_integer off,object len);
-		std::string		cpps_string_at(cpps_integer off);
+		cpps_integer	cpps_string_at(cpps_integer off);
 		std::string		cpps_string_tolower();
 		std::string		cpps_string_toupper();
 		std::string		cpps_string_join(cpps_vector *vec);

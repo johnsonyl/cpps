@@ -9,11 +9,9 @@ namespace cpps {
 
 	cpps_async_loop::~cpps_async_loop()
 	{
-		/*cleanup not used data*/
+		/*remove not used data*/
 		for (auto n : _tasks)
-		{
-			delete n;
-		}
+			n = nil;
 		_tasks.clear();
 	}
 
@@ -30,21 +28,19 @@ namespace cpps {
 		* 3. vector<cpps_async_task> 类型  数组结构传进来,则数组结构传出去.
 		*/
 		if (isrunning()) throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "the loop is running,please use await call async function. ")); /*已经运行中,不能再次调用*/
-
 		_tasks.clear(); /*说明用户自己启用协程列表,不由默认*/
 		cpps_value ret;
-		
+		cpps_async_task* roottask = NULL;
 		if (task.isdomain() && task.value.domain->domainname == "ASYNC_OBJECT") {
 			cpps_async_object* vobj = cpps_converter<cpps_async_object*>::apply(task);
-			cpps_async_task* vtask = create_task(vobj);
-			push_task(c,vtask);
-			ret = cpps_cpp_to_cpps_converter<cpps_async_task*>::apply(c, vtask);
+			ret = create_task(c,vobj, &roottask);
+			push_task(c, ret);
 		}
 		else if (task.isdomain() && task.value.domain->domainname == "ASYNC_TASK") {
-			cpps_async_task* vtask = cpps_converter<cpps_async_task*>::apply(task);
-			if (vtask->state())  throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "the task state is running. "));
-			push_task(c,vtask);
-			ret = cpps_cpp_to_cpps_converter<cpps_async_task*>::apply(c, vtask);
+			roottask = cpps_converter<cpps_async_task*>::apply(task);
+			ret = task;
+			if (roottask->state())  throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "the task state is running. "));
+			push_task(c, ret);
 		}
 		else if (task.isdomain() && task.value.domain->domainname == "vector"){
 			cpps_vector* retvec;
@@ -53,15 +49,16 @@ namespace cpps {
 			for (auto v : vec->realvector()) {
 				if (v.isdomain() && v.value.domain->domainname == "ASYNC_OBJECT") {
 					cpps_async_object* vobj = cpps_converter<cpps_async_object*>::apply(v);
-					cpps_async_task* vtask = create_task(vobj);
-					push_task(c,vtask);
-					retvec->push_back(cpps_cpp_to_cpps_converter<cpps_async_task*>::apply(c, vtask));
+					cpps_async_task* vtask;
+					cpps_value vtask_value = create_task(c, vobj,&vtask);
+					push_task(c, vtask_value);
+					retvec->push_back(vtask_value);
 				}
 				else if (v.isdomain() && task.value.domain->domainname == "ASYNC_TASK") {
 					cpps_async_task* vtask = cpps_converter<cpps_async_task*>::apply(v);
 					if (vtask->state())  throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "the task state is running."));
-					push_task(c,vtask);
-					retvec->push_back(cpps_cpp_to_cpps_converter<cpps_async_task*>::apply(c, vtask));
+					push_task(c,v);
+					retvec->push_back(v);
 				}
 			}
 		}
@@ -69,18 +66,20 @@ namespace cpps {
 			throw (cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "async run_until_complete is a unknow task type."));
 
 		/*运行*/
-		loop(c);
+		loop(c, roottask);
 
 		/*回收协程*/
-		for (auto task : _tasks) {
-			if(task)
+		for (auto vtask : _tasks) {
+			cpps_async_task* task = cpps_converter<cpps_async_task*>::apply(vtask);
+			if (task)
 				coroutine::destroy(ordinator,task->rt); 
 		}
 		_tasks.clear();
 
+
 		return ret;
 	}
-	void cpps_async_loop::loop(C* c)
+	void cpps_async_loop::loop(C* c, cpps_async_task* roottask)
 	{
 		runstate = true;
 		std::vector<cpps_stack*> *takestacklist = c->getcallstack(); /*记录原始callstack*/
@@ -90,13 +89,19 @@ namespace cpps {
 			/*pop empty task*/
 			popemptytask();
 
+			/*当主协程运行完毕,则关闭所有协程*/
+			if (roottask && roottask->state() != cpps_async_task_running) {
+				terminate_all_task();
+			}
+
 			for(size_t i = 0; i < _tasks.size(); i++){
-				auto task = _tasks[i];
+				auto vtask = _tasks[i];
+				auto task = cpps_converter<cpps_async_task*>::apply(vtask);
 				if (task){
 					if (task->rt == MAXUINT64)
 					{
 						task->runstate = cpps_async_task_done;
-						_tasks[i] = NULL; /*可以释放了.*/
+						_tasks[i] = nil; /*可以释放了.*/
 					}
 					else if (task->state() == cpps_async_task_running){
 						/*将这个协程的stack设置回来*/
@@ -104,39 +109,57 @@ namespace cpps {
 						
 						coroutine::resume(ordinator, task->rt);
 						
-						task = _tasks[i]; /*需要恢复task*/
+						vtask = _tasks[i]; /*需要恢复task*/
+						task = cpps_converter<cpps_async_task*>::apply(vtask);
 						hasrun = true;
 						if (task->state() == cpps_async_task_done || task->state() == cpps_async_task_thorw) {
-							task->call_done_callback(c);
+							if(task->state() == cpps_async_task_done) task->call_done_callback(c);
 							coroutine::destroy(ordinator, task->rt);
 							task->rt = MAXUINT64;
-							_tasks[i] = NULL;
+							_tasks[i] = nil;
 						}
 					}
 					else if (task->state() == cpps_async_task_cancelled) { /*用户取消需要特殊处理什么吗?*/
 						if(task->rt != MAXUINT64) coroutine::destroy(ordinator, task->rt);
 						task->rt = MAXUINT64;
-						_tasks[i] = NULL;
+						_tasks[i] = nil;
+					}
+					else if (task->state() == cpps_async_task_terminate) { /*强制停止?*/
+						if(task->rt != MAXUINT64) coroutine::destroy(ordinator, task->rt);
+						task->rt = MAXUINT64;
+						_tasks[i] = nil;
 					}
 					else{
 						if (task->rt != MAXUINT64) coroutine::destroy(ordinator, task->rt);
 						task->rt = MAXUINT64;
-						_tasks[i] = NULL; /*可以释放了.*/
+						_tasks[i] = nil; /*可以释放了.*/
 					}
 				}
 			}
+
 		}
 		/*恢复stack*/
+		popemptytask();
 		c->setcallstack(takestacklist);
 		runstate = false;
 	}
 
+	void cpps_async_loop::terminate_all_task()
+	{
+		for (auto vtask : _tasks) {
+			cpps_async_task* task = cpps_converter<cpps_async_task*>::apply(vtask);
+			if (task && task->state() == cpps_async_task_running) {
+				task->runstate = cpps_async_task_terminate;
+			}
+		}
+	}
+
 	void cpps_async_loop::popemptytask()
 	{
-		std::vector< cpps_async_task* >::iterator it = _tasks.begin();
-		std::vector< cpps_async_task* >::iterator end = _tasks.end();
+		auto it = _tasks.begin();
+		auto end = _tasks.end();
 		for (;it != end;) {
-			cpps_async_task* task = *it;
+			cpps_async_task* task = cpps_converter<cpps_async_task*>::apply (*it);
 			if (task == NULL) {
 				it = _tasks.erase(it);
 				end = _tasks.end();
@@ -151,18 +174,21 @@ namespace cpps {
 		return runstate;
 	}
 
-	void cpps_async_loop::push_task(C*c,cpps_async_task* task) 
+	void cpps_async_loop::push_task(C*c,cpps_value vtask) 
 	{
+		cpps_async_task* task = cpps_converter<cpps_async_task*>::apply(vtask);
 		task->rt = coroutine::create(ordinator,std::bind(cpps_async_task::run, task, c));/*创建协程*/
 		task->start(c);
 		
-		_tasks.push_back(task); //加入默认列表
+		_tasks.push_back(vtask); //加入默认列表
 	}
-	cpps_async_task* cpps_async_loop::create_task(cpps_async_object* obj)
+	cpps_value cpps_async_loop::create_task(C*c,cpps_async_object* obj, cpps_async_task**outtask)
 	{
-		cpps_async_task* task = new cpps_async_task();
+		cpps_async_task* task;
+		cpps_value ret = newclass< cpps_async_task>(c, &task);
 		task->async_object = obj;
-		return task;
+		*outtask = task;
+		return ret;
 	}
 
 }

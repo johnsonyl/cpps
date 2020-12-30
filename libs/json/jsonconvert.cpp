@@ -78,20 +78,14 @@ Json::Value cppstojsonvalue(cpps::object obj)
 	return ret;
 }
 
-std::string cppstojson_type(cpps::object obj,int encodeType)
+std::string cppstojson(cpps::object obj, cpps::object encodeType)
 {
+	cpps::int32 nencodeType = Json::encode_utf8;
+	if (encodeType.isint()) nencodeType = (cpps::int32) encodeType.toint();
 	Json::Value ret = cppstojsonvalue(obj);
-	ret.encodetyle(encodeType);
-	return ret.toStyledString(encodeType);
+	ret.encodetyle(nencodeType);
+	return ret.toStyledString(nencodeType);
 }
-
-std::string cppstojson(cpps::object obj)
-{
-	Json::Value ret = cppstojsonvalue(obj);
-	ret.encodetyle(Json::encode_utf8);
-	return ret.toStyledString(Json::encode_utf8);
-}
-
 
 cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 {
