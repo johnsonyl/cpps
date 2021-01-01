@@ -94,7 +94,7 @@ namespace cpps
 			cpps_function *f = func.value.value.func;
 			if (f)
 			{
-				std::vector<cpps_value> paramlist;
+				cpps_std_vector paramlist;
 				CPPS_PP_ENUM_VARS_PARAMS_PUSHBACK(CPPS_DOFUNCTION_ITER_C, paramlist, A, p, c);
 
 				cpps_domain *execdomain2 =  c->_G;
@@ -129,7 +129,7 @@ namespace cpps
 			cpps_function *f = func.value.value.func;
 			if (f)
 			{
-				std::vector<cpps_value> paramlist;
+				cpps_std_vector paramlist;
 				CPPS_PP_ENUM_VARS_PARAMS_PUSHBACK(CPPS_DOFUNCTION_ITER_C, paramlist, A, p, c);
 
 				cpps_domain *execdomain2 = domain.value.value.domain;

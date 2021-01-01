@@ -616,6 +616,43 @@ namespace cpps {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_trycatherror, "Try needs corresponding catch."));
 		}
 	}
+	void cpps_parse_char(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
+		child->type = CPPS_OINTEGER;
+
+		/* ÌÞ³ý¿Õ¸ñ */
+		cpps_parse_rmspaceandenter(buffer);
+
+		//char('str')
+		if (buffer.cur() != '(') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '(' after char"));
+		}
+		buffer.pop();
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != '\'') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing ' after char("));
+		}
+		buffer.pop();
+
+		char lastch = buffer.realpop();
+		/* todo ½âÎö·´Ð±¸Ü */
+		char ch = cpps_parse_transfer_character(lastch, buffer);
+		child->value.integer = (cpps_integer)ch;
+
+		if (buffer.cur() != '\'') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing ' after char('"));
+		}
+		buffer.pop();
+
+		cpps_parse_rmspaceandenter(buffer);
+
+		if (buffer.cur() != ')') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing ')' after char"));
+		}
+		buffer.pop();
+
+		cpps_parse_rmspaceandenter(buffer);
+	}
 	node* cpps_parse_var_param(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, bool findparent) {
 		node* param = new node(o->filename, buffer.line());
 		param->type = CPPS_VARNAME;
@@ -697,6 +734,10 @@ namespace cpps {
 		}
 		else if (param->s == "nil" || param->s == "null" || param->s == "NULL") {
 			param->type = CPPS_ONIL;
+		}
+		else if (param->s == "char")
+		{
+			cpps_parse_char(c, domain, param, root, buffer);
 		}
 		else if (param->s == "await")
 		{
@@ -1720,6 +1761,8 @@ namespace cpps {
 		if (cpps_io_file_exists(tmppath)) return tmppath;
 		return "";
 	}
+	
+	
 	void cpps_parse_include(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		child->type = CPPS_OINCLUDE;
 		/* ÌÞ³ý¿Õ¸ñ */
@@ -1903,7 +1946,6 @@ namespace cpps {
 			cpps_parse_rmspaceandenter(buffer);
 			child->s = cpps_parse_varname(buffer);
 			if (child->s == "include") {
-				child->type = CPPS_OINCLUDE;
 				cpps_parse_include(c, domain, child, root, buffer);
 			}
 			else if (child->s == "import") {
@@ -2288,7 +2330,7 @@ namespace cpps {
 			cpps_vector* vec;
 			ret_value = newclass(c, &vec);
 			ret_value.tt = CPPS_TMULTIRETURN;
-			//ret_value.value.multiv = new std::vector<cpps_value>();
+			//ret_value.value.multiv = new cpps_std_vector();
 			for (auto nn : d->l) {
 				cpps_value vv = cpps_calculate_expression(c, domain, root, nn, leftdomain);
 				vec->push_back(vv);
@@ -2427,7 +2469,7 @@ namespace cpps {
 			cpps_vector* vec = cpps_converter<cpps_vector*>::apply(v);
 			if (vec) {
 				cpps_domain* execdomain = c->domain_alloc();
-				std::vector<cpps_value>& realvector = vec->realvector();
+				cpps_std_vector& realvector = vec->realvector();
 				for (size_t i = 0; i < realvector.size(); i++) {
 					if (for1_v)
 						for1_v->setval(realvector[i]);
@@ -3049,7 +3091,7 @@ namespace cpps {
 		}
 		return(v);
 	}
-	void make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, std::vector<cpps_value>& params) {
+	void make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_std_vector& params) {
 		char	index = 65;
 		size_t	size = d->l.size();
 		params.reserve(size);
@@ -3381,6 +3423,7 @@ namespace cpps {
 					leftdomain = takedomain;
 					ret = pMap->find(right);
 				}
+
 				else {
 					/*cpps_domain* execdomain = c->domain_alloc();
 					execdomain->init(left.value.domain, cpps_domain_type_exec);
@@ -3389,6 +3432,21 @@ namespace cpps {
 					execdomain->destory(c);
 					c->domain_free(execdomain);*/
 				}
+			}
+			else if (left.tt == CPPS_TSTRING)
+			{
+				std::string* str = cpps_get_string(left);
+				cpps_domain* takedomain = leftdomain;
+				leftdomain = NULL;
+				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+				if (right.tt != CPPS_TINTEGER) {
+					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String must contain a number as an index."));
+				}
+				leftdomain = takedomain;
+				if ((cpps_integer)str->size() <= right.value.integer)
+					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), right.value.integer));
+
+				ret = (cpps_integer)str->at(right.value.integer);
 			}
 		/*	else if (left.tt == CPPS_TDOMAIN) {
 				leftdomain = left.value.domain;
@@ -3424,6 +3482,7 @@ namespace cpps {
 				cpps_regvar* var = cppsclass->getvar(d->getright()->s, takedomain, false);
 				if (var && var->getval().tt == CPPS_TFUNCTION) {
 					ret = var->getval();
+					leftdomain = root->parent[1];
 				}
 			}
 			else if (left.tt == CPPS_TDOMAIN) {
@@ -3485,6 +3544,21 @@ namespace cpps {
 						ret = cpps_value(v->isconst() ? (&tmp) : (&v->getval()));
 					}*/
 				}
+			}
+			else if (left.tt == CPPS_TSTRING)
+			{
+				std::string* str = cpps_get_string(left);
+				cpps_domain* takedomain = leftdomain;
+				leftdomain = NULL;
+				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+				if (right.tt != CPPS_TINTEGER) {
+					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String must contain a number as an index."));
+				}
+				leftdomain = takedomain;
+				if ((cpps_integer)str->size() <= right.value.integer)
+					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), right.value.integer));
+
+				ret = cpps_value(&str->at(right.value.integer));
 			}
 		}
 		else {
@@ -3614,7 +3688,7 @@ namespace cpps {
 		return(ret);
 	}
 	/* ///////////////////// */
-	cpps_value cpps_execute_callfunction(C* c, cpps_function* f, cpps_domain* domain, std::string filename, int32 line, std::string funcname, std::vector<cpps_value>& params) {
+	cpps_value cpps_execute_callfunction(C* c, cpps_function* f, cpps_domain* domain, std::string filename, int32 line, std::string funcname, cpps_std_vector& params) {
 		cpps_value	ret;
 		cpps_stack* stack = c->stack_alloc();
 		stack->init(filename.c_str(), line, funcname.c_str());
@@ -3687,7 +3761,7 @@ namespace cpps {
 		if (func.tt == CPPS_TFUNCTION) {
 			cpps_function* f = func.value.func;
 			if (f->funcname == "isset") c->disabled_non_def_var = true;
-			std::vector<cpps_value> params;
+			cpps_std_vector params;
 			cpps_value		isNeedC;
 			if (f->getIsNeedC()) {
 				isNeedC = cpps_cpp_to_cpps_converter<C*>::apply(c, c);

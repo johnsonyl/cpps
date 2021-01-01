@@ -18,7 +18,7 @@ namespace cpps
 			cpps_function *f = func.value.value.func;
 			if (f)
 			{
-				std::vector<cpps_value> paramlist;
+				cpps_std_vector paramlist;
 
 
 				cpps_domain *execdomain = c->_G;
@@ -51,7 +51,7 @@ namespace cpps
 			cpps_function *f = func.value.value.func;
 			if (f)
 			{
-				std::vector<cpps_value> paramlist;
+				cpps_std_vector paramlist;
 
 
 				cpps_domain *execdomain = domain.value.value.domain;

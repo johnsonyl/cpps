@@ -77,19 +77,20 @@
 #define CPPS_ENCODE_CPPS_KEY	0x1f
 
 
-#define CPPS_TNIL		0
-#define CPPS_TINTEGER	1	
-#define CPPS_TNUMBER	2
-#define CPPS_TBOOLEAN	3
-#define CPPS_TSTRING	4
-#define	CPPS_TUSERDATA	5
-#define CPPS_TFUNCTION	6
-#define CPPS_TDOMAIN	7	//暂时内部用（域）
-#define CPPS_TREGVAR	8	//变量引用（指针)（域）
-#define CPPS_TCLASS		9	//定义类
-#define CPPS_TCLASSVAR  10  //类的对象
+#define CPPS_TNIL				0
+#define CPPS_TINTEGER			1	
+#define CPPS_TNUMBER			2
+#define CPPS_TBOOLEAN			3
+#define CPPS_TSTRING			4
+#define	CPPS_TUSERDATA			5
+#define CPPS_TFUNCTION			6
+#define CPPS_TDOMAIN			7	//暂时内部用（域）
+#define CPPS_TREGVAR			8	//变量引用（指针)（域）
+#define CPPS_TCLASS				9	//定义类
+#define CPPS_TCLASSVAR			10  //类的对象
 #define CPPS_TLAMBDAFUNCTION	11
-#define CPPS_TMULTIRETURN	12
+#define CPPS_TMULTIRETURN		12
+#define CPPS_TSTRINGV			13
 
 #define CPPS_SINGLERET		0
 #define CPPS_MUNITRET		1
@@ -282,6 +283,7 @@ namespace cpps
 
 
 
+
 #if defined LINUX
 #include <stdlib.h>
 #include <string.h>
@@ -401,6 +403,9 @@ typedef struct {
 namespace cpps
 {
 	struct C;
+
+	struct cpps_value;
+	typedef std::vector<cpps_value> cpps_std_vector;
 }
 #ifdef _WIN32
 typedef void(__stdcall*cpps_attach_func)(cpps::C *c);

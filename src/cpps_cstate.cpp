@@ -162,9 +162,9 @@ namespace cpps
 		l = pl;
 	}
 
-	std::vector<cpps_value>* cpps_stack::createparams()
+	cpps_std_vector* cpps_stack::createparams()
 	{
-		return new std::vector<cpps_value>();
+		return new cpps_std_vector();
 	}
 
 	

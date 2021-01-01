@@ -11,6 +11,7 @@
 //@website		:	http://cpps.wiki
 //==================================
 
+#include "cpps_array.h"
 #include "cpps_map.h"
 
 namespace cpps
@@ -36,11 +37,12 @@ namespace cpps
 			static		vector							create(C* c);
 		public:
 			vector(object obj);
-			std::vector<cpps_value>::iterator			begin();
-			std::vector<cpps_value>::iterator			end();
+			cpps_std_vector::iterator					begin();
+			cpps_std_vector::iterator					end();
 			void										push_back(object v);
 			object										toobject();
 			object										operator[](const cpps_integer k);
+			cpps_std_vector&							realvector();
 		private:
 			cpps_vector* _vec;
 			cpps_value _src_value;
@@ -68,6 +70,7 @@ namespace cpps
 				cpps_value& value = _map->cpps_find(key);
 				return cpps_value(&value);
 			}
+			cpps_hash_map&															realmap();
 		private:
 			cpps_value _src_value;
 			cpps_map* _map;

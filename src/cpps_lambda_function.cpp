@@ -38,7 +38,7 @@ namespace cpps {
 		realfunc = func;
 	}
 
-	void cpps_lambda_function::callfunction(C* c, cpps_value* ret, cpps_domain* domain, std::vector<cpps_value>* o, cpps_stack* stack /*= NULL*/, std::vector< cpps_regvar*>* lambdastacklist /*= NULL*/)
+	void cpps_lambda_function::callfunction(C* c, cpps_value* ret, cpps_domain* domain, cpps_std_vector* o, cpps_stack* stack /*= NULL*/, std::vector< cpps_regvar*>* lambdastacklist /*= NULL*/)
 	{
 		realfunc->callfunction(c, ret, domain, o, stack, stacklist);
 	}

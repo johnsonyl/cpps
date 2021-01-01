@@ -42,7 +42,7 @@ namespace cpps
 
 		virtual int8 getparamcount() { return 1; }
 
-		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, std::vector<cpps_value> *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
+		void  callfunction(C *c, cpps_value *ret, cpps_domain *domain, cpps_std_vector *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
 		{
 
 			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)o->at(0).value.domain;

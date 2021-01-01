@@ -569,7 +569,7 @@ namespace cpps
 		}
 		return ret;
 	}
-	size_t partition(std::vector<cpps_value>& v, size_t begin, size_t end)
+	size_t partition(cpps_std_vector& v, size_t begin, size_t end)
 	{
 		cpps_value pivot = v[begin];
 		size_t left = begin + 1;
@@ -590,7 +590,7 @@ namespace cpps
 		v[left] = pivot;
 		return left;
 	}
-	void quickSort(std::vector<cpps_value>& v, size_t begin, size_t end)
+	void quickSort(cpps_std_vector& v, size_t begin, size_t end)
 	{
 		if (begin >= end)
 			return;
@@ -605,7 +605,7 @@ namespace cpps
 			quickSort(vec->realvector(), 0, vec->size() - 1);
 		}
 	}
-	void cpps_base_real_shuffle(std::vector<cpps_value>& vec)
+	void cpps_base_real_shuffle(cpps_std_vector& vec)
 	{
 		size_t n = vec.size();
 		if (n <= 0)

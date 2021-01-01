@@ -23,7 +23,7 @@ namespace cpps
 
 		cpps_value call(C* c);
 
-		std::vector<cpps_value> params;
+		cpps_std_vector params;
 		cpps_domain* leftdomain;
 		cpps_function* f;
 		std::string filename;

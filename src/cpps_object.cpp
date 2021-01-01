@@ -349,12 +349,12 @@ namespace cpps
 		_src_value = obj.value;
 	}
 
-	std::vector<cpps_value>::iterator object::vector::begin()
+	cpps_std_vector::iterator object::vector::begin()
 	{
 		return _vec->realvector().begin();
 	}
 
-	std::vector<cpps_value>::iterator object::vector::end()
+	cpps_std_vector::iterator object::vector::end()
 	{
 		return _vec->realvector().end();
 	}
@@ -375,7 +375,12 @@ namespace cpps
 		return cpps_value(&v);
 	}
 
-	object::vector object::vector::create(C*c)
+	cpps::cpps_std_vector& object::vector::realvector()
+	{
+		return _vec->realvector();
+	}
+
+	object::vector object::vector::create(C* c)
 	{
 		return object::vector(object::create_with_vector(c));
 	}
@@ -408,6 +413,11 @@ namespace cpps
 	cpps::object object::map::toobject()
 	{
 		return _src_value;
+	}
+
+	cpps::cpps_hash_map& object::map::realmap()
+	{
+		return _map->realmap();
 	}
 
 	cpps::object::map object::map::create(C* c)

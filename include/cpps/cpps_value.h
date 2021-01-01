@@ -34,6 +34,7 @@ namespace cpps
 #else
 		cpps_value(const long unsigned int i);
 #endif
+		cpps_value(char* strv);
 		cpps_value(const bool b);
 		cpps_value(cpps_function* f);
 		cpps_value(cpps_domain* d);
@@ -69,7 +70,7 @@ namespace cpps
 			cpps_domain *		domain;		// domain
 			cpps_regvar *		var;		// 变量指针
 			cpps_value *		value;		// 值引用
-			std::vector<cpps_value> *		multiv;		// 多返回值
+			char*				strv;		// String[]扩展.
 		};
 		Value					value;		//值。
 		int8					tt;			//类型

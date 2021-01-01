@@ -262,107 +262,145 @@ namespace cpps
 		{
 			return;
 		}
+		if (a.tt == CPPS_TREGVAR) {
 
-		if (a.value.value->tt == CPPS_TSTRING) {
-			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)a.value.value->value.domain;
-			std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
-			if (b.tt == CPPS_TREGVAR)
-			{
-				tmpStr->append(*cpps_get_string(*(b.value.value)));
+			if (a.value.value->tt == CPPS_TSTRING) {
+				cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)a.value.value->value.domain;
+				std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+				if (b.tt == CPPS_TREGVAR)
+				{
+					tmpStr->append(*cpps_get_string(*(b.value.value)));
+				}
+				else
+				{
+					tmpStr->append(*cpps_get_string(b));
+				}
+
 			}
-			else
-			{
-				tmpStr->append(*cpps_get_string(b));
+			else {
+				std::string* tmpStr = NULL;
+				*(a.value.value) = newclass<std::string>(c, &tmpStr);
+				if (b.tt == CPPS_TREGVAR)
+				{
+					tmpStr->append(*cpps_get_string(*(b.value.value)));
+				}
+				else
+				{
+					tmpStr->append(*cpps_get_string(b));
+				}
 			}
 
+
+			ret = *(a.value.value);
 		}
-		else {
-			std::string* tmpStr = NULL;
-			*(a.value.value) = newclass<std::string>(c, &tmpStr);
-			if (b.tt == CPPS_TREGVAR)
-			{
-				tmpStr->append(*cpps_get_string(*(b.value.value)));
-			}
-			else
-			{
-				tmpStr->append(*cpps_get_string(b));
-			}
-		}
-
-		
-		ret = *(a.value.value);
 	}
 	
 	void cpps_rightautoincrease(cpps_value& a, cpps_value &ret)
 	{
-		cpps_value &v = *(a.value.value);
-		ret = v;
-		switch (v.tt)
-		{
-		case CPPS_TNUMBER:
-			v.value.number ++;
-			break;
-		case CPPS_TINTEGER:
-			v.value.integer++;
-			break;
-		default:
-			throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
-			break;
+		if (a.tt == CPPS_TREGVAR) {
+			cpps_value& v = *(a.value.value);
+			ret = v;
+			switch (v.tt)
+			{
+			case CPPS_TNUMBER:
+				v.value.number++;
+				break;
+			case CPPS_TINTEGER:
+				v.value.integer++;
+				break;
+			default:
+				throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
+				break;
+			}
 		}
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			ret = (cpps_integer)strv;
+			strv++;
+		}
+		
 	}
 
 	void cpps_leftautoincrease(cpps_value& a,cpps_value &ret)
 	{
-		cpps_value &v = *(a.value.value);
-		switch (v.tt)
-		{
-		case CPPS_TNUMBER:
-			v.value.number++;
-			break;
-		case CPPS_TINTEGER:
-			v.value.integer++;
-			break;
-		default:
-			throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
-			break;
+		if (a.tt == CPPS_TREGVAR) {
+
+			cpps_value& v = *(a.value.value);
+			switch (v.tt)
+			{
+			case CPPS_TNUMBER:
+				v.value.number++;
+				break;
+			case CPPS_TINTEGER:
+				v.value.integer++;
+				break;
+			default:
+				throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
+				break;
+			}
+			ret = v;
 		}
-		ret = v;
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv++;
+			ret = (cpps_integer)strv;
+		}
 	}
 
 	void cpps_rightautodecrease(cpps_value& a, cpps_value& ret)
 	{
-		cpps_value &v = *(a.value.value);
-		ret = v;
-		switch (v.tt)
+		if (a.tt == CPPS_TREGVAR) {
+
+			cpps_value& v = *(a.value.value);
+			ret = v;
+			switch (v.tt)
+			{
+			case CPPS_TNUMBER:
+				v.value.number--;
+				break;
+			case CPPS_TINTEGER:
+				v.value.integer--;
+				break;
+			default:
+				throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
+				break;
+			}
+		}
+		else if (a.tt == CPPS_TSTRINGV)
 		{
-		case CPPS_TNUMBER:
-			v.value.number--;
-			break;
-		case CPPS_TINTEGER:
-			v.value.integer--;
-			break;
-		default:
-			throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
-			break;
+			char& strv = *(a.value.strv);
+			ret = (cpps_integer)strv;
+			strv--;
 		}
 	}
 
 	void cpps_leftautodecrease(cpps_value& a, cpps_value& ret)
 	{
-		cpps_value &v = *(a.value.value);
-		switch (v.tt)
-		{
-		case CPPS_TNUMBER:
-			v.value.number--;
-			break;
-		case CPPS_TINTEGER:
-			v.value.integer--;
-			break;
-		default:
-			throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
-			break;
+		if (a.tt == CPPS_TREGVAR) {
+
+			cpps_value& v = *(a.value.value);
+			switch (v.tt)
+			{
+			case CPPS_TNUMBER:
+				v.value.number--;
+				break;
+			case CPPS_TINTEGER:
+				v.value.integer--;
+				break;
+			default:
+				throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
+				break;
+			}
+			ret = v;
 		}
-		ret = v;
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv--;
+			ret = (cpps_integer)strv;
+		}
 	}
 
 	//ÕýºÅ
@@ -415,65 +453,74 @@ namespace cpps
 			return ;
 		}
 
-		if (b.tt == CPPS_TREGVAR)
+		if (a.tt == CPPS_TREGVAR) {
+
+			if (b.tt == CPPS_TREGVAR)
+			{
+				if (b.value.value->tt == CPPS_TSTRING)
+				{
+					if (a.value.value->tt == CPPS_TSTRING)
+					{
+						std::string* src = cpps_get_string(*(b.value.value));
+						std::string* tar = cpps_get_string(*(a.value.value));
+						*tar = *src;
+					}
+					else
+					{
+						std::string* str;
+						cpps_value ret = newclass<std::string>(c, &str);
+
+
+						cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.value->value.domain;
+						std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+						str->append(tmpStr->c_str());
+
+						*(a.value.value) = ret;
+					}
+
+				}
+				else
+					*(a.value.value) = *(b.value.value);
+
+
+			}
+			else {
+
+				if (b.tt == CPPS_TSTRING)
+				{
+					if (a.value.value->tt == CPPS_TSTRING)
+					{
+						std::string* src = cpps_get_string(b);
+						std::string* tar = cpps_get_string(*a.value.value);
+						*tar = *src;
+						//tar->assign(*src);
+					}
+					else
+					{
+						std::string* str;
+						cpps_value ret = newclass<std::string>(c, &str);
+
+						cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.domain;
+						std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
+
+						str->append(tmpStr->begin(), tmpStr->end());
+						*(a.value.value) = ret;
+					}
+				}
+				else
+					*(a.value.value) = b;
+
+			}
+
+			ret = *(a.value.value);
+		}
+		else if (a.tt == CPPS_TSTRINGV)
 		{
-			if (b.value.value->tt == CPPS_TSTRING)
-			{
-				if (a.value.value->tt == CPPS_TSTRING)
-				{
-					std::string* src = cpps_get_string(*(b.value.value));
-					std::string* tar = cpps_get_string(*(a.value.value));
-					*tar = *src;
-				}
-				else
-				{
-					std::string* str;
-					cpps_value ret = newclass<std::string>(c, &str);
-
-
-					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.value->value.domain;
-					std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
-
-					str->append(tmpStr->c_str());
-
-					*(a.value.value) = ret;
-				}
-
-			}
-			else
-				*(a.value.value) = *(b.value.value);
-
-
+			char& strv = *(a.value.strv);
+			strv = (char)cpps_to_integer(b);
+			ret = (cpps_integer)strv;
 		}
-		else {
-
-			if (b.tt == CPPS_TSTRING)
-			{
-				if (a.value.value->tt == CPPS_TSTRING)
-				{
-					std::string* src = cpps_get_string(b);
-					std::string* tar = cpps_get_string(*a.value.value);
-					*tar = *src;
-					//tar->assign(*src);
-				}
-				else
-				{
-					std::string* str;
-					cpps_value ret = newclass<std::string>(c, &str);
-
-					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.domain;
-					std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
-
-					str->append(tmpStr->begin(), tmpStr->end());
-					*(a.value.value) = ret;
-				}
-			}
-			else
-				*(a.value.value) = b;
-
-		}
-
-		ret = *(a.value.value);
 	}
 
 	void cpps_addandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
@@ -482,42 +529,52 @@ namespace cpps
 		{
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
-		cpps_value& v = *(a.value.value);
-		v.decruse();
 
-		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
-		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
-		}
-		;
-		_result.tt = CPPS_TNIL;
-		switch (v.tt)
-		{
-		case CPPS_TINTEGER:
-			if (b.tt == CPPS_TINTEGER)
+		if (a.tt == CPPS_TREGVAR) {
+
+			cpps_value& v = *(a.value.value);
+			v.decruse();
+
+			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				v.value.integer += cpps_to_integer(b);
+				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 			}
-			else if (b.tt == CPPS_TNUMBER)
+			;
+			_result.tt = CPPS_TNIL;
+			switch (v.tt)
 			{
+			case CPPS_TINTEGER:
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.integer += cpps_to_integer(b);
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) + cpps_to_number(b);
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) + cpps_to_number(b);
+				}
+				break;
+			case CPPS_TNUMBER:
+			case CPPS_TSTRING:
 				v.tt = CPPS_TNUMBER;
 				v.value.number = cpps_to_number(v) + cpps_to_number(b);
+				break;
+			default:
+				break;
 			}
-			else if (b.tt == CPPS_TSTRING)
-			{
-				v.tt = CPPS_TNUMBER;
-				v.value.number = cpps_to_number(v) + cpps_to_number(b);
-			}
-			break;
-		case CPPS_TNUMBER:
-		case CPPS_TSTRING:
-			v.tt = CPPS_TNUMBER;
-			v.value.number = cpps_to_number(v) + cpps_to_number(b);
-			break;
-		default:
-			break;
+			_result = v;
 		}
-		_result = v;
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv += (char)cpps_to_integer(b);
+			_result = (cpps_integer)strv;
+		}
 
 	}
 
@@ -527,42 +584,52 @@ namespace cpps
 		{
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
-		cpps_value& v = *(a.value.value);
-		v.decruse();
 
-		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
-		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
-		}
-		;
-		_result.tt = CPPS_TNIL;
-		switch (v.tt)
-		{
-		case CPPS_TINTEGER:
-			if (b.tt == CPPS_TINTEGER)
+		if (a.tt == CPPS_TREGVAR) {
+
+			cpps_value& v = *(a.value.value);
+			v.decruse();
+
+			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				v.value.integer -= cpps_to_integer(b);
+				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 			}
-			else if (b.tt == CPPS_TNUMBER)
+			;
+			_result.tt = CPPS_TNIL;
+			switch (v.tt)
 			{
+			case CPPS_TINTEGER:
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.integer -= cpps_to_integer(b);
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) - cpps_to_number(b);
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) - cpps_to_number(b);
+				}
+				break;
+			case CPPS_TNUMBER:
+			case CPPS_TSTRING:
 				v.tt = CPPS_TNUMBER;
 				v.value.number = cpps_to_number(v) - cpps_to_number(b);
+				break;
+			default:
+				break;
 			}
-			else if (b.tt == CPPS_TSTRING)
-			{
-				v.tt = CPPS_TNUMBER;
-				v.value.number = cpps_to_number(v) - cpps_to_number(b);
-			}
-			break;
-		case CPPS_TNUMBER:
-		case CPPS_TSTRING:
-			v.tt = CPPS_TNUMBER;
-			v.value.number = cpps_to_number(v) - cpps_to_number(b);
-			break;
-		default:
-			break;
+			_result = v;
 		}
-		_result = v;
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv -= (char)cpps_to_integer(b);
+			_result = (cpps_integer)strv;
+		}
 
 	}
 
@@ -572,42 +639,52 @@ namespace cpps
 		{
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
-		cpps_value& v = *(a.value.value);
-		v.decruse();
 
-		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
-		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
-		}
-		;
-		_result.tt = CPPS_TNIL;
-		switch (v.tt)
-		{
-		case CPPS_TINTEGER:
-			if (b.tt == CPPS_TINTEGER)
+		if (a.tt == CPPS_TREGVAR) {
+
+			cpps_value& v = *(a.value.value);
+			v.decruse();
+
+			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				v.value.integer *= cpps_to_integer(b);
+				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 			}
-			else if (b.tt == CPPS_TNUMBER)
+
+			_result.tt = CPPS_TNIL;
+			switch (v.tt)
 			{
+			case CPPS_TINTEGER:
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.integer *= cpps_to_integer(b);
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) * cpps_to_number(b);
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) * cpps_to_number(b);
+				}
+				break;
+			case CPPS_TNUMBER:
+			case CPPS_TSTRING:
 				v.tt = CPPS_TNUMBER;
 				v.value.number = cpps_to_number(v) * cpps_to_number(b);
+				break;
+			default:
+				break;
 			}
-			else if (b.tt == CPPS_TSTRING)
-			{
-				v.tt = CPPS_TNUMBER;
-				v.value.number = cpps_to_number(v) * cpps_to_number(b);
-			}
-			break;
-		case CPPS_TNUMBER:
-		case CPPS_TSTRING:
-			v.tt = CPPS_TNUMBER;
-			v.value.number = cpps_to_number(v) * cpps_to_number(b);
-			break;
-		default:
-			break;
+			_result = v;
 		}
-		_result = v;
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv *= (char)cpps_to_integer(b);
+			_result = (cpps_integer)strv;
+		}
 	}
 
 	void cpps_divideandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
@@ -616,42 +693,52 @@ namespace cpps
 		{
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
-		cpps_value& v = *(a.value.value);
-		v.decruse();
 
-		if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
-		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
-		}
-		;
-		_result.tt = CPPS_TNIL;
-		switch (v.tt)
-		{
-		case CPPS_TINTEGER:
-			if (b.tt == CPPS_TINTEGER)
+		if (a.tt == CPPS_TREGVAR) {
+
+			cpps_value& v = *(a.value.value);
+			v.decruse();
+
+			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				v.value.integer /= cpps_to_integer(b);
+				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
 			}
-			else if (b.tt == CPPS_TNUMBER)
+			;
+			_result.tt = CPPS_TNIL;
+			switch (v.tt)
 			{
+			case CPPS_TINTEGER:
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.integer /= cpps_to_integer(b);
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) / cpps_to_number(b);
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_to_number(v) / cpps_to_number(b);
+				}
+				break;
+			case CPPS_TNUMBER:
+			case CPPS_TSTRING:
 				v.tt = CPPS_TNUMBER;
 				v.value.number = cpps_to_number(v) / cpps_to_number(b);
+				break;
+			default:
+				break;
 			}
-			else if (b.tt == CPPS_TSTRING)
-			{
-				v.tt = CPPS_TNUMBER;
-				v.value.number = cpps_to_number(v) / cpps_to_number(b);
-			}
-			break;
-		case CPPS_TNUMBER:
-		case CPPS_TSTRING:
-			v.tt = CPPS_TNUMBER;
-			v.value.number = cpps_to_number(v) / cpps_to_number(b);
-			break;
-		default:
-			break;
+			_result = v;
 		}
-		_result = v;
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv /= (char)cpps_to_integer(b);
+			_result = (cpps_integer)strv;
+		}
 	}
 
 	void cpps_bigger(cpps_value& a, cpps_value b, cpps_value &ret)

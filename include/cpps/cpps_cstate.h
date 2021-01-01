@@ -25,7 +25,7 @@ namespace cpps
 	{
 		cpps_stack();
 		void						init(const char* pf, int32 pl, const char *pfunc);
-		std::vector<cpps_value> *	createparams();
+		cpps_std_vector *			createparams();
 		cpps_value *				create_cpps_value();
 		char		 f[64];
 		char		 func[64];

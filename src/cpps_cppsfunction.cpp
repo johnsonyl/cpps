@@ -7,7 +7,7 @@ namespace cpps
 	cpps_value				cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain);
 	void					cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
 	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
-	void					make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, std::vector<cpps_value>& params);
+	void					make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_std_vector& params);
 	void					cpps_gc_add_barrier(C* c, cpps_regvar* v);
 	void					cpps_gc_remove_barrier(C* c, cpps_regvar* v);
 	void					cpps_gc_check_step(C* c);
@@ -44,7 +44,7 @@ namespace cpps
 		return static_cast<int8>(params->l.size());
 	}
 
-	void cpps_cppsfunction::callfunction(C* c, cpps_value* ret, cpps_domain* prevdomain, std::vector<cpps_value>* o, cpps_stack* stack, std::vector< cpps_regvar*>* lambdastacklist)
+	void cpps_cppsfunction::callfunction(C* c, cpps_value* ret, cpps_domain* prevdomain, cpps_std_vector* o, cpps_stack* stack, std::vector< cpps_regvar*>* lambdastacklist)
 	{
 #ifdef CPPS_JIT_COMPILER
 

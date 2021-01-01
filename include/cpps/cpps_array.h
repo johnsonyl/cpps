@@ -14,7 +14,6 @@
 
 namespace cpps
 {
-	typedef std::vector<cpps_value> std_vector;
 
 	struct cpps_vector
 	{
@@ -41,16 +40,16 @@ namespace cpps
 		void								resize(cpps_integer s);
 		cpps_value							where(C* c, object o);
 		cpps_value							select(C* c, object o);
-		std::vector<cpps_value>& realvector();
+		cpps_std_vector&							realvector();
 	private:
-		std::vector<cpps_value>				_vec;
-		std::vector<cpps_value>::iterator	_begin;
+		cpps_std_vector							_vec;
+		cpps_std_vector::iterator				_begin;
 
 	};
 	void	cpps_regarray(C *c);
 
 	template<>
-	struct cpps_converter<std::vector<cpps_value>*>
+	struct cpps_converter<cpps_std_vector*>
 	{
 		static bool	match(cpps_value obj)
 		{
@@ -60,7 +59,7 @@ namespace cpps
 
 			return true;
 		}
-		static std::vector<cpps_value>*		apply(cpps_value obj)
+		static cpps_std_vector*		apply(cpps_value obj)
 		{
 			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
 			cpps::cpps_vector *m = static_cast<cpps::cpps_vector*>(clsvar->getclsptr());

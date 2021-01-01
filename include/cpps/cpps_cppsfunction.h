@@ -30,7 +30,7 @@ namespace cpps
 		cpps_cppsfunction(cpps_domain *d,node *p,node *c, usint32 count);
 		virtual ~cpps_cppsfunction();
 		virtual int8	getparamcount();
-		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, std::vector<cpps_value> *o, cpps_stack *stack, std::vector< cpps_regvar*>* lambdastacklist);
+		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, cpps_std_vector *o, cpps_stack *stack, std::vector< cpps_regvar*>* lambdastacklist);
 		void			setasync(bool b);
 		virtual bool	isasync();
 	public:

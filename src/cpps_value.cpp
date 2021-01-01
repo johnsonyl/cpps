@@ -268,8 +268,15 @@ namespace cpps
 		tt = CPPS_TINTEGER;
 		value.integer = i;
 	}
-#endif
 
+	
+
+#endif
+	cpps_value::cpps_value(char* strv)
+	{
+		tt = CPPS_TSTRINGV;
+		value.strv = strv;
+	}
 	cpps_value::~cpps_value()
 	{
 		decruse();

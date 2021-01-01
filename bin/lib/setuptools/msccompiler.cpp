@@ -186,7 +186,7 @@ class mscompiler : ccompiler
 		}
 		//baselib
 		var complier_base_libs = ['"libcpps.lib"','"kernel32.lib"','"user32.lib"','"gdi32.lib"','"winspool.lib"','"shell32.lib"','"ole32.lib"','"oleaut32.lib"','"uuid.lib"','"comdlg32.lib"','"advapi32.lib"'];
-		if(is_nocpps_build) complier_base_libs.pop_front(); //remove cpps.lib
+		if(is_nocpps_build) complier_base_libs.pop_front(); //remove libcpps.lib
 
 		if(libraries != null){
 			foreach(var lib:libraries){
@@ -314,7 +314,7 @@ class mscompiler : ccompiler
 			if(string.find(s,"error") != string.npos) { log.error(s);sleep(10); return false;}
 		}
 		else{
-			if(len(s) > 0) { log.error(s); sleep(10);return false;}
+			if(string.find(s,"error") != string.npos) { log.error(s);sleep(10); return false;}
 		}
 		
 		println_color("compiler is done.",2); 
