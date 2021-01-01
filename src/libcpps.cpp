@@ -2068,7 +2068,7 @@ namespace cpps {
 	void cpps_free_all_library(cpps::C*& c)
 	{
 		for (auto lib : c->modulelist) {
-			cpps_detach_library(lib.second, lib.first, c);
+			if(lib.second != NULL) cpps_detach_library(lib.second, lib.first, c);
 		}
 		c->modulelist.clear();
 	}
@@ -2078,14 +2078,16 @@ namespace cpps {
 		delete c->o;
 		c->o = NULL;
 		/* 清理内存 */
-		c->_G->destory(c,true);
+		
+		
+		c->_G->destory(c, true);
+		gc_cleanup(c);
 		cpps_unregasyncio(c);
 		cpps_free_all_library(c);
 		c->barrierList.clear();
 		c->_callstack->clear();
 		c->_class_map_classvar.clear();
 		//asyncio需要特殊处理
-		gc_cleanup(c);
 		delete c->_G;
 		c->_G = NULL;
 		delete c;

@@ -23,6 +23,15 @@ cpps_export_void cpps_attach(cpps::C* c)
 
 	cpps::cpps_init_cpps_class(c);
 
+    cpps::_module(c, "httpproxy")[
+        defvar(c,"HTTP",0),
+        defvar(c,"HTTP1",1),
+        defvar(c,"HTTPS",2),
+        defvar(c,"SOCKS4",4),
+        defvar(c,"SOCKS5",5),
+        defvar(c,"SOCKS4A",6),
+        defvar(c,"SOCKS5_HOSTNAME",7)
+    ];
     cpps::_module(c, "http")[
         _class<cpps_http_request>("httprequest")
             .def("setcookiefile",&cpps_http_request::setcookiefile)

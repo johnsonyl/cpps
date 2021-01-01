@@ -668,7 +668,7 @@ namespace cpps
 		std::string ret;
 		ret.resize(size());
 		for (size_t i = 0; i < size(); i++) {
-			ret[i] = tolower(at(i));
+			ret[i] = (char)tolower(at(i));
 		}
 		return ret;
 	}
@@ -678,7 +678,7 @@ namespace cpps
 		std::string ret;
 		ret.resize(size());
 		for (size_t i = 0; i < size(); i++) {
-			ret[i] = toupper(at(i));
+			ret[i] = (char)toupper(at(i));
 		}
 		return ret;
 	}

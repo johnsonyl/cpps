@@ -8,6 +8,7 @@ namespace cpps
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc);
 	std::string getfilenamenotext(std::string str);
 	std::string cpps_rebuild_filepath(std::string path);
+	cpps_integer cpps_math_rand();
 	bool cpps_base_isdebug() {
 #ifdef _DEBUG
 		return true;
@@ -343,6 +344,8 @@ namespace cpps
 
 	void cpps_detach_library(HMODULE module,const std::string& libname, C* c)
 	{
+		//printf("cpps_detach_library -> %s\r\n", libname.c_str());
+		if (module == NULL) return;
 #ifdef _WIN32
 		std::string libfuncname = "cpps_detach";
 
@@ -354,10 +357,8 @@ namespace cpps
 		else
 		{
 			cpps_detach(c);
+			FreeLibrary(module);
 		}
-
-
-		FreeLibrary(module);
 #else
 		dlerror();
 		CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
@@ -368,10 +369,10 @@ namespace cpps
 		else
 		{
 			api->cpps_detach(c);
+#if defined LINUX
+			dlclose(module);
+#endif
 		}
-
-
-		dlclose(module);
 #endif
 	}
 
@@ -389,7 +390,6 @@ namespace cpps
 			HMODULE module = it->second;
 			if (module) {
 				cpps_detach_library(module, libname, c);
-
 			}
 			c->modulelist.erase(it);
 			ret = true;
@@ -402,7 +402,9 @@ namespace cpps
 		if (it != c->modulelist.end())
 		{
 			HMODULE module = it->second;
-			cpps_detach_library(module, libname, c);
+			if (module) {
+				cpps_detach_library(module, libname, c);
+			}
 			c->modulelist.erase(it);
 			ret = true;
 		}
@@ -603,6 +605,26 @@ namespace cpps
 			quickSort(vec->realvector(), 0, vec->size() - 1);
 		}
 	}
+	void cpps_base_real_shuffle(std::vector<cpps_value>& vec)
+	{
+		size_t n = vec.size();
+		if (n <= 0)
+			return;
+
+		for (size_t i = 0; i < n; i++)
+		{
+			//保证每次第i位的值不会涉及到第i位以前
+			size_t index = i + ((size_t)cpps_math_rand()) % (n - i);
+			std::swap(vec[index], vec[i]);
+		}
+	}
+	void cpps_base_shuffle(object v)
+	{
+		if (v.isvector()) {
+			cpps_vector* vec = cpps_to_cpps_vector(v.value);
+			cpps_base_real_shuffle(vec->realvector());
+		}
+	}
 	void cpps_base_exit(cpps_integer exitcode)
 	{
 		exit((int)exitcode);
@@ -641,6 +663,7 @@ namespace cpps
 			def("system", cpps_base_system),
 			def("len", cpps_base_len),
 			def("sort", cpps_base_sort),
+			def("shuffle", cpps_base_shuffle),
 			def("isset", cpps_base_isset),
 			def("isdebug", cpps_base_isdebug),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),

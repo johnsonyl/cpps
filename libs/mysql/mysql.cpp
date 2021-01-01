@@ -33,7 +33,6 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def("execute",&cpps_mysql::execute)
 		.def("error",&cpps_mysql::error)
 		.def("isconnect",&cpps_mysql::isconnect)
-		.def("clear",&cpps_mysql::clear)
 		.def("affected_rows",&cpps_mysql::affected_rows),
 		_class<cpps_mysql_record>("mysql_record")
 		.def("fields",&cpps_mysql_record::fields)

@@ -182,7 +182,7 @@ namespace cpps
 						cpps_function* func = (cpps_function*)v->getval().value.func;
 						delete func;//类里面的函数也要被清理
 					}
-					else if (isclose && v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this)
+					else if (isclose && v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this && v->getval().value.domain != c->_G)
 					{
 						cpps_domain* domain = v->getval().value.domain;
 						domain->hasVar = false;

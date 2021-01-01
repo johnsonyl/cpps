@@ -22,7 +22,7 @@ namespace cpps
 	cpps_value cpps_socket_httpserver_session::get(std::string key,object defaultvalue)
 	{
 		auto it = session_value.find(key);
-		if (it == session_value.end() && !defaultvalue.isnull()) {
+		if (it == session_value.end()) {
 			session_value.insert(session_values::value_type(key, defaultvalue.value));
 		}
 		return session_value[key];
@@ -41,6 +41,7 @@ namespace cpps
 	void cpps_socket_httpserver_session::remove()
 	{
 		clear();
+		needremove = true;
 	}
 
 }

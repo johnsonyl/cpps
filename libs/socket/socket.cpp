@@ -214,9 +214,6 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def("set",&cpps_socket_httpserver_session::set)
 		.def("clear",&cpps_socket_httpserver_session::clear)
 		.def("remove",&cpps_socket_httpserver_session::remove)
-		.def("set_expire",&cpps_socket_httpserver_session::set_expire)
-
-
 	];
 
 }

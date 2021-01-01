@@ -46,6 +46,9 @@ namespace cpps {
 		void									register_controller(cpps::object cls,cpps_value defaultset); 
 		bool									isrunning();
 		virtual	void							run();
+
+		void update_session();
+
 		void									stop();
 		void									add_type(std::string mime, std::string ext);
 		std::string								get_type(std::string ext);

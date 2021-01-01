@@ -364,6 +364,7 @@ namespace cpps {
 	void cpps_socket_httpserver::run()
 	{
 		if (ev_base)	event_base_loop(ev_base, EVLOOP_NONBLOCK);
+		update_session();
 	}
 
 	void cpps_socket_httpserver::stop()
@@ -452,6 +453,21 @@ namespace cpps {
 			ret = it->second;
 		}
 		return ret;
+	}
+
+	void cpps_socket_httpserver::update_session()
+	{
+		auto it = session_list.begin();
+		for (; it != session_list.end();) {
+			auto session = it->second;
+			if (cpps_time_gettime() >= session->session_expire || session->needremove) {
+				delete session;
+				it = session_list.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
 	}
 
 }

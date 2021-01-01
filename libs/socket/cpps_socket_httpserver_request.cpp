@@ -5,6 +5,7 @@ namespace cpps {
 	cpps_socket_httpserver_request::cpps_socket_httpserver_request()
 	{
 		ev_req = NULL;
+		session = NULL;
 	}
 
 	cpps_socket_httpserver_request::~cpps_socket_httpserver_request()
