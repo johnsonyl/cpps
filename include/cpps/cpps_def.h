@@ -162,7 +162,7 @@
 #define CPPS_OTHIS				62 //this关键字的重写
 #define CPPS_OTHISPARAM			63 //字符串参数
 #define CPPS_OYIELD				64 //字符串参数
-
+#define CPPS_ODEFVAR_HOTUPDATE  65 //子函数.
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 
@@ -385,7 +385,7 @@ typedef struct {
 #include <chrono>
 #include <iomanip>
 #include <fstream>
-#include <filesystem>
+//#include <filesystem> C++17 暂时不用了.
 #include <stdio.h>
 #include <string>
 #include <vector>

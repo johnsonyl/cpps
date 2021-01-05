@@ -153,4 +153,17 @@ namespace cpps
 		return nasync;
 	}
 
+	void cpps_cppsfunction::rebuildfunc(node* p, node* c, usint32 count)
+	{
+		cpps_destory_node(params); delete params; params = NULL;
+		params = new node(p->filename, p->line);
+		params->clone(p); //克隆出所有列表
+
+		cpps_destory_node(context); delete context; context = NULL;
+		context = new node(c->filename, c->line);
+		context->clone(c); //克隆出所有列表
+
+		varcount = count;
+	}
+
 }

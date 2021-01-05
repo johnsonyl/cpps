@@ -4,6 +4,18 @@
 #include <cpps/cpps.h>
 #include <mysql/mysql.h>
 
+//ºÊ»›¿œ∞Ê±æmariadb
+#ifndef CR_SERVER_GONE_ERROR
+#define CR_SERVER_GONE_ERROR 2006
+#endif
+
+#ifndef CR_SERVER_LOST
+#define CR_SERVER_LOST 2013
+#endif
+#ifndef CR_CONN_HOST_ERROR
+#define CR_CONN_HOST_ERROR 2003
+#endif
+
 namespace cpps {
 
 	#define BINDDATA_SIZE 1 * 1024 * 1024 

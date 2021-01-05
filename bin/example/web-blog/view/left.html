@@ -1,0 +1,37 @@
+    <header class="header text-center">	    
+	    <h1 class="blog-name pt-lg-4 mb-0"><a href="/">{{globalconfig["name"]}}的 Blog</a></h1>
+        
+	    <nav class="navbar navbar-expand-lg navbar-dark" >
+           
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div id="navigation" class="collapse navbar-collapse flex-column" >
+				<div class="profile-section pt-3 pt-lg-0">
+				    <img class="profile-image mb-3 rounded-circle mx-auto" src="{{globalconfig["profile-url"]}}" alt="image" >			
+					
+					<div class="bio mb-3">嗨，我叫{{globalconfig["name"]}}。在这里简单介绍一下你自己。您还可以提供“关于”页面的链接<br><a href="/home/about">查看更多我的信息</a></div><!--//bio-->
+			        <hr> 
+				</div><!--//profile-section-->
+				
+				<ul class="navbar-nav flex-column text-left">
+					<li class="nav-item active">
+					    <a class="nav-link" href="/"><i class="fas fa-home fa-fw mr-2"></i>首页 <span class="sr-only">(current)</span></a>
+					</li>
+					{% foreach(var item: globalconfig["leftmore"]){ %}
+					<li class="nav-item">
+					    <a class="nav-link" href="{{item["url"]}}"><i class="fas fa-bookmark fa-fw mr-2"></i>{{item["text"]}}</a>
+					</li>
+					{% } %}
+					<li class="nav-item">
+					    <a class="nav-link" href="/home/about"><i class="fas fa-user fa-fw mr-2"></i>关于我</a>
+					</li>
+				</ul>
+				
+				<div class="my-2 my-md-3">
+				    <a class="btn btn-primary" href="{{globalconfig["github-url"]}}" target="_blank">Fork Me GitHub</a>
+				</div>
+			</div>
+		</nav>
+    </header>

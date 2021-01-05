@@ -303,6 +303,7 @@ class mscompiler : ccompiler
 		}
 
 		io.remove(outfilepath);
+		io.mkdirs(io.getfilepath(outfilepath));
 		
         var libs = string.join(" ",complier_base_libs);
         var lib_paths = string.join(" ",complier_base_lib_path);

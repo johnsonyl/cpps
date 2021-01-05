@@ -36,6 +36,7 @@ namespace cpps
 		cpps_value		key();
 		void			clear();
 		cpps_integer	size();
+		void			merge(cpps_value right);
 		void			set(cpps_value key_val, cpps_value value);
 
 		cpps_value		where(C* c, object o);

@@ -1,45 +1,24 @@
-﻿// libdemo.cpp : 定义 DLL 应用程序的导出函数。
-//
+﻿#include <cpps/cpps.h> //Single Header
 
-#include "stdafx.h"
-
-
-#include <cpps/cpps.h>
 using namespace cpps;
 
 void demotest()
 {
 	printf("hit demo function.\r\n");
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_attach(cpps::C *c)
-#else
-extern "C" void  cpps_attach(cpps::C* c)
-#endif
+cpps_export_void cpps_attach(cpps::C* c)
 {
 	printf("attach demo\r\n");
 
-	cpps::cpps_init_cpps_class(c);
+	cpps::cpps_init_cpps_class(c); //init cpps module
 
 	cpps::_module(c)[
 		def("demotest", demotest)
 	];
 }
-#ifdef _WIN32
-extern "C" _declspec(dllexport) void __stdcall cpps_detach(cpps::C *c)
-#else
-extern "C" void  cpps_detach(cpps::C * c)
-#endif
+cpps_export_void  cpps_detach(cpps::C* c)
 {
 	printf("detach demo\r\n");
 }
 
-#ifdef LINUX
-
-
-extern "C" const CPPS_ST_API  LIBAPI = {
-   cpps_attach,
-   cpps_detach,
-};
-
-#endif
+cpps_export_finish	//unix export.

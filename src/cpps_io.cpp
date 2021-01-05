@@ -267,12 +267,21 @@ namespace cpps
 		return buffer;
 	}
 
-	using namespace std::literals::chrono_literals;
+	//using namespace std::literals::chrono_literals;
 	cpps_integer cpps_io_last_write_time( std::string path) {
-		auto ftime = std::filesystem::last_write_time(path);
+		/*auto ftime = std::filesystem::last_write_time(path);
 		auto elapse = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::file_time_type::clock::now().time_since_epoch() - std::chrono::system_clock::now().time_since_epoch()).count();
-		auto systemTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count() - elapse;
-		return (cpps_integer)systemTime;
+		auto systemTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count() - elapse;*/
+
+#ifdef _WIN32
+		struct _stat64 statinfo;
+		_stati64(path.c_str(), &statinfo);
+#else 
+		struct stat statinfo;
+		lstat(path.c_str(), &statinfo);
+#endif
+		
+		return (cpps_integer)statinfo.st_mtime;
 	}
 	cpps_value cpps_io_get_stat(C* c, std::string path) {
 

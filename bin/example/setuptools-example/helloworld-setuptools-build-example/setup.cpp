@@ -23,7 +23,7 @@ setuptools::setup({
     author_email:"mysqltest@mysqltest.com",
     description:"A setuptools build executable..",
     long_description:long_description,
-    debug:false,
+    debug:false, //release build
     link_type:3,// 1. dynamic Share library 2.Stand library 3.executable  2 or 3 only be used when nocpps is compiled!
     nocpps:true, //no cpps module dynamic Share library
     long_description_content_type:"text/markdown",

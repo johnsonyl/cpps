@@ -33,33 +33,23 @@ namespace cpps
 
 	struct cpps_function
 	{
-		cpps_function() { isNeesC = false; nasync = false; }
+		cpps_function() { isNeedC = false; nasync = false; _cls = NULL; }
 		virtual ~cpps_function() {}
-		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, cpps_std_vector *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
-		{
-		}
-		virtual void			setfuncname(std::string name){
-			funcname = name;
-		}
-		virtual std::string		getfuncname(){
-			return funcname;
-		}
-
-		virtual void setIsNeesC(bool b)
-		{
-			isNeesC = b;
-		}
-		virtual bool getIsNeedC()
-		{
-			return isNeesC;
-		}
+		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, cpps_std_vector *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL){}
+		virtual void			setfuncname(std::string name){	funcname = name;}
+		virtual std::string		getfuncname(){return funcname;}
+		virtual void setIsNeedC(bool b)	{isNeedC = b;}
+		virtual bool getIsNeedC(){ return isNeedC; }
 		virtual int8 getparamcount() { return 0; }
 		virtual bool isasync() { return nasync; }
 		virtual void setasync(bool b) { nasync = b; }
-		bool			isNeesC;
+		virtual bool iscppsfunc() { return false; }
+		virtual cpps_cppsclass* getclass() { return _cls; }
+		virtual void setclass(cpps_cppsclass* cls) { _cls = cls; }
+		bool			isNeedC;
 		std::string		funcname;
-		bool		nasync;
-
+		bool			nasync;
+		cpps_cppsclass*	_cls;
 	};
 
 

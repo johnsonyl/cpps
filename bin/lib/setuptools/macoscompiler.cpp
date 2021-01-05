@@ -139,7 +139,8 @@ class macoscompiler : ccompiler
 			outfilepath = "{real_install_path}{output_name}";
 		}
 		io.remove(outfilepath);
-
+		io.mkdirs(io.getfilepath(outfilepath));
+		
         var libs = string.join(" ",complier_base_libs);
         var lib_paths = string.join(" ",complier_base_lib_path);
         var objslist = string.join(" ",objs);

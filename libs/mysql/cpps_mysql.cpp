@@ -81,8 +81,11 @@ namespace cpps
 			{
 				paramlist[i].buffer = paramDatalist[i].buff;
 				paramlist[i].length = &paramDatalist[i].length;
+#ifdef MARIADB_BASE_VERSION
+				paramlist[i].is_null = (my_bool*)&paramDatalist[i].is_null;
+#else
 				paramlist[i].is_null = &paramDatalist[i].is_null;
-
+#endif
 				cpps_value& v = vec->realvector()[i];
 				paramDatalist[i].is_null = false;
 				if (v.tt == CPPS_TBOOLEAN)
@@ -290,7 +293,13 @@ namespace cpps
 						resultlist[i].buffer = resultDatalist[i].buff;
 						resultlist[i].length = &resultDatalist[i].length;
 						resultlist[i].buffer_length = BINDDATA_SIZE;
+
+#ifdef MARIADB_BASE_VERSION
+						resultlist[i].is_null = (my_bool*)&resultDatalist[i].is_null;
+#else
 						resultlist[i].is_null = &resultDatalist[i].is_null;
+#endif
+
 					}
 
 					if (mysql_stmt_bind_result(mysql_stmt, resultlist.data()))

@@ -338,6 +338,54 @@ namespace cpps {
 			cpps_parse_def_function(c, domain, right, right, buffer);
 			/* 定义了一个函数 */
 		}
+		else if (buffer.cur() == ':' && buffer.at(buffer.offset()+1) == ':')
+		{
+			// var namespace::namespace::class::func()
+			node* lastNode = right;
+			/* 是否使用名空间 */
+			while (!buffer.isend()) {
+				/* 剔除回车. */
+				cpps_parse_rmspaceandenter(buffer);
+				if (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':') {
+					buffer.pop();
+					buffer.pop();
+					cpps_parse_rmspaceandenter(buffer);
+					node* child = new node(lastNode, var->filename, buffer.line());
+					child->s = cpps_parse_varname(buffer);
+					child->type = CPPS_ONAMESPANCE_CHILD;
+					lastNode = child;
+				}
+				else {
+					break;
+				}
+			}
+			if (buffer.cur() == '(')
+				/* 定义了一个函数 */ {
+				buffer.pop();
+				if (limit & CPPS_NOT_DEFFUNCTION) {
+					throw("Function definition prohibited");
+				}
+				if (vartype == node_var_type_constvar)
+					throw(cpps_error(right->filename, buffer.line(), cpps_error_varerror, "do not define const function."));
+
+				lastNode->type = CPPS_ODEFVAR_FUNC;
+				lastNode->size = 0;
+				lastNode->varsize = 0;
+				/*
+				 * right->offset = 0;
+				 * right->offsettype = 0;
+				 * root 修改为 函数节点
+				 */
+				cpps_parse_def_function(c, domain, lastNode, lastNode, buffer);
+				/* 定义了一个函数 */
+				right->type = CPPS_ODEFVAR_HOTUPDATE;
+
+			}
+			else
+			{
+				throw(cpps_error(right->filename, buffer.line(), cpps_error_varerror, "invalid syntax.hotupdate child function need ("));
+			}
+		}
 		else if (buffer.cur() == ';') {
 			right->type = CPPS_ODEFVAR_NIL;
 		}
@@ -2264,12 +2312,13 @@ namespace cpps {
 					}
 				}
 				else if (var && (var->type == CPPS_ODEFVAR_FUNC || var->type == CPPS_ODEFVAR_LAMBDA_FUNC)) {
-					/* cpps_regfunction regfunc = cpps_regfunction(varName->s, ); */
+					/*全局函数,不存在重载问题*/
+					
 					cpps_domain* leftdomain = NULL;
 					cpps_regvar* v = domain->getvar(varName->s, leftdomain, false);
+					cpps_cppsfunction* func = NULL;
 					if (v) {
-						cpps_cppsfunction* func = (cpps_cppsfunction*)v->getval().value.func;
-						delete func;
+						func = (cpps_cppsfunction*)v->getval().value.func;
 					}
 					else {
 						v = new cpps_regvar();
@@ -2286,14 +2335,59 @@ namespace cpps {
 							c->_G->regidxvar(varName->offset, v);
 						}
 					}
-					/* domain->regFunc(&regfunc); */
-					cpps_domain* funcdomain = new cpps_domain(NULL, cpps_domain_type_func, d->s + "::" + varName->s);
-					cpps_cppsfunction* func = new cpps_cppsfunction(funcdomain, var->l[0], var->l[1], var->size);
+					
+					if (func == NULL){
+						cpps_domain* funcdomain = new cpps_domain(NULL, cpps_domain_type_func, d->s + "::" + varName->s);
+						func = new cpps_cppsfunction(funcdomain, var->l[0], var->l[1], var->size);
+					}
+					else
+						func->rebuildfunc(var->l[0], var->l[1], var->size);
+
 					func->setfuncname(varName->s);
-					func->setIsNeesC(false);
+					func->setIsNeedC(false);
 					if (isasync == node_var_type::node_var_type_asyncvar)
 						func->setasync(true);
 					v->setval(cpps_value(func));
+				}
+				else if(var && var->type == CPPS_ODEFVAR_HOTUPDATE) {
+					cpps_domain* leftdomain = NULL;
+					cpps_regvar* v = domain->getvar(varName->s, leftdomain, false);
+					cpps_regvar* subv = v;
+					if (v) {
+						node* takenode = var->getleft();
+						while(takenode && (takenode->type == CPPS_ONAMESPANCE_CHILD || takenode->type == CPPS_ODEFVAR_FUNC)){
+							v = subv;
+							subv = subv->getval().value.domain->getvar(takenode->s, leftdomain);
+							if (!subv) throw cpps_error(d->filename, d->line, cpps_error_trycatherror, "hotupdate classfunc [%s] not found.", takenode->s.c_str());
+							if (takenode->getleft() && (takenode->getleft()->type == CPPS_ONAMESPANCE_CHILD || takenode->getleft()->type == CPPS_ODEFVAR_FUNC)) takenode = takenode->getleft();
+							else break;
+						}
+						if (subv && subv->getval().tt == CPPS_TFUNCTION)
+						{
+							cpps_function* func = subv->getval().value.func;
+							if (func->iscppsfunc()) {
+								cpps_cppsfunction* cppsfunc = (cpps_cppsfunction*)func;
+								/*如果是类函数*/
+								if (v->getval().tt == CPPS_TCLASS) {
+									cpps_cppsclass* pclsthis = cpps_to_cpps_cppsclass(v->getval());
+									if (pclsthis == cppsfunc->getclass()) {
+										cppsfunc->rebuildfunc(takenode->getleft(), takenode->getright(), takenode->size); //不是继承来的替换.
+									}
+									/*继承来的暂时不可以修改. 并且也不能创建.*/
+								}
+								else {
+									/*不是类的函数直接替换,没有继承问题*/
+									cppsfunc->rebuildfunc(takenode->getleft(), takenode->getright(), takenode->size);
+								}
+							}
+							else {
+								throw cpps_error(d->filename, d->line, cpps_error_trycatherror, "hotupdate classfunc [%s] must be a cppsfunction.", takenode->s.c_str());
+							}
+						}
+						else {
+							throw cpps_error(d->filename, d->line, cpps_error_trycatherror, "hotupdate classfunc [%s] must be a cppsfunction.", takenode->s.c_str());
+						}
+					}
 				}
 			}
 		}
@@ -2798,7 +2892,8 @@ namespace cpps {
 						}
 						cpps_domain* funcdomain = new cpps_domain(cppsclass, cpps_domain_type_func, d->s + "::" + varName->s);
 						cpps_cppsfunction* func = new cpps_cppsfunction(funcdomain, var->l[0], var->l[1], var->size);
-						func->setIsNeesC(false);
+						func->setclass(cppsclass);
+						func->setIsNeedC(false);
 						if (o->type == CPPS_ODEFASYNCVAR) {
 							func->setasync(true);
 						}

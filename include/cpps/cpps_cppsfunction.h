@@ -33,6 +33,8 @@ namespace cpps
 		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, cpps_std_vector *o, cpps_stack *stack, std::vector< cpps_regvar*>* lambdastacklist);
 		void			setasync(bool b);
 		virtual bool	isasync();
+		virtual bool	iscppsfunc() { return true; }
+		void			rebuildfunc(node* p, node* c, usint32 count);
 	public:
 		usint32		varcount;
 		node		*params;

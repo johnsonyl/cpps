@@ -4,7 +4,6 @@
 #include <lib/setuptools/logging.cpp>
 #include <lib/setuptools/dist.cpp>
 #include <lib/setuptools/upload.cpp>
-#include <lib/setuptools/colorprint.cpp>
 #include <lib/setuptools/ccompiler.cpp>
 #include <lib/setuptools/compiler.cpp>
 #include <lib/setuptools/msccompiler.cpp>
@@ -54,6 +53,12 @@ namespace setuptools{
 
 			if( option["nocpps"] != null)
 				is_nocpps_build =  option["nocpps"];
+
+			if(is_nocpps_build){ //仅非cpps编译才会关注是否独立debug release模式.
+				if(isbool(option["debug"])){
+					real_build_type = option["debug"];
+				}
+			}
 			
 			if(option["ext_modules"] != null){
 				var curos = "";

@@ -723,6 +723,7 @@ module socket
 		server.add_type("application/zip","zip");
 		server.add_type("multipart/x-zip","zip");
 		server.add_type("application/octet-stream","zoo");
+		server.add_type("text/markdown","md");
 
 	}
 }

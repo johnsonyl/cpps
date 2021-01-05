@@ -80,7 +80,7 @@ namespace cpps
 				cpps_regfunction* func = (cpps_regfunction*)f;
 				var->setval(cpps_value(func->func));
 				var->setconst(true);
-				func->func->setIsNeesC(f->isneedC);
+				func->func->setIsNeedC(f->isneedC);
 			}
 			else if (f->type == cpps_def_regclass)
 			{
@@ -180,7 +180,15 @@ namespace cpps
 					else if (v->issource() && v->getval().tt == CPPS_TFUNCTION)
 					{
 						cpps_function* func = (cpps_function*)v->getval().value.func;
-						delete func;//类里面的函数也要被清理
+						if (domainType == cpps_domain_type_class && func->getclass()) { //判断是否是继承来的 cpp 注册进来的类不需要判断 删就完了.
+							cpps_cppsclass* pclsthis = (cpps_cppsclass*)this;
+							if (pclsthis == func->getclass()) {
+								delete func;//类里面的函数也要被清理
+							}
+						}
+						else {
+							delete func;
+						}
 					}
 					else if (isclose && v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this && v->getval().value.domain != c->_G)
 					{

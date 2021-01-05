@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <title></title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog Template">
+    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">    
+    <link rel="shortcut icon" href="/favicon.ico"> 
+    <link rel="stylesheet" href="/editormd/css/editormd.preview.css" />
+    
+    
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="/assets/css/theme-1.css">
+    
+
+</head> 
+
+<body>
+    
+
+     {% @page(view/left.html) %}
+    <div class="main-wrapper">
+	    
+	    <article class="blog-post px-3 py-5 p-md-5">
+		    <div class="container">
+			    <header class="blog-post-header">
+				    <h2 class="title mb-2">{{blog.title}}</h2>
+				    <div class="meta mb-3"><span class="date">{{time.time2str(blog.createdate)}}</span><span class="time">{{blog.readcount}} 次阅读</span></div>
+			    </header>
+			    
+			    <div class="blog-post-body">
+				   
+				   <div id="test-markdown-view">
+						<!-- Server-side output Markdown text -->
+						<textarea style="display:none;">### Hello world!</textarea>             
+					</div>
+				</div><!--//blog-comments-section-->
+				
+		    </div><!--//container-->
+	    </article>
+	   
+	    
+	    <footer class="footer text-center py-2 theme-bg-dark">
+		   
+	        <small class="copyright">Copyright &copy; 2020.Company name All rights reserved.</small>
+		   
+	    </footer>
+    
+    </div><!--//main-wrapper-->
+    
+
+    
+       
+    <!-- Javascript -->          
+    <script src="/assets/plugins/jquery-3.3.1.min.js"></script>
+    <script src="/assets/plugins/popper.min.js"></script> 
+    <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script> 
+	<script src="/editormd/editormd.js"></script>
+	<script src="/editormd/lib/marked.min.js"></script>
+	<script src="/editormd/lib/prettify.min.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        $.get("{{blog.content}}", function(markdown) {
+            var testView = editormd.markdownToHTML("test-markdown-view", {
+                markdown : markdown, // Also, you can dynamic set Markdown text
+                htmlDecode : true,  // Enable / disable HTML tag encode.
+                htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+            });
+        });
+    });
+	</script> 
+
+      
+    
+
+</body>
+</html> 
+

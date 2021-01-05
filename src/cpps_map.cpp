@@ -16,6 +16,7 @@ namespace cpps
 				.def("find", &cpps_map::find)
 				.def("erase", &cpps_map::erase)
 				.def("pop", &cpps_map::pop)
+				.def("merge", &cpps_map::merge)
 				.def("begin", &cpps_map::begin)
 				.def("has", &cpps_map::has)
 				.def("end", &cpps_map::end)
@@ -135,6 +136,16 @@ namespace cpps
 	cpps_integer cpps_map::size()
 	{
 		return (cpps_integer)_map.size();
+	}
+
+	void cpps_map::merge(cpps_value right)
+	{
+		if (!cpps_base_ismap(right)) return;
+
+		cpps_map* rightmap = cpps_to_cpps_map(right);
+		for (auto it : rightmap->realmap()) {
+			(*this)[it.first] = it.second;
+		}
 	}
 
 	phmap::flat_hash_map<cpps::cpps_value, cpps::cpps_value, cpps::cpps_value::hash>& cpps_map::realmap()

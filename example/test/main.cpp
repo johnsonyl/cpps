@@ -1,5 +1,5 @@
 #include <iostream>
-#include "cpps/cpps.h"
+#include <cpps/cpps.h>
 
 using namespace cpps;
 using namespace std;
