@@ -8,7 +8,7 @@
 //@Date			:	2020/12/4 (yy/mm/dd)
 //@Module		:	CPPS_CPPSFUNCTION
 //@Description	:	Cppsº¯Êý´¦Àí
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 namespace cpps
 {

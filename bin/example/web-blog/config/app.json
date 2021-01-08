@@ -1,13 +1,1 @@
-{
-    "httpserver":{
-    	"port":8080,
-    	"ip":"0.0.0.0"
-    },
-    "name":"Johnson",
-    "profile-url":"/assets/images/profile.png",
-    "leftmore":[
-        {"url":"http://cppscript.org","text":"我的脚本"}
-    ],
-    "github-url":"https://github.com/johnsonyl/cpps",
-    "page-count":10
-}
+{"admin_key":"admin","admin_password":"","admin_username":"johnsonyl","gitee_url":"https://gitee.com/cppscript/cpps","github_url":"https://github.com/johnsonyl/cpps","httpserver":{"ip":"0.0.0.0","port":8080},"leftmore":[{"text":"\u6211\u7684\u811a\u672c","url":"http://cppscript.org"}],"name":"Johnson","page_count":10,"profile_url":"/assets/images/profile.png"}

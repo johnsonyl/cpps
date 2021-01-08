@@ -8,7 +8,7 @@
 //@Date			:	2015/11/25 (yy/mm/dd)
 //@Module		:	CPPS_STRING
 //@Description	:	创建String接口
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

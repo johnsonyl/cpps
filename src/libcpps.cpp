@@ -224,6 +224,25 @@ namespace cpps {
 		buffer.pop();
 		return(str);
 	}
+	node* cpps_parse_regx(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, int8 endch) {
+		node* str = new node(o->filename, buffer.line());
+		str->type = CPPS_OSTR;
+		str->value.str = cpps_class_singleton<cpps::string*>::instance()->getcls()->create(c, true);
+		buffer.pop();
+		/* pop '"' */
+		node* laststr = NULL;
+		while (buffer.realcur() != endch && !buffer.isend()) {
+			char lastch = buffer.realpop();
+			if (laststr == NULL) {
+				laststr = new node(o->filename, buffer.line());
+				laststr->type = CPPS_OSTR;
+				str->add(laststr);
+			}
+			laststr->s.push_back(lastch);
+		}
+		buffer.pop();
+		return(str);
+	}
 	
 	node* cpps_get_root_node(node* n) {
 		if (n->parent)
@@ -433,7 +452,7 @@ namespace cpps {
 			else if (root->type == CPPS_ODEFVAR_FUNC || root->type == CPPS_ODEFVAR_LAMBDA_FUNC) {
 				str->offset = root->size++;
 				str->offsettype = CPPS_OFFSET_TYPE_SELF;
-				root->regnode(str->s, str);
+				//root->regnode(str->s, str);
 
 				if (cpps_parse_checkdomain(domain))
 					domain->nodedomain->regnode(str->s, str);
@@ -1040,6 +1059,17 @@ namespace cpps {
 		else if (cpps_parse_isnumber(ch))
 			/* 数字参数   s */ {
 			return cpps_parse_number(c, domain, o, buffer);
+		}
+		else if (ch == 'r' && (buffer.at(buffer.offset() + 1) == '"' || buffer.at(buffer.offset() + 1) == '\''))
+		{
+			buffer.pop();
+			char ch2 = buffer.cur();
+			if (ch2 == '"') {
+				p = cpps_parse_regx(c, domain, o, root, buffer, '"');
+			}
+			else if(ch2 == '\''){
+				p = cpps_parse_regx(c, domain, o, root, buffer, '\'');
+			}
 		}
 		else if (!cpps_parse_isnotvarname(ch))
 			/* 变量参数 */ {
@@ -2051,7 +2081,7 @@ namespace cpps {
 		}
 		return(child);
 	}
-	node* loadbuffer(C* c, std::string& str, std::string filename) {
+	node* loadbuffer(C* c,cpps_domain *parent_domain, std::string& str, std::string filename) {
 		/* 如果需要转译 */
 		if (c->func)
 			str = c->func(str);
@@ -2059,7 +2089,7 @@ namespace cpps {
 		cpps_node_domain* domain = new cpps_node_domain(o, NULL, cpps_domain_type_root, "root");
 		o->setdomain(domain);
 		o->type = CPPS_ROOT;
-		o->size = 0;
+		o->size = parent_domain->stacklist ? (int16)parent_domain->stacklist->size() : 0;
 		o->varsize = 0;
 		cppsbuffer buffer(filename.c_str(), str.c_str(), (int32)str.size());
 		while (true) {
@@ -2071,9 +2101,8 @@ namespace cpps {
 			}
 			cpps_parse_line(c, domain, o, o, buffer);
 		}
+		if(parent_domain->stacklist) parent_domain->stacklist->resize(o->size);
 		return(o);
-		/* 返回根节点 */
-		return(NULL);
 	}
 	void cpps_create_root_G(C* c) {
 		c->_G = new cpps_domain(NULL, cpps_domain_type_root, "root");
@@ -2120,7 +2149,7 @@ namespace cpps {
 	}
 	int32 dostring(C* c, std::string str) {
 		_CPPS_TRY
-			node* o = loadbuffer(c,  str, "");
+			node* o = loadbuffer(c, c->_G, str, "");
 		if (o)
 			cpps_step_all(c, CPPS_MUNITRET, 0, 0, o);
 		/* dostring pcall */
@@ -2132,8 +2161,8 @@ namespace cpps {
 		c->buildoffset = true;
 		std::string fileSrc;
 		cpps_load_filebuffer(path, fileSrc);
-		node* o = loadbuffer(c, fileSrc, path);
-		c->buildoffset = false;
+		node* o = loadbuffer(c,c->_G, fileSrc, path);
+		//c->buildoffset = false;
 		if (o) {
 			c->push(o);
 			return(CPPS_NOERROR);
@@ -2938,7 +2967,7 @@ namespace cpps {
 				std::string	fpath = cpps_to_string(path);
 				std::string fileSrc;
 				cpps_load_filebuffer(fpath.c_str(), fileSrc);
-				node* o = loadbuffer(c, fileSrc, fpath);
+				node* o = loadbuffer(c,c->_G, fileSrc, fpath);
 				cpps_stack* stack = c->stack_alloc();
 				stack->init((*it)->filename.c_str(), (*it)->line, "dofile");
 				c->push_stack(stack);
@@ -2961,7 +2990,9 @@ namespace cpps {
 			std::string* str = cpps_get_string(path);
 			if (!str)
 				return;
-			node* o = loadbuffer(c, *str, "");
+			c->buildoffset = false;
+			node* o = loadbuffer(c, root,*str, "");
+			c->buildoffset = true;
 			cpps_stack* stack = c->stack_alloc();
 			stack->init(d->filename.c_str(), d->line, "dostring");
 			c->push_stack(stack);
@@ -3808,7 +3839,7 @@ namespace cpps {
 			getline(std::cin, str);
 			if (str == "quit")
 				break;
-			node* o = loadbuffer(c, str, "");
+			node* o = loadbuffer(c,domain, str, "");
 			cpps_stack* stack = c->stack_alloc();
 			stack->init(d->filename.c_str(), d->line, "dostring");
 			c->push_stack(stack);

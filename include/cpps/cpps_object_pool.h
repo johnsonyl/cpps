@@ -8,7 +8,7 @@
 //@Date			:	2020/11/26 (yy/mm/dd)
 //@Module		:	CPPS_OBJECT_POOL
 //@Description	:	非管理模式内存池.
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 #include <vector>

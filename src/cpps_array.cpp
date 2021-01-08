@@ -31,7 +31,9 @@ namespace cpps
 				.def("clear", &cpps_vector::clear)
 				.def("size", &cpps_vector::size)
 				.def("has", &cpps_vector::has)
+				.def_inside("reverse", &cpps_vector::reverse)
 				.def_inside("where", &cpps_vector::where)
+				.def_inside("remove", &cpps_vector::remove)
 				.def_inside("select", &cpps_vector::select)
 		];
 	}
@@ -170,6 +172,28 @@ namespace cpps
 				if (b) vec->push_back(v);
 			}
 		}
+		return ret;
+	}
+	void cpps_vector::remove(C* c, object o)
+	{
+		if (o.isfunction()) {
+			auto it = realvector().begin();
+			for (;it != realvector().end();) 
+			{
+				bool b = object_cast<bool>(dofunction(c, o, *it));
+				if (b)
+					it = realvector().erase(it);
+				else
+					++it;
+			}
+		}
+	}
+	cpps_value cpps_vector::reverse(C* c)
+	{
+		cpps_vector* vec;
+		cpps_value ret = newclass(c, &vec);
+		vec->realvector() = realvector();
+		std::reverse(vec->realvector().begin(), vec->realvector().end());
 		return ret;
 	}
 	cpps_value cpps_vector::select(C* c, object o)

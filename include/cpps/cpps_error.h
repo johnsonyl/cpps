@@ -8,7 +8,7 @@
 //@Date			:	2015/11/23 (yy/mm/dd)
 //@Module		:	CPPS_ERROR
 //@Description	:	Cpps±¨´í
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 #include <stdarg.h>
 

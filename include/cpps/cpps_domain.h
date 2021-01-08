@@ -8,7 +8,7 @@
 //@Date			:	2015/11/25 (yy/mm/dd)
 //@Module		:	CPPS_DOMAIN
 //@Description	:	Óò¿Õ¼ä
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

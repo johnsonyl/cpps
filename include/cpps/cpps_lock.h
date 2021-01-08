@@ -8,7 +8,7 @@
 //@Date			:	2018/09/26 (yy/mm/dd)
 //@Module		:	CPPS_LOCK
 //@Description	:	œﬂ≥Ãª•≥‚À¯¿‡
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 #ifndef _WIN32

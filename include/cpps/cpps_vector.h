@@ -8,7 +8,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_VECTOR
 //@Description	:	函数参数列表
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 template<typename ret>

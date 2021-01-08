@@ -8,7 +8,7 @@
 //@Date			:	2015/11/24 (yy/mm/dd)
 //@Module		:	CPPS_OBJECT
 //@Description	:	CppsתC++
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 #include "cpps_array.h"

@@ -8,7 +8,7 @@
 //@Date			:	2015/12/9 (yy/mm/dd)
 //@Module		:	CPPS_MATH
 //@Description	:	创建数学库接口
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

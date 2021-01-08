@@ -8,7 +8,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_MAKE_FUNCTION
 //@Description	:	创建函数调用体
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 namespace cpps

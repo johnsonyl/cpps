@@ -10,7 +10,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_CSTATE
 //@Description	:	CppsState
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 namespace cpps
 {

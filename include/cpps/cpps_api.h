@@ -8,7 +8,7 @@
 //@Date			:	2020/12/15 (yy/mm/dd)
 //@Module		:	CPPS_API
 //@Description	:	»ù´¡º¯Êý¿â
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

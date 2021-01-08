@@ -8,7 +8,7 @@
 //@Date			:	2015/11/23 (yy/mm/dd)
 //@Module		:	CPPS_REGVAR
 //@Description	:	×¢²á±äÁ¿
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

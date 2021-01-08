@@ -55,9 +55,8 @@ namespace cpps
 		localtime_s(&tt, &t);
 		return tt;
 #else
-		struct tm tt = { 0 };
-		localtime_r(&t, &tt);
-		return tt;
+		struct tm *tt = localtime(&t);
+		return *tt;
 #endif
 	}
 	std::string cpps_time_time2str(cpps_integer nt)

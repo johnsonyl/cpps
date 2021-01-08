@@ -8,7 +8,7 @@
 //@Date			:	2015/11/18 (yy/mm/dd)
 //@Module		:	CPPSBUFFER
 //@Description	:	×Ö½ÚÁ÷IO
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 namespace cpps

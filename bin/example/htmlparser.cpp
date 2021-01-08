@@ -1,3 +1,4 @@
+#import "htmlparser"
 var html = io.readfile("test.html");
 
 var parser = new htmlparser::parser();

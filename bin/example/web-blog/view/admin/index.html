@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <title></title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog Template">
+    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">    
+    <link rel="shortcut icon" href="/favicon.ico"> 
+    
+    
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="/assets/css/theme-1.css">
+
+</head> 
+
+<body>
+    
+    {% @page(view/left.html) %}
+    <div class="main-wrapper">
+	    <section class="blog-list px-3 py-5 p-md-5">
+		    <div class="container">
+
+				{% foreach(var blog: bloglist){ %}
+			    <div class="item mb-5">
+				    <div class="media">
+					    <img class="mr-3 img-fluid post-thumb d-none d-md-flex" src="{{blog.image}}" alt="image">
+					    <div class="media-body">
+						    <h3 class="title mb-1"><a href="/admin/post?id={{blog.id}}">{{blog.title}}</a></h3>
+						    <div class="meta mb-1"><span class="date">{{time.time2str(blog.createdate)}}</span><span class="time">{{blog.readcount}} 次阅读</span></div>
+						    <div class="intro">{{blog.easycontent}}...</div>
+						    <a class="more-link" href="/admin/post?id={{blog.id}}">编辑 &rarr;</a>
+							<a class="more-link" href="/admin/remove?id={{blog.id}}">删除 &rarr;</a>
+					    </div><!--//media-body-->
+				    </div><!--//media-->
+			    </div><!--//item-->
+			   
+			    {%}%}
+			    <nav class="blog-nav nav nav-justified my-5">
+				  <a class="nav-link-prev nav-item nav-link rounded-left" href="{{ prepageid == 0 ? "#" : "/admin/index?page={prepageid}"}}">上一页<i class="arrow-prev fas fa-long-arrow-alt-left"></i></a>
+				  <a class="nav-link-next nav-item nav-link rounded-right" href="{{ nextpageid == 0 ? "#" : "/admin/index?page={nextpageid}"}}">下一页<i class="arrow-next fas fa-long-arrow-alt-right"></i></a>
+				</nav>
+				
+		    </div>
+	    </section>
+	    
+	    <footer class="footer text-center py-2 theme-bg-dark">
+		   
+	        <small class="copyright">Copyright &copy; 2020.Company name All rights reserved.</small>
+		   
+	    </footer>
+    
+    </div><!--//main-wrapper-->
+    
+    
+    
+       
+    <!-- Javascript -->          
+    <script src="/assets/plugins/jquery-3.3.1.min.js"></script>
+    <script src="/assets/plugins/popper.min.js"></script> 
+    <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script> 
+    
+    
+
+</body>
+</html> 
+

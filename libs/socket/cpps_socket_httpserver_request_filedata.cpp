@@ -32,5 +32,9 @@ namespace cpps
 	{
 		return value_value;
 	}
+	cpps_integer cpps_socket_httpserver_request_filedata::getfilesize()
+	{
+		return (cpps_integer)value_value.size();
+	}
 
 }

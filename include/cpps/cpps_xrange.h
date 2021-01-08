@@ -8,7 +8,7 @@
 //@Date			:	2015/12/24 (yy/mm/dd)
 //@Module		:	CPPS_ARRAY
 //@Description	:	vector×¢²áÀà
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

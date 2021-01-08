@@ -67,8 +67,8 @@
         $.get("{{blog.content}}", function(markdown) {
             var testView = editormd.markdownToHTML("test-markdown-view", {
                 markdown : markdown, // Also, you can dynamic set Markdown text
-                htmlDecode : true,  // Enable / disable HTML tag encode.
-                htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+                //htmlDecode : true,  // Enable / disable HTML tag encode.
+                //htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
             });
         });
     });

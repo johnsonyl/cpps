@@ -8,7 +8,7 @@
 //@Date			:	2016/11/6 (yy/mm/dd)
 //@Module		:	CPPS_GC
 //@Description	:	À¬»ø»ØÊÕ(³õ¼¶£©
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 namespace cpps
 {

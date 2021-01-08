@@ -8,7 +8,7 @@
 //@Date			:	2015/11/25 (yy/mm/dd)
 //@Module		:	CPPS_CONVERTER
 //@Description	:	Cpps转C++ 或 C++转Cpps
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 
@@ -279,6 +279,7 @@ namespace cpps
 			return ret;
 		}
 	};
+
 	template<>
 	struct cpps_cpp_to_cpps_converter < cpps_value >
 	{
@@ -297,6 +298,26 @@ namespace cpps
 		}
 	};
 
+	template<>
+	struct cpps_cpp_to_cpps_converter < cpps::mulitreturn >
+	{
+		static bool match(C* c, const cpps::mulitreturn& value)
+		{
+			//检测是否支持
+			return true;
+		}
+		static cpps_value apply(C* c, const cpps::mulitreturn& value)
+		{
+			cpps_value ret;
+			cpps_vector* vct = NULL;
+			ret = newclass(c, &vct);
+			for (auto obj : value.mulitreturn_list) {
+				vct->push_back(obj.value);
+			}
+			ret.tt = CPPS_TMULTIRETURN;
+			return ret;
+		}
+	};
 	template<>
 	struct cpps_cpp_to_cpps_converter<void>
 	{

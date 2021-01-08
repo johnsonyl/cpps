@@ -16,9 +16,11 @@
 //controllers
 #include <src/controllers/controller.cpp>
 #include <src/controllers/homecontroller.cpp>
+#include <src/controllers/admincontroller.cpp>
 
 //models
 #include <src/models/blog.cpp>
+#include <src/models/config.cpp>
 
 #include <src/webserver/webserver.cpp>
 #include <src/program.cpp>

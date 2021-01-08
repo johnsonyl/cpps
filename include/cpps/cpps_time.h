@@ -8,7 +8,7 @@
 //@Date			:	2015/12/23 (yy/mm/dd)
 //@Module		:	CPPS_TIME
 //@Description	:	Ê±¼ä²Ù×÷
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

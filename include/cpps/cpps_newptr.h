@@ -8,7 +8,7 @@
 //@Date			:	2015/11/18 (yy/mm/dd)
 //@Module		:	LIBCPPS
 //@Description	:	Cpps处理接口
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

@@ -5,17 +5,14 @@ class CBlogmanager
 
     var loadbloglist()
     {
-        var bloglist_json = io.readfile("data/bloglist.json");
-        var bloglist_json_object = json.decode(bloglist_json);
-        foreach(var blogjson : bloglist_json_object){
-            var modelblog = serializer.decode(models::blog,blogjson);
-            bloglist.push_back(modelblog);
-            bloglist_id.insert(modelblog.id,modelblog);
+        bloglist = json.decode_file("data/bloglist.json",models::blog);
+        foreach(var blog : bloglist){
+            bloglist_id.insert(blog.id,blog);
         }
     }
     var getmaxpage()
     {
-        var maxpage = (bloglist.size()-1) / globalconfig["page-count"] + 1;
+        var maxpage = (bloglist.size()-1) / globalconfig.page_count + 1;
         return maxpage;
     }
 
@@ -26,13 +23,16 @@ class CBlogmanager
 
         var ret = [];
         
-        var start = (page-1) * globalconfig["page-count"];
-        var end = start + globalconfig["page-count"];
+        var start = (page-1) * globalconfig.page_count;
+        var end = start + globalconfig.page_count;
+        var size = bloglist.size()-1;
         if(end >= bloglist.size()) end = bloglist.size();
-        for(; start < end; start++){
-            ret.push_back(bloglist[start]);   
-        }
-
+        // for(; start < end; start++){
+        //     ret.push_back(bloglist[size-start]);   //反序
+        // }
+        foreach(var i : xrange(start , end-1))
+             ret.push_back(bloglist[size-i]);   //反序
+        
         var prepageid = page-1;
         var nextpageid = page+1;
         if(prepageid <= 0) prepageid = 0;
@@ -42,6 +42,15 @@ class CBlogmanager
     var getblog(var id)
     {
         return bloglist_id[id];
+    }
+    var save()
+    {
+        json.encode_file("data/bloglist.json",bloglist);
+    }
+    var remove(var id)
+    {
+        bloglist.remove([](var item){ return item.id == id;});
+        bloglist_id.erase(id);
     }
 }
 

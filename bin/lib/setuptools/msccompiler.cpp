@@ -18,6 +18,11 @@ class mscompiler : ccompiler
 			return majorVersion + minorVersion;
 		return null;
 	}
+	var check_vcvarsall(var programfiles,var vsver){
+		var path = "{programfiles}/Microsoft Visual Studio/{vsver}/Community/VC/Auxiliary/Build/vcvarsall.bat";
+		var exists = io.file_exists(path);
+		return exists,path;
+	}
 	var find_vcvarsall(var ver)
 	{
 		var vsver = "2019";
@@ -34,10 +39,29 @@ class mscompiler : ccompiler
 			return null;
 		
 		//default installed Visual Studio path. need use cmd> cppsc -install xx -vcvarsall="path" change other path.
-		var path = "C:/Program Files (x86)/Microsoft Visual Studio/{vsver}/Community/VC/Auxiliary/Build/vcvarsall.bat";
-		var exists = io.file_exists(path);
-		if(!exists) return null;
-		return path;
+		 var ProgramFilesx86 = environ.get("ProgramFiles(x86)");
+		 var [exists,path] = check_vcvarsall(ProgramFilesx86,vsver);
+		 if(exists) return path;
+		 var ProgramFiles = environ.get("ProgramFiles");
+		var [exists,path] = check_vcvarsall(ProgramFiles,vsver);
+		if(exists) return path;
+
+		// try found vswhere.exe
+		// "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -products *
+		var vswhere = "{ProgramFilesx86}/Microsoft Visual Studio/Installer/vswhere.exe";
+		var exists = io.file_exists(vswhere);
+		if(exists){
+			var result = execmd('"{vswhere}" -latest -prerelease -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -products *');
+			result.pop_back(2); //pop \r\n
+			if(io.isdir(result)){
+				var path = "{result}/VC/Auxiliary/Build/vcvarsall.bat";
+				exists = io.file_exists(path);
+				if(exists)
+					return path;
+			}
+		}
+
+		return null;
 	}
 	var removeDuplicates(var variable){
 		var oldlist = string.split(variable,";");

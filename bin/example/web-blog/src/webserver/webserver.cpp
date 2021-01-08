@@ -3,7 +3,7 @@ var initwebserver()
 {
 	var http_option = new HttpServerOption()
 	{
-		ip = globalconfig["httpserver"]["ip"],
+		ip = globalconfig.httpserver["ip"],
 		exceptionfunc = [](var request,var errmsg)
 		{
 			println(errmsg);
@@ -31,7 +31,7 @@ var initwebserver()
 
 	socket.initmimetype(srv);
 
-	var port = globalconfig["httpserver"]["port"];
+	var port = globalconfig.httpserver["port"];
 		//开启服务
 	var ret = srv.listen(port); //配置端口
 	if(!ret)
@@ -47,4 +47,5 @@ var register_controllers()
 
 	//注册contorlloers Home default
 	srv.register_controller(Home,true);
+	srv.register_controller(Admin);
 }

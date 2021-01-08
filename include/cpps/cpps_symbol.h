@@ -7,7 +7,7 @@
 //@Date			:	2015/11/26 (yy/mm/dd)
 //@Module		:	CPPS_SYMBOL
 //@Description	:	操作符
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 #define MAXSYMBOLPRIO 9 // 不得超过16

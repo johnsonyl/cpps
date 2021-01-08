@@ -9,7 +9,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_NODE
 //@Description	:	Cpps½Úµã
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

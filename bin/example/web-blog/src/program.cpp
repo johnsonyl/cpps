@@ -1,5 +1,6 @@
 class program
 {
+	var nextsavefiletime = now() + 300;//5分钟存储一次.
     var Main()
 	{
 		//创建日志
@@ -18,7 +19,11 @@ class program
 	}
 	var LogicHandle()
 	{
-
+		if(now() > nextsavefiletime){
+			blogmanager.save();
+			saveconfig();
+			nextsavefiletime = now() + 300;
+		}
 	}
 	var Run(){
 		LogicHandle();

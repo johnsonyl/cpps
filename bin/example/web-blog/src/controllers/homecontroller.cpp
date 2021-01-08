@@ -7,7 +7,7 @@ class Home : Controller
 	var index(var request)
 	{
 		var page = request.get("page");
-		if(isnull(page) || page == "") page = "1";
+		if(isnull(page) || page == "") page = 1;
 		
 		var [prepageid,nextpageid,list] = blogmanager.getbloglist(int(page));
 

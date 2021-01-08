@@ -16,6 +16,8 @@
 #include <clocale>
 #endif
 
+#include "ConvertUTF.h"
+
 /* This header provides common string manipulation support, such as UTF-8,
  * portable conversion from/to string...
  *
@@ -49,44 +51,16 @@ static inline JSONCPP_STRING codePointToUTF8(unsigned int cp) {
   else if (cp <= 0xFFFF) {
 	  if ((cp >= 0x4E00 && cp <= 0x9FA5) || (cp >= 0xF900 && cp <= 0xFA2D) || cp == 0x3002 || cp == 0xFF1F || cp == 0xFF01 || cp == 0xFF0C || cp == 0x3001 || cp == 0xFF1B || cp == 0xFF1A || cp == 0x300C || cp == 0x300D || cp == 0x300E || cp == 0x300F || cp == 0x2018 || cp == 0x2019 || cp == 0x201C || cp == 0x201D || cp == 0xFF08 || cp == 0xFF09 || cp == 0x3014 || cp == 0x3015 || cp == 0x3010 || cp == 0x3011 || cp == 0x2014 || cp == 0x2026 || cp == 0x2013 || cp == 0xFF0E || cp == 0x300A || cp == 0x300B || cp == 0x3008 || cp == 0x3009)
 	  {
-#ifdef WIN32
-		  wchar_t src[2] = { 0 };
-		  char dest[9] = { 0 };
-		  src[0] = static_cast<wchar_t>(cp);
-		/*  std::string curLocale = setlocale(LC_ALL, NULL);
-
-		  setlocale(LC_ALL, "chs");
-		  wcstombs_s(NULL, dest, 5, src, 2);
-		  result = dest;
-		  setlocale(LC_ALL, curLocale.c_str());*/
-
-          int len;
-          len = WideCharToMultiByte(CP_UTF8, 0, src, -1, NULL, 0, NULL, NULL);
-          WideCharToMultiByte(CP_UTF8, 0, src, -1, dest, len, NULL, NULL);
-          result = dest;
-
-#else
-          std::string curLocale = setlocale(LC_ALL, NULL);
-          setlocale(LC_ALL, "zh_CN.utf8");
-
-
-          char dest[9] = { 0 };
-          wchar_t src[2] = { 0 };
-          src[0] = static_cast<wchar_t>(cp);
-
-          int len = 0;
-
-          len = wcslen(src) + 1;
-
-          /*sizeof(wchar_t) = 4 */
-
-          /*这里的第三个长度参数，应为字节长度，即宽字符长度 * 4 */
-          wcstombs(dest, src, len * sizeof(wchar_t));
-
-          result = dest;
-
-          setlocale(LC_ALL, curLocale.c_str());
-#endif
+          result.resize(8);
+		  char* resultptr = (char*)(result.c_str());
+		  char* take = resultptr;
+		  bool r = llvm::ConvertCodePoint16ToUTF8((UTF16)cp, resultptr);
+		  if (r) {
+              result.resize(resultptr - take);
+          }
+          else {
+              result.clear();
+          }
 	  }
 	  else
 	  {

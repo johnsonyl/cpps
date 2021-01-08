@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <title>修改文章</title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog Template">
+    <meta name="author" content="Xiaoying Riley at 3rd Wave Media">    
+    <link rel="shortcut icon" href="/favicon.ico"> 
+    <link rel="stylesheet" href="/editormd/css/editormd.css" />
+    
+    
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="/assets/css/theme-1.css">
+    
+
+</head> 
+
+<body>
+    
+
+     {% @page(view/left.html) %}
+    <div class="">
+	    
+	    <article class="">
+		    <div class="" style="left:-100px;">
+			    <header class="container blog-post-header">
+				    <h2 class="title mb-2">文章标题:<input type="text" class="blogtitle" value=""/> <a class="save btn btn-primary">添加文章</a></h2>
+				    <h4 class="title mb-2">文章图片:<input type="text" class="blogimage" value=""/> </h4>
+			    </header>
+			    
+			    <div class="blog-post-body">
+				   
+				   <div id="test-markdown-view">
+						<!-- Server-side output Markdown text -->
+						<textarea style="display:none;"></textarea>             
+					</div>
+				</div><!--//blog-comments-section-->
+				
+		    </div><!--//container-->
+	    </article>
+	   
+	    
+	    <footer class="footer text-center py-2 theme-bg-dark">
+		   
+	        <small class="copyright">Copyright &copy; 2020.Company name All rights reserved.</small>
+		   
+	    </footer>
+    
+    </div><!--//main-wrapper-->
+    
+
+    
+       
+    <!-- Javascript -->          
+    <script src="/assets/plugins/jquery-3.3.1.min.js"></script>
+    <script src="/assets/plugins/popper.min.js"></script> 
+    <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script> 
+	<script src="/editormd/editormd.js"></script>
+	<script src="/editormd/lib/marked.min.js"></script>
+	<script src="/editormd/lib/prettify.min.js"></script>
+    <script type="text/javascript">
+     var testView = null;
+    $(function() {
+     
+        testView = editormd("test-markdown-view", {
+            width: "75%",
+            height: 1000,
+            path:"/editormd/lib/",
+            imageUpload : true,
+            imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL : "/admin/upload",
+            markdown : "", // Also, you can dynamic set Markdown text
+            htmlDecode : true,  // Enable / disable HTML tag encode.
+            htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+        });
+    });
+    $(".save").on("click",function(){
+        var oDiv = document.createElement('div');
+        oDiv.innerHTML = testView.getPreviewedHTML();
+        var text = oDiv.innerText;
+
+
+        var data = {
+            easycontent : encodeURI(text.slice(0,301)),
+            markdown : encodeURI(testView.getMarkdown()),
+            title : encodeURI($(".blogtitle").val()),
+            image : encodeURI($(".blogimage").val())
+        };
+        
+        
+        $.ajax({
+            url:"/admin/add2",
+            data: data,
+            type:"POST",
+            success:function(data){
+                if(data != "0")
+                    window.location.href="/admin/post?id="+data;
+                else
+                    alert("添加失败");
+            }
+        });
+
+    })
+	</script> 
+
+      
+    
+
+</body>
+</html> 
+

@@ -260,48 +260,26 @@ static JSONCPP_STRING toHex16Bit(unsigned int x) {
 }
 JSONCPP_STRING UTF82WCS(const char* szU8)
 {
-	JSONCPP_STRING unicodeString;
-#ifdef WIN32
-	//预转换，得到所需空间的大小;
-	int wcsLen = ::MultiByteToWideChar(CP_UTF8, NULL, szU8, static_cast<int>(strlen(szU8)), NULL, 0);
-
-	//分配空间要给'\0'留个空间，MultiByteToWideChar不会给'\0'空间
-	wchar_t* wszString = new wchar_t[wcsLen + 1];
-
-	//转换
-	::MultiByteToWideChar(CP_UTF8, NULL, szU8, static_cast<int>(strlen(szU8)), wszString, wcsLen);
-
-	//最后加上'\0'
-	wszString[wcsLen] = '\0';
-
-	unicodeString.append((const char *)wszString, wcsLen * 2);
-	unicodeString.append("\0\0", 2);
-
-	delete[] wszString;
-	wszString = NULL;
-#else
-    std::string curLocale = setlocale(LC_ALL, NULL);
-    setlocale(LC_ALL, "zh_CN.utf8");
-    int wcsLen = mbstowcs(NULL, szU8, 0) + 1;
-    if (wcsLen == 0) {
-        setlocale(LC_ALL, curLocale.c_str());
-        return unicodeString;
-    }
-
-    wchar_t* wszString = new wchar_t[wcsLen + 1];
-    int ret = mbstowcs(wszString, szU8, strlen(szU8) + 1);
-    setlocale(LC_ALL, curLocale.c_str());
-    if (ret <= 0)return unicodeString;
-
-    unicodeString.append((const char*)wszString, wcsLen * sizeof(wchar_t));
-    unicodeString.append("\0\0", 2);
+	JSONCPP_STRING ret;
 
 
-    delete[] wszString;
-    wszString = NULL;
+	size_t u8size = strlen(szU8);
+	const UTF8* Src = (const UTF8*)(szU8);
+	const UTF8* SrcEnd = Src + u8size;
 
-#endif
-	return unicodeString;
+	ret.resize(u8size * UNI_MAX_UTF8_BYTES_PER_CODE_POINT + 1);
+	UTF16* Dst = reinterpret_cast<UTF16*>(&ret[0]);
+	UTF16* DstEnd = reinterpret_cast<UTF16*>(&ret[ret.size() - 1]);
+
+
+	ConversionResult result = ConvertUTF8toUTF16(&Src, SrcEnd, &Dst, DstEnd, ConversionFlags::strictConversion);
+	if (result != conversionOK) {
+		ret.clear();
+		return ret;
+	}
+	ret.resize(reinterpret_cast<char*>(Dst) - &ret[0]);
+
+	return ret;
 }
 
 
@@ -497,7 +475,7 @@ static JSONCPP_STRING valueToQuotedStringN(const char* value, unsigned length, i
 }
 
 JSONCPP_STRING valueToQuotedString(const char* value) {
-  return valueToQuotedStringN(value, static_cast<unsigned int>(strlen(value)),encode_ascii);
+  return valueToQuotedStringN(value, static_cast<unsigned int>(strlen(value)), encode_utf8);
 }
 
 // Class Writer

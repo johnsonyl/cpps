@@ -8,7 +8,7 @@
 //@Date			:	2015/12/16 (yy/mm/dd)
 //@Module		:	CPPS_DOFUNCTION
 //@Description	:	C++调用Cpps函数处理
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

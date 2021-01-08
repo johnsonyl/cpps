@@ -8,7 +8,7 @@
 //@Date			:	2020/12/5 (yy/mm/dd)
 //@Module		:	CPPS_ASYNC_OBJECT
 //@Description	:	协程对象
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 namespace cpps
 {

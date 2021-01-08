@@ -16,6 +16,10 @@
 #define CR_CONN_HOST_ERROR 2003
 #endif
 
+#ifndef IS_LONGDATA
+#define IS_LONGDATA(t) ((t) >= MYSQL_TYPE_TINY_BLOB && (t) <= MYSQL_TYPE_STRING)
+#endif
+
 namespace cpps {
 
 	#define BINDDATA_SIZE 1 * 1024 * 1024 

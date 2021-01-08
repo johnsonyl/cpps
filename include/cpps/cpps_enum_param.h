@@ -8,7 +8,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_ENUM_PARAM
 //@Description	:	ºê²ÎÊýÆ´½Ó
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 #define CPPS_PP_ENUM_PARAMS(c,x) CPPS_PP_CAT(CPPS_PP_ENUM_PARAMS_,c)(x)

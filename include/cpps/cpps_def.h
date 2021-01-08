@@ -8,7 +8,7 @@
 //@Date			:	2015/11/24 (yy/mm/dd)
 //@Module		:	CPPS_DEF
 //@Description	:	∫Í∂®“Â
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 #if defined _WIN32

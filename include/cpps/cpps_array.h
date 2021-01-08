@@ -8,7 +8,7 @@
 //@Date			:	2015/12/24 (yy/mm/dd)
 //@Module		:	CPPS_ARRAY
 //@Description	:	vector×¢²áÀà
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 
@@ -39,6 +39,8 @@ namespace cpps
 		cpps_integer						size();
 		void								resize(cpps_integer s);
 		cpps_value							where(C* c, object o);
+		void								remove(C* c, object o);
+		cpps_value							reverse(C* c);
 		cpps_value							select(C* c, object o);
 		cpps_std_vector&							realvector();
 	private:

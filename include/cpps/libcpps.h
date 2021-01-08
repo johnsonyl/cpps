@@ -8,7 +8,7 @@
 //@Date			:	2015/11/18 (yy/mm/dd)
 //@Module		:	LIBCPPS
 //@Description	:	Cpps处理接口
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 
@@ -16,7 +16,7 @@ namespace cpps
 {
 	struct					object;
 	C*						create(int argc = 0, char** argv = NULL);
-	node* 					loadbuffer(C *c, std::string &str, std::string filename);
+	node* 					loadbuffer(C *c, cpps_domain* parent_domain,std::string &str, std::string filename);
 	int32					dostring(C *c, std::string str);
 	int32					loadfile(C *c, const char* path);
 	int32					dofile(C *c, const char* path);

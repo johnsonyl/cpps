@@ -8,7 +8,7 @@
 //@Date			:	2015/11/18 (yy/mm/dd)
 //@Module		:	CPPS
 //@Description	:	Í·ÎÄ¼þ
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 
@@ -42,6 +42,7 @@
 #include "cpps_make_function.h"
 #include "cpps_module.h"
 #include "cpps_object.h"
+#include "cpps_mulitreturn.h"
 #include "cpps_converter.h"
 #include "cpps_newptr.h"
 #include "cpps_cast.h"

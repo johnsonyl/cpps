@@ -8,7 +8,7 @@
 //@Date			:	2015/11/26 (yy/mm/dd)
 //@Module		:	CPPS_CPPSFUNCTION
 //@Description	:	Cppsº¯Êý´¦Àí
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 #ifdef _WIN32
 #if defined _M_X64 || defined _M_IX86

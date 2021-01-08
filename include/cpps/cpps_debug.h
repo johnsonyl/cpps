@@ -8,7 +8,7 @@
 //@Date			:	2016/12/13 (yy/mm/dd)
 //@Module		:	CPPS_DEBUG
 //@Description	:	debugµ˜ ‘¿‡
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

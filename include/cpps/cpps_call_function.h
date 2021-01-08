@@ -8,7 +8,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_CALL_FUNCTION
 //@Description	:	µ÷ÓÃCppº¯Êý
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

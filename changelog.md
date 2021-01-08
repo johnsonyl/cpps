@@ -1,6 +1,21 @@
 *更新日志*：
 -
 
+2020-01-08 更新
+-
+
+1.支持r""字符串格式
+
+2.vector支持reverse,remove
+
+3.增加winreg模块 操作与python一致
+
+4.setuptools模块增加通过vswhere.exe找vs安装目录.
+
+5.增加cpps::mulitreturn,cpp可以提供多返回值给cpps.
+
+6.优化dofile.
+
 2020-01-05 更新
 -
 

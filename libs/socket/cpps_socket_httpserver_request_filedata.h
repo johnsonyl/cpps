@@ -14,6 +14,7 @@ namespace cpps{
 		std::string	filename();
 		std::string content_type();
 		std::string buffer();
+		cpps_integer getfilesize();
 	public:
 		std::string name_value;
 		std::string filename_value;

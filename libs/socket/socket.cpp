@@ -208,6 +208,7 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def("name", &cpps_socket_httpserver_request_filedata::name)
 		.def("filename", &cpps_socket_httpserver_request_filedata::filename)
 		.def("content_type", &cpps_socket_httpserver_request_filedata::content_type)
+		.def("getfilesize", &cpps_socket_httpserver_request_filedata::getfilesize)
 		.def("getbuffer", &cpps_socket_httpserver_request_filedata::buffer),
 		_class< cpps_socket_httpserver_session>("httpsession")
 		.def("get",&cpps_socket_httpserver_session::get)

@@ -8,7 +8,7 @@
 //@Date			:	2020/12/1 (yy/mm/dd)
 //@Module		:	CPPS_CONSOLE
 //@Description	:	¿ØÖÆÌ¨²Ù×÷
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 

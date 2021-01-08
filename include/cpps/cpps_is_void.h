@@ -8,7 +8,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_IS_VOID
 //@Description	:	检测是否为void参数
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 namespace cpps

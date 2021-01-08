@@ -326,7 +326,7 @@ namespace cpps
 				c->modulelist.insert(phmap::flat_hash_map<std::string, HMODULE>::value_type(libname, NULL));
 			std::string fileSrc;
 			cpps_load_filebuffer(fpath.c_str(), fileSrc);
-			node* o = loadbuffer(c,  fileSrc, fpath);
+			node* o = loadbuffer(c,c->_G,  fileSrc, fpath);
 			cpps_stack* stack = c->stack_alloc();
 			stack->init("main.cpp", 0, "import");
 
@@ -625,10 +625,18 @@ namespace cpps
 			cpps_base_real_shuffle(vec->realvector());
 		}
 	}
+	void cpps_base_reverse(object v)
+	{
+		if (v.isvector()) {
+			cpps_vector* vec = cpps_to_cpps_vector(v.value);
+			reverse(vec->realvector().begin(),vec->realvector().end());
+		}
+	}
 	void cpps_base_exit(cpps_integer exitcode)
 	{
 		exit((int)exitcode);
 	}
+	
 	void cpps_regbase(C *c)
 	{
 		
@@ -664,6 +672,7 @@ namespace cpps
 			def("len", cpps_base_len),
 			def("sort", cpps_base_sort),
 			def("shuffle", cpps_base_shuffle),
+			def("reverse", cpps_base_reverse),
 			def("isset", cpps_base_isset),
 			def("isdebug", cpps_base_isdebug),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),

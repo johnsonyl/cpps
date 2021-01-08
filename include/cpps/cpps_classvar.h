@@ -8,7 +8,7 @@
 //@Date			:	2015/12/10 (yy/mm/dd)
 //@Module		:	CPPS_CLASSVAR
 //@Description	:	Cpps¿‡∂‘œÛ
-//@website		:	http://cpps.wiki
+//@website		:	http://cppscript.org
 //==================================
 
 
