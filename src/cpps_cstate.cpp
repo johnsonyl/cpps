@@ -114,6 +114,8 @@ namespace cpps
 		buildoffset = false;
 		application_argc = argc;
 		application_argv = argv;
+		ordinator = NULL;
+		isterminate = false;
 		_callstack = new std::vector<cpps_stack*>();
 	}
 

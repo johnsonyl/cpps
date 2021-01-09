@@ -70,9 +70,10 @@ var render(var request,var __html,var __data)
 	}
 
 	__htmltextblock = __cache.__htmltextblock;
-	
+	setechofunc(request.append,request);
 	dostring(__cache.__headers);
 	dostring(__cache.__s);
+	setechofunc(nil);
 	request.send(200,"OK");
 }
 module socket

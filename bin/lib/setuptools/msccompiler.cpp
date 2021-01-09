@@ -60,6 +60,18 @@ class mscompiler : ccompiler
 					return path;
 			}
 		}
+		var vswhere = "{ProgramFiles}/Microsoft Visual Studio/Installer/vswhere.exe";
+		var exists = io.file_exists(vswhere);
+		if(exists){
+			var result = execmd('"{vswhere}" -latest -prerelease -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath -products *');
+			result.pop_back(2); //pop \r\n
+			if(io.isdir(result)){
+				var path = "{result}/VC/Auxiliary/Build/vcvarsall.bat";
+				exists = io.file_exists(path);
+				if(exists)
+					return path;
+			}
+		}
 
 		return null;
 	}
@@ -131,7 +143,7 @@ class mscompiler : ccompiler
 		if(vcvarsall == null ) 
 			vcvarsall = find_vcvarsall(ver);
 		if(vcvarsall == null || vcvarsall == ""){
-			log.error("Unable to find vcvarsall.bat");
+			log.error("Unable to find vcvarsall.bat, need use cmd> cppsc -install xx -vcvarsall=\"path\" change other path");
 			return false;
 		}
 		var arch = "x64";

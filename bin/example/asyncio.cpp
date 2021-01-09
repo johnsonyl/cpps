@@ -2,7 +2,7 @@
 async var test()
 {
 	println("do test function");
-	await asyncio.sleep(2000);
+	await asyncio.wait_for(asyncio.sleep(2000),100);
 	println("do test function done");
 	return "test";
 

@@ -11,10 +11,9 @@ namespace cpps
 	{
 		c->debugclose();
 	}
-	void cpps_base_printfln(object b);
 	void cpps_debug_log(C *c, object b)
 	{
-		if (c->debug) cpps_base_printfln(b);
+		if (c->debug) cpps_base_printfln(c,b);
 	}
 	void cpps_debug_breakpoint(C *c)
 	{

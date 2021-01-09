@@ -50,6 +50,7 @@ namespace cpps
 		CPPS_SYMBOL_TYPE_OR,
 		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT,
 		CPPS_SYMBOL_TYPE_TERNARYOPERATOR,
+		CPPS_SYMBOL_TYPE_GETOBJECT,
 
 	};
 	struct cpps_symbol;
@@ -61,7 +62,7 @@ namespace cpps
 		//第三位第四位表示参数个数，最后四位表示操作优先级
 		usint8		symbollimit;		
 		//操作符函数
-		//std::string symbolfuncname;		//操作函数名
+		std::string symbolfuncname;		//操作函数名
 		int8	symboltype;
 
 		usint8 getprio(){ return symbollimit & 0x0F; }
@@ -74,7 +75,7 @@ namespace cpps
 		//	symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
 		//	symbolfuncname = funcname;
 		//}
-		cpps_symbol(usint8 prio, usint8 paramnum, usint8 paramlimit, usint8 type)
+		cpps_symbol(usint8 prio, usint8 paramnum, usint8 paramlimit,std::string name, usint8 type)
 		{
 #if defined(__APPLE__) && defined(__MACH__)
 #pragma clang diagnostic push
@@ -85,6 +86,7 @@ namespace cpps
 #pragma clang diagnostic pop
 #endif
 			symboltype = type;
+			symbolfuncname = name;
 		}
 	};
 	bool			cpps_parse_isleftasso(usint8 prio);

@@ -18,6 +18,7 @@ namespace cpps {
 	void cpps_async_loop::setcstate(C* pc)
 	{
 		c = pc;
+		c->ordinator = &ordinator;
 	}
 	cpps_value	 cpps_async_loop::run_until_complete(C* c, cpps_value task)
 	{
@@ -106,7 +107,6 @@ namespace cpps {
 					else if (task->state() == cpps_async_task_running){
 						/*将这个协程的stack设置回来*/
 						c->setcallstack(&task->takestacklist);
-						
 						coroutine::resume(ordinator, task->rt);
 						
 						vtask = _tasks[i]; /*需要恢复task*/
@@ -119,18 +119,23 @@ namespace cpps {
 							_tasks[i] = nil;
 						}
 					}
-					else if (task->state() == cpps_async_task_cancelled) { /*用户取消需要特殊处理什么吗?*/
-						if(task->rt != MAXUINT64) coroutine::destroy(ordinator, task->rt);
-						task->rt = MAXUINT64;
-						_tasks[i] = nil;
-					}
-					else if (task->state() == cpps_async_task_terminate) { /*强制停止?*/
-						if(task->rt != MAXUINT64) coroutine::destroy(ordinator, task->rt);
-						task->rt = MAXUINT64;
-						_tasks[i] = nil;
-					}
 					else{
-						if (task->rt != MAXUINT64) coroutine::destroy(ordinator, task->rt);
+						//结束了但是没释放. timeout,terminate,cancel等状态.
+						if (task->rt != MAXUINT64) {
+
+							c->setcallstack(&task->takestacklist);
+							c->isterminate = true; //通知协程停止.
+							ordinator.isterminate = true;//通知协程停止.
+							coroutine::resume(ordinator, task->rt); //停止的原因是为了清理变量,否则导致GC计数永不为0 导致不能释放内存.造成内存泄露.
+
+							vtask = _tasks[i]; /*需要恢复task*/
+							task = cpps_converter<cpps_async_task*>::apply(vtask);
+
+							c->isterminate = false;//返回正常状态.
+							ordinator.isterminate = false;//返回正常状态.
+
+							coroutine::destroy(ordinator, task->rt);
+						}
 						task->rt = MAXUINT64;
 						_tasks[i] = nil; /*可以释放了.*/
 					}

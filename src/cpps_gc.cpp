@@ -2,7 +2,6 @@
 
 namespace cpps
 {
-	void cpps_base_printf(object b);
 
 	void cpps_gc_add_barrier(C*c, cpps_regvar *v)
 	{

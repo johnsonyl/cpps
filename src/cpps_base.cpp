@@ -53,7 +53,7 @@ namespace cpps
 		}
 		return nil;
 	}
-	void cpps_base_printf(object b)
+	void cpps_base_printf(C*c,object b)
 	{
 		if (type(b) == CPPS_TNUMBER)
 		{
@@ -90,7 +90,7 @@ namespace cpps
 				{
 					for (v->begin(); v->end(); v->next())
 					{
-						cpps_base_printf(v->it());
+						cpps_base_printf(c,v->it());
 						cout << ",";
 					}
 				}
@@ -104,9 +104,9 @@ namespace cpps
 				{
 					for (v->begin(); v->end(); v->next())
 					{
-						cpps_base_printf(v->key());
+						cpps_base_printf(c,v->key());
 						cout << ":";
-						cpps_base_printf(v->it());
+						cpps_base_printf(c,v->it());
 						cout << ",";
 					}
 				}
@@ -114,7 +114,13 @@ namespace cpps
 			}
 			else
 			{
-				cout << "class <" << b.value.value.domain->domainname << ">";
+				object tostring = b["tostring"];
+				if (tostring.isfunction()) {
+					cpps_base_printf(c,doclassfunction(c,b, tostring));
+				}
+				else {
+					cout << "class <" << b.value.value.domain->domainname << ">";
+				}
 			}
 		}
 		else if (type(b) == CPPS_TMULTIRETURN)
@@ -123,7 +129,7 @@ namespace cpps
 			cout << "[";
 			for (auto v : vec->realvector())
 			{
-				cpps_base_printf(v);
+				cpps_base_printf(c,v);
 				cout << ",";
 			}
 			cout << "]";
@@ -134,9 +140,9 @@ namespace cpps
 			cout << "not support  '" << type_s(b).c_str() << "' type..";
 		}
 	}
-	void cpps_base_printfln(object b)
+	void cpps_base_printfln(C*c,object b)
 	{
-		cpps_base_printf(b);
+		cpps_base_printf(c,b);
 		cout << endl;
 	}
 
@@ -636,16 +642,20 @@ namespace cpps
 	{
 		exit((int)exitcode);
 	}
-	
+	void cpps_setechofunc(C*c,object echofunc,object echoleft)
+	{
+		cpps::object::define(c, "__echofunc", echofunc);
+		cpps::object::define(c, "__echoleft", echoleft);
+	}
 	void cpps_regbase(C *c)
 	{
 		
 		cpps::_module(c)[
 			_class<C>("C_STATE"),
-			def("printf", cpps_base_printf),
-			def("print", cpps_base_printf),
-			def("printfln", cpps_base_printfln),
-			def("println", cpps_base_printfln),
+			def_inside("printf", cpps_base_printf),
+			def_inside("print", cpps_base_printf),
+			def_inside("printfln", cpps_base_printfln),
+			def_inside("println", cpps_base_printfln),
 			def_inside("dump", cpps_base_dump),
 			def("exit", cpps_base_exit),
 			def("sleep", cpps_base_sleep),
@@ -677,6 +687,7 @@ namespace cpps
 			def("isdebug", cpps_base_isdebug),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
 			def("assert", cpps_assert),
+			def_inside("setechofunc", cpps_setechofunc),
 			defvar(c,"_VERSION", CPPS_VER),
 			defvar(c,"_VERSIONNO", CPPS_VERN),
 			def_inside("loadlibrary", cpps_loadlibrary),

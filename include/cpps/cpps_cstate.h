@@ -31,6 +31,7 @@ namespace cpps
 		char		 func[64];
 		int32			l;
 	};
+	namespace coroutine {struct Ordinator;}
 	struct cpps_module_data {}; //interface 
 	struct C
 	{
@@ -81,6 +82,8 @@ namespace cpps
 		bool																		buildoffset;
 		bool																		disabled_non_def_var;
 		phmap::flat_hash_map<std::string, cpps_module_data*>						savemoduledatas;
+		coroutine::Ordinator*														ordinator;
+		bool																		isterminate;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

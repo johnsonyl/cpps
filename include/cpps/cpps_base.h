@@ -17,6 +17,8 @@ namespace cpps
 	void	cpps_regbase(C *c);
 
 	//public function
+	void cpps_base_printf(C*c,object b);
+	void cpps_base_printfln(C*c,object b);
 	bool cpps_base_ismap(cpps_value v);
 	bool cpps_base_isstring(cpps_value v);
 	bool cpps_base_isvector(cpps_value v);

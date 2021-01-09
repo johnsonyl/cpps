@@ -163,6 +163,7 @@
 #define CPPS_OTHISPARAM			63 //字符串参数
 #define CPPS_OYIELD				64 //字符串参数
 #define CPPS_ODEFVAR_HOTUPDATE  65 //子函数.
+#define CPPS_OECHO				66 //子函数.
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 

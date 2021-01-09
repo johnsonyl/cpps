@@ -14,7 +14,6 @@
 
 namespace cpps
 {
-	void cpps_base_printf(object b);
 
 	typedef phmap::flat_hash_map<cpps_value, cpps_value, cpps_value::hash> cpps_hash_map;
 

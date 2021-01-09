@@ -1,6 +1,88 @@
 *更新日志*：
 -
 
+2020-01-09 更新
+-
+
+1.增加自定义echo功能,并且httpserver的template可使用echo输出内容了.
+
+```
+
+echo "123"; //println("123"); 默认为println函数
+
+var operecho(var text)
+{
+	println(text.."oper");
+}
+
+setechofunc(operecho);
+
+echo "123"; //operecho("123"); 可自定义重写echo函数体.
+
+
+```
+
+2.调整协程超时,取消,强制中断等情况对堆栈中变量的清理工作.
+
+3.增加类重写operator功能.
+
+4.当类中含有tostring函数,既可以被print输出.
+
+5.类函数可以先定义实体.后更新实体内容(其也就热更新) ,此更新可反复执行修改内容.达到热更新内容.
+
+```
+class Vec2D
+{
+	Vec2D(){
+
+	}
+
+	var operator +=(var right){
+		x += right.x;
+		y += right.y;
+	}
+	var operator [](var key){
+		if("x" == key)
+			return x;
+		else 
+			return y;
+	}
+	var testnonfunc(var val);
+	var tostring()
+	{
+		return "x:{x},y:{y}";
+	}
+
+	var x = 0;
+	var y = 0;
+}
+
+
+var p1 = new Vec2D();
+var p2 = new Vec2D();
+
+p1.x = 100;
+p1.y = 100;
+
+p2.x = 1;
+p2.y = 1;
+
+p1 += p2;
+
+println(p1);
+
+println(p1["x"]);
+
+
+
+var Vec2D::testnonfunc(var val){
+	println(val);
+}
+
+p1.testnonfunc(100111111111111);
+```
+
+
 2020-01-08 更新
 -
 

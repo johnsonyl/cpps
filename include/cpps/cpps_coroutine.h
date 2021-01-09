@@ -26,7 +26,11 @@ using ::std::wstring;
 #include <Windows.h>
 
 #include <thread>
-#include <experimental/coroutine>
+//#if _MSVC_LANG > 201799L
+//#include <coroutine>
+//#else
+//#include <experimental/coroutine>
+//#endif
 #else
 #if defined(__APPLE__) && defined(__MACH__)
 #pragma clang diagnostic push
@@ -69,9 +73,11 @@ namespace cpps {
 			routine_t current;
 			size_t stack_size;
 			LPVOID fiber;
+			bool	isterminate;
 
 			Ordinator(size_t ss = STACK_LIMIT)
 			{
+				isterminate = false;
 				current = 0;
 				stack_size = ss;
 				fiber = ConvertThreadToFiber(nullptr);
@@ -174,15 +180,15 @@ namespace cpps {
 		
 		template<typename Function, class... _ArgTypes>
 		inline std::_Invoke_result_t<std::decay_t<Function>, std::decay_t<_ArgTypes>...>
-			wait_for(Ordinator& ordinator,Function&& func, _ArgTypes&&... _Args)
+			wait_for(Ordinator* ordinator,Function&& func, _ArgTypes&&... _Args)
 		{
 			auto future = std::async(std::launch::async, func,_Args...);
 			std::future_status status = future.wait_for(std::chrono::milliseconds(0));
 
-			while (status == std::future_status::timeout)
+			while (status == std::future_status::timeout && !ordinator->isterminate)
 			{
-				if (ordinator.current != 0)
-					yield(ordinator);
+				if (ordinator->current != 0)
+					yield(*ordinator);
 
 				status = future.wait_for(std::chrono::milliseconds(0));
 			}
@@ -217,10 +223,12 @@ namespace cpps {
 			std::list<routine_t> indexes;
 			routine_t current;
 			size_t stack_size;
+			bool	isterminate;
 			ucontext_t ctx;
 
 			inline Ordinator(size_t ss = STACK_LIMIT)
 			{
+				isterminate = false;
 				current = 0;
 				stack_size = ss;
 			}
@@ -338,15 +346,15 @@ namespace cpps {
 
 		template<typename Function, class... _ArgTypes>
 		inline typename std::result_of<Function(_ArgTypes...)>::type
-			wait_for(Ordinator& ordinator, Function&& func, _ArgTypes&&... _Args)
+			wait_for(Ordinator* ordinator, Function&& func, _ArgTypes&&... _Args)
 		{
 			auto future = std::async(std::launch::async, func,_Args...);
 			std::future_status status = future.wait_for(std::chrono::milliseconds(0));
 
-			while (status == std::future_status::timeout)
+			while (status == std::future_status::timeout && !ordinator->isterminate)
 			{
-				if (ordinator.current != 0)
-					yield(ordinator);
+				if (ordinator->current != 0)
+					yield(*ordinator);
 
 				status = future.wait_for(std::chrono::milliseconds(0));
 			}

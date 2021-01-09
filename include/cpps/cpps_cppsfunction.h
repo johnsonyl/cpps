@@ -35,6 +35,7 @@ namespace cpps
 		virtual bool	isasync();
 		virtual bool	iscppsfunc() { return true; }
 		void			rebuildfunc(node* p, node* c, usint32 count);
+
 	public:
 		usint32		varcount;
 		node		*params;

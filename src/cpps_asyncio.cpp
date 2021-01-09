@@ -70,8 +70,7 @@ namespace cpps {
 		return ret;
 	}
 	void	cpps_async_sleep(C*c,cpps_integer ms) {
-		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
-		coroutine::wait_for(loop->ordinator,std::this_thread::sleep_for<cpps_integer, std::milli>, std::chrono::milliseconds(ms));
+		coroutine::wait_for(c->ordinator,std::this_thread::sleep_for<cpps_integer, std::milli>, std::chrono::milliseconds(ms));
 	}
 
 	void cpps_regasyncio(C* c)
