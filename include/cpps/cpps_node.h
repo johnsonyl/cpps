@@ -39,6 +39,7 @@ namespace cpps
 			varlist = NULL;
 			value.integer = 0;
 			closure = false;
+			quote = false;
 		}
 		node(std::string f)
 		{
@@ -55,6 +56,7 @@ namespace cpps
 			varlist = NULL;
 			value.integer = 0;
 			closure = false;
+			quote = false;
 		}
 		node(node *n,std::string f,int32 ln)
 		{
@@ -72,6 +74,7 @@ namespace cpps
 			varlist = NULL;
 			value.integer = 0;
 			closure = false;
+			quote = false;
 		}
 		node(std::string f, int32 ln)
 		{
@@ -89,6 +92,7 @@ namespace cpps
 			varlist = NULL;
 			value.integer = 0;
 			closure = false;
+			quote = false;
 		}
 		void release()
 		{
@@ -126,6 +130,7 @@ namespace cpps
 			varlist = v->varlist;
 			value = v->value;
 			closure = v->closure;
+			quote = v->quote;
 		}
 
 		void setparent(node* p)
@@ -235,6 +240,7 @@ namespace cpps
 		cpps_node_domain* domain;
 		int32 line;
 		bool closure;
+		bool quote;
 
 		//½âÊÍ×ª»¯
 		union Value

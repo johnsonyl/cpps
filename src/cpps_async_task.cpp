@@ -25,7 +25,7 @@ namespace cpps {
 			printcallstack(errmsg, c);
 
 			p->throwerr = e;
-			p->throwerr.callstackstr += errmsg;
+			p->throwerr._callstackstr += errmsg;
 			p->runstate = cpps_async_task_thorw;
 		}
 		catch (cpps_error e)
@@ -34,7 +34,7 @@ namespace cpps {
 			printcallstack(errmsg, c);
 
 			p->throwerr = cpps_trycatch_error(e);
-			p->throwerr.callstackstr = errmsg;
+			p->throwerr._callstackstr = errmsg;
 			p->runstate = cpps_async_task_thorw;
 		}
 	}

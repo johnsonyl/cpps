@@ -35,7 +35,7 @@ enum
 
 struct cpps_error
 {
-	cpps_error(std::string f,int l,int n, const char *format, ...)
+	cpps_error(std::string f, cpps::usint32 l, cpps::int32 n, const char *format, ...)
 	{
 		char szString[4096];
 		va_list ap;
@@ -47,15 +47,19 @@ struct cpps_error
 #endif
 		va_end(ap);
 
-		erron = n;
-		file = f;
-		line = l;
+		_erron = n;
+		_file = f;
+		_line = l;
 		s = szString;
 	}
+	std::string& what() { return s; }
+	cpps::int32 error() { return _erron; }
+	cpps::usint32 line() { return this->_line; }
+	std::string& file() { return _file; }
 
-	int erron;
-	std::string file;
-	int line;
+	cpps::int32 _erron;
+	std::string _file;
+	cpps::usint32 _line;
 	std::string s;
 };
 #endif // CPPS_ERROR_CPPS_HEAD_

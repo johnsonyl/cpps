@@ -13,18 +13,18 @@ cpps_trycatch_error::cpps_trycatch_error(std::string f, int l, int n, const char
 #endif
 	va_end(ap);
 
-	erron = n;
-	file = f;
-	line = l;
-	s = szString;
+	_erron = n;
+	_file = f;
+	_line = l;
+	_s = szString;
 }
 
 cpps_trycatch_error::cpps_trycatch_error(cpps_error e)
 {
-	erron = e.erron;
-	file = e.file;
-	line = e.line;
-	s = e.s;
+	_erron = e.error();
+	_file = e.file();
+	_line = e.line();
+	_s = e.what();
 }
 
 cpps_trycatch_error::~cpps_trycatch_error()

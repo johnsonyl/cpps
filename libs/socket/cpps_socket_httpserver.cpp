@@ -308,7 +308,7 @@ namespace cpps {
 			//5.脚本异常的话...
 			std::string errmsg;
 			char errbuffer[1024];
-			sprintf(errbuffer, "error: %d : %s file:%s line:%d \nError stack information:\n", e.erron, e.s.c_str(), e.file.c_str(), e.line);
+			sprintf(errbuffer, "error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().c_str(), e.line());
 			errmsg.append(errbuffer);
 			std::vector<cpps_stack*>* stacklist = httpserver->c->getcallstack();
 			for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)

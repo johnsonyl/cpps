@@ -23,6 +23,7 @@ namespace cpps
 		context->clone(c); //克隆出所有列表
 
 		varcount = count;
+		quatoreturn = false;
 
 
 #ifdef CPPS_JIT_COMPILER
@@ -94,13 +95,17 @@ namespace cpps
 						node* var = varname->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
 						cpps_domain* leftdomain = NULL;
 						cpps_value value = cpps_calculate_expression(c, prevdomain, prevdomain, var, leftdomain);
+						if (value.tt == CPPS_TREGVAR) value = *value.value.value;
 						v->setval(value);
 					}
 				}
 				else
 				{
 					cpps_value value = (*o)[i];
-					v->setval(value);
+					if (value.tt == CPPS_TREGVAR && !varname->quote)
+						v->setval(*value.value.value);
+					else
+						v->setval(value);
 				}
 				funcdomain->regvar(c, v);
 				if (varname->offsettype == CPPS_OFFSET_TYPE_SELF)
@@ -122,8 +127,15 @@ namespace cpps
 #else
 		cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context);
 
-		if (ret)
-			*ret = funcdomain->funcRet;//return的值反馈回去
+		if (ret) {
+
+			if (funcdomain->funcRet.tt == CPPS_TREGVAR && !quatoreturn) {
+				*ret = *funcdomain->funcRet.value.value;
+			}
+			else {
+				*ret = funcdomain->funcRet;//return的值反馈回去
+			}
+		}
 #endif
 
 			/*是否闭包*/
@@ -158,4 +170,10 @@ namespace cpps
 
 		varcount = count;
 	}
+
+	void cpps_cppsfunction::setquatoreturn(bool b)
+	{
+		quatoreturn = b;
+	}
+
 }

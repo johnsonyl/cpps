@@ -34,11 +34,11 @@ namespace cpps
 		];
 		cpps::_module(c)[
 			_class<cpps_trycatch_error>("cpps_trycatch_error")
-			.def("geterrno", &cpps_trycatch_error::geterrno)
-			.def("geterrstr", &cpps_trycatch_error::geterrstr)
-			.def("getfile", &cpps_trycatch_error::getfile)
-			.def("getline", &cpps_trycatch_error::getline)
-			.def("getvalue", &cpps_trycatch_error::getvalue)
+			.def("error", &cpps_trycatch_error::error)
+			.def("what", &cpps_trycatch_error::what)
+			.def("file", &cpps_trycatch_error::file)
+			.def("line", &cpps_trycatch_error::line)
+			.def("value", &cpps_trycatch_error::value)
 			.def("callstack", &cpps_trycatch_error::callstack)
 		];
 	}

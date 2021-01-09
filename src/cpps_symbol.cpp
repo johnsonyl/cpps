@@ -513,7 +513,7 @@ namespace cpps
 
 			}
 
-			ret = *(a.value.value);
+			ret = a;
 		}
 		else if (a.tt == CPPS_TSTRINGV)
 		{
@@ -567,7 +567,7 @@ namespace cpps
 			default:
 				break;
 			}
-			_result = v;
+			_result = a;
 		}
 		else if (a.tt == CPPS_TSTRINGV)
 		{
@@ -622,7 +622,7 @@ namespace cpps
 			default:
 				break;
 			}
-			_result = v;
+			_result = a;
 		}
 		else if (a.tt == CPPS_TSTRINGV)
 		{
@@ -677,7 +677,7 @@ namespace cpps
 			default:
 				break;
 			}
-			_result = v;
+			_result = a;
 		}
 		else if (a.tt == CPPS_TSTRINGV)
 		{
@@ -731,7 +731,7 @@ namespace cpps
 			default:
 				break;
 			}
-			_result = v;
+			_result = a;
 		}
 		else if (a.tt == CPPS_TSTRINGV)
 		{
@@ -1206,16 +1206,19 @@ namespace cpps
 		}
 		case CPPS_SYMBOL_TYPE_PLUS:
 		{
+			CPPS_TO_REAL_VALUE(a);
 			cpps_plus(a, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_MINUS:
 		{
+			CPPS_TO_REAL_VALUE(a);
 			cpps_minus(a, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_NOT:
 		{
+			CPPS_TO_REAL_VALUE(a);
 			cpps_not(a, ret);
 			break;
 		}
@@ -1232,140 +1235,187 @@ namespace cpps
 		case CPPS_SYMBOL_TYPE_MUL:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_mul(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_DIVIDE:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_divide(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_QUYU:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_quyu(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_ADD:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_add(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_ADD2:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_add2(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_ADD3:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_add3(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_SUBTRACT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_subtract(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_STRCAT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_strcat(c, a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_BIGGER:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_bigger(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_BIGGEROREQUEL:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_biggerorequel(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_LESS:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_less(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_LESSOREQUEL:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_lessorequel(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_EQUEL:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_equel(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_NOTEQUEL:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(a);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_notequel(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_ASSIGNMENT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_assignment(c, a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_addandassignment( a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_subtractandassignment(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_MULANDASSIGNMENT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_mulandassignment(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(b);
 			cpps_divideandassignment(a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_AND:
 		{
 			typedef cpps::cpps_converter<bool> convert;
+
+			CPPS_TO_REAL_VALUE(a);
 			ret.tt = CPPS_TBOOLEAN;
-			ret.value.b =  convert::apply(a) && convert::apply(cpps_calculate_expression(c, domain, root, d->l[1], leftdomain));
+			ret.value.b = convert::apply(a);
+			if (!ret.value.b) break; //如果A等于false 则不需要执行B.
+
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(b);
+			ret.value.b = convert::apply(b);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_OR:
 		{
 			typedef cpps::cpps_converter<bool> convert;
+			CPPS_TO_REAL_VALUE(a);
 			ret.tt = CPPS_TBOOLEAN;
-			ret.value.b = convert::apply(a) || convert::apply(cpps_calculate_expression(c, domain, root, d->l[1], leftdomain));
+			ret.value.b = convert::apply(a);
+			if (ret.value.b) break; //如果A等于true 则不需要执行B.
+			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
+			CPPS_TO_REAL_VALUE(b);
+			ret.value.b = convert::apply(b);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_STRCATASSIGNMENT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
-			cpps_strcatassignment(c,a, b, ret);
+			CPPS_TO_REAL_VALUE(b);
+			cpps_strcatassignment(c, a, b, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_TERNARYOPERATOR:
 		{
 			typedef cpps::cpps_converter<bool> convert;
+			CPPS_TO_REAL_VALUE(a);
 			ret = convert::apply(a) ? cpps_calculate_expression(c, domain, root, d->l[1], leftdomain) : cpps_calculate_expression(c, domain, root, d->l[2], leftdomain);
 			break;
 		}

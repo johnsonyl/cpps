@@ -35,11 +35,12 @@ namespace cpps
 		virtual bool	isasync();
 		virtual bool	iscppsfunc() { return true; }
 		void			rebuildfunc(node* p, node* c, usint32 count);
-
+		void			setquatoreturn(bool b);
 	public:
 		usint32		varcount;
 		node		*params;
 		node		*context;
+		bool		quatoreturn;
 		cpps_domain	*domain; //在每个函数中临时创建一个域。 提供临时变量
 #ifdef CPPS_JIT_COMPILER
 		char*		jitbuffer; //JIT缓存

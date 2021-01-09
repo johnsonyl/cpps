@@ -202,6 +202,9 @@ enum
 
 };
 
+#define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREGVAR) left = *left.value.value;
+
+
 #ifndef _WIN32
 typedef long long __int64;
 #endif
@@ -215,12 +218,12 @@ typedef long long __int64;
 
 #define cpps_catch } catch (cpps_error e)\
 {\
-	printf("error: %d : %s file:%s line:%d \n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+	printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
 	\
 }\
 catch(cpps_trycatch_error e)\
 {\
-	printf("error: %d : %s file:%s line:%d \n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+	printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
 }\
 	catch (const char* s)\
 {\
@@ -228,7 +231,7 @@ catch(cpps_trycatch_error e)\
 }
 #define _CPPS_CATCH } catch (cpps_error e)\
 {\
-	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
+	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
@@ -239,8 +242,8 @@ for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != 
 }\
 catch(cpps_trycatch_error e)\
 {\
-	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.erron, e.s.c_str(), e.file.c_str(), e.line); \
-	printf("%s\n",e.callstackstr.c_str());\
+	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
+	printf("%s\n",e.callstack().c_str());\
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\

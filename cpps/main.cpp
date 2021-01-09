@@ -11,7 +11,6 @@ namespace cpps { std::string cpps_io_getfilepath(std::string str);std::string cp
 
 int32 main(int argc,char **argv)
 {
-
 #ifdef _WIN32
 	HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
 	HWND  hwnd = GetConsoleWindow();
