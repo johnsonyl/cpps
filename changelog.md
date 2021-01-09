@@ -491,8 +491,9 @@ println(e);
 ```
 
 2020-12-15 更新2
+-
 
-1. socket模块httpserver的 request增加 get post接口可以分别取get post对应变量
+1.socket模块httpserver的 request增加 get post接口可以分别取get post对应变量
 
 2.增加serializer序列化模块,可以将类对象序列化成vector或者map. 也可以反序列化回对象.
 
@@ -513,6 +514,7 @@ println(a2.b);
 ```
 
 2020-12-15 更新
+-
 
 1.增加smtp模块,可以发邮件了.
 
@@ -618,9 +620,6 @@ if(element)
 {
     println(element.text());
 }
-```
-
-```
 ```
 
 2020-12-14 更新
