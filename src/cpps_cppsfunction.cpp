@@ -90,7 +90,7 @@ namespace cpps
 
 				if (i >= o->size())
 				{
-					if (i < varname->l.size())
+					if (varname->l.size() > 0)
 					{
 						node* var = varname->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
 						cpps_domain* leftdomain = NULL;

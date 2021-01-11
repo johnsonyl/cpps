@@ -1,0 +1,264 @@
+//                   Building cpps libs tool for Unix.v1.0.0
+// 
+// MIT License
+// 
+// Copyright (c) 2020 johnsonyl
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//
+//
+// --------------------------------------------------------------------------- //
+//                               BUILD CPPS LIBS                               //
+//                          bugreport:88481106@qq.com                          //
+// --------------------------------------------------------------------------- //
+var RED = 1;
+var GREEN = 2;
+var YELLOW = 3;
+var BLUE = 4;
+var PURPLE = 5;
+var CYAN = 6;
+
+
+//not support windows.
+if(sys.os == "windows"){
+
+	println_color("Only Unix OS build libs, Windows Please Use Visual Studio Build.",RED);
+	exit(0);
+} 
+
+var execute(var cmd)
+{
+	return execmd(cmd);
+}
+var checkdepsfile(var filepath)
+{
+	print("-- CHECK Deps for {filepath} - ");
+	var result = io.file_exists("deps/{filepath}")
+	if(result == false)
+	{
+		println_color("not found",RED);
+		println_color("deps/{filepath} not found.",RED);
+		exit(0);
+	}
+	else
+		println_color("found",GREEN);
+}
+var checkdepsdir(var filepath)
+{
+	print("-- CHECK DepsDir for {filepath} - ");
+	var depsdir = "{io.getrealpath()}../deps/{filepath}";
+	depsdir = io.normpath(depsdir);
+	depsdir.replace("\\","/");
+	depsdir.pop_back();
+	var result = io.isdir(depsdir);
+	if(result == false)
+	{
+		println_color("not found",RED);
+		println_color("{io.getrealpath()}deps/{filepath} not found.",RED);
+		exit(0);
+	}
+	else
+		println_color("found",GREEN);
+}
+var uncompress(var dir,var filepath)
+{
+	print("-- uncompress Deps for {filepath} - ");
+	var a = execute("tar -zxvf {dir}/{filepath}");
+	println_color("ok",GREEN);
+}
+print("-- CHECK for tar - ");
+var result = execute("which tar");
+if(result.find("/usr/bin/tar") == string.npos)
+{
+	println_color("not found",RED);
+	println_color("You OS not install tar command. Please install tar command and try again.",RED);
+	exit(0);
+}
+else
+	println_color("found",GREEN);
+
+print("-- CHECK for mysql-devel - ");
+if(sys.os == "macos"){
+	var result = io.file_exists("/usr/local/opt/mysql/include/mysql/mysql.h")
+	if(result == false)
+	{
+		println_color("not found",RED);
+		println_color("mysql-devel not found.",RED);
+		println_color("please use 'brew install mysql-connector-c'.");
+		exit(0);
+	}
+	else
+		println_color("found",GREEN);
+}
+else if(sys.os == "linux")
+{
+	var result = io.file_exists("/usr/include/mysql/mysql.h")
+	if(result == false)
+	{
+		println_color("not found",RED);
+		println_color("mysql-devel not found.",RED);
+		println_color("install mysql-devel on linux use look like 'yum -y install mysql-devel' or 'apt-get install libmysqlclient-dev'");
+		exit(0);
+	}
+	else
+		println_color("found",GREEN);
+}
+
+if(sys.os == "macos")
+{
+	print("-- CHECK for curl - ");
+	var result = io.file_exists("/usr/local/opt/curl/include/curl/curl.h")
+	if(result == false)
+	{
+		println_color("not found",RED);
+		println_color("curl not found. please use brew install curl",RED);
+		exit(0);
+	}
+	else
+		println_color("found",GREEN);
+}
+
+//CHECK curl-7.74.0.tar.gz
+checkdepsfile("curl-7.74.0.tar.gz");
+checkdepsfile("libuuid-1.0.3.tar.gz");
+checkdepsfile("libuv-1.40.0.tar.gz");
+checkdepsfile("mariadb-connector-c-3.1.11-src.tar.gz");
+checkdepsfile("openssl-1.1.1h.tar.gz");
+checkdepsfile("zlib-1.2.11.tar.gz");
+checkdepsfile("hiredis-1.0.0.tar.gz");
+
+var depspath = "{io.getrealpath()}../deps";
+depspath = io.normpath(depspath);
+depspath.replace("\\","/");
+depspath.pop_back();
+println("-- Entered the directory: {depspath}");
+io.chdir(depspath);
+uncompress(depspath,"curl-7.74.0.tar.gz");
+uncompress(depspath,"libuuid-1.0.3.tar.gz");
+if(sys.os != "macos")
+	uncompress(depspath,"libuv-1.40.0.tar.gz");
+uncompress(depspath,"mariadb-connector-c-3.1.11-src.tar.gz");
+uncompress(depspath,"openssl-1.1.1h.tar.gz");
+uncompress(depspath,"zlib-1.2.11.tar.gz");
+uncompress(depspath,"hiredis-1.0.0.tar.gz");
+
+
+if(sys.os != "macos")
+	checkdepsdir("curl-7.74.0");
+checkdepsdir("hiredis-1.0.0");
+checkdepsdir("libuuid-1.0.3");
+checkdepsdir("libuv-1.40.0");
+checkdepsdir("mariadb-connector-c-3.1.11-src");
+checkdepsdir("openssl-1.1.1h");
+checkdepsdir("zlib-1.2.11");
+
+//build zlib-1.2.11
+var buildname = "zlib-1.2.11";
+var buildpath = "{depspath}/{buildname}";
+println("-- Entered the directory: {buildpath}");
+println("-- Building for : {buildname}");
+io.chdir(buildpath);
+system("./configure");
+system("make");
+system("sudo make install");
+
+
+//build openssl-1.1.1h
+var buildname = "openssl-1.1.1h";
+var buildpath = "{depspath}/{buildname}";
+println("-- Entered the directory: {buildpath}");
+println("-- Building for : {buildname}");
+io.chdir(buildpath);
+system("./config");
+system("make");
+system("sudo make install");
+
+//build curl-7.74.0
+if(sys.os != "macos"){
+	var buildname = "curl-7.74.0";
+	var buildpath = "{depspath}/{buildname}";
+	println("-- Entered the directory: {buildpath}");
+	println("-- Building for : {buildname}");
+	io.chdir(buildpath);
+	system("./configure --disable-static --enable-shared --with-ssl --with-zlib --enable-ipv6 –disable-ldap --disable-ldaps");
+	system("make");
+	system("sudo make install");
+}
+
+
+//build hiredis-1.0.0
+var buildname = "hiredis-1.0.0";
+var buildpath = "{depspath}/{buildname}";
+println("-- Entered the directory: {buildpath}");
+println("-- Building for : {buildname}");
+io.chdir(buildpath);
+system("cmake .");
+system("make");
+system("sudo make install");
+
+//build libuuid-1.0.3
+var buildname = "libuuid-1.0.3";
+var buildpath = "{depspath}/{buildname}";
+println("-- Entered the directory: {buildpath}");
+println("-- Building for : {buildname}");
+io.chdir(buildpath);
+system("./configure");
+system("make");
+system("sudo make install");
+
+//build libuv-1.40.0
+var buildname = "libuv-1.40.0";
+var buildpath = "{depspath}/{buildname}";
+println("-- Entered the directory: {buildpath}");
+println("-- Building for : {buildname}");
+io.chdir(buildpath);
+system("cmake .");
+system("make");
+system("sudo make install");
+
+//build mariadb-connector-c-3.1.11-src
+var buildname = "mariadb-connector-c-3.1.11-src";
+var buildpath = "{depspath}/{buildname}";
+println("-- Entered the directory: {buildpath}");
+println("-- Building for : {buildname}");
+io.chdir(buildpath);
+system("cmake .");
+system("make");
+system("sudo make install");
+
+println("-- Leaved the directory: {depspath}");
+io.chdir(io.getrealpath());
+
+
+println_color("-- Installed deps is successful.",CYAN);
+
+var libspath = "{io.getrealpath()}../libs";
+libspath = io.normpath(libspath);
+libspath.replace("\\","/");
+libspath.pop_back();
+println("-- Entered the directory: {libspath}");
+io.chdir(libspath);
+
+system("cmake .");
+system("make");
+
+println("-- Leaved the directory: {libspath}");
+io.chdir(io.getrealpath());
+
+println_color("-- Build libs is successful.",CYAN);
