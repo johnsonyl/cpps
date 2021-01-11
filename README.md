@@ -23,6 +23,10 @@ cmake .
 make
 
 make install
+
+;根据需要是否编译扩展模块.
+cpps buildlibs
+
 ```
 *Windows*
 -
@@ -31,7 +35,16 @@ git clone https://github.com/johnsonyl/cpps.git
 
 cmake .
 
-使用Visual Studio打开cpps.sln进行编译即可。
+使用Visual Studio打开libcpps.sln进行编译即可。
+
+cd libs
+
+;根据需要是否编译扩展模块.
+
+cmake .
+
+使用Visual Studio打开cppslibs.sln进行编译即可。
+
 ```
 
 是不是非常简单？
