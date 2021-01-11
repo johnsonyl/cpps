@@ -93,13 +93,13 @@ if(result.find("/usr/bin/tar") == string.npos)
 else
 	println_color("found",GREEN);
 
-print("-- CHECK for mysql-devel - ");
 if(sys.os == "macos"){
+	print("-- CHECK for mysql-connector-c - ");
 	var result = io.file_exists("/usr/local/opt/mysql/include/mysql/mysql.h")
 	if(result == false)
 	{
 		println_color("not found",RED);
-		println_color("mysql-devel not found.",RED);
+		println_color("mysql-connector-c not found.",RED);
 		println_color("please use 'brew install mysql-connector-c'.",RED);
 		exit(0);
 	}
@@ -108,6 +108,7 @@ if(sys.os == "macos"){
 }
 else if(sys.os == "linux")
 {
+	print("-- CHECK for mysql-devel - ");
 	var result = io.file_exists("/usr/include/mysql/mysql.h")
 	if(result == false)
 	{
