@@ -34,6 +34,24 @@ namespace cpps
 		sourcestate = src;
 	}
 
+	void cpps_regvar::cleanup()
+	{
+		value.tt = CPPS_TNIL;
+	}
+
+	void cpps_regvar::clone(cpps_regvar *right)
+	{
+		value = right->value;
+		varName = right->varName;
+		nconst = right->nconst;
+		offset = right->offset;
+		offsettype = right->offsettype;
+		closeure = right->closeure;
+		closeureusecount = right->closeureusecount;
+		stackdomain = right->stackdomain;
+		sourcestate= false;
+	}
+
 	cpps_regvar::cpps_regvar()
 	{
 		nconst = 0;

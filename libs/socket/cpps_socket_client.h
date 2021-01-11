@@ -5,11 +5,7 @@
 #include <cpps/cpps.h>
 #include <string>
 #include <unordered_map>
-#include <event2/event.h>
-#include <event2/bufferevent.h>
-#include <event2/listener.h>
-#include <event2/thread.h>
-#include <event2/buffer.h>
+#include <uv.h>
 
 namespace cpps {
 
@@ -37,19 +33,21 @@ namespace cpps {
 		cpps_socket_client*						setoption( cpps::object opt);
 		bool									connect(cpps::C* cstate, std::string ip, cpps::usint16 port);
 		virtual	void							run();
-		virtual void							close();
+		void									close();
 		virtual void							closesocket();
 		bool									isconnect();
+		void									closed();
 
 	public:
-		virtual void							onReadCallback(cpps_socket* sock, struct bufferevent* bv);
-		virtual void							onWriteCallback(cpps_socket* sock, struct bufferevent* bv);
-		virtual void							onEventCallback(cpps_socket* sock, short e);
+		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
+		static  void							onClsoeCallback(uv_handle_t* handle);
+		static  void							on_connect(uv_connect_t* req, int status);
 	public:
 
 		cpps::usint16							dest_port;
 		std::string								dest_ip;
-		struct event_base*						ev_base;
+		uv_loop_t*								uv_loop;
+		uv_connect_t*							uv_connect;
 		cpps_socket_client_option				client_option;
 		cpps::C*								c;
 		bool									client_connection;

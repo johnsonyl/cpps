@@ -9,7 +9,7 @@ namespace cpps{
 	{
 	public:
 		cpps_socket_httpserver_cachefile();
-		virtual ~cpps_socket_httpserver_cachefile();
+		~cpps_socket_httpserver_cachefile();
 		
 		void					setfilepath(std::string& path);
 		std::string&			getfilepath();

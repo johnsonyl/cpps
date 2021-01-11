@@ -147,6 +147,7 @@ namespace cpps
 					v->setvarname(_domain);
 					v->setval(cpps_value(temp_domain)); //域列表会copy进去
 					domain->regvar(NULL,v); //将自己注册成_G..
+					v->setsource(true);
 				}
 				domain = v->getval().value.domain;
 			}

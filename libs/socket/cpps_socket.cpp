@@ -5,103 +5,131 @@ namespace cpps {
 	cpps_socket::cpps_socket()
 	{
 		socket_event_callback = NULL;
-		evsocket = 0;
-		evbufferevent = NULL;
-		socket_evbuffer = NULL;
+		uv_tcp = NULL;
 	}
 
 	cpps_socket::~cpps_socket()
 	{
-		if (socket_evbuffer)
-		{
-			evbuffer_free(socket_evbuffer);
-		}
-		if (evbufferevent != NULL)
-		{
-			bufferevent_free(evbufferevent);
-			evbufferevent = NULL;
-			evsocket = 0;
-		}
 		socket_event_callback = NULL;
 	}
 
-	bool cpps_socket::create(event_base* evbase, evutil_socket_t nFd /*= 0*/)
+	bool cpps_socket::create( uv_tcp_t* nFd )
 	{
-		if (nFd == 0) evsocket = -1;
-		else evsocket = nFd;
-
-		evbufferevent = bufferevent_socket_new(evbase, evsocket, BEV_OPT_CLOSE_ON_FREE | BEV_OPT_THREADSAFE);
-
-		if (evbufferevent == NULL)
-		{
-			int err = EVUTIL_SOCKET_ERROR();
-			std::string err_str = evutil_socket_error_to_string(err);
-			return false;
-		}
-
-		if (nFd == 0)
-			evsocket = bufferevent_getfd(evbufferevent);
-
-		socket_evbuffer = evbuffer_new();
-
-		bufferevent_setcb(evbufferevent, &cpps_socket::on_read_cb, &cpps_socket::on_write_cb, &cpps_socket::on_event_cb, this);
-		bufferevent_enable(evbufferevent, EV_READ | EV_WRITE | EV_PERSIST);
-
-		int nOptVal = 1;
-		int nOptLen = sizeof(int);
-		setsockopt(evsocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&nOptVal, nOptLen);
-
-		nOptVal = 1024 * 1024;
-		nOptLen = sizeof(int);
-		setsockopt(evsocket, SOL_SOCKET, SO_SNDBUF, (const char*)&nOptVal, nOptLen);
-		setsockopt(evsocket, SOL_SOCKET, SO_RCVBUF, (const char*)&nOptVal, nOptLen);
-
+		uv_tcp = nFd;
+		
 		return true;
 	}
-
+	bool cpps_socket::read_start()
+	{
+		int err = uv_read_start((uv_stream_t*)uv_tcp, &cpps_socket::on_alloc_cb, cpps_socket::on_read_cb);
+		if (err) return false;
+		return true;
+	}
 	void cpps_socket::set_event_callback(cpps_socket_event_callback* cb)
 	{
 		socket_event_callback = cb;
 	}
 
-	void cpps_socket::close()
+	void cpps_socket::close(std::string msg, uv_close_cb close_cb)
 	{
-		if (evbufferevent != NULL)
-		{
-			bufferevent_free(evbufferevent);
-			evbufferevent = NULL;
-			evsocket = 0;
-		}
-		if (socket_evbuffer)
-		{
-			evbuffer_free(socket_evbuffer);
-			socket_evbuffer = NULL;
-		}
+		if (uv_tcp == NULL) return;
+
+		closemsg = msg;
+		if(uv_tcp)uv_close((uv_handle_t*)uv_tcp, close_cb);
+		uv_tcp = NULL;
 	}
+	typedef struct {
+		uv_write_t req;
+		uv_buf_t buf;
+	} write_req_t;
 
 	void cpps_socket::send(cpps::Buffer* buffer)
 	{
-		bufferevent_write(evbufferevent, buffer->getbuffer(), buffer->length());
+
+		write_req_t* req = (write_req_t*)malloc(sizeof(write_req_t));
+
+		req->buf = uv_buf_init((char*)malloc((size_t)buffer->length()), (usint32)buffer->length());
+		req->req.data = req->buf.base;
+		memcpy(req->buf.base, buffer->getbuffer(), buffer->length());
+		int err = uv_write(&req->req,(uv_stream_t*) uv_tcp, &req->buf, 1, on_write_cb);
+		if (err)
+		{
+			fprintf(stderr, "Write error %s\n", uv_strerror(err));
+		}
+
 	}
 
-	void cpps_socket::on_read_cb(struct bufferevent* bv, void* ptr)
+	void cpps_socket::sends(std::string& buffer)
 	{
-		cpps_socket* sock = (cpps_socket*)ptr;
-		if (sock == NULL) return;
-		if (sock->socket_event_callback) sock->socket_event_callback->onReadCallback(sock,bv);
+		write_req_t* req = (write_req_t*)malloc(sizeof(write_req_t));
+
+		req->buf = uv_buf_init((char*)malloc((size_t)buffer.size()), (usint32)buffer.size());
+		req->req.data = req->buf.base;
+		memcpy(req->buf.base, buffer.data(), buffer.size());
+		int err = uv_write(&req->req, (uv_stream_t*)uv_tcp, &req->buf, 1, on_write_cb);
+		if (err)
+		{
+			fprintf(stderr, "Write error %s\n", uv_strerror(err));
+		}
 	}
 
-	void cpps_socket::on_write_cb(struct bufferevent* bv, void* ptr)
+	void cpps_socket::readbuffer(const uv_buf_t* buf, ssize_t nread)
 	{
-		cpps_socket* sock = (cpps_socket*)ptr;
-		if (sock == NULL) return;
-		if (sock->socket_event_callback) sock->socket_event_callback->onWriteCallback(sock, bv);
+		buffer.append(buf->base, nread);
 	}
 
-	void cpps_socket::on_event_cb(struct bufferevent* bv, short e, void* ptr)
+	size_t cpps_socket::get_buffer_length()
 	{
-		cpps_socket* sock = (cpps_socket*)ptr;
-		if (sock == NULL) return;
-		if (sock->socket_event_callback) sock->socket_event_callback->onEventCallback(sock, e);
+		return buffer.size();
 	}
+
+	void cpps_socket::buffer_remove(char* out_buffer, size_t size)
+	{
+		if (buffer.size() < size) abort();
+
+		memcpy(out_buffer, buffer.data(), size);
+		if (size >= buffer.size()) {
+			buffer.clear();
+		}
+		else {
+			memmove((void*)buffer.data(), buffer.data() + size, buffer.size() - size);
+			buffer.resize(buffer.size() - size);
+		}
+	}
+
+	void cpps_socket::buffer_copyout(char* out_buffer, size_t size)
+	{
+		if (buffer.size() < size) abort();
+		memcpy(out_buffer, buffer.data(), size);
+	}
+
+	void cpps_socket::on_read_cb(uv_stream_t* client, ssize_t nread, const uv_buf_t* buf)
+	{
+		cpps_socket* sock = (cpps_socket*)client->data;
+		if (sock == NULL) return;
+		if (sock->socket_event_callback) sock->socket_event_callback->onReadCallback(sock, nread, buf);
+		free(buf->base);
+	}
+
+	
+
+	void cpps_socket::on_write_cb(uv_write_t* req, int status)
+	{
+		if (status) {
+			fprintf(stderr, "Write error %s\n", uv_strerror(status));
+		}
+		write_req_t* wr;
+
+		/* Free the read/write buffer and the request */
+		wr = (write_req_t*)req;
+		free(wr->buf.base);
+		free(wr);
+
+	}
+
+	void cpps_socket::on_alloc_cb(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf)
+	{
+		*buf = uv_buf_init((char*)malloc(suggested_size),(usint32) suggested_size);
+	}
+
 }

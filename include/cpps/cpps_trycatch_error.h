@@ -1,13 +1,13 @@
 #pragma once
 
-class cpps_trycatch_error
+struct cpps_trycatch_error
 {
 public:
 	cpps_trycatch_error() { _erron = 0; _line = 0; }
 	cpps_trycatch_error(std::string f, int l, int n, const char *format, ...);
-	cpps_trycatch_error(cpps_error e);
-	~cpps_trycatch_error();
+	virtual ~cpps_trycatch_error();
 
+	void					attach(cpps_error e);
 	cpps::cpps_value		value() { return _value; }
 	int						error() { return _erron; }
 	std::string				file() { return _file; }

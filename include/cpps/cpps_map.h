@@ -57,6 +57,7 @@ namespace cpps
 	{
 	public:
 		cpps_map_node(){}
+		virtual~cpps_map_node(){}
 		cpps_value first() {
 			return _first;
 		}

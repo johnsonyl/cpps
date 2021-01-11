@@ -17,6 +17,7 @@ namespace cpps
 
 	struct cpps_io_stat 
 	{
+		virtual ~cpps_io_stat(){}
 		cpps_integer dev() { return statinfo.st_dev; }
 		cpps_integer ino() { return statinfo.st_ino; }
 		cpps_integer mode() { return statinfo.st_mode; }
@@ -45,7 +46,7 @@ namespace cpps
 	struct Buffer
 	{
 		Buffer();
-		~Buffer();
+		virtual ~Buffer();
 		void			read(Buffer *out, cpps_integer len);
 		Buffer			*write(Buffer *buf, cpps_integer len);
 		char *			_read(char *out, cpps_integer len);

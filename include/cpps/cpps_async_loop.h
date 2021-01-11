@@ -15,7 +15,7 @@ namespace cpps
 	struct cpps_async_loop
 	{
 		cpps_async_loop();
-		~cpps_async_loop();
+		virtual ~cpps_async_loop();
 
 		void											setcstate(C* pc);
 		void											loop(C* c, cpps_async_task* roottask);

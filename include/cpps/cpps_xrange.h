@@ -17,6 +17,7 @@ namespace cpps
 
 	struct cpps_range
 	{
+		virtual ~cpps_range() {}
 	public:
 		cpps_integer  begin;
 		cpps_integer  end;

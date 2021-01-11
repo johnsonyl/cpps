@@ -6,48 +6,23 @@
 namespace cpps {
 	cpps_socket_server::cpps_socket_server()
 	{
-		ev_base = NULL;
+		
 		inc_socket_index = 1;
-		ev_listener = NULL;
-		ev_socket = 0;
 		c = NULL;
 		sever_running = false;
-
-
-		struct event_config* cfg = event_config_new();
-
-#ifdef _WIN32
-		evthread_use_windows_threads();
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_STARTUP_IOCP);
-		//根据CPU实际数量配置libEvent的CPU数
-		SYSTEM_INFO si;
-		GetSystemInfo(&si);
-		event_config_set_num_cpus_hint(cfg, si.dwNumberOfProcessors);
-#else
-
-		if (event_config_require_features(cfg, EV_FEATURE_ET) == -1)
-		{
-			printf("event_config_require_features error...\r\n");
-			return;
-		}
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST);
-		evthread_use_pthreads();
-
-#endif
-
-		ev_base = event_base_new_with_config(cfg);
-		if (!ev_base) {
-			printf("event_base_new_with_config error...\r\n"); return;
-		}
-		event_config_free(cfg);
+		uv_loop = new uv_loop_t();
+		uv_loop_init(uv_loop);
 
 	}
 
 	cpps_socket_server::~cpps_socket_server()
 	{
-		stop();
-		event_base_free(ev_base);
-		ev_base = NULL;
+		if (uv_loop)
+		{
+			uv_loop_close(uv_loop);
+			delete uv_loop;
+			uv_loop = NULL;
+		}
 	}
 
 	void cpps_socket_server::setcstate(cpps::C* cstate)
@@ -96,6 +71,8 @@ namespace cpps {
 
 	cpps_socket_server* cpps_socket_server::listen(cpps::C* cstate, cpps::usint16 port)
 	{
+		if (sever_running) return this;
+
 		setcstate(cstate);
 
 		struct addrinfo SocketAddr, * res = NULL, * ressave = NULL;
@@ -119,14 +96,17 @@ namespace cpps {
 			return this;
 		}
 #endif
+	
 
+		uv_tcp_init(uv_loop, &uv_socket);
 
 		ressave = res;
-
+		int err = 0;
 		//尝试绑定端口
 		while (res != NULL) {
-			ev_listener = evconnlistener_new_bind(ev_base, cb_listener, this, LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE | LEV_OPT_THREADSAFE, -1, (struct  sockaddr*) res->ai_addr, (int)res->ai_addrlen);
-			if (!ev_listener)
+
+			err = uv_tcp_bind(&uv_socket, (const struct sockaddr*)res->ai_addr, 0);
+			if (err != 0)
 			{
 				res = res->ai_next;
 				continue;
@@ -135,41 +115,65 @@ namespace cpps {
 		}
 		freeaddrinfo(ressave);
 		//绑定失败
-		if (NULL == res || NULL == ev_listener)
+		if (NULL == res )
 		{
-			printf("evconnlistener_new_bind error...\r\n");
+			fprintf(stderr, "Listen error %s\n", uv_strerror(err));
 			return this;
 		}
-		
-		ev_socket = evconnlistener_get_fd(ev_listener);
-		evutil_make_socket_nonblocking(ev_socket);
-		evconnlistener_set_error_cb(ev_listener, &cb_listener_error);
+		uv_socket.data = (void*)this;
+		err = uv_listen((uv_stream_t*)&uv_socket, 5000, cb_listener);
+		if (err) {
+			fprintf(stderr, "Listen error %s\n", uv_strerror(err));
+			return this;
+		}
+		//暂不做异步.异步的话整个结构都需要修改.
+// 		async_send_msg.data = (void*)this;
+// 		uv_async_init(uv_loop, &async_send_msg, write_task_cb);
+
+
 		sever_running = true;
 		return this;
 	}
 
-	void cpps_socket_server::cb_listener(struct evconnlistener* ev_listener, evutil_socket_t fd, struct sockaddr* addr, int len, void* ptr)
+	void cpps_socket_server::cb_listener(uv_stream_t* server, int status)
 	{
-		cpps_socket_server* srv = (cpps_socket_server*)ptr;
-		std::string ip;
-		cpps::usint16 port;
-		srv->get_addrinfo((struct sockaddr*) addr, ip, port);
-
-		cpps_socket_server_client* client = srv->create_server_client(); //可能需要一个池呀.
-		if (client == NULL) return;
-		if (!client->create(srv->ev_base, fd)) {
-			delete client;
+		cpps_socket_server* srv = (cpps_socket_server*)server->data;
+		if (status < 0) {
+			fprintf(stderr, "New connection error %s\n", uv_strerror(status));
 			return;
 		}
+
+		cpps_socket_server_client* client = srv->create_server_client(); //可能需要一个池呀.
+		uv_tcp_t* fd = new uv_tcp_t();
+		uv_tcp_init(srv->uv_loop, fd);
+		fd->data = (void*)client;
+		client->create(fd);
+		if (uv_accept(server, (uv_stream_t*)fd) != 0) {
+			client->close("server accept error.", onClsoeCallback);
+			return;
+		}
+		struct sockaddr  peername;
+		int namelen;
+		uv_tcp_getpeername(fd, &peername, &namelen);
+
+
+		std::string ip;
+		cpps::usint16 port;
+		srv->get_addrinfo((struct sockaddr*) &peername, ip, port);
+
+		if (client == NULL) return;
+		if (!client->read_start()) {
+			client->close("client create faild.", onClsoeCallback);
+			return;
+		}
+		
+		
 		client->set_client_info(ip, port);
-		evutil_make_socket_nonblocking(client->evsocket);
 
 		if (cpps::type(srv->server_option.option_accept) == CPPS_TFUNCTION)
 		{
 			cpps::dofunction(srv->c, srv->server_option.option_accept, client->socket_index);
 		}
-
-
 	}
 	cpps_socket_server_client* cpps_socket_server::create_server_client()
 	{
@@ -182,8 +186,16 @@ namespace cpps {
 	void cpps_socket_server::free_server_client(cpps_socket_server_client *client)
 	{
 		server_client_list.erase(client->socket_index);
-		client->close();
 		delete client;
+	}
+
+	void cpps_socket_server::sends(cpps_integer socketIndex, std::string& buffer)
+	{
+		cpps_socket_server_client* client = getclient(socketIndex);
+		if (client)
+		{
+			client->sends(buffer);
+		}
 	}
 
 	void cpps_socket_server::send(cpps_integer socketIndex, cpps::Buffer* buffer)
@@ -208,7 +220,7 @@ namespace cpps {
 
 	void cpps_socket_server::run()
 	{
-		if(ev_base)	event_base_loop(ev_base, EVLOOP_NONBLOCK);
+		if (uv_loop)	uv_run(uv_loop, UV_RUN_NOWAIT);
 	}
 
 	void cpps_socket_server::closesocket(cpps_integer socketIndex)
@@ -216,32 +228,26 @@ namespace cpps {
 		cpps_socket_server_client* client = getclient(socketIndex);
 		if (client)
 		{
-			if (cpps::type(server_option.option_close) == CPPS_TFUNCTION)
-			{
-				cpps::dofunction(c, server_option.option_close, client->socket_index,-1,"server close the socket.");
-			}
-
-			free_server_client(client);
+			client->close("server close the socket", onClsoeCallback);
 		}
 
 	}
-
-	void cpps_socket_server::stop()
+	void cpps_socket_server::stop_cb(uv_handle_t* handle)
+	{
+		cpps_socket_server* server = (cpps_socket_server*)handle->data;
+		server->stoped();
+	}
+	void cpps_socket_server::stoped()
 	{
 		for (auto client : server_client_list)
 		{
-			client.second->close();
-			delete client.second;
+			client.second->close("server close", onClsoeCallback);
 		}
-		server_client_list.clear();
-		if (ev_listener) {
-
-			evconnlistener_free(ev_listener);
-			ev_listener = NULL;
-			ev_listener = NULL;
-			inc_socket_index = 1;
-			ev_socket = 0;
-		}
+	}
+	void cpps_socket_server::stop()
+	{
+		if (!sever_running) return;
+		uv_tcp_close_reset(&uv_socket, stop_cb);
 		sever_running = false;
 	}
 
@@ -250,107 +256,84 @@ namespace cpps {
 		return sever_running;
 	}
 
-	void cpps_socket_server::cb_listener_error(struct evconnlistener* ev_listener, void* pCtx)
-	{
-		struct event_base* ev_base = evconnlistener_get_base(ev_listener);
-		int err = EVUTIL_SOCKET_ERROR();
-		std::string error = evutil_socket_error_to_string(err);
-		event_base_loopexit(ev_base, NULL);
-	}
-	void cpps_socket_server::onReadCallback(cpps_socket* sock, struct bufferevent* bv)
+
+	void cpps_socket_server::onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf)
 	{
 		cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
-		bufferevent_read_buffer(bv, client->socket_evbuffer);
-		cpps_integer packetsize = evbuffer_get_length(client->socket_evbuffer);
-
-		cpps_create_class_var(cpps::Buffer,c, buffer_var, buffer_ptr);
-
-		if (server_option.option_headsize == 0)
+		if (nread > 0)
 		{
-			buffer_ptr->clear();
-			buffer_ptr->realloc(packetsize);
-			evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), packetsize);
-
-			if (cpps::type(server_option.option_data) == CPPS_TFUNCTION)
-			{
-				cpps::dofunction(c, server_option.option_data, client->socket_index, buffer_var);
-			}
-		}
-		else
-		{
-			while (packetsize >= server_option.option_headsize)
+			client->readbuffer( buf, nread);
+			cpps_integer packetsize = (cpps_integer)client->get_buffer_length();
+			cpps_create_class_var(cpps::Buffer, c, buffer_var, buffer_ptr);
+			if (server_option.option_headsize == 0)
 			{
 				buffer_ptr->clear();
-				buffer_ptr->realloc(server_option.option_headsize);
-				buffer_ptr->seek(0);
-				evbuffer_copyout(client->socket_evbuffer, buffer_ptr->getbuffer(), server_option.option_headsize);
-				if (cpps::type(server_option.option_parser) == CPPS_TFUNCTION)
+				buffer_ptr->realloc(packetsize);
+				client->buffer_remove( buffer_ptr->getbuffer(), packetsize);
+
+				if (cpps::type(server_option.option_data) == CPPS_TFUNCTION)
 				{
-					cpps_integer size = object_cast<cpps_integer>(cpps::dofunction(c, server_option.option_parser,  buffer_var));
-					if (size == -1)
+					cpps::dofunction(c, server_option.option_data, client->socket_index, buffer_var);
+				}
+			}
+			else {
+				
+				while (packetsize >= server_option.option_headsize)
+				{
+					buffer_ptr->clear();
+					buffer_ptr->realloc(server_option.option_headsize);
+					buffer_ptr->seek(0);
+					client->buffer_copyout( buffer_ptr->getbuffer(), server_option.option_headsize);
+					if (cpps::type(server_option.option_parser) == CPPS_TFUNCTION)
 					{
-						//说明包头异常关闭它.
+						cpps_integer size = object_cast<cpps_integer>(cpps::dofunction(c, server_option.option_parser, buffer_var));
+						if (size == -1)
+						{
+							//说明包头异常关闭它.
+							closesocket(client->socket_index);
+							return;
+						}
+						else if (size == 0)
+						{
+							break; //说明包不全.
+						}
+						else if (size <= packetsize)
+						{
+							buffer_ptr->clear();
+							buffer_ptr->realloc(size);
+							buffer_ptr->seek(0);
+							client->buffer_remove( buffer_ptr->getbuffer(), size);
+							if (cpps::type(server_option.option_data) == CPPS_TFUNCTION)
+							{
+								cpps::dofunction(c, server_option.option_data, client->socket_index, buffer_var);
+							}
+							packetsize = client->get_buffer_length();
+						}
+					}
+					else
+					{
 						closesocket(client->socket_index);
 						return;
 					}
-					else if (size == 0)
-					{
-						break; //说明包不全.
-					}
-					else if (size <= packetsize)
-					{
-						buffer_ptr->clear();
-						buffer_ptr->realloc(size);
-						buffer_ptr->seek(0);
-						evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), size);
-						if (cpps::type(server_option.option_data) == CPPS_TFUNCTION)
-						{
-							cpps::dofunction(c, server_option.option_data, client->socket_index, buffer_var);
-						}
-						packetsize = evbuffer_get_length(client->socket_evbuffer);
-					}
-				}
-				else
-				{
-					closesocket(client->socket_index);
-					return;
 				}
 			}
 		}
-
-	}
-
-	void cpps_socket_server::onWriteCallback(cpps_socket* sock, struct bufferevent* bv)
-	{
-		//do nothing..
-	}
-
-	void cpps_socket_server::onEventCallback(cpps_socket* sock, short e)
-	{
-		cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
-		if (e & BEV_EVENT_EOF)
+		else if (nread <= 0)
 		{
-			if (cpps::type(server_option.option_close) == CPPS_TFUNCTION)
-			{
-				cpps::dofunction(c, server_option.option_close, client->socket_index,0,"normal close socket.");
-			}
-
-			free_server_client(client);
+			client->close("normal close.", onClsoeCallback);
 		}
-		else if (e & BEV_EVENT_ERROR)
+	}
+	void cpps_socket_server::onClsoeCallback(uv_handle_t* handle)
+	{
+		uv_tcp_t* source = (uv_tcp_t*)handle;
+		cpps_socket_server_client* client = (cpps_socket_server_client*)handle->data;
+	
+		if (cpps::type(client->server->server_option.option_close) == CPPS_TFUNCTION)
 		{
-			int err = EVUTIL_SOCKET_ERROR();
-
-			if (cpps::type(server_option.option_close) == CPPS_TFUNCTION)
-			{
-#ifdef WIN32
-				cpps::dofunction(c, server_option.option_close, client->socket_index,err, cpps_socket_g2u(evutil_socket_error_to_string(err)));
-#else
-				cpps::dofunction(c, server_option.option_close, client->socket_index,err, evutil_socket_error_to_string(err));
-#endif
-			}
-
-			free_server_client(client);
+			cpps::dofunction(client->server->c, client->server->server_option.option_close, client->socket_index, 0, client->closemsg);
 		}
+
+		delete source;
+		client->server->free_server_client(client);
 	}
 }

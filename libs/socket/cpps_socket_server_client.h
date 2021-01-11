@@ -13,8 +13,6 @@ namespace cpps {
 
 		void								setServerHandle(cpps_socket_server* srv);
 
-
-
 	public:
 		void								set_client_info(std::string ip, cpps::usint16 port);
 		cpps_integer						socket_index;

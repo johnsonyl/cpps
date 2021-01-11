@@ -4,13 +4,10 @@
 #include <cpps/cpps.h>
 #include <string>
 #include <unordered_map>
-#include <event2/event.h>
-#include <event2/bufferevent.h>
-#include <event2/listener.h>
-#include <event2/thread.h>
-#include <event2/buffer.h>
+#include <uv.h>
 
 #ifdef _WIN32
+#include <ws2def.h>
 #include <windows.h>
 #include <time.h>
 #include <ws2ipdef.h>
@@ -48,32 +45,34 @@ namespace cpps {
 		cpps_socket_server();
 		virtual ~cpps_socket_server();
 
-		void									setcstate(cpps::C* cstate);
+		virtual void							setcstate(cpps::C* cstate);
 		cpps_socket_server*						setoption( cpps::object opt);
 		int										get_addrinfo(const struct sockaddr* addr, std::string& ip, cpps::usint16& port);
 		cpps_socket_server*						listen(cpps::C* cstate, cpps::usint16 port);
 		virtual cpps_socket_server_client*		create_server_client();
 		virtual void							free_server_client(cpps_socket_server_client* client);
+		virtual	void							sends(cpps_integer socketIndex,std::string& buffer);
 		virtual	void							send(cpps_integer socketIndex, cpps::Buffer* buffer);
-		cpps_socket_server_client*				getclient(cpps_integer socketIndex);
+		virtual cpps_socket_server_client*		getclient(cpps_integer socketIndex);
 		virtual	void							run();
 		virtual void							closesocket(cpps_integer socketIndex);
 		virtual	void							stop();
+		void									stoped();
 		bool									isrunning();
 
 	public:
-		virtual void							onReadCallback(cpps_socket* sock, struct bufferevent* bv);
-		virtual void							onWriteCallback(cpps_socket* sock, struct bufferevent* bv);
-		virtual void							onEventCallback(cpps_socket* sock, short e);
+		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
+		static  void							onClsoeCallback(uv_handle_t* handle);
 
 	public:
-		static void								cb_listener(struct evconnlistener* listener, evutil_socket_t fd, struct sockaddr* addr, int len, void* ptr);
-		static void								cb_listener_error(struct evconnlistener* pListener, void* pCtx);
+		static void								stop_cb(uv_handle_t* handle);
+		static void								write_task_cb(uv_async_t* handle);
+		static void								cb_listener(uv_stream_t* server, int status);
 	public:
-		evutil_socket_t							ev_socket;
+		uv_tcp_t 								uv_socket;
+		uv_async_t								async_send_msg;
 		cpps_socket_server_option				server_option;
-		struct event_base*						ev_base;
-		struct evconnlistener*					ev_listener;
+		uv_loop_t*								uv_loop;
 		cpps::C*								c;
 		socket_list								server_client_list;
 		cpps_integer							inc_socket_index;

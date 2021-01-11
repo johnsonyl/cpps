@@ -10,8 +10,6 @@ namespace cpps {
 	cpps_async_loop::~cpps_async_loop()
 	{
 		/*remove not used data*/
-		for (auto n : _tasks)
-			n = nil;
 		_tasks.clear();
 	}
 
@@ -72,7 +70,7 @@ namespace cpps {
 		/*回收协程*/
 		for (auto vtask : _tasks) {
 			cpps_async_task* task = cpps_converter<cpps_async_task*>::apply(vtask);
-			if (task)
+			if (task && task->rt != MAXUINT64)
 				coroutine::destroy(ordinator,task->rt); 
 		}
 		_tasks.clear();

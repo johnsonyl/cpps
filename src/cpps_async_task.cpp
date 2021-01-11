@@ -19,7 +19,7 @@ namespace cpps {
 			p->ret = p->async_object->call(c);
 			p->runstate = cpps_async_task_done;
 		}
-		catch (cpps_trycatch_error e)
+		catch (cpps_trycatch_error& e)
 		{
 			std::string errmsg;
 			printcallstack(errmsg, c);
@@ -28,12 +28,12 @@ namespace cpps {
 			p->throwerr._callstackstr += errmsg;
 			p->runstate = cpps_async_task_thorw;
 		}
-		catch (cpps_error e)
+		catch (cpps_error& e)
 		{
 			std::string errmsg;
 			printcallstack(errmsg, c);
 
-			p->throwerr = cpps_trycatch_error(e);
+			p->throwerr.attach(e);
 			p->throwerr._callstackstr = errmsg;
 			p->runstate = cpps_async_task_thorw;
 		}
@@ -83,16 +83,6 @@ namespace cpps {
 		runstate = cpps_async_task_cancelled;
 	}
 
-	void cpps_async_task::cleanup()
-	{
-		if (runstate == cpps_async_task_running) return; /*运行中不能删除*/
-		if (async_object) delete async_object;
-		async_object = NULL;
-		for (auto stack : takestacklist) {
-			delete stack;
-		}
-		delete this;
-	}
 
 	void cpps_async_task::start(C * cstate)
 	{

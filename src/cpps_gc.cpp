@@ -155,7 +155,7 @@ namespace cpps
 				assert(pClsVar->count() >= 0);
 				if (pClsVar->count() <= 0) {
 					pClsVar->destory(c);
-					delete pClsVar;
+					pClsVar->release();
 					hasdelete = true;
 					it = c->getgen0()->erase(it);
 				}
@@ -216,7 +216,7 @@ namespace cpps
 				assert(pClsVar->count() >= 0);
 				if (pClsVar->count() <= 0) {
 					pClsVar->destory(c);
-					delete pClsVar;
+					pClsVar->release();
 					hasdelete = true;
 					it = c->getgen0()->erase(it);
 				}
@@ -247,7 +247,7 @@ namespace cpps
 				assert(pClsVar->count() >= 0);
 				if (pClsVar->count() <= 0) {
 					pClsVar->destory(c);
-					delete pClsVar;
+					pClsVar->release();
 					hasdelete = true;
 					it = c->getgen1()->erase(it);
 				}
@@ -271,53 +271,70 @@ namespace cpps
 	}
 	void		gc_cleanup(C *c )
 	{
-		for (phmap::flat_hash_set<cpps_cppsclassvar*>::iterator it = c->getgen0()->begin();
-			it != c->getgen0()->end(); ++it)
-		{
-			cpps_cppsclassvar* pClsVar = *it;
-			pClsVar->destory(c);
-			if (pClsVar->domainname == "vector") {
-				cpps_vector* vct = (cpps_vector*)pClsVar->getclsptr();
-				vct->clear();
-			}
-			else if (pClsVar->domainname == "map"){
-				cpps_map* m = (cpps_map*)pClsVar->getclsptr();
-				m->clear();
-			}
-		}
-		for (phmap::flat_hash_set<cpps_cppsclassvar*>::iterator it = c->getgen1()->begin();
-			it != c->getgen1()->end(); ++it)
-		{
-			cpps_cppsclassvar* pClsVar = *it;
-			pClsVar->destory(c);
-			if (pClsVar->domainname == "vector") {
-				cpps_vector* vct = (cpps_vector*)pClsVar->getclsptr();
-				vct->clear();
-			}
-			else if (pClsVar->domainname == "map") {
-				cpps_map* m = (cpps_map*)pClsVar->getclsptr();
-				m->clear();
-			}
-		}
+		
 
-
-		//清理当前线程的
-		for (phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = c->getgen0()->begin();
-			it != c->getgen0()->end(); ++it)
-		{
-			cpps_cppsclassvar * pClsVar = *it;
-			delete pClsVar;
+		bool hasdelete = true;
+		int cc = 0;
+		while (hasdelete && cc < 500) {
+			hasdelete = false;
+			auto it = c->getgen0()->begin();
+			while (it != c->getgen0()->end()) {
+				cpps_cppsclassvar* pClsVar = *it;
+				assert(pClsVar->count() >= 0);
+				if (pClsVar->count() <= 0) {
+					pClsVar->destory(c);
+					pClsVar->release();
+					hasdelete = true;
+					it = c->getgen0()->erase(it);
+				}
+				else
+					++it;
+			}
+			cc++;
 		}
+#ifdef _DEBUG
+		if (!c->getgen0()->empty()) {
+			("no cleanup:%d\r\n", (int)c->getgen0()->size());
+			std::vector< cpps_cppsclassvar* > tmp;
+			for (auto item : *c->getgen0()) {
+				tmp.push_back(item);
+			}
+		}
+#endif
+
 		c->getgen0()->clear();
 		c->setgen0size(0);
 
-		//释放gen1里面的内存
-		for (phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin();
-			it != c->getgen1()->end(); ++it)
-		{
-			cpps_cppsclassvar * pClsVar = *it;
-			delete pClsVar;
+	
+
+		hasdelete = true;
+		cc = 0;
+		while (hasdelete && cc < 500) {
+			hasdelete = false;
+			auto it = c->getgen1()->begin();
+			while (it != c->getgen1()->end()) {
+				cpps_cppsclassvar* pClsVar = *it;
+				assert(pClsVar->count() >= 0);
+				if (pClsVar->count() <= 0) {
+					pClsVar->destory(c);
+					pClsVar->release();
+					hasdelete = true;
+					it = c->getgen1()->erase(it);
+				}
+				else
+					++it;
+			}
+			cc++;
 		}
+#ifdef _DEBUG
+		if (!c->getgen1()->empty()) {
+			("no cleanup:%d\r\n", (int)c->getgen1()->size());
+			std::vector< cpps_cppsclassvar* > tmp;
+			for (auto item : *c->getgen1()) {
+				tmp.push_back(item);
+			}
+		}
+#endif
 
 		c->getgen1()->clear();
 		c->setgen1size(0);

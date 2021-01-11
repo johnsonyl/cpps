@@ -20,6 +20,7 @@ namespace cpps
 			f = NULL;
 			line = 0;
 		}
+		virtual~cpps_async_object() {}
 
 		cpps_value call(C* c);
 

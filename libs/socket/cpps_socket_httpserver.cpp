@@ -3,6 +3,8 @@
 #include "cpps_socket_httpserver_controller.h"
 #include "cpps_socket_httpserver_session.h"
 #include "cpps_socket_httpserver_cachefile.h"
+#include "cpps_socket_server_client.h"
+#include "http_parser.h"
 namespace cpps {
 	void cpps_string_real_tolower(std::string& s);
 	bool cpps_io_file_exists(std::string path);
@@ -13,57 +15,13 @@ namespace cpps {
 	cpps_integer cpps_io_last_write_time(std::string path);
 	cpps_socket_httpserver::cpps_socket_httpserver()
 	{
-		ev_base = NULL;
-		ev_http = NULL;
 		c = NULL;
 		http_running = false;
-		struct event_config* cfg = event_config_new();
-
-#ifdef _WIN32
-		evthread_use_windows_threads();
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_STARTUP_IOCP);
-		//根据CPU实际数量配置libEvent的CPU数
-		SYSTEM_INFO si;
-		GetSystemInfo(&si);
-		event_config_set_num_cpus_hint(cfg, si.dwNumberOfProcessors);
-#else
-
-		if (event_config_require_features(cfg, EV_FEATURE_ET) == -1)
-		{
-			printf("event_config_require_features error...\r\n");
-			return;
-		}
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST);
-		evthread_use_pthreads();
-
-#endif
-
-		ev_base = event_base_new_with_config(cfg);
-		if (!ev_base) {
-			printf("event_base_new_with_config error...\r\n");
-			return;
-		}
-		event_config_free(cfg);
 	}
 
 	cpps_socket_httpserver::~cpps_socket_httpserver()
 	{
 		stop();
-		if (ev_base) {
-
-			event_base_free(ev_base);
-			ev_base = NULL;
-		}
-		for (auto session: session_list)
-		{
-			delete session.second;
-		}
-		session_list.clear();
-		for (auto cachefile: cachefile_list)
-		{
-			delete cachefile.second;
-		}
-		cachefile_list.clear();
 	}
 
 	void cpps_socket_httpserver::setcstate(cpps::C* cstate)
@@ -76,28 +34,15 @@ namespace cpps {
 		if (cpps::type(opt["ip"]) == CPPS_TSTRING) http_option.option_ip = object_cast<std::string>(opt["ip"]);
 		http_option.exceptionfunc = opt["exceptionfunc"];
 		http_option.notfoundfunc = opt["notfoundfunc"];
+		server_option.option_ip = http_option.option_ip;
 		return this;
 	}
 
 	cpps_socket_httpserver* cpps_socket_httpserver::listen(cpps::C* cstate, cpps::usint16 port)
 	{
 		setcstate(cstate);
-
-		ev_http = evhttp_new(ev_base);
-		if (!ev_http)
-		{
-			throw cpps_error(__FILE__,__LINE__,cpps_error_normalerror,"evhttp_new error...\r\n");
-			return this;
-		}
-
-		int ret = evhttp_bind_socket(ev_http, http_option.option_ip.c_str(), port);
-		if (ret != 0)
-		{
-			evhttp_free(ev_http);
-			ev_http = NULL;
-			return this;
-		}
-		evhttp_set_gencb(ev_http, generic_handler, this);
+		cpps_socket_server::listen(cstate, port);
+		if (!sever_running) return this;
 
 		createuuidfunc = cpps::object::globals(c)["__socket_httpserver_createuuid"];
 		if(!createuuidfunc.isfunction()) 
@@ -121,94 +66,136 @@ namespace cpps {
 		return this;
 	}
 
-	void cpps_socket_httpserver::generic_handler(struct evhttp_request* req, void* handler)
+	unsigned char ToHex(unsigned char x)
+	{
+		return  x > 9 ? x + 55 : x + 48;
+	}
+
+	unsigned char FromHex(unsigned char x)
+	{
+		unsigned char y = 0;
+		if (x >= 'A' && x <= 'Z') y = x - 'A' + 10;
+		else if (x >= 'a' && x <= 'z') y = x - 'a' + 10;
+		else if (x >= '0' && x <= '9') y = x - '0';
+		return y;
+	}
+
+	std::string urlencode(std::string str)
+	{
+		std::string strTemp = "";
+		size_t length = str.length();
+		for (size_t i = 0; i < length; i++)
+		{
+			if (isalnum((unsigned char)str[i]) ||
+				(str[i] == '-') ||
+				(str[i] == '_') ||
+				(str[i] == '.') ||
+				(str[i] == '~'))
+				strTemp += str[i];
+			else if (str[i] == ' ')
+			{
+				strTemp += '%';
+				strTemp += '2';
+				strTemp += '0';
+			}
+			else
+			{
+				strTemp += '%';
+				strTemp += ToHex((unsigned char)str[i] >> 4);
+				strTemp += ToHex((unsigned char)str[i] % 16);
+			}
+		}
+		return strTemp;
+	}
+
+	std::string urldecode(std::string str)
+	{
+		std::string strTemp = "";
+		size_t length = str.length();
+		for (size_t i = 0; i < length; i++)
+		{
+			if (str[i] == '+') strTemp += ' ';
+			else if (str[i] == '%')
+			{
+				unsigned char high = FromHex((unsigned char)str[++i]);
+				unsigned char low = FromHex((unsigned char)str[++i]);
+				strTemp += high * 16 + low;
+			}
+			else strTemp += str[i];
+		}
+		return strTemp;
+	}
+
+	void http_parse_query_str(std::string& uri, PARAMSLIST& list)
+	{
+
+		//a=10&b=20&c=&d=&=10
+		size_t i = 0;
+		
+		while (i != std::string::npos && i < uri.size()) {
+			size_t ii = uri.find('=',i);
+			if (ii == std::string::npos) {
+				break;
+			}
+			if (ii == i + 1) {
+				break; //&= is wrong.need keys.
+			}
+			std::string field = uri.substr(i, ii - i);
+			ii++;
+			size_t iii = uri.find("&", ii);
+			if (iii == std::string::npos) {
+				list[field] = urldecode(uri.substr(ii));
+				break;
+			}
+			list[field] = urldecode(uri.substr(ii, iii - ii));
+			i = iii + 1;
+		}
+	}
+	void cpps_socket_httpserver::generic_handler(struct http_request& req, void* handler)
 	{
 		cpps_socket_httpserver* httpserver = (cpps_socket_httpserver*)handler;
 
 		cpps_create_class_var(cpps_socket_httpserver_request, httpserver->c, cpps_request_var, cpps_request_ptr);
 
-		const struct evhttp_uri* uri = evhttp_request_get_evhttp_uri(req);
-		const char* path = evhttp_uri_get_path(uri);
-		const char* query = evhttp_uri_get_query(uri);
-		const char* scheme = evhttp_uri_get_scheme(uri);
-		const char* userinfo = evhttp_uri_get_userinfo(uri);
+		cpps_request_ptr->server = httpserver;
+		cpps_request_ptr->socket_index = req.socket_index;
+		cpps_request_ptr->path = req.path;
+		cpps_request_ptr->keepalive = req.keepalive;
+		cpps_request_ptr->support_gzip = req.support_gzip;
 
 
-		cpps_request_ptr->ev_req = req;
-
-		
-		
-
-		if (path) cpps_request_ptr->path = path;
-		if (scheme) cpps_request_ptr->scheme = scheme;
-		if (userinfo) cpps_request_ptr->userinfo = userinfo;
-
-		if (query)
+		if (!req.uri.empty())
 		{
-			cpps_request_ptr->uri = query;
+			cpps_request_ptr->uri = req.uri;
 
-			char* decode_query = evhttp_decode_uri(query);
-			struct evkeyvalq params;
-			evhttp_parse_query_str(decode_query, &params);
+			http_parse_query_str(req.uri, cpps_request_ptr->getlist);
 
-			for (struct evkeyval* header = params.tqh_first; header; header = header->next.tqe_next) {
-				cpps_request_ptr->paramslist.insert(PARAMSLIST::value_type(header->key, header->value));
-				cpps_request_ptr->getlist.insert(PARAMSLIST::value_type(header->key, header->value));
-			}
+			for (auto item : cpps_request_ptr->getlist)
+				cpps_request_ptr->paramslist[item.first] = item.second;
 		}
 		
+		for (auto item : req.headers)
+			cpps_request_ptr->input_headerslist.insert(PARAMSLIST::value_type(item.first, item.second));
 
-		struct evkeyvalq* headers = evhttp_request_get_input_headers(req);
-		for (struct evkeyval* header = headers->tqh_first; header; header = header->next.tqe_next) {
-			cpps_request_ptr->input_headerslist.insert(PARAMSLIST::value_type(header->key, header->value));
-
-		}
-		struct evbuffer* ib = evhttp_request_get_input_buffer(req);
-		size_t ibsize = evbuffer_get_length(ib);
+		size_t ibsize = req.body.size();
 		if (ibsize > 0)
 		{
-			char* ib_buffer = new char[ibsize + 1];
-			memset(ib_buffer, 0, ibsize + 1);
-			evbuffer_remove(ib, ib_buffer, ibsize);
-			cpps_request_ptr->input_buffer.append(ib_buffer, ibsize);
+			cpps_request_ptr->input_buffer.resize(ibsize);
+			cpps_request_ptr->input_buffer = req.body;
 
 			if (cpps_request_ptr->isformdata()) {
 				cpps_request_ptr->parse_form_data(cpps_request_ptr->input_buffer);
 			}
 			else {
-				struct evkeyvalq post_params;
-				evhttp_parse_query_str(ib_buffer, &post_params);
+				http_parse_query_str(cpps_request_ptr->input_buffer, cpps_request_ptr->postlist);
 
-				for (struct evkeyval* header = post_params.tqh_first; header; header = header->next.tqe_next) {
-					cpps_request_ptr->paramslist.insert(PARAMSLIST::value_type(header->key, header->value));
-					cpps_request_ptr->postlist.insert(PARAMSLIST::value_type(header->key, header->value));
-				}
-
+				for (auto item : cpps_request_ptr->postlist)
+					cpps_request_ptr->paramslist[item.first] = item.second;
 			}
-
-			
-			delete[] ib_buffer;
 		}
 		cpps_stack* takestack = httpserver->c->getcallstack()->empty() ? NULL : httpserver->c->getcallstack()->at(httpserver->c->getcallstack()->size() - 1);
 
-		if (httpserver->SESSION_ENABLED) {
-			std::string sessionid = cpps_request_ptr->getcookie(httpserver->SESSION_COOKIE_NAME);
-			cpps_socket_httpserver_session* session = NULL;
-			if (!sessionid.empty()) {
-				//check session;
-				session = httpserver->get_session(sessionid);
-				if (session) {
-					session->set_expire(cpps_time_gettime() + httpserver->SESSION_COOKIE_AGE);//加时.
-				}
-			}
-			if (!session) {
-				session = httpserver->create_seesion(httpserver->c);
-				cpps_request_ptr->setcookie(httpserver->SESSION_COOKIE_NAME, session->session_id, cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c,httpserver->SESSION_COOKIE_AGE));
-				object csrftoken = session->get("csrftoken", nil);
-				cpps_request_ptr->setcookie("csrftoken", csrftoken.tostring(), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c,httpserver->SESSION_COOKIE_AGE));
-			}
-			cpps_request_ptr->setsession(session);
-		}
+
 		try
 		{
 			//1.先找路由
@@ -216,6 +203,7 @@ namespace cpps {
 			cpps::object func = httpserver->gethandlefunc(cpps_request_ptr->path);
 			if (cpps::type(func) == CPPS_TFUNCTION)
 			{
+				cpps_socket_httpserver_bindsession(httpserver, cpps_request_ptr);
 				dofunction(httpserver->c, func, cpps_request_var);
 				return;
 			}
@@ -242,6 +230,7 @@ namespace cpps {
 					if (var) //找到method了.
 					{
 						//创建变量.
+						cpps_socket_httpserver_bindsession(httpserver, cpps_request_ptr);
 						cpps::object cppsclassvar = newcppsclasvar(httpserver->c, cppsclass);
 						doclassfunction(httpserver->c, cppsclassvar, var->getval(), cpps_request_var);
 						return;
@@ -298,16 +287,15 @@ namespace cpps {
 			}
 
 			//4.没有绑定notfound的话...
-			struct evbuffer* buf = evhttp_request_get_output_buffer(req);
-			evbuffer_add_printf(buf, "sorry,not found.\n");
-			evhttp_send_reply(req, HTTP_NOTFOUND, "NOT FOUND", buf);
+			cpps_request_ptr->append("sorry,not found.\n");
+			cpps_request_ptr->send( 404, "NOT FOUND");
 		}
 		catch (cpps_error e)
 		{
 
 			//5.脚本异常的话...
 			std::string errmsg;
-			char errbuffer[1024];
+			char errbuffer[4096];
 			sprintf(errbuffer, "error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().c_str(), e.line());
 			errmsg.append(errbuffer);
 			std::vector<cpps_stack*>* stacklist = httpserver->c->getcallstack();
@@ -327,9 +315,9 @@ namespace cpps {
 			}
 
 			//6.没有找到脚本异常的话...
-			struct evbuffer* buf = evhttp_request_get_output_buffer(req);
-			evbuffer_add_printf(buf, "It Error Page!\n%s", errmsg.c_str());
-			evhttp_send_reply(req, HTTP_INTERNAL, "SERVER ERROR", buf);
+
+			cpps_request_ptr->append("sorry,not found.\n");
+			cpps_request_ptr->send(500, "SERVER ERROR");
 		}
 	}
 
@@ -363,17 +351,27 @@ namespace cpps {
 
 	void cpps_socket_httpserver::run()
 	{
-		if (ev_base)	event_base_loop(ev_base, EVLOOP_NONBLOCK);
+		cpps_socket_server::run();
 		update_session();
 	}
 
 	void cpps_socket_httpserver::stop()
 	{
-		if (ev_http)
+		cpps_socket_server::stop();
+
+		for (auto session : session_list)
 		{
-			evhttp_free(ev_http);
-			ev_http = NULL;
+			cpps_socket_httpserver_session* sess = session.second;
+			delete sess;
 		}
+		session_list.clear();
+		auto it = cachefile_list.begin();
+		for (; it != cachefile_list.end(); ++it) {
+			cpps_socket_httpserver_cachefile* file = it->second;
+			delete file;
+
+		}
+		cachefile_list.clear();
 		http_running = false;
 	}
 
@@ -455,6 +453,96 @@ namespace cpps {
 		return ret;
 	}
 
+	int header_field_cb(http_parser* p, const char* buf, size_t len)
+	{
+		http_request* req = (struct http_request*)p->data;
+		req->field.clear();
+		req->field.append(buf, len);
+		return 0;
+	}
+
+	int header_value_cb(http_parser* p, const char* buf, size_t len)
+	{
+		http_request* req = (struct http_request*)p->data;
+		std::string value;
+		value.append(buf, len);
+		if ("Accept-Encoding" == req->field) {
+			req->support_gzip = value.find("gzip") != std::string::npos;
+		}
+		req->headers[req->field] = value;
+		return 0;
+	}
+
+	int request_url_cb(http_parser* p, const char* buf, size_t len)
+	{
+		http_request* req = (struct http_request*)p->data;
+		std::string url;
+		url.append(buf, len);
+		size_t pos = url.find('?');
+		req->path.append(url.substr(0,pos));
+		if (pos != std::string::npos) 
+			req->uri.append(url.substr(pos + 1));
+		return 0;
+	}
+
+
+
+	int body_cb(http_parser* p, const char* buf, size_t len)
+	{
+		http_request* req = (struct http_request*)p->data;
+		req->body.append(buf, len);
+		return 0;
+	}
+
+	int headers_complete_cb(http_parser* p)
+	{
+		http_request* req = (struct http_request*)p->data;
+		req->keepalive = http_should_keep_alive(p);
+		return 0;
+	}
+
+	int message_complete_cb(http_parser* p)
+	{
+		return 0;
+	}
+
+	int chunk_header_cb(http_parser* parser)
+	{
+		return 0;
+	}
+
+	int chunk_complete_cb(http_parser* p)
+	{
+		return 0;
+	}
+	
+	void cpps_socket_httpserver::onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf)
+	{
+		cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
+		if (nread > 0)
+		{
+			client->readbuffer(buf, nread);
+			http_request request;
+			http_parser parser;
+			parser.data = (void*)&request;
+			http_parser_init(&parser, HTTP_REQUEST);
+			http_parser_settings settings = { nullptr, request_url_cb, nullptr, header_field_cb, header_value_cb,
+				headers_complete_cb, body_cb, message_complete_cb, chunk_header_cb, chunk_complete_cb };
+
+			size_t parsed = http_parser_execute(&parser, &settings, client->buffer.c_str(), client->buffer.size());
+			if (parsed != client->buffer.size() ) {
+				return;
+			}
+			request.socket_index = client->socket_index;
+			generic_handler(request, this);
+			client->buffer.clear();
+		}
+		else if (nread <= 0)
+		{
+			client->close("normal close.", onClsoeCallback);
+		}
+	}
+
 	void cpps_socket_httpserver::update_session()
 	{
 		auto it = session_list.begin();
@@ -467,6 +555,28 @@ namespace cpps {
 			else {
 				++it;
 			}
+		}
+	}
+
+	void cpps_socket_httpserver::cpps_socket_httpserver_bindsession(cpps_socket_httpserver* httpserver, cpps_socket_httpserver_request* cpps_request_ptr)
+	{
+		if (httpserver->SESSION_ENABLED) {
+			std::string sessionid = cpps_request_ptr->getcookie(httpserver->SESSION_COOKIE_NAME);
+			cpps_socket_httpserver_session* session = NULL;
+			if (!sessionid.empty()) {
+				//check session;
+				session = httpserver->get_session(sessionid);
+				if (session) {
+					session->set_expire(cpps_time_gettime() + httpserver->SESSION_COOKIE_AGE);//加时.
+				}
+			}
+			if (!session) {
+				session = httpserver->create_seesion(httpserver->c);
+				cpps_request_ptr->setcookie(httpserver->SESSION_COOKIE_NAME, session->session_id, cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_AGE));
+				object csrftoken = session->get("csrftoken", nil);
+				cpps_request_ptr->setcookie("csrftoken", csrftoken.tostring(), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_AGE));
+			}
+			cpps_request_ptr->setsession(session);
 		}
 	}
 

@@ -29,10 +29,16 @@ namespace cpps
 		cpps::cpps_reg_cpps_class<cpps_vector>(c, "vector", "_G");
 		cpps::cpps_reg_cpps_class<Buffer>(c, "Buffer", "_G");
 		cpps::cpps_reg_cpps_class<C>(c, "C_STATE", "_G");
+		cpps::cpps_reg_cpps_class<FILE>(c, "FILE", "_G");
+		cpps::cpps_reg_cpps_class<cpps_lambda_function>(c, "CPPS_LAMBDA_FUNCTION", "_G");
+		cpps::cpps_reg_cpps_class<cpps_io_stat>(c, "statinfo", "_G");
 		cpps::cpps_reg_cpps_class<cpps_trycatch_error>(c, "cpps_trycatch_error", "_G");
 		cpps::cpps_reg_cpps_class<cpps_map>(c, "map", "_G");
 		cpps::cpps_reg_cpps_class<cpps_map_node>(c, "cpps_map_node", "_G");
 		cpps::cpps_reg_cpps_class<cpps_range>(c, "RANGE", "_G");
+		cpps::cpps_reg_cpps_class<cpps_async_object>(c, "ASYNC_OBJECT", "asyncio");
+		cpps::cpps_reg_cpps_class<cpps_async_loop>(c, "ASYNC_LOOP", "asyncio");
+		cpps::cpps_reg_cpps_class<cpps_async_task>(c, "ASYNC_TASK", "asyncio");
 		
 	}
 }

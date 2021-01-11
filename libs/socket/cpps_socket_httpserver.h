@@ -2,19 +2,26 @@
 #define cpps_socket_httpserver_h__
 
 #include <cpps/cpps.h>
-#include <event2/event.h>
-#include <event2/bufferevent.h>
-#include <event2/listener.h>
-#include <event2/buffer.h>
-#include <event2/thread.h>
-#include <event2/http.h>
-#include <event2/http_struct.h>
-#include <event2/keyvalq_struct.h>
+#include <uv.h>
 #include <unordered_map>
 #include <string>
+#include "cpps_socket_server.h"
 
 
 namespace cpps {
+	typedef phmap::flat_hash_map<std::string, std::string> http_request_header;
+	struct http_request {
+		std::string path;
+		std::string uri;
+		bool support_gzip;
+		http_request_header headers;
+		cpps_integer socket_index;
+		std::string chunk;
+		std::string body;
+		std::string field;
+		int32 keepalive;
+
+	};
 	class cpps_socket_httpserver_option
 	{
 	public:
@@ -33,7 +40,7 @@ namespace cpps {
 	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_session*> http_session_list;
 	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_cachefile*> http_cachefile_list;
 	class cpps_socket_httpserver_request;
-	class cpps_socket_httpserver
+	class cpps_socket_httpserver : public cpps_socket_server
 	{
 	public:
 		cpps_socket_httpserver();
@@ -61,14 +68,16 @@ namespace cpps {
 
 		cpps_socket_httpserver_cachefile*		create_cachefile(std::string &filepath,std::string &content, cpps_integer last_write_time);
 		cpps_socket_httpserver_cachefile*		get_cachefile(std::string filepath);
+		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
 
 
 	public:
-		static void								generic_handler(struct evhttp_request* req, void* handler);
+		static void								cb_listener(uv_stream_t* server, int status);
+		static void								generic_handler(struct http_request& req, void* handler);
+		static void								cpps_socket_httpserver_bindsession(cpps_socket_httpserver* httpserver, cpps_socket_httpserver_request* cpps_request_ptr);
+
 	public:
 		cpps::C*								c;
-		struct event_base*						ev_base;
-		struct evhttp*							ev_http;
 		http_route								http_route_list;
 		http_route								http_class_route_list;
 		cpps::object							http_default_class_route;

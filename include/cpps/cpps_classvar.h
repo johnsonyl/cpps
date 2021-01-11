@@ -22,6 +22,7 @@ namespace cpps
 		virtual void *getclsptr(){ return NULL; }
 		virtual void setclsptr(void *p){ }
 		virtual bool isallocclass() { return isalloc; }
+		virtual void release() { delete this; }
 		virtual size_t size() { return sizeof(*this); }
 		bool isalloc;
 		int usecount;
@@ -32,22 +33,24 @@ namespace cpps
 		cpps_classvar(std::string clsname,cpps_domain* p, char type, bool alloc)
 			:cpps_cppsclassvar(clsname,p, type, alloc)
 		{
-			_class = NULL;
-			if (alloc)	_class = new CLS();//暂时不支持带参数的构造函数
+			__class = NULL;
+			if (alloc)	__class = new CLS();//暂时不支持带参数的构造函数
 		}
-		virtual ~cpps_classvar()
-		{
-			if (_class && isallocclass()) delete _class;
+		virtual ~cpps_classvar(){}
+		virtual void *getclsptr(){ return (void *)__class; }
+		virtual void release() {
+			if (__class && isallocclass()) delete __class;
+			__class = NULL; 
+			delete this;
 		}
-		virtual void *getclsptr(){ return (void *)_class; }
-		virtual void setclsptr(void *p){ _class = (CLS*)p; }
-		virtual size_t size() { return sizeof(*this) + (_class ? sizeof(*_class) : 0 ); }
+		virtual void setclsptr(void* p) { __class = (CLS*)p; }
+		virtual size_t size() { return sizeof(*this) + (__class ? sizeof(*__class) : 0 ); }
 		virtual void destory(C* c, bool isclose = false) {
 			cpps_domain::destory(c);
-			if (_class && isallocclass())
-				c->_class_map_classvar.erase(_class);
+			if (__class && isallocclass())
+				c->_class_map_classvar.erase(__class);
 		}
-		CLS *_class;
+		CLS *__class;
 	};
 
 }

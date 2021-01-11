@@ -113,7 +113,7 @@ namespace cpps {
 	void cpps_unregasyncio(C* c)
 	{
 		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
-		delete loop;
+		if(loop) delete loop;
 		c->setmoduledata("asyncio", NULL);
 	}
 

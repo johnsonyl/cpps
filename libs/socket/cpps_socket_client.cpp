@@ -7,40 +7,18 @@ namespace cpps
 	{
 		client_connection = false;
 		c = NULL;
+		uv_connect = NULL;
 		dest_port = 0;
-		struct event_config* cfg = event_config_new();
-
-#ifdef _WIN32
-		evthread_use_windows_threads();
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_STARTUP_IOCP);
-		//根据CPU实际数量配置libEvent的CPU数
-		SYSTEM_INFO si;
-		GetSystemInfo(&si);
-		event_config_set_num_cpus_hint(cfg, si.dwNumberOfProcessors);
-#else
-
-		if (event_config_require_features(cfg, EV_FEATURE_ET) == -1)
-		{
-			printf("event_config_require_features error...\r\n");
-			return;
-		}
-		event_config_set_flag(cfg, EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST);
-		evthread_use_pthreads();
-
-#endif
-
-		ev_base = event_base_new_with_config(cfg);
-		if (!ev_base) {
-			printf("event_base_new_with_config error...\r\n");
-		}
-		event_config_free(cfg);
+		uv_loop = new uv_loop_t();
+		uv_loop_init(uv_loop);
 	}
 
 	cpps_socket_client::~cpps_socket_client()
 	{
-		if (ev_base) {
-			event_base_free(ev_base);
-			ev_base = NULL;
+		if (uv_loop) {
+			uv_loop_close(uv_loop);
+			delete uv_loop;
+			uv_loop = NULL;
 		}
 	}
 
@@ -68,19 +46,63 @@ namespace cpps
 		dest_ip = ip;
 		dest_port = port;
 
-		
+	
 
-		if (!create(ev_base))
-		{
-			printf("create error...\r\n"); return false;
-		}
+		uv_tcp_t* fd = new uv_tcp_t();
+		uv_tcp_init(uv_loop, fd);
+		fd->data = (void*)this;
 
-		if (bufferevent_socket_connect_hostname(evbufferevent, NULL, AF_INET, dest_ip.c_str(), dest_port) != 0)
+	
+		uv_connect = new uv_connect_t();
+		uv_connect->data = (void* )this;
+
+
+// 		struct sockaddr_in dest;
+// 		uv_ip4_addr(dest_ip.c_str(), dest_port, &dest);
+// 		uv_ip4_addr(dest_ip.c_str(), dest_port, &dest);
+
+		struct addrinfo SocketAddr, * res = NULL, * ressave = NULL;
+		memset(&SocketAddr, 0, sizeof(SocketAddr));
+		SocketAddr.ai_flags = AI_PASSIVE;
+		SocketAddr.ai_family = AF_UNSPEC;
+		SocketAddr.ai_socktype = SOCK_STREAM;
+		SocketAddr.ai_protocol = IPPROTO_IP;
+		int  ret;
+		char s_port[256];
+#ifdef WIN32
+		_itoa_s(dest_port, s_port, 10);
+
+		if (0 != (ret = getaddrinfo(dest_ip.c_str(), s_port, &SocketAddr, &res)))
+			return false;
+#else
+		sprintf(s_port, "%d", dest_port);
+		if (0 != (ret = getaddrinfo(dest_ip.c_str(), s_port, &SocketAddr, &res)))
 		{
-			close();
+			printf("getaddrinfo error...\r\n");
 			return false;
 		}
+#endif
+		create(fd);
+
+		ressave = res;
 		
+		//尝试绑定端口
+		while (res != NULL) {
+
+			if (uv_tcp_connect(uv_connect, fd, (const struct sockaddr*) & res->ai_addr, on_connect)) {
+				res = res->ai_next;
+				continue;
+			}
+			break;
+		}
+
+		freeaddrinfo(ressave);
+		//绑定失败
+		if (NULL == res)
+		{
+			cpps_socket::close("conecction error..", onClsoeCallback);
+			return false;
+		}
 
 		set_event_callback(this);
 		return true;
@@ -88,22 +110,19 @@ namespace cpps
 
 	void cpps_socket_client::run()
 	{
-		if (ev_base)	event_base_loop(ev_base, EVLOOP_NONBLOCK);
+		if (uv_loop != NULL) {
+			uv_run(uv_loop, UV_RUN_NOWAIT);
+		}
 	}
 
 	void cpps_socket_client::close()
 	{
-		client_connection = false;
-		
-		cpps_socket::close();
+		if (!client_connection) return;
+		cpps_socket::close("normal close.", onClsoeCallback);
 	}
 
 	void cpps_socket_client::closesocket()
 	{
-		if (cpps::type(client_option.option_close) == CPPS_TFUNCTION)
-		{
-			cpps::dofunction(c, client_option.option_close, -1, "safe close the connction.");
-		}
 		close();
 	}
 
@@ -112,110 +131,101 @@ namespace cpps
 		return client_connection;
 	}
 
-	void cpps_socket_client::onReadCallback(cpps_socket* sock, struct bufferevent* bv)
+	void cpps_socket_client::onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf)
 	{
-		cpps_socket_client* client = (cpps_socket_client*)sock;
-		bufferevent_read_buffer(bv, client->socket_evbuffer);
-		cpps_integer packetsize = evbuffer_get_length(client->socket_evbuffer);
-
-		cpps_create_class_var(cpps::Buffer, c, buffer_var, buffer_ptr);
-
-		if (client_option.option_headsize == 0)
+		if (nread > 0)
 		{
-			buffer_ptr->clear();
-			buffer_ptr->realloc(packetsize);
-			evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), packetsize);
+			readbuffer(buf, nread);
+			cpps_integer packetsize = (cpps_integer)get_buffer_length();
+			cpps_create_class_var(cpps::Buffer, c, buffer_var, buffer_ptr);
 
-			if (cpps::type(client_option.option_data) == CPPS_TFUNCTION)
-			{
-				cpps::dofunction(c, client_option.option_data,  buffer_var);
-			}
-		}
-		else
-		{
-			while (packetsize >= client_option.option_headsize)
+			if (client_option.option_headsize == 0)
 			{
 				buffer_ptr->clear();
-				buffer_ptr->realloc(client_option.option_headsize);
-				buffer_ptr->seek(0);
-				evbuffer_copyout(client->socket_evbuffer, buffer_ptr->getbuffer(), client_option.option_headsize);
-				if (cpps::type(client_option.option_parser) == CPPS_TFUNCTION)
+				buffer_ptr->realloc(packetsize);
+				buffer_remove(buffer_ptr->getbuffer(), packetsize);
+
+				if (cpps::type(client_option.option_data) == CPPS_TFUNCTION)
 				{
-					cpps_integer size = object_cast<cpps_integer>(cpps::dofunction(c, client_option.option_parser, buffer_var));
-					if (size == -1)
+					cpps::dofunction(c, client_option.option_data, buffer_var);
+				}
+			}
+			else
+			{
+				while (packetsize >= client_option.option_headsize)
+				{
+					buffer_ptr->clear();
+					buffer_ptr->realloc(client_option.option_headsize);
+					buffer_ptr->seek(0);
+					buffer_copyout(buffer_ptr->getbuffer(), client_option.option_headsize);
+					if (cpps::type(client_option.option_parser) == CPPS_TFUNCTION)
 					{
-						//说明包头异常关闭它.
-						close();
+						cpps_integer size = object_cast<cpps_integer>(cpps::dofunction(c, client_option.option_parser, buffer_var));
+						if (size == -1)
+						{
+							//说明包头异常关闭它.
+							cpps_socket::close("Illegal header.", onClsoeCallback);
+							return;
+						}
+						else if (size == 0)
+						{
+							break; //说明包不全.
+						}
+						else if (size <= packetsize)
+						{
+							buffer_ptr->clear();
+							buffer_ptr->realloc(size);
+							buffer_ptr->seek(0);
+							buffer_remove(buffer_ptr->getbuffer(), size);
+							if (cpps::type(client_option.option_data) == CPPS_TFUNCTION)
+							{
+								cpps::dofunction(c, client_option.option_data, buffer_var);
+							}
+							packetsize = (cpps_integer)get_buffer_length();
+						}
+					}
+					else
+					{
+						cpps_socket::close("not found parser function..", onClsoeCallback);
 						return;
 					}
-					else if (size == 0)
-					{
-						break; //说明包不全.
-					}
-					else if (size <= packetsize)
-					{
-						buffer_ptr->clear();
-						buffer_ptr->realloc(size);
-						buffer_ptr->seek(0);
-						evbuffer_remove(client->socket_evbuffer, buffer_ptr->getbuffer(), size);
-						if (cpps::type(client_option.option_data) == CPPS_TFUNCTION)
-						{
-							cpps::dofunction(c, client_option.option_data, buffer_var);
-						}
-						packetsize = evbuffer_get_length(client->socket_evbuffer);
-					}
-				}
-				else
-				{
-					close();
-					return;
 				}
 			}
 		}
+		else {
+			cpps_socket::close("server closed the connection.", onClsoeCallback);
+		}
 	}
 
-	void cpps_socket_client::onWriteCallback(cpps_socket* sock, struct bufferevent* bv)
-	{
+	void cpps_socket_client::closed() {
+		client_connection = false;
+		if (cpps::type(client_option.option_close) == CPPS_TFUNCTION)
+		{
+			cpps::dofunction(c, client_option.option_close, 0, closemsg);
+		}
+	
 
 	}
 
-	void cpps_socket_client::onEventCallback(cpps_socket* sock, short e)
+	void cpps_socket_client::onClsoeCallback(uv_handle_t* handle)
 	{
-		if (e & BEV_EVENT_EOF)
-		{
-			if (cpps::type(client_option.option_close) == CPPS_TFUNCTION)
-			{
-				cpps::dofunction(c, client_option.option_close, 0, "server close the connection.");
-			}
-			close();
-		}
-		else if (e & BEV_EVENT_ERROR)
-		{
-			int err = EVUTIL_SOCKET_ERROR();
+		cpps_socket_client* client = (cpps_socket_client*)handle->data;
+		client->closed();
+		uv_tcp_t* fd = (struct uv_tcp_s*)handle;
+		delete fd;
+	}
 
-			if (cpps::type(client_option.option_close) == CPPS_TFUNCTION)
-			{
-#ifdef WIN32
-				cpps::dofunction(c, client_option.option_close, err, cpps_socket_g2u(evutil_socket_error_to_string(err)));
-#else
-				cpps::dofunction(c, client_option.option_close, err, evutil_socket_error_to_string(err));
-#endif
-			}
-
-			close();
+	void cpps_socket_client::on_connect(uv_connect_t* req, int status)
+	{
+		cpps_socket_client* client = (cpps_socket_client*)req->data;
+		if (!client->read_start()) {
+			client->close();
+			return ;
 		}
-		else if (e & BEV_EVENT_CONNECTED)
+		client->client_connection = true;
+		if (cpps::type(client->client_option.option_connected) == CPPS_TFUNCTION)
 		{
-
-			client_connection = true;
-			if (cpps::type(client_option.option_connected) == CPPS_TFUNCTION)
-			{
-				cpps::dofunction(c, client_option.option_connected);
-			}
-		}
-		else if (e & BEV_EVENT_TIMEOUT)
-		{
-			close();
+			cpps::dofunction(client->c, client->client_option.option_connected);
 		}
 	}
 

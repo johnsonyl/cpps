@@ -8,7 +8,7 @@
 //@Date			:	2015/12/10 (yy/mm/dd)
 //@Module		:	CPPS_CLASS
 //@Description	:	Cpps、C++类注册
-//@website		:	http://cppscript.org
+//@website		:	http://cpps.wiki
 //==================================
 
 
@@ -37,7 +37,8 @@ namespace cpps
 		virtual bool						iscppsclass() { return true; }
 		std::string							getclassname(){	return classname; }
 		std::vector<cpps_cppsclass*>&		parentclasslist() { return _parentclasslist; }
-		node		*o; //定义的变量
+		virtual void						release() { delete this; }
+		node* o; //定义的变量
 		std::string classname;
 		std::vector<cpps_cppsclass*> _parentclasslist;
 	};
@@ -47,13 +48,15 @@ namespace cpps
 	{
 		cpps_class(std::string _classname,cpps_domain* p, char type)
 			:cpps_cppsclass(_classname, NULL, p, type){	}
+		virtual ~cpps_class(){}
 		virtual bool					iscppsclass() { return false; }
-		virtual cpps_cppsclassvar*		create(C* c, bool alloc = true)
+		virtual void					release() { delete this; }
+		virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
 		{
 			cpps_classvar<T>* v = new cpps_classvar<T>(getclassname(), this, cpps_domain_type_classvar, alloc);
 			if (alloc){
 				cpps_cppsclassvar* class_var = (cpps_cppsclassvar* )v;
-				if(c) c->_class_map_classvar.insert(phmap::flat_hash_map<void*, cpps_cppsclassvar*>::value_type(v->_class, class_var));
+				if(c) c->_class_map_classvar.insert(phmap::flat_hash_map<void*, cpps_cppsclassvar*>::value_type(v->__class, class_var));
 			}
 			return v;
 		}

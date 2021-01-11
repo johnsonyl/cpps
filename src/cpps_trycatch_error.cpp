@@ -19,7 +19,7 @@ cpps_trycatch_error::cpps_trycatch_error(std::string f, int l, int n, const char
 	_s = szString;
 }
 
-cpps_trycatch_error::cpps_trycatch_error(cpps_error e)
+void cpps_trycatch_error::attach(cpps_error e)
 {
 	_erron = e.error();
 	_file = e.file();

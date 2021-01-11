@@ -1,10 +1,11 @@
 #include "cpps_socket_httpserver_request.h"
 #include "cpps_socket_httpserver_session.h"
+#include "cpps_socket_httpserver.h"
+#include <zlib.h>
 namespace cpps {
 	void cpps_string_real_split(std::vector<std::string>& vec, std::string& v, std::string v2, cpps_integer count);
 	cpps_socket_httpserver_request::cpps_socket_httpserver_request()
 	{
-		ev_req = NULL;
 		session = NULL;
 	}
 
@@ -18,8 +19,7 @@ namespace cpps {
 
 	void cpps_socket_httpserver_request::real_addheader(std::string& k, std::string& v)
 	{
-		struct evkeyvalq* out_headers = evhttp_request_get_output_headers(ev_req);
-		evhttp_add_header(out_headers, k.c_str(), v.c_str());
+		output_headerslist += k + ": " + v + "\r\n";
 	}
 	void cpps_socket_httpserver_request::addheader(cpps::object list)
 	{
@@ -35,14 +35,40 @@ namespace cpps {
 
 	void cpps_socket_httpserver_request::append(std::string s)
 	{
-		struct evbuffer* buf = evhttp_request_get_output_buffer(ev_req);
-		evbuffer_add(buf, s.c_str(),s.size());
+		output_buffer.append(s);
 	}
 
 	void cpps_socket_httpserver_request::send(cpps_integer code, std::string reason)
 	{
-		struct evbuffer* buf = evhttp_request_get_output_buffer(ev_req);
-		evhttp_send_reply(ev_req, (int)code, reason.c_str(), buf);
+		std::string build_buffer;
+
+		//1.code
+		char tmp[4096];
+		sprintf(tmp, "HTTP/1.1 %d %s\r\n", (int32)code,reason.c_str());
+		build_buffer.append(tmp);
+
+		//2.gzip
+		if (support_gzip) {
+			if(gzip_compress(output_buffer))
+				build_buffer.append("Content-Encoding: gzip\r\n");
+		}
+		//3.keepalive
+		if (!keepalive){
+			build_buffer.append("Connection: close\r\n");
+		}
+		//4.Content-Length
+		sprintf(tmp, "Content-Length: %d\r\n", (usint32)output_buffer.size());
+		build_buffer.append(tmp);
+
+		//5. headers
+		build_buffer.append(output_headerslist);
+		build_buffer.append("\r\n");
+		//6. body
+		build_buffer.append(output_buffer);
+
+
+
+		server->sends(socket_index, build_buffer);
 	}
 
 	cpps::cpps_value cpps_socket_httpserver_request::paramslistfunc(C*c)
@@ -237,6 +263,60 @@ namespace cpps {
 			}
 
 		}
+	}
+	/* Compress gzip data */
+	/* data 原数据 ndata 原数据长度 zdata 压缩后数据 nzdata 压缩后长度 */
+	int gzcompress(Bytef* zdata, uLong* nzdata, Bytef* data, uLong ndata, cpps_integer level)
+	{
+		z_stream c_stream;
+		int err = 0;
+
+		if (data && ndata > 0) {
+			c_stream.zalloc = NULL;
+			c_stream.zfree = NULL;
+			c_stream.opaque = NULL;
+			//只有设置为MAX_WBITS + 16才能在在压缩文本中带header和trailer
+			if (deflateInit2(&c_stream, (int)level, Z_DEFLATED,
+				MAX_WBITS + 16, 8, Z_DEFAULT_STRATEGY) != Z_OK) return -1;
+			c_stream.next_in = data;
+			c_stream.avail_in = ndata;
+			c_stream.next_out = zdata;
+			c_stream.avail_out = *nzdata;
+			while (c_stream.avail_in != 0 && c_stream.total_out < *nzdata) {
+				if (deflate(&c_stream, Z_NO_FLUSH) != Z_OK) return -1;
+			}
+			if (c_stream.avail_in != 0) return c_stream.avail_in;
+			for (;;) {
+				if ((err = deflate(&c_stream, Z_FINISH)) == Z_STREAM_END) break;
+				if (err != Z_OK) return -1;
+			}
+			if (deflateEnd(&c_stream) != Z_OK) return -1;
+			*nzdata = c_stream.total_out;
+			return 0;
+		}
+		return -1;
+	}
+	bool cpps_socket_httpserver_request::gzip_compress(std::string& output_buffer)
+	{
+		Bytef* buf = NULL;
+		uLong len = 0;
+
+		buf = (Bytef*)output_buffer.c_str();
+		len = (uLong)output_buffer.size();
+
+		uLongf destlen = (uLongf)len + 20; /*不知道这个协议头到底是多大*/
+		Bytef* dest = new Bytef[destlen];
+
+		int32 err = gzcompress(dest, &destlen, buf, len, Z_DEFAULT_COMPRESSION);
+		if (err != Z_OK) {
+			delete[] dest;
+			dest = NULL;
+			return false;
+		}
+
+		output_buffer.clear();
+		output_buffer.append((const char*)dest, destlen);
+		return true;
 	}
 
 }

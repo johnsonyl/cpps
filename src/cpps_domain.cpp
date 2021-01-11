@@ -80,6 +80,7 @@ namespace cpps
 				cpps_regfunction* func = (cpps_regfunction*)f;
 				var->setval(cpps_value(func->func));
 				var->setconst(true);
+				var->setsource(true);
 				func->func->setIsNeedC(f->isneedC);
 			}
 			else if (f->type == cpps_def_regclass)
@@ -88,6 +89,7 @@ namespace cpps
 				//cpps_domain *domain = (cpps_domain *)cls->cls;
 				//domain->parent[0] = this;
 				var->setval(cpps_value(cls->cls));
+				var->setsource(true);
 				var->setconst(true);
 			}
 			else if (f->type == cpps_def_regvar)
@@ -98,7 +100,7 @@ namespace cpps
 			varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(var->varName, var));
 			cpps_reg* take = f;
 			f = f->next;
-			delete take;
+			take->release();
 		} while (f);
 	}
 
@@ -162,20 +164,19 @@ namespace cpps
 
 	void cpps_domain::destory(C* c,bool isclose)
 	{
-		if (hasVar) {
+		if (hasVar || isclose) {
 			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
 			{
 				cpps_regvar* v = it->second;
-				if (!v->closeure || v->closeureusecount <= 0) { /*闭包不删除,但是必须有人使用*/
+				if ((!v->closeure || v->closeureusecount <= 0) || isclose) { /*闭包不删除,但是必须有人使用*/
 					cpps_gc_remove_barrier(c, v);
 					if (!isclose && v->stackdomain && v->offset != -1) {
 						v->stackdomain->removeidxvar(v->offset);
 					}
 					if (v->issource() && v->getval().tt == CPPS_TCLASS) {
 						cpps_cppsclass* _cls = cpps_to_cpps_cppsclass(v->getval());
-						_cls->hasVar = false;
 						_cls->destory(c, isclose);
-						delete _cls;//class 会随着变量消失而删除.
+						_cls->release();//class 会随着变量消失而删除.
 					}
 					else if (v->issource() && v->getval().tt == CPPS_TFUNCTION)
 					{
@@ -183,19 +184,18 @@ namespace cpps
 						if (domainType == cpps_domain_type_class && func->getclass()) { //判断是否是继承来的 cpp 注册进来的类不需要判断 删就完了.
 							cpps_cppsclass* pclsthis = (cpps_cppsclass*)this;
 							if (pclsthis == func->getclass()) {
-								delete func;//类里面的函数也要被清理
+								func->release();//类里面的函数也要被清理
 							}
 						}
 						else {
-							delete func;
+							func->release();
 						}
 					}
-					else if (isclose && v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this && v->getval().value.domain != c->_G)
+					else if (isclose && v->issource() &&v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this && v->getval().value.domain != c->_G)
 					{
 						cpps_domain* domain = v->getval().value.domain;
-						domain->hasVar = false;
 						domain->destory(c, isclose);
-						delete domain;
+						domain->release();
 					}
 					delete v;
 				}
@@ -209,6 +209,28 @@ namespace cpps
 			stacklist = NULL;
 		}
 		funcRet.decruse();
+		funcRet.tt = CPPS_TNIL;
+		isbreak = false;
+		parent[0] = NULL;
+		parent[1] = NULL;
+	}
+	void cpps_domain::cleanup()
+	{
+		if (hasVar) {
+			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
+			{
+				cpps_regvar* v = it->second;
+				v->cleanup();
+				delete v;
+			}
+			varList.clear();
+			hasVar = false;
+		}
+		if (stacklist != NULL)
+		{
+			stacklist->clear();
+			stacklist = NULL;
+		}
 		funcRet.tt = CPPS_TNIL;
 		isbreak = false;
 		parent[0] = NULL;

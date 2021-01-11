@@ -2237,15 +2237,17 @@ namespace cpps {
 		delete c->o;
 		c->o = NULL;
 		/* 清理内存 */
-		
-		
-		c->_G->destory(c, true);
-		gc_cleanup(c);
-		cpps_unregasyncio(c);
-		cpps_free_all_library(c);
+
 		c->barrierList.clear();
 		c->_callstack->clear();
 		c->_class_map_classvar.clear();
+		
+		c->_G->destory(c, true);
+		c->domain_pool.freeall();
+		c->stack_pool.freeall();
+		cpps_unregasyncio(c);
+		gc_cleanup(c);
+		cpps_free_all_library(c);
 		//asyncio需要特殊处理
 		delete c->_G;
 		c->_G = NULL;
@@ -2800,6 +2802,8 @@ namespace cpps {
 		v = new cpps_regvar();
 		v->setvarname(d->s);
 		v->setval(cpps_value(ns));
+		v->setsource(true);
+
 		domain->regvar(c, v);
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			c->_G->regidxvar(d->offset, v);
@@ -2830,6 +2834,7 @@ namespace cpps {
 		v = new cpps_regvar();
 		v->setvarname(d->s);
 		v->setval(cpps_value(ns));
+		v->setsource(true);
 		_Gdomain->regvar(c, v);
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			c->_G->regidxvar(d->offset, v);
@@ -2863,7 +2868,7 @@ namespace cpps {
 
 	void printcallstack(std::string& errmsg, C* c)
 	{
-		char errbuffer[1024];
+		char errbuffer[4096];
 		sprintf(errbuffer, "Error stack information:\n");
 		errmsg.append(errbuffer);
 		std::vector<cpps_stack*>* stacklist = c->getcallstack();
@@ -2892,7 +2897,7 @@ namespace cpps {
 				hasCatch = true;
 			}
 		}
-		catch (cpps_trycatch_error e) {
+		catch (cpps_trycatch_error& e) {
 			throwerr = e;
 
 			std::string errmsg;
@@ -2903,7 +2908,7 @@ namespace cpps {
 			hasCatch = true;
 
 		}
-		catch (cpps_error e) {
+		catch (cpps_error& e) {
 
 			std::string errmsg;
 			printcallstack(errmsg, c);
@@ -2911,7 +2916,7 @@ namespace cpps {
 
 			cpps_pop_stack_to_here(c, takestack);
 			/* 清栈 */
-			throwerr = cpps_trycatch_error(e);
+			throwerr.attach(e);
 			throwerr._callstackstr = errmsg;
 			hasCatch = true;
 		}
@@ -2927,6 +2932,17 @@ namespace cpps {
 			throwerr._callstackstr = errmsg;
 			hasCatch = true;
 		}
+		catch (...) {
+			std::string errmsg;
+			printcallstack(errmsg, c);
+
+			throwerr = cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "Unknown exception thrown by throw.");
+
+			cpps_pop_stack_to_here(c, takestack);
+			/* 清栈 */
+			throwerr._callstackstr = errmsg;
+			hasCatch = true;
+		}
 		if (hasCatch)
 			cpps_do_catch(c, domain, domain, root, catchfun, throwerr);
 		execdomain->destory(c);
@@ -2937,9 +2953,20 @@ namespace cpps {
 		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it2 = parentclass->varList.begin(); it2 != parentclass->varList.end(); ++it2) {
 			if (it2->first != "constructor")
 				/*不复制构造函数.. */ {
-				cppsclass->varList.erase(it2->first);
-				cppsclass->hasVar = true;
-				cppsclass->varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(it2->first, it2->second));
+
+
+				cpps_regvar* v = NULL;
+				auto it = cppsclass->varList.find(it2->first);
+				if (it != cppsclass->varList.end()) {
+					v = it->second;
+				}
+				else {
+					v = new cpps_regvar();	
+				}
+
+				v->clone(it2->second);
+
+				cppsclass->varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(it2->first, v));
 			}
 		}
 		cppsclass->setidxoffset(parentclass, takeoff);
@@ -2991,11 +3018,18 @@ namespace cpps {
 				if (varName->type == CPPS_VARNAME) {
 					node* var = varName->l[0];
 					if (var && var->type == CPPS_ODEFVAR_FUNC) {
-						cpps_regvar* v2 = new cpps_regvar();
-						v2->setvarname(varName->s);
-						cppsclass->varList.erase(varName->s);
+						cpps_regvar* v2 = NULL;
+						auto it2 = cppsclass->varList.find(varName->s);
+						if (it2 != cppsclass->varList.end()) {
+							v2 = it2->second;
+						}
+						else {
+							v2 = new cpps_regvar();
+							v2->setvarname(varName->s);
+							cppsclass->regvar(c, v2);
+						}
+
 						/* 重写父类的函数 */
-						cppsclass->regvar(c, v2);
 						v2->setconst(true);
 						v2->setsource(true);
 						v2->offset = varName->offset;
@@ -3610,7 +3644,7 @@ namespace cpps {
 					func->stacklist = new std::vector<cpps_regvar*>();
 
 					//check
-					assert(d->size <= root->stacklist->size());
+					assert(c <= root->stacklist->size());
 					for (size_t i = 0; i < c; i++) {
 						auto no = (*(root->stacklist))[i];
 						if (no && no->closeure) {

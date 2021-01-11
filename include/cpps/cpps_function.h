@@ -8,7 +8,7 @@
 //@Date			:	2015/11/20 (yy/mm/dd)
 //@Module		:	CPPS_FUNCTION
 //@Description	:	Cppº¯Êýµ÷ÓÃ
-//@website		:	http://cppscript.org
+//@website		:	http://cpps.wiki
 //==================================
 
 namespace cpps
@@ -53,7 +53,7 @@ namespace cpps
 		if (domain&& domain->domainType == cpps_domain_type_classvar)
 		{
 			cpps_classvar<CLS> *cls = (cpps_classvar<CLS> *)domain;
-			(cls->_class->*f)();
+			(cls->__class->*f)();
 		}
 	}
 	template < class Ret, class CLS, class context>
@@ -62,7 +62,7 @@ namespace cpps
 		if (domain&& domain->domainType == cpps_domain_type_classvar)
 		{
 			cpps_classvar<CLS> *cls = (cpps_classvar<CLS> *)domain;
-			return (cls->_class->*f)();
+			return (cls->__class->*f)();
 		}
 		return Ret();
 	}
@@ -119,7 +119,7 @@ namespace cpps
 		{
 			cpps_classvar<CLS> *cls = (cpps_classvar<CLS> *)domain;
 			CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
-			(cls->_class->*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
+			(cls->__class->*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 		}
 	}
 	template < class Ret, class context, class CLS, CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, class A) >
@@ -129,7 +129,7 @@ namespace cpps
 		{
 			cpps_classvar<CLS> *cls = (cpps_classvar<CLS> *)domain;
 			CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
-			return (cls->_class->*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
+			return (cls->__class->*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 		}
 		return Ret();
 	}

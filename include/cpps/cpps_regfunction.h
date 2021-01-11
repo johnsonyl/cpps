@@ -38,6 +38,7 @@ namespace cpps
 		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, cpps_std_vector *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL){}
 		virtual void			setfuncname(std::string name){	funcname = name;}
 		virtual std::string		getfuncname(){return funcname;}
+		virtual void release() { delete this; }
 		virtual void setIsNeedC(bool b)	{isNeedC = b;}
 		virtual bool getIsNeedC(){ return isNeedC; }
 		virtual int8 getparamcount() { return 0; }
@@ -62,6 +63,7 @@ namespace cpps
 			isneedC = false;
 		}
 		virtual ~cpps_reg(){}
+		virtual void release() { delete this; }
 		cpps_reg* next;
 		int8	type;
 		std::string varname;
@@ -80,6 +82,7 @@ namespace cpps
 			func->setasync(isasync);
 		}
 		virtual ~cpps_regfunction() {}
+		virtual void release() { delete this; }
 
 		cpps_function* func;
 	};
@@ -92,6 +95,7 @@ namespace cpps
 			value = v;
 		}
 		virtual ~cpps_reggvar() {}
+		virtual void release() { delete this; }
 
 	};
 	struct cpps_regclass : public cpps_reg
@@ -103,6 +107,7 @@ namespace cpps
 			varname = name;
 		}
 		virtual ~cpps_regclass() {}
+		virtual void release() { delete this; }
 
 		cpps_cppsclass* cls;
 	};
@@ -116,6 +121,7 @@ namespace cpps
 
 		}
 		virtual ~cpps_regclass_template(){}
+		virtual void release() { delete this; }
 	};
 
 
@@ -136,6 +142,7 @@ namespace cpps
 
 			call_function<R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
+		virtual void release() { delete this; }
 		R(*f)();
 		vector1<R> param;
 	};
@@ -164,7 +171,8 @@ namespace cpps
 
 			call_function< R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
-		R(CLS::*f)();
+		virtual void release() { delete this; }
+		R(CLS::* f)();
 		vector1<R> param;
 	};
 
@@ -256,6 +264,7 @@ namespace cpps
 
 			call_function<R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
+		virtual void release() { delete this; }
 		virtual int8 getparamcount() { return CPPS_MAKE_REGFUNCTION_ITER_C; }
 		R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A));
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
@@ -282,6 +291,7 @@ namespace cpps
 
 			call_function<R>(c,*ret, domain, *o, func, f, cpps_is_void<R>());
 		}
+		virtual void release() { delete this; }
 		virtual int8 getparamcount() { return CPPS_MAKE_REGFUNCTION_ITER_C; }
 		R(CLS::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A));
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;

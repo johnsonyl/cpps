@@ -35,12 +35,14 @@ namespace cpps
 		void												unregvar(C *c, cpps_regvar * v);
 		void												setexecdomain(cpps_domain *exec);
 		virtual void										destory(C *c,bool isclose = false);
+		void												cleanup();
 		void												regidxvar(int32 offset, cpps_regvar* v);
 		void												removeidxvar(int32 offset);
 		cpps_regvar* 										getregidxvar(int32 offset);
 		int32												getidxoffset(cpps_domain* parentclass);
 		void												setidxoffset(cpps_domain* parentclass, int32 off);
 		void												resize(usint16 size);
+		virtual void										release() { delete this; }
 
 
 		cpps_domain											*parent[2]; // 0Îª¸¸Óò£¬ 1ÎªÖ´ÐÐÓò

@@ -27,6 +27,8 @@ namespace cpps
 		void					setconst(int8 c);
 		bool					issource();
 		void					setsource(bool src);
+		void					cleanup();
+		void					clone(cpps_regvar* right);
 	public:
 		cpps_value				value;
 		std::string				varName;

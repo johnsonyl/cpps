@@ -25,7 +25,7 @@ namespace cpps
 	struct cpps_async_task
 	{
 		cpps_async_task();
-		~cpps_async_task();
+		virtual ~cpps_async_task();
 		static void			run(cpps_async_task* p,C*c);
 		cpps_value			getresult();
 		cpps_async_object*	getobject();
@@ -36,7 +36,6 @@ namespace cpps
 		bool				pending();
 		bool				running();
 		void				cancel();
-		void				cleanup();/*ÊÍ·Å×Ô¼º.*/
 		void				start(C* cstate);
 		void				add_done_callback(cpps_value func, cpps_value context);
 		void				remove_done_callback();

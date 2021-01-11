@@ -2,14 +2,6 @@
 #define cpps_socket_httpserver_request_h__
 
 #include <cpps/cpps.h>
-#include <event2/event.h>
-#include <event2/bufferevent.h>
-#include <event2/listener.h>
-#include <event2/buffer.h>
-#include <event2/thread.h>
-#include <event2/http.h>
-#include <event2/http_struct.h>
-#include <event2/keyvalq_struct.h>
 #include <unordered_map>
 #include <string>
 #include "cpps_socket_httpserver_request_filedata.h"
@@ -20,6 +12,7 @@ namespace cpps {
 	typedef phmap::flat_hash_map<std::string, std::string> PARAMSLIST;
 	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_request_filedata*> FILEDATASLIST;
 	class cpps_socket_httpserver_session;
+	class cpps_socket_httpserver;
 	class cpps_socket_httpserver_request
 	{
 	public:
@@ -63,12 +56,19 @@ namespace cpps {
 		PARAMSLIST	getlist;
 		PARAMSLIST	postlist;
 		PARAMSLIST	input_headerslist;
+		std::string	output_headerslist;
 		std::string scheme;
 		std::string userinfo;
 		std::string input_buffer;
-		struct evhttp_request* ev_req;
+		std::string output_buffer;
+		cpps_integer socket_index;
+		cpps_socket_httpserver* server;
 		FILEDATASLIST filedataslist;
 		cpps_socket_httpserver_session* session;
+		bool support_gzip;
+		int32 keepalive;
+	private:
+		bool gzip_compress(std::string& output_buffer);
 	};
 }
 

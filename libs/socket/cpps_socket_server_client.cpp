@@ -15,10 +15,11 @@ namespace cpps
 
 	cpps_socket_server_client::~cpps_socket_server_client()
 	{
-		socket_ip = "";
+		socket_ip.clear();
 		socket_port = 0;
 		socket_index = 0;
 		server = NULL;
+		closemsg.clear();
 	}
 
 	void cpps_socket_server_client::setServerHandle(cpps_socket_server* srv)
@@ -34,5 +35,7 @@ namespace cpps
 		socket_ip = ip;
 		socket_port = port;
 	}
+
+
 
 }
