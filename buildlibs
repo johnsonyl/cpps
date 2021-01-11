@@ -100,7 +100,7 @@ if(sys.os == "macos"){
 	{
 		println_color("not found",RED);
 		println_color("mysql-devel not found.",RED);
-		println_color("please use 'brew install mysql-connector-c'.");
+		println_color("please use 'brew install mysql-connector-c'.",RED);
 		exit(0);
 	}
 	else
@@ -113,7 +113,7 @@ else if(sys.os == "linux")
 	{
 		println_color("not found",RED);
 		println_color("mysql-devel not found.",RED);
-		println_color("install mysql-devel on linux use look like 'yum -y install mysql-devel' or 'apt-get install libmysqlclient-dev'");
+		println_color("install mysql-devel on linux use look like 'yum -y install mysql-devel' or 'apt-get install libmysqlclient-dev'",RED);
 		exit(0);
 	}
 	else
