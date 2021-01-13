@@ -133,7 +133,7 @@ namespace cpps {
 		return(ret);
 	}
 	bool cpps_parse_isbuiltinname(std::string s) {
-		return(s == "if" || s == "echo" || s == "const" ||s == "async" || s == "yield" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "module" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring");
+		return(s == "if" || s == "echo" || s == "const" || s == "async" || s == "yield" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "module" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring");
 	}
 	bool cpps_is_not_use_var_name(std::string s) {
 		return(cpps_parse_isbuiltinname(s) || s == "true" || s == "catch" || s == "null" || s == "nil" || s == "NULL" || s == "false" || s == "map" || s == "vector" || s == "math" || s == "string" || s == "time" || s == "io" || s == "GC");
@@ -457,7 +457,7 @@ namespace cpps {
 			node* op = cpps_parse_symbol(c, domain, str, buffer);
 			if (!op) throw(cpps_error(str->filename, buffer.line(), cpps_error_varerror, "invalid operator symbol."));
 			str->s = op->symbol->symbolfuncname;
-			delete op;
+			op->release();
 		}
 
 		cpps_parse_rmspaceandenter(buffer);
@@ -573,6 +573,73 @@ namespace cpps {
 			}
 			buffer.pop();
 		}
+	}
+	void cpps_parse_enum(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer, int32 limit) {
+		child->type = CPPS_OENUM;
+		cpps_parse_rmspaceandenter(buffer);
+		child->offset = 0;
+		child->offsettype = 0;
+		child->varsize = 0;
+		child->size = 0;
+
+		cpps_parse_rmspaceandenter(buffer);
+		child->s = cpps_parse_varname(buffer);
+		if (child->s.empty()) {
+			child->s = "_G"; //全局
+		}
+		cpps_parse_rmspaceandenter(buffer);
+
+		cpps_integer enum_idx = 0;
+		if (buffer.cur() != '{')
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "'{' was detected for enum. Please check."));
+		buffer.pop();
+
+		
+
+		while (!buffer.isend()) {
+			/* 剔除回车. */
+			cpps_parse_rmspaceandenter(buffer);
+			/* 是否到最后了. */
+			if (buffer.cur() == '}') {
+				break;
+			}
+			if (buffer.isend()) {
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "'}' was detected for enum. Please check."));
+			}
+
+			node* enum_value = new node(child, child->filename, buffer.line());
+			enum_value->s = cpps_parse_varname(buffer);
+			cpps_parse_rmspaceandenter(buffer);
+			
+			if (buffer.cur() == '=') {
+				buffer.pop();
+				cpps_parse_rmspaceandenter(buffer);
+
+				node *value = cpps_parse_number(c, domain, enum_value, buffer);
+				if (value->type != CPPS_OINTEGER && value->type != CPPS_OINTEGER16) 
+					throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "enum only defined integer value."));
+
+				enum_value->value.integer = value->value.integer;
+				if(enum_value->value.integer <= enum_idx)
+					throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "enum the value defined must be greater than the previous value ."));
+				enum_idx = enum_value->value.integer + 1;
+				value->release();
+			}
+			else {
+				enum_value->value.integer = enum_idx++;
+			}
+			cpps_parse_rmspaceandenter(buffer);
+			if (buffer.cur() == ',')
+				buffer.pop();
+			else
+				break;
+		}
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != '}')
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "'}' was detected for enum. Please check."));
+		buffer.pop();
+
 	}
 	void cpps_parse_module(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer, int32 limit) {
 		child->type = CPPS_OMODULE;
@@ -887,7 +954,7 @@ namespace cpps {
 				cpps_str2d(str->s.c_str(), &str->value.number);
 			}
 		}
-		else if (buffer.cur() == 'x') {
+		else if (str->s == "0" && buffer.cur() == 'x') {
 			str->type = CPPS_OINTEGER16;
 			buffer.pop();
 			str->s += "x";
@@ -2038,6 +2105,9 @@ namespace cpps {
 		else if (child->s == "module"){
 			cpps_parse_module(c, domain, child, root, buffer, limit);
 		}
+		else if (child->s == "enum"){
+			cpps_parse_enum(c, domain, child, root, buffer, limit);
+		}
 		else if (child->s == "try") {
 			cpps_parse_trycatch(c, domain, child, root, buffer, limit);
 		}
@@ -2218,7 +2288,7 @@ namespace cpps {
 			node* n = *it;
 			if (n) {
 				cpps_destory_node(n);
-				delete n;
+				n->release();
 			}
 		}
 		d->l.clear();
@@ -2234,7 +2304,7 @@ namespace cpps {
 
 	int32 close(cpps::C*& c) {
 		cpps_destory_node(c->o);
-		delete c->o;
+		c->o->release();
 		c->o = NULL;
 		/* 清理内存 */
 
@@ -2249,7 +2319,7 @@ namespace cpps {
 		gc_cleanup(c);
 		cpps_free_all_library(c);
 		//asyncio需要特殊处理
-		delete c->_G;
+		c->_G->release();
 		c->_G = NULL;
 		delete c;
 		c = NULL;
@@ -2810,6 +2880,43 @@ namespace cpps {
 		}
 		cpps_step_all(c, CPPS_MUNITRET, ns, root, d);
 	}
+	void cpps_step_enum(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
+
+		cpps_domain* leftdomain;
+		cpps_regvar* v = domain->getvar(d->s, leftdomain, false);
+		cpps_domain* ns = NULL;
+		if (!v) {
+			if (d->s == "_G") {
+				ns = domain;
+			}
+			else {
+				ns = new cpps_domain(domain, cpps_domain_type_enum, d->s);
+				v = new cpps_regvar();
+				v->setvarname(d->s);
+				v->setval(cpps_value(ns));
+				v->setsource(true);
+				domain->regvar(c, v);
+			}
+		}
+		else {
+			if(!v->getval().isdomain() || (v->getval().value.domain->domainType != cpps_domain_type_enum && v->getval().value.domain != c->_G))
+				throw(cpps_error(d->filename, d->line, cpps_error_moduleerror, "%s is defined but this is not enum.", d->s.c_str()));
+
+			ns = v->getval().value.domain;
+		}
+
+		for (auto n : d->l) {
+			leftdomain = NULL;
+			auto v2 = ns->getvar(n->s, leftdomain, false);
+			if (!v2) {
+				v2 = new cpps_regvar();
+				v2->setvarname(n->s);
+				v2->setsource(true);
+				ns->regvar(c, v2);
+			}
+			v2->setval(cpps_value(n->value.integer));
+		}
+	}
 	void cpps_step_module(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		cpps_domain* leftdomain;
 		cpps_domain* _Gdomain = c->_G;
@@ -3100,7 +3207,7 @@ namespace cpps {
 			cpps_gc_check_step(c);
 			c->stack_free(stack);
 			cpps_destory_node(o);
-			delete o;
+			o->release();
 			o = NULL;
 		}
 	}
@@ -3124,7 +3231,7 @@ namespace cpps {
 		cpps_gc_check_step(c);
 
 		cpps_destory_node(o);
-		delete o;
+		o->release();
 		o = NULL;
 	}
 	void cpps_step_newclassvar_reg_baselassvar(cpps_cppsclass* cppsclass, C* c, cpps_cppsclassvar* cppsclassvar, cpps_domain* root) {
@@ -3290,6 +3397,9 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_OMODULE) {
 			cpps_step_module(c, domain, root, d);
+		}
+		else if (d->type == CPPS_OENUM) {
+			cpps_step_enum(c, domain, root, d);
 		}
 		else if (d->type == CPPS_OTRYCATCH) {
 			cpps_step_trycath(c, domain, root, d);
@@ -3865,7 +3975,7 @@ namespace cpps {
 					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), right.value.integer));
 
 				//ret = (cpps_integer)str->at(right.value.integer);
-				ret = cpps_value(&str->at(right.value.integer));
+				ret = cpps_value(str->at(right.value.integer));
 			}
 			/*	else if (left.tt == CPPS_TDOMAIN) {
 					leftdomain = left.value.domain;

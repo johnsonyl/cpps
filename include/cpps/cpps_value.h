@@ -34,7 +34,7 @@ namespace cpps
 #else
 		cpps_value(const long unsigned int i);
 #endif
-		cpps_value(char* strv);
+		cpps_value(char& strv);
 		cpps_value(const bool b);
 		cpps_value(cpps_function* f);
 		cpps_value(cpps_domain* d);

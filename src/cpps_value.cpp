@@ -4,6 +4,7 @@ namespace cpps
 {
 	cpps_number cpps_to_number(cpps_value obj)
 	{
+		CPPS_TO_REAL_VALUE(obj);
 		cpps_number ret = 0;
 		if (obj.tt == CPPS_TNUMBER)
 		{
@@ -26,6 +27,7 @@ namespace cpps
 
 	cpps_integer cpps_to_integer(cpps_value obj)
 	{
+		CPPS_TO_REAL_VALUE(obj);
 		cpps_integer ret = 0;
 		if (obj.tt == CPPS_TNUMBER)
 		{
@@ -45,6 +47,7 @@ namespace cpps
 	}
 	std::string* cpps_get_string(cpps_value obj)
 	{
+		CPPS_TO_REAL_VALUE(obj);
 		if (obj.tt == CPPS_TSTRING)
 		{
 			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
@@ -56,6 +59,7 @@ namespace cpps
 	}
 	std::string cpps_to_string(cpps_value obj)
 	{
+		CPPS_TO_REAL_VALUE(obj);
 		std::stringstream strStream;
 		if (obj.tt == CPPS_TNUMBER)
 		{
@@ -82,6 +86,7 @@ namespace cpps
 
 	cpps_vector* cpps_to_cpps_vector(cpps_value obj)
 	{
+		CPPS_TO_REAL_VALUE(obj);
 		if (!obj.isdomain()) return NULL;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
 		cpps_vector* ret = (cpps_vector*)cppsclassvar->getclsptr();
@@ -89,6 +94,7 @@ namespace cpps
 	}
 	cpps_map* cpps_to_cpps_map(cpps_value obj)
 	{
+		CPPS_TO_REAL_VALUE(obj);
 		if (!obj.isdomain()) return NULL;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
 		cpps_map* ret = (cpps_map*)cppsclassvar->getclsptr();
@@ -97,6 +103,7 @@ namespace cpps
 
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj)
 	{
+		CPPS_TO_REAL_VALUE(obj);
 		if (!obj.isdomain()) return NULL;
 		cpps_cppsclass* cppsclassvar = (cpps_cppsclass*)obj.value.domain;
 		return cppsclassvar;
@@ -272,10 +279,10 @@ namespace cpps
 	
 
 #endif
-	cpps_value::cpps_value(char* strv)
+	cpps_value::cpps_value(char& strv)
 	{
 		tt = CPPS_TSTRINGV;
-		value.strv = strv;
+		value.strv = &strv;
 	}
 	cpps_value::~cpps_value()
 	{

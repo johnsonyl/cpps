@@ -163,7 +163,8 @@
 #define CPPS_OTHISPARAM			63 //字符串参数
 #define CPPS_OYIELD				64 //字符串参数
 #define CPPS_ODEFVAR_HOTUPDATE  65 //子函数.
-#define CPPS_OECHO				66 //子函数.
+#define CPPS_OECHO				66 //ECHO.
+#define CPPS_OENUM				67 //ENUM 枚举.
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 
@@ -195,7 +196,8 @@ enum
 	cpps_domain_type_class,		//类的域
 	cpps_domain_type_classvar,		//类的域
 	cpps_domain_type_namespace,		//名空间
-	cpps_domain_type_module,		//名空间
+	cpps_domain_type_module,		//模块
+	cpps_domain_type_enum,		//枚举
 	cpps_domain_type_trycatch,		//trycatch
 	cpps_domain_type_foreach,		//foreach
 	//cpps_domain_type_
@@ -204,6 +206,20 @@ enum
 
 #define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREGVAR) left = *left.value.value;
 
+#ifndef CPPS_DECLARE_DEPRECATED
+# define CPPS_DECLARE_DEPRECATED(f)   f;
+# ifdef __GNUC__
+#  if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 0)
+#   undef CPPS_DECLARE_DEPRECATED
+#   define CPPS_DECLARE_DEPRECATED(f)    f __attribute__ ((deprecated));
+#  endif
+# elif defined(__SUNPRO_C)
+#  if (__SUNPRO_C >= 0x5130)
+#   undef CPPS_DECLARE_DEPRECATED
+#   define CPPS_DECLARE_DEPRECATED(f)    f __attribute__ ((deprecated));
+#  endif
+# endif
+#endif
 
 #ifndef _WIN32
 typedef long long __int64;
