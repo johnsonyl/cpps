@@ -6,11 +6,21 @@ using namespace std;
 
 namespace cpps { std::string cpps_io_getfilepath(std::string str);std::string cpps_rebuild_filepath(std::string path);std::string cpps_real_path(); }
 
-class CppClassTest
+class CppParentClassTest
+{
+public:
+	int i;
+	void	parentTestFunc()
+	{
+		printf("call CppParentClassTest::parentTestFunc() : %d",i);
+	}
+};
+class CppClassTest : public CppParentClassTest
 {
 public:
 	void	testFunc(cpps::object val)
 	{
+		i = 100;
 		if (val.isint())
 		{
 			printf("val:%d\r\n", object_cast<int32>(val));
@@ -39,7 +49,10 @@ int32 main(int argc,char **argv)
 	C* c = cpps::create(argc,argv);
 
 	cpps::_module(c)[
+		_class<CppParentClassTest>("CppParentClassTest")
+			.def("parentTestFunc",&CppParentClassTest::parentTestFunc),
 		_class<CppClassTest>("CppClassTest")
+			.base<CppParentClassTest>()
 			.def("testFunc",&CppClassTest::testFunc)
 	];
 
@@ -173,6 +186,10 @@ int32 main(int argc,char **argv)
 		cpps::doclassfunction(c, cppclassvar, testFunc,cpps::object::create(c,"asdfsadf")); //or get function and call it.
 	}
 
+	cpps::object parentTestFunc = cppclassvar["parentTestFunc"];
+	if (parentTestFunc.isfunction()) {
+		cpps::doclassfunction(c, cppclassvar, parentTestFunc); //or get function and call it.
+	}
 
 
 	cpps::close(c);

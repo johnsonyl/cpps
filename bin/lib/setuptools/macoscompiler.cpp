@@ -104,7 +104,7 @@ class macoscompiler : ccompiler
         	newsources.push_back(full_path);
         	
         }
-        println_color("Building Path:{work_path}",6);
+        println_color("-- Building Path:{work_path}",6);
 
         var c = newsources.size();
         foreach(var i : xrange(0,c-1)){
@@ -124,17 +124,17 @@ class macoscompiler : ccompiler
 		var outfilepath = "";
 		if(link_type == 1){
 			outfilepath = "{real_install_path}lib{output_name}.dylib";
-        	println_color("Linking CXX shared library lib{output_name}.so",3);
+        	println_color("-- Linking CXX shared library lib{output_name}.so",3);
 			opt = string.join(" ",ldflags_shared);
 		}
 		else if(link_type == 2){
 			outfilepath = "{real_install_path}lib{output_name}.a";
-			println_color("Linking CXX static library lib{output_name}.a",3);
+			println_color("-- Linking CXX static library lib{output_name}.a",3);
 			opt = string.join(" ",ldflags_static);
 
 		}
 		else if(link_type == 3){
-			println_color("Linking CXX executable {output_name}",3);
+			println_color("-- Linking CXX executable {output_name}",3);
 			opt = string.join(" ",ldflags_executable);
 			outfilepath = "{real_install_path}{output_name}";
 		}
@@ -151,7 +151,7 @@ class macoscompiler : ccompiler
 			cmd = '{ar} {opt} {outfilepath} {objslist}';
         var s = execmd(cmd);
 		if(len(s) > 0)  { log.error(s);  return false; }
-		else println_color("compiler is done.",2); 
+		else println_color("-- Compiler is done.",2); 
 
 		return true;
     }

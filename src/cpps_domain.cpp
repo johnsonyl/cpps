@@ -72,9 +72,18 @@ namespace cpps
 		hasVar = true;
 		do
 		{
-			cpps_regvar* var = new cpps_regvar();
-			var->setvarname(f->varname);
-			var->setconst(true);
+			cpps_domain* leftdomain = NULL;
+			cpps_regvar* var = NULL;
+			if (!f->varname.empty()) {
+				var = getvar(f->varname, leftdomain, false, true);;
+				if (!var) {
+					var = new cpps_regvar();
+					var->setvarname(f->varname);
+					var->setconst(true);
+
+					varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(var->varName, var));
+				}
+			}
 			if (f->type == cpps_def_regfunction)
 			{
 				cpps_regfunction* func = (cpps_regfunction*)f;
@@ -96,8 +105,28 @@ namespace cpps
 			{
 				var->setval(f->value);
 			}
-			varList.erase(var->varName);
-			varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(var->varName, var));
+			else if (f->type == cpps_def_regparentclass)
+			{
+				leftdomain = NULL;
+				cpps_regparentclass* _regparentclass = (cpps_regparentclass*)f;
+				cpps_cppsclass* _parent = _regparentclass->__cppsclass;
+
+				for (auto _var : _parent->varList) {
+					auto __var = _var.second;
+
+					leftdomain = NULL;
+					auto __self_var = getvar(__var->getvarname(), leftdomain, true, false);
+					if (!__self_var) {
+						__self_var = new cpps_regvar();
+						__self_var->setvarname(__var->getvarname());
+						__self_var->setsource(false);
+						__self_var->setconst(true);
+						varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(__var->getvarname(), __self_var));
+					}
+					__self_var->setsource(false);
+					__self_var->setval(__var->getval());
+				}
+			}
 			cpps_reg* take = f;
 			f = f->next;
 			take->release();

@@ -73,4 +73,9 @@ namespace cpps
 		varName = n;
 	}
 
+	std::string cpps_regvar::getvarname()
+	{
+		return varName;
+	}
+
 }

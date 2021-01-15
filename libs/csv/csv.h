@@ -53,7 +53,7 @@
 
 
 
-namespace io{
+namespace cpps{
         ////////////////////////////////////////////////////////////////////////////
         //                                 LineReader                             //
         ////////////////////////////////////////////////////////////////////////////
@@ -875,7 +875,7 @@ namespace io{
                 ){
                         for (int i : col_order) {
                                 if(line == nullptr)
-                                        throw ::io::error::too_few_columns();
+                                        throw ::cpps::error::too_few_columns();
                                 char*col_begin, *col_end;
                                 chop_next_column<quote_policy>(line, col_begin, col_end);
 
@@ -887,7 +887,7 @@ namespace io{
                                 }
                         }
                         if(line != nullptr)
-                                throw ::io::error::too_many_columns();
+                                throw ::cpps::error::too_many_columns();
                 }
 
                 template< class trim_policy, class quote_policy>
@@ -902,7 +902,7 @@ namespace io{
                         col_order.clear();
 
                         std::vector<bool> found; found.resize(column_count);
-                        for (auto& b : found) b = false;
+                        for (auto it = found.begin(); it != found.end(); ++it) *it = false;
                         while(line){
                                 char*col_begin,*col_end;
                                 chop_next_column<quote_policy>(line, col_begin, col_end);
@@ -923,7 +923,7 @@ namespace io{
                                                 break;
                                         }
                                 if(col_begin){
-                                        if(ignore_policy & ::io::ignore_extra_column)
+                                        if(ignore_policy & ::cpps::ignore_extra_column)
                                                 col_order.push_back(-1);
                                         else{
                                                 error::extra_column_in_header err;
@@ -932,7 +932,7 @@ namespace io{
                                         }
                                 }
                         }
-                        if(!(ignore_policy & ::io::ignore_missing_column)){
+                        if(!(ignore_policy & ::cpps::ignore_missing_column)){
                                 for(unsigned i=0; i<column_count; ++i){
                                         if(!found[i]){
                                                 error::missing_column_in_header err;
@@ -1176,7 +1176,7 @@ namespace io{
 		}
 
                 void read_header(ignore_column ignore_policy, std::vector<std::string> &list){
-                    init((usint32)list.size());
+                    init((cpps::usint32)list.size());
                         try{
                                 size_t idx = 0;
                                 for (auto &s : list){
@@ -1200,7 +1200,7 @@ namespace io{
                 }
                 template<class ...ColNames>
                 void read_header(ignore_column ignore_policy, ColNames...cols){
-					init((usint32)list.size());
+					init((cpps::usint32)(sizeof...(ColNames)));
 
                         try{
                                 set_column_names(std::forward<ColNames>(cols)...);
@@ -1222,7 +1222,7 @@ namespace io{
                 }
 
                 void set_header(std::vector<std::string>& list){
-					init((usint32)list.size());
+					init((cpps::usint32)list.size());
 
 					size_t idx = 0;
 					for (auto& s : list) {
@@ -1235,7 +1235,7 @@ namespace io{
 				}
 				template<class ...ColNames>
 				void set_header(ColNames...cols) {
-					init((usint32)list.size());
+                    init((cpps::usint32)(sizeof...(ColNames)));
 
 					set_column_names(std::forward<ColNames>(cols)...);
 					std::fill(row, row + column_count, nullptr);
@@ -1282,7 +1282,7 @@ namespace io{
                         if(row[r]){
                                 try{
                                         try{
-                                                ::io::detail::parse<overflow_policy>(row[r], t);
+                                                ::cpps::detail::parse<overflow_policy>(row[r], t);
                                         }catch(error::with_column_content&err){
                                                 err.set_column_content(row[r]);
                                                 throw;
@@ -1298,7 +1298,7 @@ namespace io{
 					if (r < column_count && row[r]) {
 						try {
 							try {
-								::io::detail::parse<overflow_policy>(row[r], list[r]);
+								::cpps::detail::parse<overflow_policy>(row[r], list[r]);
 							}
 							catch (error::with_column_content& err) {
 								err.set_column_content(row[r]);
@@ -1390,12 +1390,12 @@ namespace cpps {
         }
 		void    open(std::string csvpath) {
          
-            reader = new io::CSVReader(csvpath.c_str());
+            reader = new CSVReader<>(csvpath.c_str());
 		}
         void  read_header(cpps::object headers,object _ignore_column)
         {
-            io::ignore_column v = io::ignore_extra_column;
-            if (_ignore_column.isint()) v = (io::ignore_column) _ignore_column.toint();
+            ignore_column v = ignore_extra_column;
+            if (_ignore_column.isint()) v = (ignore_column) _ignore_column.toint();
 
             std::vector<std::string> headers_vct;
             for (cpps::object cv : cpps::object::vector(headers)) {
@@ -1449,7 +1449,7 @@ namespace cpps {
                 reader = NULL;
             }
 		}
-        io::CSVReader<> *reader;
+        CSVReader<> *reader;
 	};
 }
 #endif

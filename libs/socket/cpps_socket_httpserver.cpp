@@ -177,11 +177,10 @@ namespace cpps {
 		for (auto item : req.headers)
 			cpps_request_ptr->input_headerslist.insert(PARAMSLIST::value_type(item.first, item.second));
 
-		size_t ibsize = req.body.size();
+		size_t ibsize = req.body_len;
 		if (ibsize > 0)
 		{
-			cpps_request_ptr->input_buffer.resize(ibsize);
-			cpps_request_ptr->input_buffer = req.body;
+			cpps_request_ptr->input_buffer.append(req.body_buf, req.body_len);
 
 			if (cpps_request_ptr->isformdata()) {
 				cpps_request_ptr->parse_form_data(cpps_request_ptr->input_buffer);
@@ -489,8 +488,6 @@ namespace cpps {
 
 	int body_cb(http_parser* p, const char* buf, size_t len)
 	{
-		http_request* req = (struct http_request*)p->data;
-		req->body.append(buf, len);
 		return 0;
 	}
 
@@ -498,7 +495,7 @@ namespace cpps {
 	{
 		http_request* req = (struct http_request*)p->data;
 		req->keepalive = http_should_keep_alive(p);
-		return 0;
+		return -1;
 	}
 
 	int message_complete_cb(http_parser* p)
@@ -524,20 +521,35 @@ namespace cpps {
 			client->readbuffer(buf, nread);
 			http_request request;
 			http_parser parser;
+			request.support_gzip = false;
+			request.body_len = 0;
 			parser.data = (void*)&request;
 			http_parser_init(&parser, HTTP_REQUEST);
 			http_parser_settings settings = { nullptr, request_url_cb, nullptr, header_field_cb, header_value_cb,
 				headers_complete_cb, body_cb, message_complete_cb, chunk_header_cb, chunk_complete_cb };
 
 			size_t parsed = http_parser_execute(&parser, &settings, client->buffer.c_str(), client->buffer.size());
-			if (parsed != client->buffer.size() ) {
+			if (!request.headers["Content-Length"].empty())
+			{
+				auto content_length = atoll(request.headers["Content-Length"].c_str());
+				if ((client->buffer.size() - parsed) < (size_t)content_length)
+				{
+					return;
+				}
+				request.body_buf = client->buffer.c_str() + parsed + 1;
+				request.body_len = content_length;
+
+			}
+			else if ((parsed + 1) != client->buffer.size()) {
 				return;
 			}
+
+			//request.body.append(request.body_buf, request.body_len);
 			request.socket_index = client->socket_index;
 			generic_handler(request, this);
 			client->buffer.clear();
 		}
-		else if (nread <= 0)
+		else if (nread < 0)
 		{
 			client->close("normal close.", onClsoeCallback);
 		}

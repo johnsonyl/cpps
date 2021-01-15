@@ -125,16 +125,13 @@ namespace cpps
 		// 				*ret = stack->funcRet;//return的值反馈回去
 
 #else
+		if (quatoreturn) {
+			funcdomain->funcRet.tt = CPPS_TREGVAR;
+		}
 		cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context);
 
 		if (ret) {
-
-			if (funcdomain->funcRet.tt == CPPS_TREGVAR && !quatoreturn) {
-				*ret = *funcdomain->funcRet.value.value;
-			}
-			else {
-				*ret = funcdomain->funcRet;//return的值反馈回去
-			}
+			*ret = funcdomain->funcRet;//return的值反馈回去
 		}
 #endif
 

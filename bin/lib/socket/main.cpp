@@ -1,4 +1,5 @@
 #import "uuid"
+#import "hashlib"
 class ServerOption
 {
 	var ip;

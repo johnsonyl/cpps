@@ -180,15 +180,15 @@ class mscompiler : ccompiler
 		var compile_options;
 		var compile_options_debug;
 		if(arch == "x86"){
-			compile_options = [ '/std:c++17','/nologo', '/EHsc' , '/Ox', '/MD', '/W3',
+			compile_options = [ '/nologo', '/EHsc' , '/Ox', '/MD', '/W3',
                                      '/DNDEBUG', '/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
-			compile_options_debug = ['/std:c++17','/nologo', '/EHsc', '/Od', '/MDd', '/W3',
+			compile_options_debug = ['/nologo', '/EHsc', '/Od', '/MDd', '/W3',
                                           '/Z7', '/D_DEBUG', '/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
 		}
 		else{
-			compile_options = [ '/std:c++17','/nologo', '/EHsc', '/Ox', '/MD', '/W3', '/GS-' ,
+			compile_options = [ '/nologo', '/EHsc', '/Ox', '/MD', '/W3', '/GS-' ,
                                      '/DNDEBUG', '/EHsc','/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
-            compile_options_debug = ['/std:c++17','/nologo', '/Od', '/MDd', '/W3', '/GS-',
+            compile_options_debug = ['/nologo', '/Od', '/MDd', '/W3', '/GS-',
                                           '/Z7', '/D_DEBUG' ,'/D_CRT_SECURE_NO_WARNINGS',"/DWIN32","/D_WINDOWS"];
 		}
 		var ldflags_shared;
@@ -292,7 +292,7 @@ class mscompiler : ccompiler
         	newsources.push_back(full_path);
         	
         }
-        println_color("Building Path:{work_path}",6);
+        println_color("-- Building Path:{work_path}",6);
 		
         var c = newsources.size();
         foreach(var i : xrange(0,c-1)){
@@ -308,7 +308,7 @@ class mscompiler : ccompiler
         	println_color(" Building CXX object {sources[i]} -> {sources[i]}.obj",2);
 			var cmd = '{cl} /c {opt} {inc} /Fo"{obj}" "{src}"';
         	var s = execmd(cmd);
-        	if(string.find(s,"error") != string.npos ) { log.warrning(s);}
+        	if(string.find(s,"error") != string.npos ) { log.error(s);}
         }
 
         
@@ -316,7 +316,7 @@ class mscompiler : ccompiler
         var opt = "";
 		var outfilepath = "";
 		if(link_type == 1){
-			println_color("Linking CXX shared library {output_name}.dll",3);
+			println_color("-- Linking CXX shared library {output_name}.dll",3);
 			if(!debug)
 				opt = string.join(" ",ldflags_shared);
 			else
@@ -324,12 +324,12 @@ class mscompiler : ccompiler
 			outfilepath = "{real_install_path}{output_name}.dll";
 		}
 		else if(link_type == 2) {
-			println_color("Linking CXX static library {output_name}.lib",3);
+			println_color("-- Linking CXX static library {output_name}.lib",3);
 			opt = string.join(" ",ldflags_static);
 			outfilepath = "{real_install_path}{output_name}.lib";
 		}
 		else if(link_type == 3) {
-			println_color("Linking CXX executable {output_name}.exe",3);
+			println_color("-- Linking CXX executable {output_name}.exe",3);
 			if(!debug)
 				opt = string.join(" ",ldflags_executable);
 			else
@@ -354,7 +354,7 @@ class mscompiler : ccompiler
 			if(string.find(s,"error") != string.npos) { log.error(s);sleep(10); return false;}
 		}
 		
-		println_color("compiler is done.",2); 
+		println_color("-- Compiler is done.",2); 
 		return true;
 	}
 }

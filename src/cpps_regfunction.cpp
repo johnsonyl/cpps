@@ -60,4 +60,9 @@ namespace cpps
 		return newstr.size();
 	}
 
+	cpps::cpps_regparentclass* make_parentclass(cpps_cppsclass* _cppsclass)
+	{
+		return new cpps_regparentclass(_cppsclass);
+	}
+
 }

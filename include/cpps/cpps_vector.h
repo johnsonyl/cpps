@@ -39,6 +39,11 @@ public:
 #define VECTOR_I_9 10
 #define VECTOR_I_10 11
 #define VECTOR_I_11 12
+#define VECTOR_I_12 13
+#define VECTOR_I_13 14
+#define VECTOR_I_14 15
+#define VECTOR_I_15 16
+#define VECTOR_I_16 17
 
 #define VECTORCLASS(c) 
 
@@ -89,6 +94,26 @@ public:
 #undef CPPS_VECTOR_ITER_C
 
 #define  CPPS_VECTOR_ITER_C 11
+#include "cpps_vector.h"
+#undef CPPS_VECTOR_ITER_C
+
+#define  CPPS_VECTOR_ITER_C 12
+#include "cpps_vector.h"
+#undef CPPS_VECTOR_ITER_C
+
+#define  CPPS_VECTOR_ITER_C 13
+#include "cpps_vector.h"
+#undef CPPS_VECTOR_ITER_C
+
+#define  CPPS_VECTOR_ITER_C 14
+#include "cpps_vector.h"
+#undef CPPS_VECTOR_ITER_C
+
+#define  CPPS_VECTOR_ITER_C 15
+#include "cpps_vector.h"
+#undef CPPS_VECTOR_ITER_C
+
+#define  CPPS_VECTOR_ITER_C 16
 #include "cpps_vector.h"
 #undef CPPS_VECTOR_ITER_C
 

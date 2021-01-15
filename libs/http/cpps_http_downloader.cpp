@@ -4,7 +4,9 @@ namespace cpps
 
 	cpps_http_downloader::cpps_http_downloader()
 	{
-		
+		fileCurrSize = 0;
+		fileSize = 0;
+		fileSize = 0;
 	}
 	
 	cpps_http_downloader::~cpps_http_downloader()
@@ -149,7 +151,7 @@ namespace cpps
 		if (file) fwrite(page, size, 1, file);
 
 		if(m_funcCallback.isfunction())
-			cpps::dofunction(m_c, m_funcCallback, (__int64)fileSize, (__int64)size, (__int64)fileCurrSize);
+			cpps::dofunction(m_c, m_funcCallback, (cpps_integer)fileSize, (cpps_integer)size, (cpps_integer)fileCurrSize);
 	}
 
 }

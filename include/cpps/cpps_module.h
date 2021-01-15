@@ -69,6 +69,14 @@ namespace cpps
 			cpps_class_singleton<C*>::instance()->setsls(_cls);
 		}
 		template<class F>
+		_class<C>& base()
+		{
+			cpps_reg* r = make_parentclass(cpps_class_singleton<F*>::instance()->getcls());
+			r->isneedC = false;
+			_cls->regfunc(r);
+			return *this;
+		}
+		template<class F>
 		_class<C>& 	def(std::string func, F _f, bool isasync = false)
 		{
 			cpps_reg* r = make_regfunction(func, _f,isasync);

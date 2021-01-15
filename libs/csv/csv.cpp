@@ -34,9 +34,9 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def_inside("read_row", &cpps_csvreader::read_row)
 		.def("close", &cpps_csvreader::close),
 		def_inside("open",cpps_csv_open),
-		defvar(c,"ignore_missing_column", io::ignore_missing_column),
-		defvar(c,"ignore_extra_column", io::ignore_extra_column),
-		defvar(c,"ignore_no_column", io::ignore_no_column)
+		defvar(c,"ignore_missing_column", cpps::ignore_missing_column),
+		defvar(c,"ignore_extra_column", cpps::ignore_extra_column),
+		defvar(c,"ignore_no_column", cpps::ignore_no_column)
 	];
 
 

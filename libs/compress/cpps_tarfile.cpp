@@ -130,8 +130,8 @@ namespace cpps {
 
 				file_list.push_back( info);
 
-
-				pos += file_block_count * block_size;
+				if(header->typeflag != '5') //dir not real save.
+					pos += file_block_count * block_size;
 			}
 		}
 		

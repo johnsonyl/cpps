@@ -26,9 +26,7 @@ namespace cpps
 	struct cpps_cppsclass;
 	struct cpps_cpps_value;
 	struct Buffer;
-#define cpps_def_regfunction	1
-#define cpps_def_regclass		2
-#define cpps_def_regvar			3
+
 
 
 	struct cpps_function
@@ -98,6 +96,17 @@ namespace cpps
 		virtual void release() { delete this; }
 
 	};
+	struct cpps_regparentclass : public cpps_reg
+	{
+		cpps_regparentclass(cpps_cppsclass* _cppsclass)
+		{
+			type = cpps_def_regparentclass;
+			__cppsclass = _cppsclass;
+		}
+		virtual ~cpps_regparentclass() {}
+		virtual void release() { delete this; }
+		cpps_cppsclass* __cppsclass;
+	};
 	struct cpps_regclass : public cpps_reg
 	{
 		cpps_regclass(std::string name, cpps_cppsclass *c)
@@ -155,6 +164,7 @@ namespace cpps
 		return new cpps_regfunction(func, new cpps_function1<R>(f),isasync);
 	}
 
+
 	template<class R, class CLS>
 	struct cpps_cpp_function1 : public cpps_function
 	{
@@ -187,6 +197,7 @@ namespace cpps
 	{
 		return new cpps_reggvar(name, v);
 	}
+	cpps_regparentclass* make_parentclass(cpps_cppsclass* _cppsclass);
 	
 }
 
@@ -240,6 +251,26 @@ namespace cpps
 #undef  CPPS_MAKE_REGFUNCTION_ITER_C
 
 #define CPPS_MAKE_REGFUNCTION_ITER_C 11
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 12
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 13
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 14
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 15
+#include "cpps_regfunction.h"
+#undef  CPPS_MAKE_REGFUNCTION_ITER_C
+
+#define CPPS_MAKE_REGFUNCTION_ITER_C 16
 #include "cpps_regfunction.h"
 #undef  CPPS_MAKE_REGFUNCTION_ITER_C
 

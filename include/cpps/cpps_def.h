@@ -165,6 +165,7 @@
 #define CPPS_ODEFVAR_HOTUPDATE  65 //子函数.
 #define CPPS_OECHO				66 //ECHO.
 #define CPPS_OENUM				67 //ENUM 枚举.
+#define CPPS_OSLICE				68 //切片.
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 
@@ -203,6 +204,10 @@ enum
 	//cpps_domain_type_
 
 };
+#define cpps_def_regfunction			1
+#define cpps_def_regclass				2
+#define cpps_def_regvar					3
+#define cpps_def_regparentclass			4
 
 #define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREGVAR) left = *left.value.value;
 

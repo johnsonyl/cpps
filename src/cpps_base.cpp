@@ -275,7 +275,7 @@ namespace cpps
 			std::string libfuncname = "cpps_attach";
 			if (module == NULL)
 			{
-				printf("Load module [%s] faild.\r\n", libname.c_str());
+				printf("Load module [%s] : %d faild.\r\n", libname.c_str(),GetLastError());
 				FreeLibrary(module);
 				return false;
 			}

@@ -20,6 +20,8 @@ namespace cpps {
 		std::string body;
 		std::string field;
 		int32 keepalive;
+		const char* body_buf;
+		size_t body_len;
 
 	};
 	class cpps_socket_httpserver_option

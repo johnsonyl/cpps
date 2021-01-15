@@ -33,7 +33,7 @@ int32 main(int argc,char **argv)
 			printf("%d\r\n", CPPS_VERN);
 			return 0;
 		}
-		else if (path == "-install" || path == "-uninstall") {
+		else if (path == "-install" || path == "-uninstall"|| path == "-update") {
 			path = "lib/install/main.cpp";
 			path = cpps_rebuild_filepath(path);
 #ifdef WIN32
@@ -44,7 +44,7 @@ int32 main(int argc,char **argv)
 		}
 		else if (path == "-h" || path == "-help")
 		{
-			printf("usage: cppsc [option or filepath] ... [arg] ...\r\n");
+			printf("usage: cpps [option or filepath] ... [arg] ...\r\n");
 			printf("Options and arguments:\r\n");
 			printf("-v\t: print the cpps version and exit (also -version)\r\n");
 			printf("-vno\t: print the cpps version number and exit \r\n");
@@ -54,7 +54,7 @@ int32 main(int argc,char **argv)
 		}
 		else {
 			printf("Unknow option:%s\r\n", path.c_str());
-			printf("Try 'cppsc -h' for more infomation.\r\n");
+			printf("Try 'cpps -h' for more infomation.\r\n");
 			return 0;
 		}
 

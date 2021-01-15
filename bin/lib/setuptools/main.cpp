@@ -19,7 +19,7 @@ namespace setuptools{
 		var type = "";
 		if(args.size() == 3){
 			type = args[2];
-			if(args[1] == "-install"){
+			if(args[1] == "-install" || args[1] == "-update"){
 				type = "build";
 			}
 		}

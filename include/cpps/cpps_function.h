@@ -94,6 +94,55 @@ namespace cpps
 #define CPPS_FUNCTION_ITER_C 6
 #include "cpps_function.h"
 #undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 7
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 8
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 9
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 10
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 11
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 12
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 13
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+#define CPPS_FUNCTION_ITER_C 14
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 15
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
+
+
+#define CPPS_FUNCTION_ITER_C 16
+#include "cpps_function.h"
+#undef CPPS_FUNCTION_ITER_C
 #endif
 
 #ifdef CPPS_FUNCTION_ITER_C

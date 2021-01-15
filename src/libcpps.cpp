@@ -1073,6 +1073,54 @@ namespace cpps {
 		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "Definition array not detected '}'"));
 		return(bracket);
 	}
+	void cpps_parse_getchild_or_slice(C* c, cpps_node_domain* domain, node* root, node* geto,node* child, cppsbuffer& buffer)
+	{
+		node* first = new node(child, child->filename, buffer.line());
+		node* second = new node(child, child->filename, buffer.line());
+		node* third = new node(child, child->filename, buffer.line());
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != ':') {
+			cpps_parse_expression(c, domain, first, root, buffer);
+		}
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() == ']') { 
+			buffer.pop();
+			return; 
+		}
+		if (buffer.cur() != ':')
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "';'slice parsing error"));
+		buffer.pop();
+
+		geto->type = CPPS_OSLICE;
+
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != ':') {
+			cpps_parse_expression(c, domain, second, root, buffer);
+		}
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() == ']') {
+			buffer.pop();
+			return;
+		}
+		if (buffer.cur() != ':')
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "';'slice parsing error"));
+		buffer.pop();
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != ']') {
+			cpps_parse_expression(c, domain, third, root, buffer);
+		}
+
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != ']')
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "']' parsing error"));
+		
+		buffer.pop();
+	}
 	node* cpps_parse_last_func(C* c, cppsbuffer& buffer, node* o, node* p, cpps_node_domain* domain, node* root) {
 		/*有后续 */
 		while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':')) {
@@ -1089,12 +1137,7 @@ namespace cpps {
 				geto->type = CPPS_OGETCHIILD;
 				child = new node(o->filename, buffer.line());
 				child->setparent(geto);
-				cpps_parse_expression(c, domain, child, root, buffer);
-				if (!child)
-					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "'[' must be followed by a parameter"));
-				if (buffer.cur() != ']')
-					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "']' parsing error"));
-				buffer.pop();
+				cpps_parse_getchild_or_slice(c, domain, root, geto,child, buffer);
 			}
 			else if (symblo == '.') {
 				geto->type = CPPS_OGETOBJECT;
@@ -1785,6 +1828,7 @@ namespace cpps {
 		cpps_parse_line(c, whiledomain, while2, root, buffer);
 	}
 	node* cpps_parse_getparent_node(node* root, node* parent) {
+		if (!root) return NULL;
 		node* ret = NULL;
 		ret = root->getnode(parent->s);
 		if (!parent->l.empty())
@@ -1886,9 +1930,8 @@ namespace cpps {
 				}
 				if (c->buildoffset) {
 					node* parent_node = cpps_parse_getparent_node(root, parent);
-					if (!parent_node)
-						throw(cpps_error(child->filename, child->line, cpps_error_classerror, "[%s] base class is not defined", parent->s.c_str()));
-					cpps_parse_reg_base_class(c, parentset, child, parent_node);
+					if (parent_node)
+						cpps_parse_reg_base_class(c, parentset, child, parent_node);
 				}
 				if (buffer.cur() != ',') {
 					break;
@@ -2618,11 +2661,13 @@ namespace cpps {
 		if (cpps_func_domain && cpps_func_domain != c->_G && cpps_func_domain->parent[0]->domainType == cpps_domain_type_func) {
 			/* 设置回去 */
 			cpps_func_domain->isbreak = true;
-			cpps_func_domain->funcRet = ret_value;
-			cpps_regvar* v = new cpps_regvar();
-			v->setvarname("return");
-			v->setval(ret_value);
-			cpps_func_domain->regvar(c, v);
+			if (cpps_func_domain->funcRet.tt == CPPS_TREGVAR)
+				cpps_func_domain->funcRet = ret_value;
+			else if(ret_value.tt == CPPS_TREGVAR)
+				cpps_func_domain->funcRet = *ret_value.value.value;
+			else
+				cpps_func_domain->funcRet = ret_value;
+
 		}
 		else {
 			/* 艹，没找到函数？？ 那怎么return */
@@ -3073,6 +3118,7 @@ namespace cpps {
 
 				v->clone(it2->second);
 
+				cppsclass->hasVar = true;
 				cppsclass->varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(it2->first, v));
 			}
 		}
@@ -3249,7 +3295,7 @@ namespace cpps {
 		/*看看有没有使用名空间 */
 		node* lastNamespace = d;
 		while (lastNamespace && lastNamespace->getleft() && lastNamespace->getleft()->type == CPPS_ONAMESPANCE_CHILD) {
-			v = v->getval().value.domain->getvar(lastNamespace->getleft()->s, leftdomain);
+			v = v->getval().value.domain->getvar(lastNamespace->getleft()->s, leftdomain,false);
 			if (!v)
 				throw(cpps_error(lastNamespace->getleft()->filename, lastNamespace->getleft()->line, cpps_error_normalerror, "[%s] not found or not defined", lastNamespace->getleft()->s.c_str()));
 			lastNamespace = lastNamespace->getleft();
@@ -3770,6 +3816,176 @@ namespace cpps {
 			ret.tt = CPPS_TLAMBDAFUNCTION;
 		}
 	}
+	void cpps_calculate_expression_slice(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret)
+	{
+		cpps_value left = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
+		CPPS_TO_REAL_VALUE(left);
+		if (left.tt != CPPS_TNIL) {
+			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING  ) {
+				object leftobject = object(left);
+				object symbolfunc = leftobject["[]"]; //operator []
+
+				node* first_node = d->getright()->l[0];
+				node* second_node = d->getright()->l[1];
+				node* third_node = d->getright()->l[2];
+
+				object first;
+				object second;
+				object third;
+
+				if(first_node->getleft() && first_node->getleft()->type != CPPS_TNIL)
+					first = cpps_calculate_expression(c, domain, root, first_node->getleft(), leftdomain);
+				if (second_node->getleft() && second_node->getleft()->type != CPPS_TNIL)
+					second = cpps_calculate_expression(c, domain, root, second_node->getleft(), leftdomain);
+				if (third_node->getleft() && third_node->getleft()->type != CPPS_TNIL)
+					third = cpps_calculate_expression(c, domain, root, third_node->getleft(), leftdomain);
+
+				cpps_integer start_index = 0;
+				cpps_integer end_index = MAXINT64;
+				cpps_integer step_index = 1;
+
+				if (first.isint()) {
+					start_index = first.toint();
+					if (start_index < 0){
+						step_index = -1;
+					}
+				}
+				if (second.isint())
+					end_index = second.toint();
+				if (third.isint())
+					step_index = third.toint();
+
+
+
+				//step 为0 非法.
+				if (step_index == 0) {
+					return;
+				}
+				
+
+
+				if (leftobject.isvector()) {
+					cpps_vector* vct = cpps_to_cpps_vector(left);
+
+					object::vector ret_vec = object::vector::create(c);
+					ret = ret_vec.toobject().value;
+
+					if (end_index == MAXINT64) {
+						if (start_index < 0)
+							end_index = 0;
+						else
+							end_index = vct->size() - 1;
+					}
+
+					//计算真实值.
+					if (start_index < 0){
+						start_index = vct->size() + start_index;
+					}
+
+					if (end_index < 0) {
+						end_index = vct->size() + end_index;
+					}
+
+					
+
+					//???? a[1:1]??
+					if (start_index == end_index) {
+						ret_vec.push_back(vct->at(start_index));
+						return;
+					}
+
+					//越走越远说明有问题.
+					auto count = abs(end_index - start_index);
+					if (abs(end_index - (start_index + step_index)) > count) {
+						return;
+					}
+
+					if (start_index < end_index) {
+
+						for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
+							ret_vec.push_back(vct->at(i));
+						}
+					}
+					else {
+
+						for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
+							ret_vec.push_back(vct->at(i));
+						}
+					}
+
+					////从右至左,但step为正数. 非法
+					//if (start_index < 0 && step_index > 0) {
+					//	return;
+					//}
+					////从左至右 但step为负数 ,非法.
+					//if (start_index >= 0 && step_index < 0) {
+					//	return;
+					//}
+
+				}
+				else if (leftobject.isstring())
+				{
+					std::string* str = cpps_get_string(left);
+					std::string ret_str;
+
+					if (end_index == MAXINT64) {
+						if (start_index < 0)
+							end_index = 0;
+						else
+							end_index = str->size() - 1;
+					}
+
+					//计算真实值.
+					if (start_index < 0) {
+						start_index = str->size() + start_index;
+					}
+
+					if (end_index < 0) {
+						end_index = str->size() + end_index;
+					}
+
+
+
+					//???? a[1:1]??
+					if (start_index == end_index) {
+						ret_str.push_back(str->at(start_index));
+						return;
+					}
+
+					//越走越远说明有问题.
+					auto count = abs(end_index - start_index);
+					if (abs(end_index - (start_index + step_index)) > count) {
+						return;
+					}
+
+					if (start_index < end_index) {
+
+						for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
+							ret_str.push_back(str->at(i));
+						}
+					}
+					else {
+
+						for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
+							ret_str.push_back(str->at(i));
+						}
+					}
+
+					ret = cpps_value(c, ret_str);
+				}
+				else if(symbolfunc.isfunction()) {
+					if (symbolfunc.isfunction())
+					{
+						cpps_value src = doclassfunction(c, leftobject, symbolfunc,object::create(c, start_index), object::create(c, end_index), object::create(c, step_index)).value;
+						cpps_calculate_expression_quote_real(src, ret, false);
+					}
+				}
+			}
+		}
+		else {
+			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a vector before the 'slice[::]'", d->getleft()->s.c_str()));
+		}
+	}
 	void cpps_calculate_expression_getchild(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
 		cpps_value left = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
 		CPPS_TO_REAL_VALUE(left);
@@ -3782,7 +3998,7 @@ namespace cpps {
 					cpps_vector* pVec = (cpps_vector*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					if (right.tt != CPPS_TINTEGER) {
@@ -3792,14 +4008,18 @@ namespace cpps {
 					if (pVec->size() <= right.value.integer)
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), right.value.integer));
 					//ret = pVec->at(right.value.integer);
-					cpps_calculate_expression_quote_real(pVec->cpps_at(right.value.integer), ret, false);
+					cpps_integer idx = right.value.integer;
+					if (idx < 0) {
+						idx = pVec->size() + idx;
+					}
+					cpps_calculate_expression_quote_real(pVec->cpps_at(idx), ret, false);
 				}
 				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "map") {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_map* pMap = (cpps_map*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
@@ -3811,7 +4031,7 @@ namespace cpps {
 					object symbolfunc = leftobject["[]"];
 					if (symbolfunc.isfunction())
 					{
-						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain)).value;
+						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain)).value;
 						cpps_calculate_expression_quote_real(src, ret, false);
 					}
 				}
@@ -3821,7 +4041,7 @@ namespace cpps {
 				std::string* str = cpps_get_string(left);
 				cpps_domain* takedomain = leftdomain;
 				leftdomain = NULL;
-				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
 				CPPS_TO_REAL_VALUE(right);
 
 				if (right.tt != CPPS_TINTEGER) {
@@ -3830,8 +4050,12 @@ namespace cpps {
 				leftdomain = takedomain;
 				if ((cpps_integer)str->size() <= right.value.integer)
 					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), right.value.integer));
+				cpps_integer idx = right.value.integer;
+				if (idx < 0) {
+					idx = str->size() + idx;
+				}
 
-				ret = (cpps_integer)str->at(right.value.integer);
+				ret = (cpps_integer)str->at(idx);
 				//ret = cpps_value(&str->at(right.value.integer));
 			}
 			/*	else if (left.tt == CPPS_TDOMAIN) {
@@ -3864,10 +4088,17 @@ namespace cpps {
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain;
 				cpps_domain* takedomain = NULL;
 				/* check this class is parent class.. */
-				bool is_parent_class = cpps_check_parent_class((cpps_cppsclass*)root->parent[1]->parent[0], cppsclass);
+				cpps_cppsclass* selfclass = (cpps_cppsclass*)root->parent[1]->parent[0];
+				bool is_parent_class = cpps_check_parent_class(selfclass, cppsclass);
 				if (!is_parent_class)
 					throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "Non parent function executed: [%s::%s].", d->getleft()->s.c_str(), d->getright()->s.c_str()));
-				cpps_regvar* var = cppsclass->getvar(d->getright()->s, takedomain, false);
+
+				std::string funcname = d->getright()->s;
+				if (d->getright()->s == cppsclass->getclassname()) {
+					funcname = "constructor";
+				}
+
+				cpps_regvar* var = cppsclass->getvar(funcname, takedomain, false);
 				if (var && var->getval().tt == CPPS_TFUNCTION) {
 					ret = var->getval();
 					leftdomain = root->parent[1];
@@ -3925,7 +4156,7 @@ namespace cpps {
 					cpps_vector* pVec = (cpps_vector*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					if (right.tt != CPPS_TINTEGER) {
@@ -3935,14 +4166,18 @@ namespace cpps {
 					if (pVec->size() <= right.value.integer)
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), right.value.integer));
 					//ret = pVec->at(right.value.integer);
-					cpps_calculate_expression_quote_real(pVec->cpps_at(right.value.integer), ret, false);
+					cpps_integer idx = right.value.integer;
+					if (idx < 0) {
+						idx = pVec->size() + idx;
+					}
+					cpps_calculate_expression_quote_real(pVec->cpps_at(idx), ret, false);
 				}
 				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "map") {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_map* pMap = (cpps_map*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
@@ -3954,7 +4189,7 @@ namespace cpps {
 					object symbolfunc = leftobject["[]"];
 					if (symbolfunc.isfunction())
 					{
-						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain)).value;
+						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain)).value;
 						cpps_calculate_expression_quote_real(src, ret, false);
 					}
 				}
@@ -3964,7 +4199,7 @@ namespace cpps {
 				std::string* str = cpps_get_string(left);
 				cpps_domain* takedomain = leftdomain;
 				leftdomain = NULL;
-				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft(), leftdomain);
+				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
 				CPPS_TO_REAL_VALUE(right);
 
 				if (right.tt != CPPS_TINTEGER) {
@@ -3974,8 +4209,13 @@ namespace cpps {
 				if ((cpps_integer)str->size() <= right.value.integer)
 					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), right.value.integer));
 
+				cpps_integer idx = right.value.integer;
+				if (idx < 0) {
+					idx = str->size() + idx;
+				}
+
 				//ret = (cpps_integer)str->at(right.value.integer);
-				ret = cpps_value(str->at(right.value.integer));
+				ret = cpps_value(str->at(idx));
 			}
 			/*	else if (left.tt == CPPS_TDOMAIN) {
 					leftdomain = left.value.domain;
@@ -4030,10 +4270,17 @@ namespace cpps {
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain;
 				cpps_domain* takedomain = NULL;
 				/* check this class is parent class.. */
-				bool is_parent_class = cpps_check_parent_class((cpps_cppsclass*)root->parent[1]->parent[0], cppsclass);
+				cpps_cppsclass* selfclass = (cpps_cppsclass*)root->parent[1]->parent[0];
+				bool is_parent_class = cpps_check_parent_class(selfclass, cppsclass);
 				if (!is_parent_class)
 					throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "Non parent function executed: [%s::%s].", d->getleft()->s.c_str(), d->getright()->s.c_str()));
-				cpps_regvar* var = cppsclass->getvar(d->getright()->s, takedomain, false);
+
+				std::string funcname = d->getright()->s;
+				if (d->getright()->s == cppsclass->getclassname()) {
+					funcname = "constructor";
+				}
+
+				cpps_regvar* var = cppsclass->getvar(funcname, takedomain, false);
 				if (var && var->getval().tt == CPPS_TFUNCTION) {
 					ret = var->getval();
 					leftdomain = root->parent[1];
@@ -4148,7 +4395,9 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_OGETCHIILD) {
 			cpps_calculate_expression_getchild(c, domain, root, d, leftdomain, ret);
-			//cpps_calculate_expression_quotegetchild(c, domain, root, d, leftdomain, ret);
+		}
+		else if (d->type == CPPS_OSLICE) {
+			cpps_calculate_expression_slice(c, domain, root, d, leftdomain, ret);
 		}
 		else if (d->type == CPPS_OGETOBJECT) {
 			//cpps_calculate_expression_getobject(c, domain, root, d, leftdomain, ret);
@@ -4300,7 +4549,12 @@ namespace cpps {
 		c->func = func;
 	}
 
+
+
+
 	
 
 
 }
+
+

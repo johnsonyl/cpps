@@ -7,7 +7,7 @@
 //@Email		:	88481106@qq.com
 //@Date			:	2015/12/16 (yy/mm/dd)
 //@Module		:	CPPS_DOFUNCTION
-//@Description	:	C++µ÷ÓÃCppsº¯Êý´¦Àí
+//@Description	:	C++ï¿½ï¿½ï¿½ï¿½Cppsï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //@website		:	http://cppscript.org
 //==================================
 
@@ -66,6 +66,31 @@ namespace cpps
 
 
 #define CPPS_DOFUNCTION_ITER_C 11
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 12
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 13
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 14
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 15
+#include "cpps_dofunction.h"
+#undef CPPS_DOFUNCTION_ITER_C
+
+
+#define CPPS_DOFUNCTION_ITER_C 16
 #include "cpps_dofunction.h"
 #undef CPPS_DOFUNCTION_ITER_C
 

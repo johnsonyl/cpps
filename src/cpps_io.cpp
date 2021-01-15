@@ -514,7 +514,22 @@ namespace cpps
 		}
 #endif
 	}
-	void cpps_real_walk(C*c,cpps_vector* vct,std::string path, bool bfindchildren = false,bool onlydir = false) {
+	bool cpps_io_filename_filter(std::string filepath, std::string filter)
+	{
+		std::string filename = cpps_io_getfilename(filepath);
+		/*
+			filter :
+			*.*
+			a*.*
+			*a.*
+			*.a*
+			*.*a             =  
+			*a*b*c*.*a*b*c*  =  xaxbxc.xaxbxc 
+		*/
+		return true;
+	}
+
+	void cpps_real_walk(C*c,cpps_vector* vct,std::string path, bool bfindchildren = false,bool onlydir = false,std::string filter = "") {
 		char dirNew[200];
 
 
@@ -543,13 +558,16 @@ namespace cpps
 				if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
 					continue;
 
-				vct->push_back(cpps_value(c, dirNew));
+				if(filter.empty())
+					vct->push_back(cpps_value(c, dirNew));
 
 				if(bfindchildren)
-					cpps_real_walk(c, vct,dirNew, bfindchildren);
+					cpps_real_walk(c, vct,dirNew, bfindchildren,onlydir,filter);
 			}
-			else if(!onlydir)
-				vct->push_back(cpps_value(c, dirNew));
+			else if (!onlydir) {
+				if(filter.empty() || cpps_io_filename_filter(dirNew,filter))
+					vct->push_back(cpps_value(c, dirNew));
+			}
 
 		} while (_findnext(handle, &findData) == 0);
 
@@ -582,24 +600,28 @@ namespace cpps
 			lstat(dirNew, &s);
 			if (S_ISDIR(s.st_mode))
 			{
-				vct->push_back(cpps_value(c, dirNew));
+				if (filter.empty())
+					vct->push_back(cpps_value(c, dirNew));
 				if (bfindchildren)
-					cpps_real_walk(c, vct, dirNew, bfindchildren);
+					cpps_real_walk(c, vct, dirNew, bfindchildren,onlydir,filter);
 			}
 			else if (!onlydir)
 			{
-				vct->push_back(cpps_value(c, dirNew));
+				if (filter.empty() || cpps_io_filename_filter(dirNew, filter))
+					vct->push_back(cpps_value(c, dirNew));
 			}
 		}
 #endif
 	}
-	cpps_value cpps_io_walk( C *c,std::string path,cpps_value findchildren) {
+	cpps_value cpps_io_walk( C *c,std::string path,cpps_value findchildren,cpps_value filter) {
 		
 		cpps_vector* vct = NULL;
 		cpps_value ret = newclass<cpps_vector>(c, &vct);
 		
 		bool bfindchildren = findchildren.tt == CPPS_TBOOLEAN ? findchildren.value.b : true;
-		cpps_real_walk(c, vct, path, bfindchildren);
+		std::string sfilter = "";
+		if (cpps_base_isstring(filter)) sfilter = cpps_to_string(filter);
+		cpps_real_walk(c, vct, path, bfindchildren,false, sfilter);
 		return ret;
 	}
 	cpps_value cpps_io_listdir(C* c, std::string path, cpps_value findchildren) {
@@ -1076,5 +1098,7 @@ namespace cpps
 		buff = newbuff;
 		buffsize = s;
 	}
+
+	
 
 }

@@ -7,7 +7,7 @@ var dist(var option){
 
 	var targzname = "dist/{filename}.tar.gz";
 	io.remove(targzname);
-	print("create tar.gz file...");
+	print("-- Create tar.gz file...");
 	var file = tarfile.open(targzname,"x:gz");
 	if(!file){
 
@@ -57,7 +57,7 @@ var dist(var option){
 			println_color("ok",2);
 		}
 	}
-	print("saving compressed file...");
+	print("-- Saving compressed file...");
 	var sourcetargzsize = file.close();
 	if(sourcetargzsize == -1){
 		println_color("faild!",2);
@@ -66,7 +66,7 @@ var dist(var option){
 	else
 		println_color("success!",2);
 	
-	print("build config json file...");
+	print("-- Build config json file...");
 	option["sourcetargzsize"] = sourcetargzsize;
 	var jsonval = json.encode(option);
 	io.remove(configname);
