@@ -69,6 +69,15 @@ namespace cpps
 		return cpps_base_isvector(SAFE_VALUE);
 	}
 
+	bool object::istuple()
+	{
+		return cpps_base_istuple(SAFE_VALUE);
+	}
+	bool object::isellipsis()
+	{
+		return cpps_base_isellipsis(SAFE_VALUE);
+	}
+
 	bool object::isint()
 	{
 		return cpps_base_isint(SAFE_VALUE);

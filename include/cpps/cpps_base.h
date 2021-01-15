@@ -28,6 +28,8 @@ namespace cpps
 	bool cpps_base_isfunction(cpps_value v);
 	bool cpps_base_isclassvar(cpps_value v);
 	bool cpps_base_isclass(cpps_value v);
+	bool cpps_base_isellipsis(cpps_value v);
+	bool cpps_base_istuple(cpps_value v);
 }
 
 #endif // CPPS_BASE_CPPS_HEAD_

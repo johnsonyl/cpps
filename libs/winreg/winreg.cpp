@@ -282,9 +282,9 @@ object cpps_winreg_getvalue(C*c, RegKey* hkey,std::string valuename,cpps_integer
 	CPPS_WINREG_CATCH
 	return ret;
 }
-cpps::mulitreturn cpps_winreg_enumvalue(C*c,object key, cpps_integer index)
+cpps::tuple cpps_winreg_enumvalue(C*c,object key, cpps_integer index)
 {
-	cpps::mulitreturn ret;
+	cpps::tuple ret;
 	CPPS_WINREG_TRY
 	if (key.isclassvar())
 	{
@@ -293,7 +293,7 @@ cpps::mulitreturn cpps_winreg_enumvalue(C*c,object key, cpps_integer index)
 			RegKey* hkey = object_cast<RegKey*>(key);
 			auto value = hkey->EnumValues()[(size_t)index];
 
-			ret = cpps::mulitreturn(object::create(c, value.first),
+			ret = cpps::tuple(object::create(c, value.first),
 									cpps_winreg_getvalue(c, hkey, value.first,(cpps_integer) value.second),
 									object::create(c, value.second)
 									);
@@ -305,7 +305,7 @@ cpps::mulitreturn cpps_winreg_enumvalue(C*c,object key, cpps_integer index)
 			HKEY hkey = object_cast<HKEY>(key);
 			RegKey regkey(hkey);
 			auto value = regkey.EnumValues()[(size_t)index];
-			ret = cpps::mulitreturn(object::create(c, value.first),
+			ret = cpps::tuple(object::create(c, value.first),
 									cpps_winreg_getvalue(c, &regkey, value.first,(cpps_integer) value.second),
 									object::create(c, value.second)
 									);
@@ -386,9 +386,9 @@ void  FileTimeToTime_t(FILETIME  ft, time_t* t)
 	ui.HighPart = ft.dwHighDateTime;
 	*t = ((LONGLONG)(ui.QuadPart - 116444736000000000) / 10000000);
 }
-cpps::mulitreturn cpps_winreg_queryvalue(C* c, object key,std::string value_name)
+cpps::tuple cpps_winreg_queryvalue(C* c, object key,std::string value_name)
 {
-	cpps::mulitreturn ret;
+	cpps::tuple ret;
 	CPPS_WINREG_TRY
 	if (key.isclassvar())
 	{
@@ -396,14 +396,14 @@ cpps::mulitreturn cpps_winreg_queryvalue(C* c, object key,std::string value_name
 		{
 			RegKey* hkey = object_cast<RegKey*>(key);
 			auto type = hkey->QueryValueType(value_name);
-			ret = cpps::mulitreturn(cpps_winreg_getvalue(c, hkey, value_name, (cpps_integer)type), object::create(c, type));
+			ret = cpps::tuple(cpps_winreg_getvalue(c, hkey, value_name, (cpps_integer)type), object::create(c, type));
 		}
 		else if (type_s(key) == "HKEY")
 		{
 			HKEY hkey = object_cast<HKEY>(key);
 			RegKey regkey(hkey);
 			auto type = regkey.QueryValueType(value_name);
-			ret = cpps::mulitreturn(cpps_winreg_getvalue(c, &regkey, value_name, (cpps_integer)type), object::create(c, type));
+			ret = cpps::tuple(cpps_winreg_getvalue(c, &regkey, value_name, (cpps_integer)type), object::create(c, type));
 		}
 	}
 	CPPS_WINREG_CATCH
@@ -611,9 +611,9 @@ bool cpps_winreg_queryreflectionkey( object key)
 	CPPS_WINREG_CATCH
 	return false;
 }
-cpps::mulitreturn cpps_winreg_queryinfokey(C*c,object key)
+cpps::tuple cpps_winreg_queryinfokey(C*c,object key)
 {
-	cpps::mulitreturn ret;
+	cpps::tuple ret;
 	CPPS_WINREG_TRY
 	if (key.isclassvar())
 	{
@@ -626,7 +626,7 @@ cpps::mulitreturn cpps_winreg_queryinfokey(C*c,object key)
 			time_t t;
 			hkey->QueryInfoKey(sub_keys, values, filetime);
 			FileTimeToTime_t(filetime, &t);
-			ret = cpps::mulitreturn(object::create(c, sub_keys),
+			ret = cpps::tuple(object::create(c, sub_keys),
 									object::create(c, values),
 									object::create(c, t)
 									);
@@ -644,7 +644,7 @@ cpps::mulitreturn cpps_winreg_queryinfokey(C*c,object key)
 			regkey.QueryInfoKey(sub_keys, values, filetime);
 			FileTimeToTime_t(filetime, &t);
 
-			ret = cpps::mulitreturn(object::create(c, sub_keys),
+			ret = cpps::tuple(object::create(c, sub_keys),
 									object::create(c, values),
 									object::create(c, t)
 									);

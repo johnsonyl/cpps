@@ -299,22 +299,22 @@ namespace cpps
 	};
 
 	template<>
-	struct cpps_cpp_to_cpps_converter < cpps::mulitreturn >
+	struct cpps_cpp_to_cpps_converter < cpps::tuple >
 	{
-		static bool match(C* c, const cpps::mulitreturn& value)
+		static bool match(C* c, const cpps::tuple& value)
 		{
 			//¼ì²âÊÇ·ñÖ§³Ö
 			return true;
 		}
-		static cpps_value apply(C* c, const cpps::mulitreturn& value)
+		static cpps_value apply(C* c, const cpps::tuple& value)
 		{
 			cpps_value ret;
 			cpps_vector* vct = NULL;
 			ret = newclass(c, &vct);
-			for (auto obj : value.mulitreturn_list) {
+			for (auto obj : value.tuple_list) {
 				vct->push_back(obj.value);
 			}
-			ret.tt = CPPS_TMULTIRETURN;
+			ret.tt = CPPS_TTUPLE;
 			return ret;
 		}
 	};

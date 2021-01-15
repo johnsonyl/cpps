@@ -1073,53 +1073,81 @@ namespace cpps {
 		throw(cpps_error(bracket->filename, buffer.line(), cpps_error_arrayeerror, "Definition array not detected '}'"));
 		return(bracket);
 	}
-	void cpps_parse_getchild_or_slice(C* c, cpps_node_domain* domain, node* root, node* geto,node* child, cppsbuffer& buffer)
+	void cpps_parse_getchild_or_slice(C* c, cpps_node_domain* domain, node* root, node* geto,node* parent, cppsbuffer& buffer)
 	{
-		node* first = new node(child, child->filename, buffer.line());
-		node* second = new node(child, child->filename, buffer.line());
-		node* third = new node(child, child->filename, buffer.line());
+		while (!buffer.isend()) {
 
-		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() != ':') {
-			cpps_parse_expression(c, domain, first, root, buffer);
-		}
+			node* child = new node(parent, parent->filename, buffer.line());
+			node* first = new node(child, child->filename, buffer.line());
+			node* second = new node(child, child->filename, buffer.line());
+			node* third = new node(child, child->filename, buffer.line());
 
-		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() == ']') { 
+			cpps_parse_rmspaceandenter(buffer);
+			if (buffer.cur() != ':') {
+				cpps_parse_expression(c, domain, first, root, buffer);
+			}
+
+			cpps_parse_rmspaceandenter(buffer);
+			/*fix ellpsis.*/
+			if (first->getleft() && first->getleft()->type == CPPS_OELLIPSIS){
+				geto->type = CPPS_OSLICE;
+			}
+			if (buffer.cur() == ']') {
+				buffer.pop();
+				return;
+			}
+
+			if (buffer.cur() == ',') {
+				geto->type = CPPS_OSLICE;
+				buffer.pop();
+				continue;
+			}
+			if (buffer.cur() != ':')
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "';'slice parsing error"));
 			buffer.pop();
-			return; 
-		}
-		if (buffer.cur() != ':')
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "';'slice parsing error"));
-		buffer.pop();
 
-		geto->type = CPPS_OSLICE;
+			geto->type = CPPS_OSLICE;
 
 
-		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() != ':') {
-			cpps_parse_expression(c, domain, second, root, buffer);
-		}
+			cpps_parse_rmspaceandenter(buffer);
+			if (buffer.cur() != ':') {
+				cpps_parse_expression(c, domain, second, root, buffer);
+			}
 
-		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() == ']') {
+			cpps_parse_rmspaceandenter(buffer);
+			if (buffer.cur() == ',') {
+				buffer.pop();
+				continue;
+			}
+			if (buffer.cur() == ']') {
+				buffer.pop();
+				return;
+			}
+			if (buffer.cur() != ':')
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "';'slice parsing error"));
+			buffer.pop();
+
+			cpps_parse_rmspaceandenter(buffer);
+			if (buffer.cur() == ',') {
+				buffer.pop();
+				continue;
+			}
+			if (buffer.cur() != ']') {
+				cpps_parse_expression(c, domain, third, root, buffer);
+			}
+
+			cpps_parse_rmspaceandenter(buffer);
+			if (buffer.cur() == ',') {
+				buffer.pop();
+				continue;
+			}
+			if (buffer.cur() != ']')
+				throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "']' parsing error"));
+
 			buffer.pop();
 			return;
 		}
-		if (buffer.cur() != ':')
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "';'slice parsing error"));
-		buffer.pop();
-
-		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() != ']') {
-			cpps_parse_expression(c, domain, third, root, buffer);
-		}
-
-		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() != ']')
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "']' parsing error"));
 		
-		buffer.pop();
 	}
 	node* cpps_parse_last_func(C* c, cppsbuffer& buffer, node* o, node* p, cpps_node_domain* domain, node* root) {
 		/*有后续 */
@@ -1271,6 +1299,14 @@ namespace cpps {
 		return(ret);
 	}
 	int32 cpps_parse_expression_step(C* c, cpps_node_domain* domain, node* param, node*& lastopnode, node* root, cppsbuffer& buffer) {
+		/* ellipsis*/
+		if (buffer.cur() == '.' && buffer.at(buffer.offset() + 1) == '.' && buffer.at(buffer.offset() + 2) == '.') {
+			buffer.seek(buffer.offset() + 3);
+			node* ellipsis = new node(param->filename, buffer.line());
+			ellipsis->type = CPPS_OELLIPSIS;
+			lastopnode->l.push_back(ellipsis);
+			return 1;
+		}
 		/* 新增lambda函数参数 */
 		if (buffer.cur() == '[' && buffer.at(buffer.offset() + 1) == ']' && buffer.at(buffer.offset() + 2) == '(') {
 			buffer.seek(buffer.offset() + 3);
@@ -2462,7 +2498,7 @@ namespace cpps {
 					cpps_value	value = cpps_calculate_expression(c, domain, root, right->l[0], leftdomain);
 					CPPS_TO_REAL_VALUE(value);
 
-					if (value.tt == CPPS_TMULTIRETURN) {
+					if (value.tt == CPPS_TTUPLE) {
 						size_t ii = 0;
 						cpps_vector* vec = cpps_to_cpps_vector(value);
 						for (auto vv: vec->realvector())
@@ -2502,7 +2538,7 @@ namespace cpps {
 						}
 						else {
 							CPPS_TO_REAL_VALUE(value);
-							if (value.tt == CPPS_TMULTIRETURN) {
+							if (value.tt == CPPS_TTUPLE) {
 								cpps_value firstvalue = cpps_to_cpps_vector(value)->realvector()[0];
 								cpps_step_def_var_createvar_setval(firstvalue, v, c);
 								//delete value.value.multiv;
@@ -2650,7 +2686,7 @@ namespace cpps {
 		else if(d->l.size() > 1){
 			cpps_vector* vec;
 			ret_value = newclass(c, &vec);
-			ret_value.tt = CPPS_TMULTIRETURN;
+			ret_value.tt = CPPS_TTUPLE;
 			//ret_value.value.multiv = new cpps_std_vector();
 			for (auto nn : d->l) {
 				cpps_value vv = cpps_calculate_expression(c, domain, root, nn, leftdomain);
@@ -3829,162 +3865,224 @@ namespace cpps {
 			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING  ) {
 				object leftobject = object(left);
 				object symbolfunc = leftobject["[]"]; //operator []
+				if (symbolfunc.isfunction()) {
+					
+					//tuple
+					cpps_vector* vct = NULL;
+					cpps_value tuple_value = newclass(c, &vct);
+					tuple_value.tt = CPPS_TTUPLE; //设置成元组.
 
-				node* first_node = d->getright()->l[0];
-				node* second_node = d->getright()->l[1];
-				node* third_node = d->getright()->l[2];
+					for (auto nn : d->getright()->l) {
+						node* first_node = nn->l[0];
+						node* second_node = nn->l[1];
+						node* third_node = nn->l[2];
 
-				object first;
-				object second;
-				object third;
+						object first;
+						object second;
+						object third;
 
-				if(first_node->getleft() && first_node->getleft()->type != CPPS_TNIL)
-					first = cpps_calculate_expression(c, domain, root, first_node->getleft(), leftdomain);
-				if (second_node->getleft() && second_node->getleft()->type != CPPS_TNIL)
-					second = cpps_calculate_expression(c, domain, root, second_node->getleft(), leftdomain);
-				if (third_node->getleft() && third_node->getleft()->type != CPPS_TNIL)
-					third = cpps_calculate_expression(c, domain, root, third_node->getleft(), leftdomain);
+						if (first_node->getleft() && first_node->getleft()->type != CPPS_TNIL)
+							first = cpps_calculate_expression(c, domain, root, first_node->getleft(), leftdomain);
+						if (second_node->getleft() && second_node->getleft()->type != CPPS_TNIL)
+							second = cpps_calculate_expression(c, domain, root, second_node->getleft(), leftdomain);
+						if (third_node->getleft() && third_node->getleft()->type != CPPS_TNIL)
+							third = cpps_calculate_expression(c, domain, root, third_node->getleft(), leftdomain);
 
-				cpps_integer start_index = 0;
-				cpps_integer end_index = MAXINT64;
-				cpps_integer step_index = 1;
 
-				if (first.isint()) {
-					start_index = first.toint();
-					if (start_index < 0){
-						step_index = -1;
+						cpps_integer start_index = 0;
+						cpps_integer end_index = MAXINT64;
+						cpps_integer step_index = 1;
+
+						if (first.isint()) {
+							start_index = first.toint();
+							if (start_index < 0) {
+								step_index = -1;
+							}
+						}
+						if (second.isint())
+							end_index = second.toint();
+						if (third.isint())
+							step_index = third.toint();
+
+
+						//step 为0 非法.
+						if (step_index == 0) {
+							return;
+						}
+
+						//如果它不是空也不是整数说明它需要独立存在
+						if (!first.isint() && !first.isnull())
+						{
+							vct->push_back(first.value);
+						}
+						else {
+							cpps_range* range = NULL;
+							object range_object = object::create_with_classvar(c, &range);
+							range->begin = start_index;
+							range->end = end_index;
+							range->inc = step_index;
+
+							vct->push_back(range_object.value);
+						}
 					}
-				}
-				if (second.isint())
-					end_index = second.toint();
-				if (third.isint())
-					step_index = third.toint();
-
-
-
-				//step 为0 非法.
-				if (step_index == 0) {
-					return;
-				}
-				
-
-
-				if (leftobject.isvector()) {
-					cpps_vector* vct = cpps_to_cpps_vector(left);
-
-					object::vector ret_vec = object::vector::create(c);
-					ret = ret_vec.toobject().value;
-
-					if (end_index == MAXINT64) {
-						if (start_index < 0)
-							end_index = 0;
-						else
-							end_index = vct->size() - 1;
-					}
-
-					//计算真实值.
-					if (start_index < 0){
-						start_index = vct->size() + start_index;
-					}
-
-					if (end_index < 0) {
-						end_index = vct->size() + end_index;
-					}
-
 					
 
-					//???? a[1:1]??
-					if (start_index == end_index) {
-						ret_vec.push_back(vct->at(start_index));
-						return;
-					}
-
-					//越走越远说明有问题.
-					auto count = abs(end_index - start_index);
-					if (abs(end_index - (start_index + step_index)) > count) {
-						return;
-					}
-
-					if (start_index < end_index) {
-
-						for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
-							ret_vec.push_back(vct->at(i));
-						}
-					}
-					else {
-
-						for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
-							ret_vec.push_back(vct->at(i));
-						}
-					}
-
-					////从右至左,但step为正数. 非法
-					//if (start_index < 0 && step_index > 0) {
-					//	return;
-					//}
-					////从左至右 但step为负数 ,非法.
-					//if (start_index >= 0 && step_index < 0) {
-					//	return;
-					//}
-
+					cpps_value src = doclassfunction(c, leftobject, symbolfunc, tuple_value).value;
+					cpps_calculate_expression_quote_real(src, ret, false);
+					
 				}
-				else if (leftobject.isstring())
+				else
 				{
-					std::string* str = cpps_get_string(left);
-					std::string ret_str;
+					//cpps 暂时不支持多为数组.
+					node* first_node = d->getright()->getleft()->l[0];
+					node* second_node = d->getright()->getleft()->l[1];
+					node* third_node = d->getright()->getleft()->l[2];
 
-					if (end_index == MAXINT64) {
-						if (start_index < 0)
-							end_index = 0;
-						else
-							end_index = str->size() - 1;
+					object first;
+					object second;
+					object third;
+
+					if (first_node->getleft() && first_node->getleft()->type != CPPS_TNIL)
+						first = cpps_calculate_expression(c, domain, root, first_node->getleft(), leftdomain);
+					if (second_node->getleft() && second_node->getleft()->type != CPPS_TNIL)
+						second = cpps_calculate_expression(c, domain, root, second_node->getleft(), leftdomain);
+					if (third_node->getleft() && third_node->getleft()->type != CPPS_TNIL)
+						third = cpps_calculate_expression(c, domain, root, third_node->getleft(), leftdomain);
+
+					cpps_integer start_index = 0;
+					cpps_integer end_index = MAXINT64;
+					cpps_integer step_index = 1;
+
+					if (first.isint()) {
+						start_index = first.toint();
+						if (start_index < 0) {
+							step_index = -1;
+						}
 					}
-
-					//计算真实值.
-					if (start_index < 0) {
-						start_index = str->size() + start_index;
-					}
-
-					if (end_index < 0) {
-						end_index = str->size() + end_index;
-					}
+					if (second.isint())
+						end_index = second.toint();
+					if (third.isint())
+						step_index = third.toint();
 
 
 
-					//???? a[1:1]??
-					if (start_index == end_index) {
-						ret_str.push_back(str->at(start_index));
+					//step 为0 非法.
+					if (step_index == 0) {
 						return;
 					}
 
-					//越走越远说明有问题.
-					auto count = abs(end_index - start_index);
-					if (abs(end_index - (start_index + step_index)) > count) {
-						return;
-					}
 
-					if (start_index < end_index) {
 
-						for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
-							ret_str.push_back(str->at(i));
+					if (leftobject.isvector() || leftobject.istuple()) {
+						cpps_vector* vct = cpps_to_cpps_vector(left);
+
+						object::vector ret_vec = object::vector::create(c);
+						ret = ret_vec.toobject().value;
+
+						if (end_index == MAXINT64) {
+							if (start_index < 0)
+								end_index = 0;
+							else
+								end_index = vct->size() - 1;
 						}
-					}
-					else {
 
-						for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
-							ret_str.push_back(str->at(i));
+						//计算真实值.
+						if (start_index < 0) {
+							start_index = vct->size() + start_index;
 						}
-					}
 
-					ret = cpps_value(c, ret_str);
-				}
-				else if(symbolfunc.isfunction()) {
-					if (symbolfunc.isfunction())
+						if (end_index < 0) {
+							end_index = vct->size() + end_index;
+						}
+
+
+
+						//???? a[1:1]??
+						if (start_index == end_index) {
+							ret_vec.push_back(vct->at(start_index));
+							return;
+						}
+
+						//越走越远说明有问题.
+						auto count = abs(end_index - start_index);
+						if (abs(end_index - (start_index + step_index)) > count) {
+							return;
+						}
+
+						if (start_index < end_index) {
+
+							for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
+								ret_vec.push_back(vct->at(i));
+							}
+						}
+						else {
+
+							for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
+								ret_vec.push_back(vct->at(i));
+							}
+						}
+
+						////从右至左,但step为正数. 非法
+						//if (start_index < 0 && step_index > 0) {
+						//	return;
+						//}
+						////从左至右 但step为负数 ,非法.
+						//if (start_index >= 0 && step_index < 0) {
+						//	return;
+						//}
+
+					}
+					else if (leftobject.isstring())
 					{
-						cpps_value src = doclassfunction(c, leftobject, symbolfunc,object::create(c, start_index), object::create(c, end_index), object::create(c, step_index)).value;
-						cpps_calculate_expression_quote_real(src, ret, false);
+						std::string* str = cpps_get_string(left);
+						std::string ret_str;
+
+						if (end_index == MAXINT64) {
+							if (start_index < 0)
+								end_index = 0;
+							else
+								end_index = str->size() - 1;
+						}
+
+						//计算真实值.
+						if (start_index < 0) {
+							start_index = str->size() + start_index;
+						}
+
+						if (end_index < 0) {
+							end_index = str->size() + end_index;
+						}
+
+
+
+						//???? a[1:1]??
+						if (start_index == end_index) {
+							ret_str.push_back(str->at(start_index));
+							return;
+						}
+
+						//越走越远说明有问题.
+						auto count = abs(end_index - start_index);
+						if (abs(end_index - (start_index + step_index)) > count) {
+							return;
+						}
+
+						if (start_index < end_index) {
+
+							for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
+								ret_str.push_back(str->at(i));
+							}
+						}
+						else {
+
+							for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
+								ret_str.push_back(str->at(i));
+							}
+						}
+
+						ret = cpps_value(c, ret_str);
 					}
-				}
+				 }
 			}
 		}
 		else {
@@ -3996,14 +4094,14 @@ namespace cpps {
 		CPPS_TO_REAL_VALUE(left);
 
 		if (left.tt != CPPS_TNIL) {
-			if (left.tt == CPPS_TCLASSVAR) {
+			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TTUPLE) {
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
 				if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "vector") {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_vector* pVec = (cpps_vector*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					if (right.tt != CPPS_TINTEGER) {
@@ -4024,7 +4122,7 @@ namespace cpps {
 					cpps_map* pMap = (cpps_map*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
@@ -4036,7 +4134,7 @@ namespace cpps {
 					object symbolfunc = leftobject["[]"];
 					if (symbolfunc.isfunction())
 					{
-						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain)).value;
+						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain)).value;
 						cpps_calculate_expression_quote_real(src, ret, false);
 					}
 				}
@@ -4046,7 +4144,7 @@ namespace cpps {
 				std::string* str = cpps_get_string(left);
 				cpps_domain* takedomain = leftdomain;
 				leftdomain = NULL;
-				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
+				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain);
 				CPPS_TO_REAL_VALUE(right);
 
 				if (right.tt != CPPS_TINTEGER) {
@@ -4077,7 +4175,7 @@ namespace cpps {
 		CPPS_TO_REAL_VALUE(left);
 
 		if (left.tt != CPPS_TNIL) {
-			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING ) {
+			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING || left.tt == CPPS_TTUPLE) {
 				/* cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0]; */
 				cpps_domain* execdomain = c->domain_alloc();
 				execdomain->init(c->_G, cpps_domain_type_exec);
@@ -4154,14 +4252,14 @@ namespace cpps {
 		CPPS_TO_REAL_VALUE(left);
 
 		if (left.tt != CPPS_TNIL) {
-			if (left.tt == CPPS_TCLASSVAR) {
+			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TTUPLE) {
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
 				if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "vector") {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_vector* pVec = (cpps_vector*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					if (right.tt != CPPS_TINTEGER) {
@@ -4182,7 +4280,7 @@ namespace cpps {
 					cpps_map* pMap = (cpps_map*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
 					leftdomain = NULL;
-					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
+					cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain);
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
@@ -4194,7 +4292,7 @@ namespace cpps {
 					object symbolfunc = leftobject["[]"];
 					if (symbolfunc.isfunction())
 					{
-						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain)).value;
+						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain)).value;
 						cpps_calculate_expression_quote_real(src, ret, false);
 					}
 				}
@@ -4204,7 +4302,7 @@ namespace cpps {
 				std::string* str = cpps_get_string(left);
 				cpps_domain* takedomain = leftdomain;
 				leftdomain = NULL;
-				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft(), leftdomain);
+				cpps_value right = cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain);
 				CPPS_TO_REAL_VALUE(right);
 
 				if (right.tt != CPPS_TINTEGER) {
@@ -4257,7 +4355,7 @@ namespace cpps {
 		CPPS_TO_REAL_VALUE(left);
 
 		if (left.tt != CPPS_TNIL) {
-			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING) {
+			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING || left.tt == CPPS_TTUPLE) {
 				/* cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0]; */
 				cpps_domain* execdomain = c->domain_alloc();
 				execdomain->init(c->_G, cpps_domain_type_exec);
@@ -4394,6 +4492,9 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_VARNAME_LAMBDA) {
 			cpps_calculate_expression_lambda(c,domain,root, d, leftdomain, ret);
+		}
+		else if (d->type == CPPS_OELLIPSIS){
+			ret.tt = CPPS_TELLIPSIS;
 		}
 		else if (d->type == CPPS_FUNCNAME) {
 			cpps_symbol_handle(c, domain, root, d, ret);

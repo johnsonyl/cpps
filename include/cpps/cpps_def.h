@@ -89,8 +89,9 @@
 #define CPPS_TCLASS				9	//定义类
 #define CPPS_TCLASSVAR			10  //类的对象
 #define CPPS_TLAMBDAFUNCTION	11
-#define CPPS_TMULTIRETURN		12
+#define CPPS_TTUPLE				12
 #define CPPS_TSTRINGV			13
+#define CPPS_TELLIPSIS			14
 
 #define CPPS_SINGLERET		0
 #define CPPS_MUNITRET		1
@@ -166,6 +167,7 @@
 #define CPPS_OECHO				66 //ECHO.
 #define CPPS_OENUM				67 //ENUM 枚举.
 #define CPPS_OSLICE				68 //切片.
+#define CPPS_OELLIPSIS			69 //...
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 

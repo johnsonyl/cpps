@@ -107,6 +107,8 @@ namespace cpps
 		bool					ismap();
 		bool					isstring();
 		bool					isvector();
+		bool					istuple();
+		bool					isellipsis();
 		bool					isint();
 		bool					isnumber();
 		bool					isnull();

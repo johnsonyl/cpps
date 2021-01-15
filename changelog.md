@@ -19,10 +19,38 @@
 ```
 var a = "123456";
 
+println(a[...]);
 println(a[::2]);
 
 var b = [1,2,3,4,5,6,7,8,9];
+println(b[2]);
 println(b[::][0:5:2][-1]);
+var c = 0;
+println(b[c:-3:]);
+
+class A
+{
+	var operator [](var item)
+	{
+		if(isellipsis(item[0])){
+			println("is ellipsis");
+		}
+		else if(istuple(item)){
+			println("is tuple");
+		}
+		else{
+			println("normal value");
+		}
+		
+	}
+}
+
+var a = new A();
+
+a[...];
+a[...,1::];
+a[1,2,3];
+a[1];
 ```
 
 7.修复tar文件读取文件夹错误的BUG.
@@ -35,6 +63,11 @@ println(b[::][0:5:2][-1]);
 
 11.修复返回值非引用状态下偶发错误的BUG.
 
+12.增加ellipsis类型 ... 就是它.
+
+13.operator [] 支持元组参数了.意味着可以实现多维数组了.
+
+14.增加isellipsis与istuple函数判断变量类型.
 
 2021-01-13 更新
 -

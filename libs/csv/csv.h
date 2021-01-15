@@ -1431,11 +1431,11 @@ namespace cpps {
         void set_file_line(cpps_integer line) {
             reader->set_file_line((usint32)line);
         }
-        cpps::mulitreturn read_row(C*c)
+        cpps::tuple read_row(C*c)
         {
 			std::vector<std::string> row_values;
             bool has = reader->read_row(row_values);
-            cpps::mulitreturn ret;
+            cpps::tuple ret;
             ret.push_back(object::create(c, has));
             for (auto& v : row_values)
                 ret.push_back(object::create(c, v));

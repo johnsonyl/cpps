@@ -82,7 +82,7 @@ std::string rsa_pri_decrypt(std::string cipherText, std::string priKey)
 
 	return strRet;
 }
-cpps::mulitreturn generateRSAKey(C*c,object oKEY_LENGTH)
+cpps::tuple generateRSAKey(C*c,object oKEY_LENGTH)
 {
 	cpps_integer KEY_LENGTH = 1024;
 	if (oKEY_LENGTH.isint()) KEY_LENGTH = oKEY_LENGTH.toint();
@@ -119,7 +119,7 @@ cpps::mulitreturn generateRSAKey(C*c,object oKEY_LENGTH)
 
 	pri_key[pri_len] = '\0';
 	pub_key[pub_len] = '\0';
-	cpps::mulitreturn ret(object::create(c, pri_key), object::create(c, pub_key));
+	cpps::tuple ret(object::create(c, pri_key), object::create(c, pub_key));
 	// 内存释放  
 	RSA_free(keypair);
 	BIO_free_all(pub);

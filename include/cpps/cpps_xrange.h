@@ -22,6 +22,10 @@ namespace cpps
 		cpps_integer  begin;
 		cpps_integer  end;
 		cpps_integer  inc;
+
+		cpps_integer start_func();
+		cpps_integer end_func();
+		cpps_integer step_func();
 	};
 	void	cpps_regrange(C* c);
 

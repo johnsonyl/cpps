@@ -319,7 +319,7 @@ namespace cpps
 	{
 		// 避免自赋值
 		assert(this != &v);
-		if (v.tt == CPPS_TCLASSVAR || v.tt == CPPS_TSTRING || v.tt == CPPS_TMULTIRETURN)
+		if (v.tt == CPPS_TCLASSVAR || v.tt == CPPS_TSTRING || v.tt == CPPS_TTUPLE)
 			v.value.domain->incruse(); //先增后减
 		decruse();
 		tt = v.tt;
@@ -355,19 +355,19 @@ namespace cpps
 
 	void cpps_value::decruse()
 	{
-		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TMULTIRETURN)
+		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE)
 			value.domain->decruse();
 	}
 
 	 void cpps_value::incruse()
 	{
-		if ( tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TMULTIRETURN)
+		if ( tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE)
 			value.domain->incruse();
 	}
 
 	bool cpps_value::isdomain()
 	{
-		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR || tt == CPPS_TMULTIRETURN;
+		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR || tt == CPPS_TTUPLE;
 	}
 
 	size_t cpps_value::hash::operator()(const cpps_value& _Keyval) const

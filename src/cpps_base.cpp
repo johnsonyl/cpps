@@ -123,7 +123,7 @@ namespace cpps
 				}
 			}
 		}
-		else if (type(b) == CPPS_TMULTIRETURN)
+		else if (type(b) == CPPS_TTUPLE)
 		{
 			cpps_vector* vec = cpps_to_cpps_vector(b.value);
 			cout << "[";
@@ -203,6 +203,17 @@ namespace cpps
 	{
 		return v.tt == CPPS_TCLASS;
 	}
+
+	bool cpps_base_isellipsis(cpps_value v)
+	{
+		return v.tt == CPPS_TELLIPSIS;
+	}
+
+	bool cpps_base_istuple(cpps_value v)
+	{
+		return v.tt == CPPS_TTUPLE;
+	}
+
 	bool cpps_base_isfunction(cpps_value v)
 	{
 		return v.tt == CPPS_TFUNCTION || v.tt == CPPS_TLAMBDAFUNCTION;
@@ -676,6 +687,8 @@ namespace cpps
 			def("isfunction", cpps_base_isfunction),
 			def("isclassvar", cpps_base_isclassvar),
 			def("isclass", cpps_base_isclass),
+			def("isellipsis", cpps_base_isellipsis),
+			def("istuple", cpps_base_istuple),
 			def("objtype", cpps_base_objtype),
 			def("type", cpps_base_type),
 			def("system", cpps_base_system),

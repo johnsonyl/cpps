@@ -12,23 +12,23 @@
 //==================================
 
 namespace cpps {
-	struct mulitreturn
+	struct tuple
 	{
-		mulitreturn(){}
+		tuple(){}
 		template<typename T, class... _Types>
-		mulitreturn(const T&& v, _Types&&... _Args) {
+		tuple(const T&& v, _Types&&... _Args) {
 			push_back(v, _Args...);
 		}
 		template<typename T>
 		void push_back(const T& v) {
-			mulitreturn_list.push_back(v);
+			tuple_list.push_back(v);
 		}
 		template<typename T, class... _Types>
 		void push_back(const T& v, _Types&&... _Args) {
-			mulitreturn_list.push_back(v);
+			tuple_list.push_back(v);
 			push_back(_Args...);
 		}
-		std::vector<object> mulitreturn_list;
+		std::vector<object> tuple_list;
 	};
 }
 #endif
