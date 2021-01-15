@@ -1128,6 +1128,11 @@ namespace cpps {
 			if (buffer.cur() == '.')
 				if (cpps_parse_isnotvarname(buffer.at(buffer.offset() + 1)))
 					break;
+			//fix slice[var::] but slice[var::var] don't work..
+			if (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':')
+				if (cpps_parse_isnotvarname(buffer.at(buffer.offset() + 1)))
+					break;
+
 			char symblo = buffer.pop();
 			node* geto = new node(o->filename, buffer.line());
 			geto->setparent(o);
