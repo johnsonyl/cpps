@@ -69,6 +69,11 @@ namespace cpps
 		return cpps_base_isvector(SAFE_VALUE);
 	}
 
+	bool object::isrange()
+	{
+		return cpps_base_isrange(SAFE_VALUE);
+	}
+
 	bool object::istuple()
 	{
 		return cpps_base_istuple(SAFE_VALUE);

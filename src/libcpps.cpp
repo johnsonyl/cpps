@@ -1147,19 +1147,39 @@ namespace cpps {
 			buffer.pop();
 			return;
 		}
-		
 	}
 	node* cpps_parse_last_func(C* c, cppsbuffer& buffer, node* o, node* p, cpps_node_domain* domain, node* root) {
 		/*有后续 */
+		cpps_parse_rmspaceandenter(buffer);
 		while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':')) {
-			/*  */
-			if (buffer.cur() == '.')
-				if (cpps_parse_isnotvarname(buffer.at(buffer.offset() + 1)))
+			/*  fix  var    .     func();  */
+			if (buffer.cur() == '.') {
+				auto take = buffer.offset();
+				buffer.pop();
+
+				cpps_parse_rmspaceandenter(buffer);
+				if (cpps_parse_isnotvarname(buffer.cur())) {
+					buffer.seek(take);
 					break;
+				}
+				buffer.seek(take);
+			}
 			//fix slice[var::] but slice[var::var] don't work..
-			if (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':')
-				if (cpps_parse_isnotvarname(buffer.at(buffer.offset() + 1)))
+			if (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':') {
+
+				auto take = buffer.offset();
+				buffer.pop();
+				buffer.pop();
+				cpps_parse_rmspaceandenter(buffer);
+
+				if (cpps_parse_isnotvarname(buffer.cur())) {
+					buffer.seek(take);
+
 					break;
+				}
+				buffer.seek(take);
+			}
+				
 
 			char symblo = buffer.pop();
 			node* geto = new node(o->filename, buffer.line());
@@ -1209,6 +1229,7 @@ namespace cpps {
 			geto->addtoright(child);
 			/* 放到后续. */
 			p = geto;
+			cpps_parse_rmspaceandenter(buffer);
 		}
 		return(p);
 	}

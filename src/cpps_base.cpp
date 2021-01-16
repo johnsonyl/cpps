@@ -175,6 +175,12 @@ namespace cpps
 	{
 		return (v.isdomain() && v.value.domain->domainname == "vector");
 	}
+
+	bool cpps_base_isrange(cpps_value v)
+	{
+		return (v.isdomain() && v.value.domain->domainname == "RANGE");
+	}
+
 	bool cpps_base_ismap(cpps_value v)
 	{
 		return (v.isdomain() && (v.value.domain->domainname == "map"));
@@ -681,6 +687,7 @@ namespace cpps
 			def("isint", cpps_base_isint),
 			def("isbool", cpps_base_isbool),
 			def("isvector", cpps_base_isvector),
+			def("isrange", cpps_base_isrange),
 			def("ismap", cpps_base_ismap),
 			def("isnull", cpps_base_isnull),
 			def("isnumber", cpps_base_isnumber),
