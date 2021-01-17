@@ -124,7 +124,7 @@ class macoscompiler : ccompiler
 		var outfilepath = "";
 		if(link_type == 1){
 			outfilepath = "{real_install_path}lib{output_name}.dylib";
-        	println_color("-- Linking CXX shared library lib{output_name}.so",3);
+        	println_color("-- Linking CXX shared library lib{output_name}.dylib",3);
 			opt = string.join(" ",ldflags_shared);
 		}
 		else if(link_type == 2){

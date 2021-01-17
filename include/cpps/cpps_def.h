@@ -359,13 +359,13 @@ namespace cpps
 #include <Process.h>
 #include <corecrt_io.h>
 #ifdef _WIN32
-#define S_ISDIR(m) m & S_IFDIR
-#define S_ISREG(m) m & S_IFREG
-#define S_ISBLK(m) false
-#define S_ISCHR(m) m & S_IFCHR
-#define S_ISFIFO(m) m & _S_IFIFO
-#define S_ISLNK(m)  false
-#define S_ISSOCK(m)  false
+#define S_ISDIR(m) (m & S_IFDIR)
+#define S_ISREG(m) (m & S_IFREG)
+#define S_ISBLK(m) (false)
+#define S_ISCHR(m) (m & S_IFCHR)
+#define S_ISFIFO(m) (m & _S_IFIFO)
+#define S_ISLNK(m)  (false)
+#define S_ISSOCK(m)  (false)
 #endif
 #define cpps_export_void extern "C" _declspec(dllexport) void __stdcall
 #define cpps_export_finish 

@@ -240,13 +240,16 @@ namespace cpps {
 			for (auto it : file_list)
 			{
 				cpps_tarfile_info* info = it;
-				size_t file_block_count = (info->file_size + block_size - 1) / block_size * block_size;
-				char* tmpbuffer = new char[file_block_count];
-				memset(tmpbuffer, 0, file_block_count);
-				memcpy(tmpbuffer, info->buf, info->file_size);
 				source_file_buffer.append((const char *)&info->header, sizeof(tar_posix_header));
-				source_file_buffer.append(tmpbuffer, file_block_count);
-				delete[] tmpbuffer;
+				size_t file_block_count = info->file_size == 0 ? 0 :(info->file_size + block_size - 1) / block_size * block_size;
+				if (!info->isdir()) {
+					char* tmpbuffer = new char[file_block_count];
+					memset(tmpbuffer, 0, file_block_count);
+					memcpy(tmpbuffer, info->buf, info->file_size);
+					source_file_buffer.append(tmpbuffer, file_block_count);
+					delete[] tmpbuffer;
+				}
+			
 				save_file_buffer_size += sizeof(tar_posix_header) + file_block_count;
 			}
 			/*zero*/
@@ -427,14 +430,20 @@ namespace cpps {
 		}
 		sprintf(info->header.chksum, "%06o", (usint16)sum); info->header.chksum[6] = '\0';  info->header.chksum[7] = ' ';
 
-		info->buf = new Byte[statinfo.st_size];
-		FILE* file = fopen(name.c_str(), "rb");
-		if (file) {
-			if (fread(info->buf, statinfo.st_size, 1, file)) {}
-			fclose(file);
-			info->file_size = statinfo.st_size;
+		if (S_ISDIR(statinfo.st_mode) == false) {
+			info->buf = new Byte[statinfo.st_size];
+			FILE* file = fopen(name.c_str(), "rb");
+			if (file) {
+				if (fread(info->buf, statinfo.st_size, 1, file)) {}
+				fclose(file);
+				info->file_size = statinfo.st_size;
+			}
+			info->needdelete = true;
 		}
-		info->needdelete = true;
+		else {
+			info->buf = NULL;
+		}
+		
 			
 		return info;
 
