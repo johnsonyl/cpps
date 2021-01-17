@@ -64,8 +64,8 @@ namespace cpps
 	{
 		_class(std::string name)
 		{
-			_cls = new cpps_class<C>(name,NULL, cpps_domain_type_class);
-			f = new cpps_regclass_template<C>(name, _cls);
+			_cls = CPPSNEW( cpps_class<C>)(name,NULL, cpps_domain_type_class);
+			f = CPPSNEW( cpps_regclass_template<C>)(name, _cls);
 			cpps_class_singleton<C*>::instance()->setsls(_cls);
 		}
 		template<class F>
@@ -148,10 +148,10 @@ namespace cpps
 				cpps_regvar * v = domain->getvar(_domain,leftdomain);
 				if (!v)
 				{
-					cpps_domain *temp_domain = new cpps_domain(c->_G, cpps_domain_type_module, _domain.c_str());//创建根节点域
+					cpps_domain *temp_domain =  CPPSNEW(cpps_domain)(c->_G, cpps_domain_type_module, _domain.c_str());//创建根节点域
 
 
-					v = new cpps_regvar();//_G 为根节点
+					v = CPPSNEW(cpps_regvar)();//_G 为根节点
 					v->setvarname(_domain);
 					v->setval(cpps_value(temp_domain)); //域列表会copy进去
 					domain->regvar(NULL,v); //将自己注册成_G..

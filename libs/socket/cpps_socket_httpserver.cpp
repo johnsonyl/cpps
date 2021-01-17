@@ -361,13 +361,13 @@ namespace cpps {
 		for (auto session : session_list)
 		{
 			cpps_socket_httpserver_session* sess = session.second;
-			delete sess;
+			CPPSDELETE(sess);
 		}
 		session_list.clear();
 		auto it = cachefile_list.begin();
 		for (; it != cachefile_list.end(); ++it) {
 			cpps_socket_httpserver_cachefile* file = it->second;
-			delete file;
+			CPPSDELETE( file);
 
 		}
 		cachefile_list.clear();
@@ -411,7 +411,7 @@ namespace cpps {
 		std::string csrf_token = object_cast<std::string>(dofunction(c, createuuidfunc));
 		if (sesionid.empty()) return NULL;
 
-		cpps_socket_httpserver_session* session = new cpps_socket_httpserver_session();
+		cpps_socket_httpserver_session* session = CPPSNEW( cpps_socket_httpserver_session)();
 		session->session_id = sesionid;
 		session->set_expire(cpps_time_gettime() + SESSION_COOKIE_AGE);
 		session->set("csrftoken", cpps_value(c,csrf_token));
@@ -432,7 +432,7 @@ namespace cpps {
 
 	cpps::cpps_socket_httpserver_cachefile* cpps_socket_httpserver::create_cachefile(std::string& filepath, std::string& content,cpps_integer last_write_time)
 	{
-		cpps_socket_httpserver_cachefile* cachefile = new cpps_socket_httpserver_cachefile();
+		cpps_socket_httpserver_cachefile* cachefile = CPPSNEW( cpps_socket_httpserver_cachefile)();
 		cachefile->setfilepath(filepath);
 		cachefile->setcontent(content);
 		cachefile->setlast_write_time(last_write_time);
@@ -561,7 +561,7 @@ namespace cpps {
 		for (; it != session_list.end();) {
 			auto session = it->second;
 			if (cpps_time_gettime() >= session->session_expire || session->needremove) {
-				delete session;
+				CPPSDELETE(session);
 				it = session_list.erase(it);
 			}
 			else {
@@ -582,6 +582,7 @@ namespace cpps {
 					session->set_expire(cpps_time_gettime() + httpserver->SESSION_COOKIE_AGE);//加时.
 				}
 			}
+			//不应该直接创建session.应该由后台创建.
 			if (!session) {
 				session = httpserver->create_seesion(httpserver->c);
 				cpps_request_ptr->setcookie(httpserver->SESSION_COOKIE_NAME, session->session_id, cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_AGE));

@@ -17,6 +17,8 @@ namespace cpps
 {
 	struct C;
 	struct cpps_node_domain;
+	typedef phmap::flat_hash_map<std::string, node*> var_list_type;
+
 	enum node_var_type
 	{
 		node_var_type_var,
@@ -94,9 +96,28 @@ namespace cpps
 			closure = false;
 			quote = false;
 		}
+		~node() {
+#ifdef _DEBUG
+			static bool b = false;
+			if (b) {
+				FILE* file = fopen("node.txt", "ab+");
+				char buff[4096];
+				sprintf(buff, "file:%s line:%d", filename.c_str(), line);
+				fclose(file);
+			}
+#endif
+			if (varlist) {
+				CPPSDELETE( varlist);
+				varlist = NULL;
+			}
+			if (domain) {
+				CPPSDELETE(domain);
+				domain = NULL;
+			}
+		}
 		void release()
 		{
-			delete this;
+			CPPSDELETE(this);
 		}
 		void add(node *o)
 		{
@@ -111,7 +132,7 @@ namespace cpps
 			for (auto n : v->l)
 			{
 				if (n != NULL){
-					node* cpyn = new node();
+					node* cpyn = CPPSNEW( node)();
 					cpyn->clone(n);
 					l.push_back(cpyn);
 				}
@@ -127,7 +148,6 @@ namespace cpps
 			offset = v->offset;
 			offsettype = v->offsettype;
 			size = v->size;
-			varlist = v->varlist;
 			value = v->value;
 			closure = v->closure;
 			quote = v->quote;
@@ -224,6 +244,14 @@ namespace cpps
 			}
 			return NULL;
 		}
+		node* getthird()
+		{
+			if (l.size() >= 3)
+			{
+				return l[2];
+			}
+			return NULL;
+		}
 
 		void setdomain(cpps_node_domain* d)
 		{
@@ -248,8 +276,6 @@ namespace cpps
 			cpps_number			number;		// double float 
 			cpps_integer		integer;	// int
 			int32				b;			// bool
-			cpps_cppsclassvar	*str;		//string
-			std::vector<std::string> *vars;	// mulit return var;
 		};
 		Value					value;		//值。
 
@@ -259,12 +285,12 @@ namespace cpps
 		int8 offsettype; //偏移类型 0 global 1 left 2 self
 		int16 size;	//子节点数量 ( 只包含类 名空间 函数 , 非类情况下包含变量) 65535个节点还不够吗?
 
-		phmap::flat_hash_map<std::string, node*>		*varlist; //为了运行提速,牺牲解释速度.
+		var_list_type *varlist; //为了运行提速,牺牲解释速度.
 		void regnode(std::string& s, node* n)
 		{
 			if (varlist == NULL) //需要在添加
 			{
-				varlist = new phmap::flat_hash_map<std::string, node*>();
+				varlist = CPPSNEW(var_list_type)();
 			}
 			varlist->insert(phmap::flat_hash_map<std::string, node*>::value_type(s, n));
 		}

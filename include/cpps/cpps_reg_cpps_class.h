@@ -25,6 +25,7 @@ namespace cpps
 	}
 	inline void	cpps_init_cpps_class(cpps::C* c)
 	{
+		CPPSMEMORYSETHANDLER(c->memory_handler); //init handler;
 		cpps::cpps_reg_cpps_class<cpps::string>(c, "String", "_G");
 		cpps::cpps_reg_cpps_class<cpps_vector>(c, "vector", "_G");
 		cpps::cpps_reg_cpps_class<Buffer>(c, "Buffer", "_G");

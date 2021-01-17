@@ -319,7 +319,7 @@ namespace cpps
 	{
 		// 避免自赋值
 		assert(this != &v);
-		if (v.tt == CPPS_TCLASSVAR || v.tt == CPPS_TSTRING || v.tt == CPPS_TTUPLE)
+		if (v.tt == CPPS_TCLASSVAR || v.tt == CPPS_TSTRING || v.tt == CPPS_TLAMBDAFUNCTION || v.tt == CPPS_TTUPLE)
 			v.value.domain->incruse(); //先增后减
 		decruse();
 		tt = v.tt;
@@ -355,13 +355,13 @@ namespace cpps
 
 	void cpps_value::decruse()
 	{
-		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE)
+		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->decruse();
 	}
 
 	 void cpps_value::incruse()
 	{
-		if ( tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE)
+		if ( tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->incruse();
 	}
 

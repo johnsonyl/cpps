@@ -116,12 +116,12 @@ namespace cpps
 		application_argv = argv;
 		ordinator = NULL;
 		isterminate = false;
-		_callstack = new std::vector<cpps_stack*>();
+		_callstack = CPPSNEW( std::vector<cpps_stack*>)();
 	}
 
 	C::~C()
 	{
-		delete _callstack;
+		CPPSDELETE( _callstack);
 	}
 
 	void C::debugopen()
@@ -139,7 +139,7 @@ namespace cpps
 		for (size_t i = 0; i < _callstack->size(); i++)
 		{
 			cpps_stack* stack = (*_callstack)[i];
-			delete stack;
+			CPPSDELETE( stack);
 		}
 		_callstack->clear();
 	}
@@ -147,7 +147,7 @@ namespace cpps
 
 	cpps_value * cpps_stack::create_cpps_value()
 	{
-		return new cpps_value();
+		return CPPSNEW( cpps_value)();
 	}
 
 	cpps_stack::cpps_stack()
@@ -166,7 +166,7 @@ namespace cpps
 
 	cpps_std_vector* cpps_stack::createparams()
 	{
-		return new cpps_std_vector();
+		return CPPSNEW( cpps_std_vector)();
 	}
 
 	

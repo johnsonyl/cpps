@@ -14,6 +14,7 @@
 
 #include "cpps_def.h"
 #include "cpps_lock.h"
+#include "cpps_new.h"
 #include "cpps_object_pool.h"
 #include "cpps_thread.h"
 #include "cpps_cat.h"

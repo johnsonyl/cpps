@@ -25,7 +25,12 @@ namespace cpps
 
 	cpps_domain::~cpps_domain()
 	{
-
+		if (stacklist) {
+			CPPSDELETE( stacklist);
+		}
+		if (parentclassoffset) {
+			CPPSDELETE( parentclassoffset);
+		}
 	}
 
 	cpps::cpps_cppsclassvar* cpps_domain::create(C* c, bool alloc /*= true*/)
@@ -77,7 +82,7 @@ namespace cpps
 			if (!f->varname.empty()) {
 				var = getvar(f->varname, leftdomain, false, true);;
 				if (!var) {
-					var = new cpps_regvar();
+					var = CPPSNEW (cpps_regvar)();
 					var->setvarname(f->varname);
 					var->setconst(true);
 
@@ -117,7 +122,7 @@ namespace cpps
 					leftdomain = NULL;
 					auto __self_var = getvar(__var->getvarname(), leftdomain, true, false);
 					if (!__self_var) {
-						__self_var = new cpps_regvar();
+						__self_var = CPPSNEW (cpps_regvar)();
 						__self_var->setvarname(__var->getvarname());
 						__self_var->setsource(false);
 						__self_var->setconst(true);
@@ -226,7 +231,7 @@ namespace cpps
 						domain->destory(c, isclose);
 						domain->release();
 					}
-					delete v;
+					CPPSDELETE( v);
 				}
 			}
 			varList.clear();
@@ -235,6 +240,7 @@ namespace cpps
 		if (stacklist != NULL)
 		{
 			stacklist->clear();
+			CPPSDELETE(stacklist);
 			stacklist = NULL;
 		}
 		funcRet.decruse();
@@ -243,34 +249,11 @@ namespace cpps
 		parent[0] = NULL;
 		parent[1] = NULL;
 	}
-	void cpps_domain::cleanup()
-	{
-		if (hasVar) {
-			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
-			{
-				cpps_regvar* v = it->second;
-				v->cleanup();
-				delete v;
-			}
-			varList.clear();
-			hasVar = false;
-		}
-		if (stacklist != NULL)
-		{
-			stacklist->clear();
-			stacklist = NULL;
-		}
-		funcRet.tt = CPPS_TNIL;
-		isbreak = false;
-		parent[0] = NULL;
-		parent[1] = NULL;
-	}
-
 	void cpps_domain::regidxvar(int32 offset, cpps_regvar* v)
 	{
 		if (stacklist == NULL)
 		{
-			stacklist = new std::vector< cpps_regvar*>();
+			stacklist = CPPSNEW( std::vector< cpps_regvar*>)();
 		}
 		if (offset < (int32)stacklist->size())
 			(*stacklist)[offset] = v;
@@ -312,7 +295,8 @@ namespace cpps
 	{
 		if (parentclassoffset == NULL)
 		{
-			parentclassoffset = new phmap::flat_hash_map<cpps_domain*, int32>();
+			typedef phmap::flat_hash_map<cpps_domain*, int32> _Type;
+			parentclassoffset = CPPSNEW(_Type )();
 		}
 		parentclassoffset->insert(phmap::flat_hash_map<cpps_domain*, int32>::value_type(parentclass, off));
 	}
@@ -325,7 +309,8 @@ namespace cpps
 
 		if (stacklist == NULL)
 		{
-			stacklist = new std::vector< cpps_regvar*>();
+			typedef std::vector< cpps_regvar*> _Type;
+			stacklist = CPPSNEW(_Type)();
 		}
 		stacklist->resize(size);
 	}

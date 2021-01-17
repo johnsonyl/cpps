@@ -31,7 +31,7 @@ namespace cpps
 		{
 			if (_object_list.empty())
 			{
-				return new T();
+				return CPPSNEW(T)();
 			}
 			T* obj = _object_list[_object_list.size() - 1];
 			_object_list.pop_back();
@@ -46,7 +46,7 @@ namespace cpps
 			for (size_t i = 0; i < _object_list.size(); i++)
 			{
 				T* obj = _object_list[i];
-				delete obj;
+				CPPSDELETE( obj);
 			}
 			_object_list.clear();
 		}

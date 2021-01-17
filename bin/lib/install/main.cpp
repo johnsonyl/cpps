@@ -30,7 +30,7 @@ var download(var file,var showname)
 
 		print("[");
 		if(cur > 0)
-		print(dy[0:cur]);
+			print(dy[0:cur]);
 		print(">");
 		if(cur < progress_max)
 			print(kg[cur:-1]);
@@ -43,7 +43,7 @@ var download(var file,var showname)
 }
 var getmoduleinfo()
 {
-	var url = "http://192.168.31.124:8080/download/downfile?name={modulename}";
+	var url = "http://c.cppscript.org:88/download/downfile?name={modulename}";
 	var ret = http.get(url);
 	return json.decode(ret);
 }
@@ -63,8 +63,29 @@ var install()
 
 	//1.获取模块文件
 	//post 请求 获取压缩包地址 与 config.json地址
-	print("-- Loading module info...");
+	print("-- Seraching for module info...");
 	var info = getmoduleinfo();
+	if(!ismap(info)){
+		println_color("faild",1);
+		println("Ops, cpps server is crash...")
+		return;
+	}
+	if(info["code"] != 0){
+		println_color("faild",1);
+		if(info["code"] == -1){
+			println("Ops, cpps server is crash...")
+		}
+		else if(info["code"] == -2){
+			println("No match for module : {modulename}")
+		}
+		else if(info["code"] == -3){
+			println("Match for module : {modulename}, But no has download url")
+		}
+		else{
+			println("Unknow error:{info["code"]}")
+		}
+		return;
+	}
 	println_color("ok",2);
 	var jsonfilepath = info["downurl"];
 	var targzfilepath = info["downurl1"];
@@ -96,7 +117,7 @@ var install()
 
 	var file = tarfile.open(targzfile_realpath,"r:gz",102400000);
 	if(!file) {
-		println("faild");
+		println_color("faild",1);
 		uninstall();
 		exit(0);
 	}

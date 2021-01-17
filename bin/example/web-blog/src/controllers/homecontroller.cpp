@@ -34,4 +34,9 @@ class Home : Controller
 	{
 		render(request,"view/about.html",{});
 	}
+	var quit(var request)
+	{
+		sendmsg(request,"ok.");
+		programhandle.isstop = true;
+	}
 }

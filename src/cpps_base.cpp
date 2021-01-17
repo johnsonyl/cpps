@@ -352,15 +352,12 @@ namespace cpps
 			node* o = loadbuffer(c,c->_G,  fileSrc, fpath);
 			cpps_stack* stack = c->stack_alloc();
 			stack->init("main.cpp", 0, "import");
-
 			c->push_stack(stack);
 			cpps_step_all(c, CPPS_MUNITRET, c->_G,c->_G, o);
 			c->pop_stack();
-
-
 			cpps_gc_check_step(c);
-
 			c->stack_free(stack);
+			if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
 		}
 		return true;
 	}

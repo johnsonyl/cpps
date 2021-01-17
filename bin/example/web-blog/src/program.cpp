@@ -1,6 +1,7 @@
 class program
 {
 	var nextsavefiletime = now() + 300;//5分钟存储一次.
+	var isstop = false;
     var Main()
 	{
 		//创建日志
@@ -10,12 +11,13 @@ class program
 		initwebserver();
 		register_controllers();
 		
-		while(true){
+		while(!isstop){
 		
 			Run();
 			Sleep(1);
 			
 		}
+		srv.stop();
 	}
 	var LogicHandle()
 	{

@@ -30,8 +30,13 @@ namespace setuptools{
 			dist(option);
 		}
 		else if(type == "upload"){
+			var apikey = upload_check();
+			if(apikey == ""){
+				//账号密码错误
+				return false;
+			}
 			var ret = dist(option);
-			if(ret) upload(option);
+			if(ret) upload(option,apikey);
 		}
 		else if (type == "build")
 		{

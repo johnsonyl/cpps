@@ -12,8 +12,7 @@ async var test1()
 	println("do test1 function");
 	await asyncio.sleep(1000);
 	println("do test1 function done");
-	var a;
-	a.asd();
+	
 	return "test1";
 }
 var test_call_back(var task, var context)
@@ -42,7 +41,7 @@ async var main() {
 	catch (var e)
 	{
 		println("oh,we catch some error");
-		println("{e.geterrstr()} line:{e.getline()} file:{e.getfile()}");
+		println("{e.what()} line:{e.line()} file:{e.file()}");
 		println(e.callstack());
 	}
 

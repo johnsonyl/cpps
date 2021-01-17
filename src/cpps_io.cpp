@@ -45,6 +45,10 @@ namespace cpps
 
 		return cpps_value(c,ret);
 	}
+	cpps_integer cpps_io_getch() {
+		int ret = _getch();
+		return (cpps_integer)ret;
+	}
 	cpps_value cpps_io_getline(C *c)
 	{
 		std::string ret;
@@ -796,6 +800,7 @@ namespace cpps
 	{
 		cpps::_module(c,"io")[
 			def_inside("getc",cpps_io_getc),
+			def_inside("getch",cpps_io_getch),
 			def_inside("getline",cpps_io_getline),
 			def("fopen",cpps_io_open),
 			def("writefile",cpps_io_writefile),

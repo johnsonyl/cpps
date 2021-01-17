@@ -408,6 +408,7 @@ typedef struct {
 
 #endif
 
+#include <conio.h>
 #include <iostream>
 #include <chrono>
 #include <iomanip>

@@ -36,6 +36,8 @@ namespace cpps
 		virtual bool	iscppsfunc() { return true; }
 		void			rebuildfunc(node* p, node* c, usint32 count);
 		void			setquatoreturn(bool b);
+		virtual void	release() { CPPSDELETE(this); }
+
 	public:
 		usint32		varcount;
 		node		*params;

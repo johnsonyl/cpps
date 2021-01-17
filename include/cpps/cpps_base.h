@@ -22,6 +22,7 @@ namespace cpps
 	bool cpps_base_ismap(cpps_value v);
 	bool cpps_base_isstring(cpps_value v);
 	bool cpps_base_isvector(cpps_value v);
+	bool cpps_base_isrange(cpps_value v);
 	bool cpps_base_isint(cpps_value v);
 	bool cpps_base_isnumber(cpps_value v);
 	bool cpps_base_isnull(cpps_value v);

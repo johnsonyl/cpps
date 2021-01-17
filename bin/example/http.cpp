@@ -3,7 +3,7 @@ system("chcp 65001"); //use utf8 string
 #import "http"
 
 var request = new http::httprequest();
-request.setcookiesfile("cookies.txt");
+request.setcookiefile("cookies.txt");
 //request.setproxy(httpproxy.SOCK5,"192.168.1.166:25455");
 //request.setproxyaccount("johnsonyl","mima");
 request.addheaders({User-Agent:"cppsrequest/1.1.0"});

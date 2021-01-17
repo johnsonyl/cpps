@@ -34,8 +34,7 @@ var module_macos = {
 
 
 setuptools::setup({
-	username:"zheng1",
-    apikey:"39ae9ae32348147b4c7a53e3a25c2bac",
+	username:"johnsonyl",
     name:"mysqltest", 
     version:"0.0.1",
     author:"johnsonyl",

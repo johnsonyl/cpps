@@ -52,7 +52,6 @@ namespace cpps
 	inline	void	cpps_delete_tmp_string(cpps_value& v) {
 		cpps_cppsclassvar* var = (cpps_cppsclassvar*)v.value.domain;
 		v = nil;
-		var->cleanup();
 		var->release();
 		var = NULL;
 	}

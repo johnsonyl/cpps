@@ -261,7 +261,7 @@ namespace cpps
 		cpps_domain* leftdomain = NULL;
 		cpps_regvar* v = c->_G->getvar(varname, leftdomain, false);
 		if (!v) {
-			v = new cpps_regvar();
+			v = CPPSNEW (cpps_regvar)();
 			v->setvarname(varname);
 			c->_G->regvar(c, v);
 		}

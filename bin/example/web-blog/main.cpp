@@ -1,4 +1,4 @@
 #include <include/header.cpp>
 
-var m = new program();
-m.Main();
+var programhandle = new program();
+programhandle.Main();

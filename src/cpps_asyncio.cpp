@@ -75,7 +75,7 @@ namespace cpps {
 
 	void cpps_regasyncio(C* c)
 	{
-		cpps_async_loop* loop = new cpps_async_loop(); 
+		cpps_async_loop* loop = CPPSNEW( cpps_async_loop)();
 		loop->setcstate(c);
 		c->setmoduledata("asyncio", (cpps_module_data*)loop);
 
@@ -113,7 +113,7 @@ namespace cpps {
 	void cpps_unregasyncio(C* c)
 	{
 		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
-		if(loop) delete loop;
+		if(loop) CPPSDELETE( loop);
 		c->setmoduledata("asyncio", NULL);
 	}
 

@@ -62,7 +62,7 @@ namespace cpps
 
 	cpps::cpps_regparentclass* make_parentclass(cpps_cppsclass* _cppsclass)
 	{
-		return new cpps_regparentclass(_cppsclass);
+		return CPPSNEW( cpps_regparentclass)(_cppsclass);
 	}
 
 }

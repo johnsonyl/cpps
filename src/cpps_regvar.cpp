@@ -34,10 +34,6 @@ namespace cpps
 		sourcestate = src;
 	}
 
-	void cpps_regvar::cleanup()
-	{
-		value.tt = CPPS_TNIL;
-	}
 
 	void cpps_regvar::clone(cpps_regvar *right)
 	{

@@ -11,6 +11,8 @@ namespace cpps {
 	cpps_socket::~cpps_socket()
 	{
 		socket_event_callback = NULL;
+		if (uv_tcp) CPPSDELETE(uv_tcp);
+		uv_tcp = NULL;
 	}
 
 	bool cpps_socket::create( uv_tcp_t* nFd )
@@ -46,9 +48,9 @@ namespace cpps {
 	void cpps_socket::send(cpps::Buffer* buffer)
 	{
 
-		write_req_t* req = (write_req_t*)malloc(sizeof(write_req_t));
+		write_req_t* req = (write_req_t*)CPPSMALLOC(sizeof(write_req_t));
 
-		req->buf = uv_buf_init((char*)malloc((size_t)buffer->length()), (usint32)buffer->length());
+		req->buf = uv_buf_init((char*)CPPSMALLOC((size_t)buffer->length()), (usint32)buffer->length());
 		req->req.data = req->buf.base;
 		memcpy(req->buf.base, buffer->getbuffer(), buffer->length());
 		int err = uv_write(&req->req,(uv_stream_t*) uv_tcp, &req->buf, 1, on_write_cb);
@@ -61,9 +63,9 @@ namespace cpps {
 
 	void cpps_socket::sends(std::string& buffer)
 	{
-		write_req_t* req = (write_req_t*)malloc(sizeof(write_req_t));
+		write_req_t* req = (write_req_t*)CPPSMALLOC(sizeof(write_req_t));
 
-		req->buf = uv_buf_init((char*)malloc((size_t)buffer.size()), (usint32)buffer.size());
+		req->buf = uv_buf_init((char*)CPPSMALLOC((size_t)buffer.size()), (usint32)buffer.size());
 		req->req.data = req->buf.base;
 		memcpy(req->buf.base, buffer.data(), buffer.size());
 		int err = uv_write(&req->req, (uv_stream_t*)uv_tcp, &req->buf, 1, on_write_cb);
@@ -108,7 +110,7 @@ namespace cpps {
 		cpps_socket* sock = (cpps_socket*)client->data;
 		if (sock == NULL) return;
 		if (sock->socket_event_callback) sock->socket_event_callback->onReadCallback(sock, nread, buf);
-		free(buf->base);
+		CPPSFREE(buf->base);
 	}
 
 	
@@ -122,14 +124,14 @@ namespace cpps {
 
 		/* Free the read/write buffer and the request */
 		wr = (write_req_t*)req;
-		free(wr->buf.base);
-		free(wr);
+		CPPSFREE(wr->buf.base);
+		CPPSFREE(wr);
 
 	}
 
 	void cpps_socket::on_alloc_cb(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf)
 	{
-		*buf = uv_buf_init((char*)malloc(suggested_size),(usint32) suggested_size);
+		*buf = uv_buf_init((char*)CPPSMALLOC(suggested_size),(usint32) suggested_size);
 	}
 
 }

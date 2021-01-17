@@ -16,10 +16,10 @@ namespace cpps
 	
 	cpps_cppsfunction::cpps_cppsfunction(cpps_domain* d, node* p, node* c, usint32 count)
 	{
-		params = new node(p->filename, p->line);
+		params = CPPSNEW( node)(p->filename, p->line);
 		params->clone(p); //克隆出所有列表
 
-		context = new node(c->filename, c->line);
+		context = CPPSNEW( node)(c->filename, c->line);
 		context->clone(c); //克隆出所有列表
 
 		varcount = count;
@@ -36,8 +36,9 @@ namespace cpps
 
 	cpps_cppsfunction::~cpps_cppsfunction()
 	{
-		cpps_destory_node(params); delete params; params = NULL;
-		cpps_destory_node(context); delete context; context = NULL;
+		cpps_destory_node(params); CPPSDELETE( params); params = NULL;
+		cpps_destory_node(context); CPPSDELETE( context); context = NULL;
+		if (domain) CPPSDELETE(domain);domain = NULL;
 	}
 
 	cpps::int8 cpps_cppsfunction::getparamcount()
@@ -85,7 +86,7 @@ namespace cpps
 
 			if (varname->type == CPPS_VARNAME)
 			{
-				cpps_regvar* v = new cpps_regvar();
+				cpps_regvar* v = CPPSNEW( cpps_regvar)();
 				v->setvarname(varname->s);
 
 				if (i >= o->size())
@@ -157,12 +158,12 @@ namespace cpps
 
 	void cpps_cppsfunction::rebuildfunc(node* p, node* c, usint32 count)
 	{
-		cpps_destory_node(params); delete params; params = NULL;
-		params = new node(p->filename, p->line);
+		cpps_destory_node(params); CPPSDELETE( params); params = NULL;
+		params = CPPSNEW( node)(p->filename, p->line);
 		params->clone(p); //克隆出所有列表
 
-		cpps_destory_node(context); delete context; context = NULL;
-		context = new node(c->filename, c->line);
+		cpps_destory_node(context); CPPSDELETE( context); context = NULL;
+		context = CPPSNEW( node)(c->filename, c->line);
 		context->clone(c); //克隆出所有列表
 
 		varcount = count;

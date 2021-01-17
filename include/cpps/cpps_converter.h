@@ -260,7 +260,13 @@ namespace cpps
 
 			ret.tt = CPPS_TCLASSVAR;
 			
+#ifdef _DEBUG
+			std::map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+#else
 			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+#endif
+
+			
 			cpps_cppsclassvar* var;
 			if (it == c->_class_map_classvar.end())
 			{
@@ -414,7 +420,11 @@ namespace cpps
 
 			ret.tt = CPPS_TSTRING;
 
+#ifdef _DEBUG
+			std::map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+#else
 			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+#endif
 			cpps_cppsclassvar* var;
 			if (it == c->_class_map_classvar.end())
 			{

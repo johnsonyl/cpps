@@ -10,7 +10,7 @@ namespace cpps {
 		inc_socket_index = 1;
 		c = NULL;
 		sever_running = false;
-		uv_loop = new uv_loop_t();
+		uv_loop = CPPSNEW( uv_loop_t)();
 		uv_loop_init(uv_loop);
 
 	}
@@ -20,9 +20,13 @@ namespace cpps {
 		if (uv_loop)
 		{
 			uv_loop_close(uv_loop);
-			delete uv_loop;
+			CPPSDELETE( uv_loop );
 			uv_loop = NULL;
 		}
+		for (auto client : server_client_list) {
+			CPPSDELETE(client.second);
+		}
+		server_client_list.clear();
 	}
 
 	void cpps_socket_server::setcstate(cpps::C* cstate)
@@ -144,7 +148,7 @@ namespace cpps {
 		}
 
 		cpps_socket_server_client* client = srv->create_server_client(); //可能需要一个池呀.
-		uv_tcp_t* fd = new uv_tcp_t();
+		uv_tcp_t* fd = CPPSNEW( uv_tcp_t)();
 		uv_tcp_init(srv->uv_loop, fd);
 		fd->data = (void*)client;
 		client->create(fd);
@@ -177,7 +181,7 @@ namespace cpps {
 	}
 	cpps_socket_server_client* cpps_socket_server::create_server_client()
 	{
-		cpps_socket_server_client* client = new cpps_socket_server_client();
+		cpps_socket_server_client* client = CPPSNEW( cpps_socket_server_client)();
 		client->socket_index = inc_socket_index++;
 		client->setServerHandle(this);
 		server_client_list.insert(socket_list::value_type(client->socket_index,client));
@@ -186,7 +190,7 @@ namespace cpps {
 	void cpps_socket_server::free_server_client(cpps_socket_server_client *client)
 	{
 		server_client_list.erase(client->socket_index);
-		delete client;
+		CPPSDELETE( client);
 	}
 
 	void cpps_socket_server::sends(cpps_integer socketIndex, std::string& buffer)
@@ -333,7 +337,7 @@ namespace cpps {
 			cpps::dofunction(client->server->c, client->server->server_option.option_close, client->socket_index, 0, client->closemsg);
 		}
 
-		delete source;
+		CPPSDELETE(source);
 		client->server->free_server_client(client);
 	}
 }

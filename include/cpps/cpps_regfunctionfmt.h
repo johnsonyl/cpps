@@ -102,7 +102,7 @@ namespace cpps
 	template<class R>
 	cpps_regfunction* make_regfunction(std::string func, R(*f)(const char* fmt, ...), bool isasync)
 	{
-		return new cpps_regfunction(func, new cpps_functionfmt<R>(f),isasync);
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW( cpps_functionfmt<R>)(f),isasync);
 	}
 }
 #endif

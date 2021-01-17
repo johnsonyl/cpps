@@ -72,7 +72,11 @@ namespace cpps
 		size_t																		lastgensize;
 		std::string																	(*func)(std::string &);
 		phmap::flat_hash_map<std::string, HMODULE>									modulelist;
+#ifdef _DEBUG
+		std::map<void*, cpps_cppsclassvar*>											_class_map_classvar;
+#else
 		phmap::flat_hash_map<void*, cpps_cppsclassvar*>								_class_map_classvar;
+#endif
 		bool																		debug;
 		cpps_object_pool<cpps::cpps_domain>											domain_pool;
 		cpps_object_pool<cpps::cpps_stack>											stack_pool;
@@ -84,6 +88,7 @@ namespace cpps
 		phmap::flat_hash_map<std::string, cpps_module_data*>						savemoduledatas;
 		coroutine::Ordinator*														ordinator;
 		bool																		isterminate;
+		memory_allocal_handler*														memory_handler;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

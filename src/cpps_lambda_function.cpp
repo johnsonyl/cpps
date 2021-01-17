@@ -25,7 +25,7 @@ namespace cpps {
 					no->closeureusecount--;
 					if (no->closeureusecount == 0) {
 						cpps_gc_remove_barrier(c, no);
-						delete no;
+						CPPSDELETE( no);
 					}
 				}
 			}

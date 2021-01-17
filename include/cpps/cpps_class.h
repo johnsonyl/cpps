@@ -22,22 +22,22 @@ namespace cpps
 	{
 		cpps_cppsclass(std::string _classname, node *_o, cpps_domain* p, char type)
 			:cpps_domain(p, type, _classname) {
-			if (_o) { o = new node(); o->clone(_o); }
+			if (_o) { o = CPPSNEW( node)(); o->clone(_o); }
 			else o = NULL;
 			classname = _classname;
 		}
 		virtual ~cpps_cppsclass() {
 			if (o) {
 				cpps_destory_node(o); //清理node.
-				delete o;
+				CPPSDELETE( o);
 				o = NULL;
 			}
 		}
-		virtual cpps_cppsclassvar *			create(C* c, bool alloc = true){ return (new cpps_cppsclassvar(getclassname(), this, cpps_domain_type_classvar, alloc)); }
+		virtual cpps_cppsclassvar *			create(C* c, bool alloc = true){ return (CPPSNEW(cpps_cppsclassvar)(getclassname(), this, cpps_domain_type_classvar, alloc)); }
 		virtual bool						iscppsclass() { return true; }
 		std::string							getclassname(){	return classname; }
 		std::vector<cpps_cppsclass*>&		parentclasslist() { return _parentclasslist; }
-		virtual void						release() { delete this; }
+		virtual void						release() { CPPSDELETE( this); }
 		node* o; //定义的变量
 		std::string classname;
 		std::vector<cpps_cppsclass*> _parentclasslist;
@@ -50,13 +50,17 @@ namespace cpps
 			:cpps_cppsclass(_classname, NULL, p, type){	}
 		virtual ~cpps_class(){}
 		virtual bool					iscppsclass() { return false; }
-		virtual void					release() { delete this; }
+		virtual void					release() { CPPSDELETE( this); }
 		virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
 		{
-			cpps_classvar<T>* v = new cpps_classvar<T>(getclassname(), this, cpps_domain_type_classvar, alloc);
+			cpps_classvar<T>* v = CPPSNEW( cpps_classvar<T>)(getclassname(), this, cpps_domain_type_classvar, alloc);
 			if (alloc){
 				cpps_cppsclassvar* class_var = (cpps_cppsclassvar* )v;
-				if(c) c->_class_map_classvar.insert(phmap::flat_hash_map<void*, cpps_cppsclassvar*>::value_type(v->__class, class_var));
+#ifdef _DEBUG
+				if(c) c->_class_map_classvar.insert(std::map<void*, cpps_cppsclassvar*>::value_type(v->__class, class_var));
+#else
+				if (c) c->_class_map_classvar.insert(phmap::flat_hash_map<void*, cpps_cppsclassvar*>::value_type(v->__class, class_var));
+#endif
 			}
 			return v;
 		}

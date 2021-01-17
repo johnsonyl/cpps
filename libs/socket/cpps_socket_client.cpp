@@ -9,7 +9,7 @@ namespace cpps
 		c = NULL;
 		uv_connect = NULL;
 		dest_port = 0;
-		uv_loop = new uv_loop_t();
+		uv_loop = CPPSNEW( uv_loop_t)();
 		uv_loop_init(uv_loop);
 	}
 
@@ -17,7 +17,7 @@ namespace cpps
 	{
 		if (uv_loop) {
 			uv_loop_close(uv_loop);
-			delete uv_loop;
+			CPPSDELETE( uv_loop);
 			uv_loop = NULL;
 		}
 	}
@@ -48,12 +48,12 @@ namespace cpps
 
 	
 
-		uv_tcp_t* fd = new uv_tcp_t();
+		uv_tcp_t* fd = CPPSNEW( uv_tcp_t)();
 		uv_tcp_init(uv_loop, fd);
 		fd->data = (void*)this;
 
 	
-		uv_connect = new uv_connect_t();
+		uv_connect = CPPSNEW( uv_connect_t)();
 		uv_connect->data = (void* )this;
 
 
@@ -212,7 +212,7 @@ namespace cpps
 		cpps_socket_client* client = (cpps_socket_client*)handle->data;
 		client->closed();
 		uv_tcp_t* fd = (struct uv_tcp_s*)handle;
-		delete fd;
+		CPPSDELETE( fd);
 	}
 
 	void cpps_socket_client::on_connect(uv_connect_t* req, int status)

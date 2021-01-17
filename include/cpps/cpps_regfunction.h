@@ -36,7 +36,7 @@ namespace cpps
 		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, cpps_std_vector *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL){}
 		virtual void			setfuncname(std::string name){	funcname = name;}
 		virtual std::string		getfuncname(){return funcname;}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		virtual void setIsNeedC(bool b)	{isNeedC = b;}
 		virtual bool getIsNeedC(){ return isNeedC; }
 		virtual int8 getparamcount() { return 0; }
@@ -61,7 +61,7 @@ namespace cpps
 			isneedC = false;
 		}
 		virtual ~cpps_reg(){}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		cpps_reg* next;
 		int8	type;
 		std::string varname;
@@ -80,7 +80,7 @@ namespace cpps
 			func->setasync(isasync);
 		}
 		virtual ~cpps_regfunction() {}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 
 		cpps_function* func;
 	};
@@ -93,7 +93,7 @@ namespace cpps
 			value = v;
 		}
 		virtual ~cpps_reggvar() {}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 
 	};
 	struct cpps_regparentclass : public cpps_reg
@@ -104,7 +104,7 @@ namespace cpps
 			__cppsclass = _cppsclass;
 		}
 		virtual ~cpps_regparentclass() {}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		cpps_cppsclass* __cppsclass;
 	};
 	struct cpps_regclass : public cpps_reg
@@ -116,7 +116,7 @@ namespace cpps
 			varname = name;
 		}
 		virtual ~cpps_regclass() {}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 
 		cpps_cppsclass* cls;
 	};
@@ -130,7 +130,7 @@ namespace cpps
 
 		}
 		virtual ~cpps_regclass_template(){}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 	};
 
 
@@ -151,7 +151,7 @@ namespace cpps
 
 			call_function<R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		R(*f)();
 		vector1<R> param;
 	};
@@ -161,7 +161,7 @@ namespace cpps
 	template<class R>
 	cpps_regfunction* make_regfunction(std::string func, R(*f)(),bool isasync = false)
 	{
-		return new cpps_regfunction(func, new cpps_function1<R>(f),isasync);
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW( cpps_function1<R>)(f),isasync);
 	}
 
 
@@ -181,7 +181,7 @@ namespace cpps
 
 			call_function< R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		R(CLS::* f)();
 		vector1<R> param;
 	};
@@ -189,13 +189,14 @@ namespace cpps
 	template<class R, class C>
 	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(), bool isasync = false)
 	{
-		return new cpps_regfunction(func, new cpps_cpp_function1<R,C>(f), isasync);
+		typedef cpps_cpp_function1<R, C> _Type;
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f), isasync);
 	}
 
 	template<class F>
 	cpps_reggvar* make_regvar(std::string name, F v)
 	{
-		return new cpps_reggvar(name, v);
+		return CPPSNEW( cpps_reggvar)(name, v);
 	}
 	cpps_regparentclass* make_parentclass(cpps_cppsclass* _cppsclass);
 	
@@ -295,7 +296,7 @@ namespace cpps
 
 			call_function<R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		virtual int8 getparamcount() { return CPPS_MAKE_REGFUNCTION_ITER_C; }
 		R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A));
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
@@ -303,7 +304,8 @@ namespace cpps
 	template<class R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, class A) >
 	cpps_regfunction* make_regfunction(std::string func, R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false)
 	{
-		return new cpps_regfunction(func, new CPPS_PP_CAT(cpps_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C))<R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)>(f), isasync);
+		typedef  CPPS_PP_CAT(cpps_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > _Type;
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f), isasync);
 	}
 
 
@@ -322,7 +324,7 @@ namespace cpps
 
 			call_function<R>(c,*ret, domain, *o, func, f, cpps_is_void<R>());
 		}
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		virtual int8 getparamcount() { return CPPS_MAKE_REGFUNCTION_ITER_C; }
 		R(CLS::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A));
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
@@ -330,7 +332,8 @@ namespace cpps
 	template<class R, class C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, class A) >
 	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false)
 	{
-		return new cpps_regfunction(func, new CPPS_PP_CAT(cpps_cpp_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C))<R, C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)>(f),isasync);
+		typedef CPPS_PP_CAT(cpps_cpp_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > _Type;
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f),isasync);
 	}
 
 

@@ -12,7 +12,7 @@ namespace cpps {
 	cpps_socket_httpserver_request::~cpps_socket_httpserver_request()
 	{
 		for (auto filedata : filedataslist) {
-			delete filedata.second;
+			CPPSDELETE( filedata.second);
 		}
 		filedataslist.clear();
 	}
@@ -250,7 +250,7 @@ namespace cpps {
 
 
 			if (!filename_value.empty()) {
-				cpps_socket_httpserver_request_filedata* filedata = new cpps_socket_httpserver_request_filedata();
+				cpps_socket_httpserver_request_filedata* filedata = CPPSNEW( cpps_socket_httpserver_request_filedata)();
 				filedata->content_type_value = content_type;
 				filedata->filename_value = filename_value;
 				filedata->name_value = name_value;
@@ -316,6 +316,9 @@ namespace cpps {
 
 		output_buffer.clear();
 		output_buffer.append((const char*)dest, destlen);
+
+		delete[] dest;
+		dest = NULL;
 		return true;
 	}
 

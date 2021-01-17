@@ -294,10 +294,9 @@ namespace cpps
 		}
 #ifdef _DEBUG
 		if (!c->getgen0()->empty()) {
-			("no cleanup:%d\r\n", (int)c->getgen0()->size());
-			std::vector< cpps_cppsclassvar* > tmp;
+			printf("no cleanup:%d\r\n", (int)c->getgen0()->size());
 			for (auto item : *c->getgen0()) {
-				tmp.push_back(item);
+				c->getgen1()->insert(item);
 			}
 		}
 #endif
@@ -328,7 +327,7 @@ namespace cpps
 		}
 #ifdef _DEBUG
 		if (!c->getgen1()->empty()) {
-			("no cleanup:%d\r\n", (int)c->getgen1()->size());
+			printf("no cleanup:%d\r\n", (int)c->getgen1()->size());
 			std::vector< cpps_cppsclassvar* > tmp;
 			for (auto item : *c->getgen1()) {
 				tmp.push_back(item);

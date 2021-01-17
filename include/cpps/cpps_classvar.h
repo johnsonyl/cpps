@@ -22,7 +22,7 @@ namespace cpps
 		virtual void *getclsptr(){ return NULL; }
 		virtual void setclsptr(void *p){ }
 		virtual bool isallocclass() { return isalloc; }
-		virtual void release() { delete this; }
+		virtual void release() { CPPSDELETE( this); }
 		virtual size_t size() { return sizeof(*this); }
 		bool isalloc;
 		int usecount;
@@ -34,14 +34,14 @@ namespace cpps
 			:cpps_cppsclassvar(clsname,p, type, alloc)
 		{
 			__class = NULL;
-			if (alloc)	__class = new CLS();//暂时不支持带参数的构造函数
+			if (alloc)	__class = CPPSNEW( CLS)();//暂时不支持带参数的构造函数
 		}
 		virtual ~cpps_classvar(){}
 		virtual void *getclsptr(){ return (void *)__class; }
 		virtual void release() {
-			if (__class && isallocclass()) delete __class;
+			if (__class && isallocclass()) CPPSDELETE( __class );
 			__class = NULL; 
-			delete this;
+			CPPSDELETE( this);
 		}
 		virtual void setclsptr(void* p) { __class = (CLS*)p; }
 		virtual size_t size() { return sizeof(*this) + (__class ? sizeof(*__class) : 0 ); }
