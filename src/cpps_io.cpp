@@ -45,8 +45,27 @@ namespace cpps
 
 		return cpps_value(c,ret);
 	}
+#ifndef _WIN32
+#include <termios.h>
+#endif
 	cpps_integer cpps_io_getch() {
+#ifdef _WIN32
 		int ret = _getch();
+#else
+		struct termios stored_settings;
+		struct termios new_settings;
+		tcgetattr(0, &stored_settings);
+		new_settings = stored_settings;
+		new_settings.c_lflag &= (~ICANON);
+		new_settings.c_cc[VTIME] = 0;
+		new_settings.c_cc[VMIN] = 1;
+		tcsetattr(0, TCSANOW, &new_settings);
+
+		system("stty -echo");
+		int ret = getchar();
+		system("stty echo");
+		tcsetattr(0, TCSANOW, &stored_settings);
+#endif
 		return (cpps_integer)ret;
 	}
 	cpps_value cpps_io_getline(C *c)

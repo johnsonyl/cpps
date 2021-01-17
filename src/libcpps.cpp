@@ -1940,7 +1940,7 @@ namespace cpps {
 		child->size = 0;
 		node* parents = CPPSNEW (node)(child, child->filename, buffer.line());
 		node* vars = CPPSNEW (node)(child, child->filename, buffer.line());
-		node* forbased = CPPSNEW (node)(child, child->filename, buffer.line());
+		CPPSNEW (node)(child, child->filename, buffer.line());
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
 		child->s = cpps_parse_varname(buffer);
@@ -3244,7 +3244,7 @@ namespace cpps {
 							cppsclass->regvar(c, v2);
 						}
 						if (v2->issource()) {
-							printf((d->s + "::" + varName->s + "is repeatedly defined , The second has been ignored\r\n").c_str());
+							printf("%s",(d->s + "::" + varName->s + "is repeatedly defined , The second has been ignored\r\n").c_str());
 						}
 						else {
 							/* 重写父类的函数 */

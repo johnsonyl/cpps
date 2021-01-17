@@ -352,6 +352,7 @@ namespace cpps
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 #define WIN32_LEAN_AND_MEAN	
+#include <conio.h>
 #include <windows.h>
 #include <time.h>
 #include <direct.h>
@@ -408,7 +409,6 @@ typedef struct {
 
 #endif
 
-#include <conio.h>
 #include <iostream>
 #include <chrono>
 #include <iomanip>

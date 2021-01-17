@@ -2,8 +2,8 @@ module io{
     var getpwd(var field,var &pwd,var k = "#")
     {
         print(field);
-        var chr
-        while((chr = io.getch()) != char('\r')){
+        var chr;
+        while((chr = io.getch()) != char('\r') && chr != char('\n')){
             if(chr == 8){
                 if(pwd.empty()) continue;
                 print("\r{field}");

@@ -38,7 +38,8 @@ namespace cpps
 	{
 		cpps_destory_node(params); CPPSDELETE( params); params = NULL;
 		cpps_destory_node(context); CPPSDELETE( context); context = NULL;
-		if (domain) CPPSDELETE(domain);domain = NULL;
+		if (domain) CPPSDELETE(domain);
+		domain = NULL;
 	}
 
 	cpps::int8 cpps_cppsfunction::getparamcount()
