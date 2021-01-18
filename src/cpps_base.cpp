@@ -40,6 +40,11 @@ namespace cpps
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
 				ret = (cpps_integer)v->size();
 			}
+			else if (b.value.value.domain->domainname == "set")
+			{
+				cpps_set* v = cpps_converter<cpps_set*>::apply(b.value);
+				ret = (cpps_integer)v->size();
+			}
 		}
 		return ret;
 	}
@@ -91,6 +96,20 @@ namespace cpps
 					for (v->begin(); v->end(); v->next())
 					{
 						cpps_base_printf(c,v->it());
+						cout << ",";
+					}
+				}
+				cout << "]";
+			}
+			else if (b.value.value.domain->domainname == "set")
+			{
+				cout << "[";
+				cpps_set* v = cpps_converter<cpps_set*>::apply(b.value);
+				if (v)
+				{
+					for (v->begin(); v->end(); v->next())
+					{
+						cpps_base_printf(c, v->it());
 						cout << ",";
 					}
 				}
@@ -187,6 +206,10 @@ namespace cpps
 	bool cpps_base_ismap(cpps_value v)
 	{
 		return (v.isdomain() && (v.value.domain->domainname == "map"));
+	}
+	bool cpps_base_issetable(cpps_value v)
+	{
+		return (v.isdomain() && (v.value.domain->domainname == "set"));
 	}
 	bool cpps_base_isint(cpps_value v)
 	{
@@ -723,7 +746,7 @@ namespace cpps
 			defvar(c,"classvar", CPPS_TCLASSVAR),
 			defvar(c,"function", CPPS_TFUNCTION),
 			defvar(c,"domain", CPPS_TDOMAIN),
-			defvar(c,"ptr", CPPS_TREGVAR),
+			defvar(c,"ptr", CPPS_TREF),
 			defvar(c,"number", CPPS_TNUMBER),
 			defvar(c,"nil", CPPS_TNIL),
 			defvar(c,"lambda", CPPS_TLAMBDAFUNCTION)

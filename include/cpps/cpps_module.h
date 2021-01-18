@@ -103,6 +103,15 @@ namespace cpps
 			return *this;
 		}
 
+		template<class F>
+		_class<C>& def_operator(std::string func, F _f)
+		{
+			cpps_reg* r = make_regfunction(func, _f, false,true);
+			r->isneedC = false;
+			_cls->regfunc(r);
+			return *this;
+		}
+
 		regxmodule 	operator ,(regxmodule c)
 		{
 			regxmodule(*this).operator,(c);
@@ -114,7 +123,7 @@ namespace cpps
 	template<class F>
 	regxmodule def(std::string func, F f, bool isasync = false)
 	{
-		return regxmodule(make_regfunction(func, f, isasync),false);
+		return regxmodule(make_regfunction(func, f, isasync,false),false);
 	}
 
 

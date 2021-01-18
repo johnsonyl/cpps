@@ -33,7 +33,7 @@ namespace cpps
 		}
 		return "unknow";
 	}
-#define SAFE_VALUE (value.tt == CPPS_TREGVAR ? *(value.value.value) : value)
+#define SAFE_VALUE (value.tt == CPPS_TREF ? *(value.value.value) : value)
 
 	cpps_integer object::size()
 	{
@@ -45,6 +45,10 @@ namespace cpps
 		}
 		else if (cpps_base_isvector(SAFE_VALUE)) {
 			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
+			ret = vct->size();
+		}
+		else if (cpps_base_issetable(SAFE_VALUE)) {
+			cpps_set* vct = cpps_to_cpps_setable(SAFE_VALUE);
 			ret = vct->size();
 		}
 		else if (cpps_base_isstring(SAFE_VALUE)) {
@@ -111,6 +115,11 @@ namespace cpps
 	bool object::isclassvar()
 	{
 		return cpps_base_isclassvar(SAFE_VALUE);
+	}
+
+	bool object::isref()
+	{
+		return value.isref();
 	}
 
 	std::string object::tostring()
@@ -250,7 +259,7 @@ namespace cpps
 
 	object::object(const object& k)
 	{
-		if (k.value.tt == CPPS_TREGVAR)
+		if (k.value.tt == CPPS_TREF)
 			value = *k.value.value.value;
 		else
 			value = k.value;
@@ -271,14 +280,14 @@ namespace cpps
 
 	object& object::operator=(const object& k)
 	{
-		if (value.tt == CPPS_TREGVAR) {
-			if (k.value.tt == CPPS_TREGVAR)
+		if (value.tt == CPPS_TREF) {
+			if (k.value.tt == CPPS_TREF)
 				*value.value.value = *k.value.value.value;
 			else
 				*value.value.value = k.value;
 		}
 		else {
-			if (k.value.tt == CPPS_TREGVAR)
+			if (k.value.tt == CPPS_TREF)
 				value = *k.value.value.value;
 			else
 				value = k.value;
@@ -348,6 +357,11 @@ namespace cpps
 		cpps_create_class_var(cpps_map, c, cpps_value_map, cpps_map_ptr);
 		return  static_cast<object>(cpps_value_map);
 	}
+	object object::create_with_setable(C* c)
+	{
+		cpps_create_class_var(cpps_set, c, cpps_value_map, cpps_map_ptr);
+		return  static_cast<object>(cpps_value_map);
+	}
 	object object::create_with_vector(C* c)
 	{
 		cpps_create_class_var(cpps_vector, c, cpps_value_vector, cpps_vector_ptr);
@@ -381,6 +395,11 @@ namespace cpps
 	void object::vector::push_back(object v)
 	{
 		_vec->push_back(object::real(v).value);
+	}
+
+	void object::vector::erase(cpps_integer idx)
+	{
+		_vec->erase(idx);
 	}
 
 	cpps::object object::vector::toobject()
@@ -442,6 +461,44 @@ namespace cpps
 	cpps::object::map object::map::create(C* c)
 	{
 		return cpps::object::map(c,cpps::object::create_with_map(c));
+	}
+
+	object::setable object::setable::create(C* c)
+	{
+		return cpps::object::setable(c, cpps::object::create_with_setable(c));
+
+	}
+
+	object::setable::setable(C* cstate, object obj)
+	{
+		_set = cpps_to_cpps_setable(obj.value);
+		c = cstate;
+		_src_value = obj.value;
+	}
+
+	cpps::cpps_hash_set::iterator object::setable::begin()
+	{
+		return _set->realset().begin();
+	}
+
+	cpps::cpps_hash_set::iterator object::setable::end()
+	{
+		return _set->realset().end();
+	}
+
+	void object::setable::insert(object key)
+	{
+		_set->insert(key.getval());
+	}
+
+	cpps::object object::setable::toobject()
+	{
+		return _src_value;
+	}
+
+	cpps::cpps_hash_set& object::setable::realset()
+	{
+		return _set->realset();
 	}
 
 }

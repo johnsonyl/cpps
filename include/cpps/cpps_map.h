@@ -16,6 +16,7 @@ namespace cpps
 {
 
 	typedef phmap::flat_hash_map<cpps_value, cpps_value, cpps_value::hash> cpps_hash_map;
+	typedef phmap::flat_hash_set<cpps_value, cpps_value::hash> cpps_hash_set;
 
 	struct cpps_map
 	{
@@ -48,6 +49,32 @@ namespace cpps
 	private:
 		cpps_hash_map _map;
 		cpps_hash_map::iterator _begin;
+	public:
+	};
+
+	struct cpps_set
+	{
+
+		virtual			~cpps_set();
+		void			constructor(object list);
+		void			insert(cpps_value k);
+		void			erase(cpps_value k);
+		void			begin();
+		bool			has(cpps_value k);
+		bool			end();
+		bool			empty();
+		void			next();
+		cpps_value		it();
+		void			pop();
+		void			clear();
+		cpps_integer	size();
+		void			merge(cpps_value right);
+		cpps_value		where(C* c, object o);
+		cpps_value		select(C* c, object o);
+		cpps_hash_set&	realset();
+	private:
+		cpps_hash_set _set;
+		cpps_hash_set::iterator _begin;
 	public:
 	};
 
@@ -85,6 +112,25 @@ namespace cpps
 			cpps::cpps_map *m = static_cast<cpps::cpps_map*>(clsvar->getclsptr());
 
 			return &m->realmap();
+		}
+	};
+	template<>
+	struct cpps_converter<cpps_hash_set*>
+	{
+		static bool	match(cpps_value obj)
+		{
+			if (obj.tt != CPPS_TCLASSVAR) return false;
+			cpps::cpps_cppsclass* cls = (cpps::cpps_cppsclass*)obj.value.domain->parent[0];
+			if (cls->getclassname() != "set") return false;
+
+			return true;
+		}
+		static cpps_hash_set* apply(cpps_value obj)
+		{
+			cpps_cppsclassvar* clsvar = (cpps_cppsclassvar*)obj.value.domain;
+			cpps::cpps_set* m = static_cast<cpps::cpps_set*>(clsvar->getclsptr());
+
+			return &m->realset();
 		}
 	};
 }

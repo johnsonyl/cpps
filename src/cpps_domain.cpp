@@ -92,6 +92,14 @@ namespace cpps
 			if (f->type == cpps_def_regfunction)
 			{
 				cpps_regfunction* func = (cpps_regfunction*)f;
+				if (func->func->isoperator()) {
+					cpps_symbol* symbol = cpps_parse_getsymbol(f->varname, false);
+					if (!symbol){
+						throw cpps_error(__FILE__, __LINE__, cpps_error_normalerror, "%s operator symbol is not support.", f->varname.c_str());
+					}
+					cpps_cppsclass* cppsclass = (cpps_cppsclass*)this;
+					cppsclass->operatorreg(symbol->symboltype, func->func);
+				}
 				var->setval(cpps_value(func->func));
 				var->setconst(true);
 				var->setsource(true);

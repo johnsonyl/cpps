@@ -41,13 +41,16 @@ namespace cpps
 		virtual bool getIsNeedC(){ return isNeedC; }
 		virtual int8 getparamcount() { return 0; }
 		virtual bool isasync() { return nasync; }
+		virtual bool isoperator() { return noperator; }
 		virtual void setasync(bool b) { nasync = b; }
+		virtual void setoperator(bool b) { noperator = b; }
 		virtual bool iscppsfunc() { return false; }
 		virtual cpps_cppsclass* getclass() { return _cls; }
 		virtual void setclass(cpps_cppsclass* cls) { _cls = cls; }
 		bool			isNeedC;
 		std::string		funcname;
 		bool			nasync;
+		bool			noperator;
 		cpps_cppsclass*	_cls;
 	};
 
@@ -71,13 +74,14 @@ namespace cpps
 
 	struct cpps_regfunction : public cpps_reg
 	{
-		cpps_regfunction(std::string f,cpps_function* func, bool isasync = false)
+		cpps_regfunction(std::string f,cpps_function* func, bool isasync = false, bool isoperator = false)
 		:func(func)
 		{
 			type = cpps_def_regfunction;
 			varname = f;
 			func->setfuncname(f);
 			func->setasync(isasync);
+			func->setoperator(isoperator);
 		}
 		virtual ~cpps_regfunction() {}
 		virtual void release() { CPPSDELETE( this); }
@@ -159,9 +163,9 @@ namespace cpps
 	
 
 	template<class R>
-	cpps_regfunction* make_regfunction(std::string func, R(*f)(),bool isasync = false)
+	cpps_regfunction* make_regfunction(std::string func, R(*f)(),bool isasync = false,bool isoperator = false)
 	{
-		return CPPSNEW( cpps_regfunction)(func, CPPSNEW( cpps_function1<R>)(f),isasync);
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW( cpps_function1<R>)(f),isasync, isoperator);
 	}
 
 
@@ -187,10 +191,10 @@ namespace cpps
 	};
 
 	template<class R, class C>
-	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(), bool isasync = false)
+	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(), bool isasync = false, bool isoperator = false)
 	{
 		typedef cpps_cpp_function1<R, C> _Type;
-		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f), isasync);
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f), isasync,isoperator);
 	}
 
 	template<class F>
@@ -302,10 +306,10 @@ namespace cpps
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
 	};
 	template<class R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, class A) >
-	cpps_regfunction* make_regfunction(std::string func, R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false)
+	cpps_regfunction* make_regfunction(std::string func, R(*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false, bool isoperator = false)
 	{
 		typedef  CPPS_PP_CAT(cpps_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > _Type;
-		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f), isasync);
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f), isasync,isoperator);
 	}
 
 
@@ -330,10 +334,10 @@ namespace cpps
 		CPPS_PP_CAT(cpps::vector, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > param;
 	};
 	template<class R, class C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, class A) >
-	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false)
+	cpps_regfunction* make_regfunction(std::string func, R(C::*f)(CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A)), bool isasync = false, bool isoperator = false)
 	{
 		typedef CPPS_PP_CAT(cpps_cpp_function, CPPS_PP_CAT(VECTOR_I_, CPPS_MAKE_REGFUNCTION_ITER_C)) < R, C, CPPS_PP_ENUM_PARAMS(CPPS_MAKE_REGFUNCTION_ITER_C, A) > _Type;
-		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f),isasync);
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f),isasync,isoperator);
 	}
 
 

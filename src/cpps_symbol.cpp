@@ -262,12 +262,12 @@ namespace cpps
 		{
 			return;
 		}
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			if (a.value.value->tt == CPPS_TSTRING) {
 				cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)a.value.value->value.domain;
 				std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
-				if (b.tt == CPPS_TREGVAR)
+				if (b.tt == CPPS_TREF)
 				{
 					tmpStr->append(*cpps_get_string(*(b.value.value)));
 				}
@@ -280,7 +280,7 @@ namespace cpps
 			else {
 				std::string* tmpStr = NULL;
 				*(a.value.value) = newclass<std::string>(c, &tmpStr);
-				if (b.tt == CPPS_TREGVAR)
+				if (b.tt == CPPS_TREF)
 				{
 					tmpStr->append(*cpps_get_string(*(b.value.value)));
 				}
@@ -297,7 +297,7 @@ namespace cpps
 	
 	void cpps_rightautoincrease(cpps_value& a, cpps_value &ret)
 	{
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 			cpps_value& v = *(a.value.value);
 			ret = v;
 			switch (v.tt)
@@ -324,7 +324,7 @@ namespace cpps
 
 	void cpps_leftautoincrease(cpps_value& a,cpps_value &ret)
 	{
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
 			switch (v.tt)
@@ -351,7 +351,7 @@ namespace cpps
 
 	void cpps_rightautodecrease(cpps_value& a, cpps_value& ret)
 	{
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
 			ret = v;
@@ -378,7 +378,7 @@ namespace cpps
 
 	void cpps_leftautodecrease(cpps_value& a, cpps_value& ret)
 	{
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
 			switch (v.tt)
@@ -453,9 +453,9 @@ namespace cpps
 			return ;
 		}
 
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
-			if (b.tt == CPPS_TREGVAR)
+			if (b.tt == CPPS_TREF)
 			{
 				if (b.value.value->tt == CPPS_TSTRING)
 				{
@@ -530,7 +530,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
 			v.decruse();
@@ -585,7 +585,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
 			v.decruse();
@@ -640,7 +640,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
 			v.decruse();
@@ -694,7 +694,7 @@ namespace cpps
 			throw(cpps_error("0", 0, 0, "The variable is nil."));
 		}
 
-		if (a.tt == CPPS_TREGVAR) {
+		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
 			v.decruse();
@@ -1182,7 +1182,7 @@ namespace cpps
 		cpps_value a = cpps_calculate_expression(c, domain,root, d->l[0], leftdomain);
 		leftdomain = NULL;
 
-		if (cpps_base_isclassvar(a) || (a.tt == CPPS_TREGVAR  && cpps_base_isclassvar(*a.value.value))) {
+		if (cpps_base_isclassvar(a) || (a.tt == CPPS_TREF  && cpps_base_isclassvar(*a.value.value))) {
 
 			object left = object(a);
 			cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(a);

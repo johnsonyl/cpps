@@ -216,7 +216,7 @@ namespace cpps
 				return true;
 			case CPPS_TDOMAIN:
 				return true;
-			case CPPS_TREGVAR:
+			case CPPS_TREF:
 				return true;
 			case CPPS_TCLASS:
 				return true;
@@ -296,7 +296,7 @@ namespace cpps
 		}
 		static cpps_value apply(C *c, cpps_value value)
 		{
-			if (value.tt == CPPS_TREGVAR)
+			if (value.tt == CPPS_TREF)
 			{
 				return *(value.value.value);
 			}

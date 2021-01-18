@@ -1,6 +1,13 @@
 *更新日志*：
 -
 
+2021-01-19 更新
+-
+
+1.C++ 层支持给脚本层定义operator了.
+
+2.cpps增加了一个set类.
+
 2021-01-18 更新2
 -
 
@@ -9,6 +16,7 @@
 2.优化operator速度.
 
 3.httpserver的session做出了改变.用户当需要用到session时需要先createsession否则session可能一直为空.
+
 
 2021-01-18 更新
 -

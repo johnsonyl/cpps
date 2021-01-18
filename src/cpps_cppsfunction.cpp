@@ -97,14 +97,14 @@ namespace cpps
 						node* var = varname->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
 						cpps_domain* leftdomain = NULL;
 						cpps_value value = cpps_calculate_expression(c, prevdomain, prevdomain, var, leftdomain);
-						if (value.tt == CPPS_TREGVAR) value = *value.value.value;
+						if (value.tt == CPPS_TREF) value = *value.value.value;
 						v->setval(value);
 					}
 				}
 				else
 				{
 					cpps_value value = (*o)[i];
-					if (value.tt == CPPS_TREGVAR && !varname->quote)
+					if (value.tt == CPPS_TREF && !varname->quote)
 						v->setval(*value.value.value);
 					else
 						v->setval(value);
@@ -128,7 +128,7 @@ namespace cpps
 
 #else
 		if (quatoreturn) {
-			funcdomain->funcRet.tt = CPPS_TREGVAR;
+			funcdomain->funcRet.tt = CPPS_TREF;
 		}
 		cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context);
 

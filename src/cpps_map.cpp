@@ -27,7 +27,26 @@ namespace cpps
 				.def("clear", &cpps_map::clear)
 				.def("size", &cpps_map::size)
 				.def_inside("where", &cpps_map::where)
-				.def_inside("select", &cpps_map::select)
+				.def_inside("select", &cpps_map::select),
+			_class<cpps_set>("set")
+				.def("constructor", &cpps_set::constructor)
+				.def("insert", &cpps_set::insert)
+				.def("add", &cpps_set::insert)
+				.def("erase", &cpps_set::erase)
+				.def("pop", &cpps_set::pop)
+				.def("merge", &cpps_set::merge)
+				.def("begin", &cpps_set::begin)
+				.def("has", &cpps_set::has)
+				.def("find", &cpps_set::has)
+				.def("end", &cpps_set::end)
+				.def("next", &cpps_set::next)
+				.def("it", &cpps_set::it)
+				.def("empty", &cpps_set::empty)
+				.def("clear", &cpps_set::clear)
+				.def("size", &cpps_set::size)
+				.def_operator("[]", &cpps_set::has)
+				.def_inside("where", &cpps_set::where)
+				.def_inside("select", &cpps_set::select)
 		];
 	}
 	
@@ -185,5 +204,122 @@ namespace cpps
 		}
 		return ret;
 	}
+
+	cpps_set::~cpps_set()
+	{
+		_set.clear();
+	}
+
+	void cpps_set::constructor(object list)
+	{
+		if (list.isnull()) return;
+
+		if(list.isvector())
+		{
+			for (auto it : object::vector(list)) {
+				insert(it);
+			}
+			return;
+		}
+
+		insert(list.getval());
+	}
+
+	void cpps_set::insert(cpps_value k)
+	{
+		_set.insert(k);
+	}
+
+	void cpps_set::erase(cpps_value k)
+	{
+		_set.erase(k);
+	}
+
+	void cpps_set::begin()
+	{
+		_begin = _set.begin();
+	}
+
+	bool cpps_set::has(cpps_value k)
+	{
+		return _set.find(k) != _set.end();
+	}
+
+	bool cpps_set::end()
+	{
+		return _begin != _set.end();
+	}
+
+	bool cpps_set::empty()
+	{
+		return _set.empty();
+	}
+
+	void cpps_set::next()
+	{
+		++_begin;
+	}
+
+	cpps::cpps_value cpps_set::it()
+	{
+		return *_begin;
+	}
+
+	void cpps_set::pop()
+	{
+		_begin = _set.erase(_begin);
+	}
+
+	void cpps_set::clear()
+	{
+		_set.clear();
+	}
+
+	cpps_integer cpps_set::size()
+	{
+		return (cpps_integer)_set.size();
+	}
+
+	void cpps_set::merge(cpps_value right)
+	{
+		if (!cpps_base_issetable(right)) return;
+
+		cpps_set* rightset = cpps_to_cpps_setable(right);
+		for (auto it : rightset->realset()) {
+			insert(it);
+		}
+	}
+
+
+	cpps::cpps_value cpps_set::where(C* c, object o)
+	{
+		cpps_set* vec;
+		cpps_value ret = newclass(c, &vec);
+		if (o.isfunction()) {
+			for (auto v : realset()) {
+				bool b = object_cast<bool>(dofunction(c, o, v));
+				if (b) vec->insert(v);
+			}
+		}
+		return ret;
+	}
+	cpps::cpps_value cpps_set::select(C* c, object o)
+	{
+		cpps_set* vec;
+		cpps_value ret = newclass(c, &vec);
+		if (o.isfunction()) {
+			for (auto v : realset()) {
+				cpps_value b = object_cast<cpps_value>(dofunction(c, o, v));
+				vec->insert(b);
+			}
+		}
+		return ret;
+	}
+
+	cpps::cpps_hash_set& cpps_set::realset()
+	{
+		return _set;
+	}
+
 }
 

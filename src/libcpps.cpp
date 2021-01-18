@@ -2356,9 +2356,9 @@ namespace cpps {
 		C* c = new cpps::C(argc, argv);
 		cpps_init_memory(c);
 		cpps_create_root_G(c);
+		cpps_regsymbols(c);
 		cpps_regstring(c);
 		cpps_regbase(c);
-		cpps_regsymbols(c);
 		cpps_regmath(c);
 		cpps_regmap(c);
 		cpps_regio(c);
@@ -2496,7 +2496,7 @@ namespace cpps {
 
 	void cpps_step_def_var_createvar_setval(cpps_value& value, cpps_regvar* v, C* c,bool quato = false)
 	{
-		if (value.tt == CPPS_TREGVAR && !quato) {
+		if (value.tt == CPPS_TREF && !quato) {
 			CPPS_TO_REAL_VALUE(value);
 		}
 
@@ -2733,9 +2733,9 @@ namespace cpps {
 		if (cpps_func_domain && cpps_func_domain != c->_G && cpps_func_domain->parent[0]->domainType == cpps_domain_type_func) {
 			/* 设置回去 */
 			cpps_func_domain->isbreak = true;
-			if (cpps_func_domain->funcRet.tt == CPPS_TREGVAR)
+			if (cpps_func_domain->funcRet.tt == CPPS_TREF)
 				cpps_func_domain->funcRet = ret_value;
-			else if(ret_value.tt == CPPS_TREGVAR)
+			else if(ret_value.tt == CPPS_TREF)
 				cpps_func_domain->funcRet = *ret_value.value.value;
 			else
 				cpps_func_domain->funcRet = ret_value;
@@ -2872,6 +2872,30 @@ namespace cpps {
 				for (size_t i = 0; i < realvector.size(); i++) {
 					if (for1_v)
 						for1_v->setval(realvector[i]);
+					execdomain->init(foreachdomain, cpps_domain_type_exec);
+					execdomain->setexecdomain(foreachdomain);
+					cpps_step(c, execdomain, root, for4->l[0]);
+					bool isbreak = execdomain->isbreak;
+					execdomain->destory(c);
+					cpps_gc_check_step(c);
+					if (isbreak)
+						break;
+					/* 需要跳出循环 */
+				}
+				c->domain_free(execdomain);
+			}
+		}
+		else if (v.isdomain() && v.value.domain->domainname == "set") {
+			cpps_set* vec = cpps_converter<cpps_set*>::apply(v);
+			if (vec) {
+				cpps_domain* execdomain = c->domain_alloc();
+				cpps_hash_set& realset = vec->realset();
+
+				cpps_hash_set::iterator	it = realset.begin();
+				cpps_hash_set::iterator	itend = realset.end();
+				for (; it != itend; ++it) {
+					if (for1_v)
+						for1_v->setval(*it);
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
 					execdomain->setexecdomain(foreachdomain);
 					cpps_step(c, execdomain, root, for4->l[0]);
@@ -3704,7 +3728,7 @@ namespace cpps {
 	}
 	void cpps_calculate_expression_quote_real(cpps_value& src, cpps_value& tar, bool isconst)
 	{
-		if (src.tt == CPPS_TREGVAR) {
+		if (src.tt == CPPS_TREF) {
 			cpps_value tmp = *src.value.value;
 			tar = cpps_value(isconst ? (tmp) : (&*src.value.value));
 		}
@@ -3773,7 +3797,7 @@ namespace cpps {
 			cpps_regvar* var = c->_G->getregidxvar(d->offset);
 			if (var) {
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-				/*ret.tt = CPPS_TREGVAR;
+				/*ret.tt = CPPS_TREF;
 				ret.value.value = &var->getval();*/
 			}
 		}
@@ -3781,7 +3805,7 @@ namespace cpps {
 			cpps_regvar* var = root->getregidxvar(d->offset);
 			if (var) {
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-				/*ret.tt = CPPS_TREGVAR;
+				/*ret.tt = CPPS_TREF;
 				ret.value.value = &var->getval();*/
 			}
 		}
@@ -3790,7 +3814,7 @@ namespace cpps {
 			if (var) {
 
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-			/*	ret.tt = CPPS_TREGVAR;
+			/*	ret.tt = CPPS_TREF;
 				ret.value.value = &var->getval();*/
 
 				cpps_domain* _classvarroot = cpps_calculate_expression_offset_getclassvar(root);
@@ -3805,7 +3829,7 @@ namespace cpps {
 			cpps_regvar* var = _classvarroot->parent[1]->getregidxvar(_classvarroot->parent[1]->parent[0]->getidxoffset(_classvarroot->parent[0]) + d->offset);
 			if (var) {
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-				/*ret.tt = CPPS_TREGVAR;
+				/*ret.tt = CPPS_TREF;
 				ret.value.value = &var->getval();*/
 			}
 		}
@@ -4206,7 +4230,10 @@ namespace cpps {
 					if (symbolfunc.isfunction())
 					{
 						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain)).value;
-						cpps_calculate_expression_quote_real(src, ret, false);
+						if (src.isref())
+							cpps_calculate_expression_quote_real(src, ret, false);
+						else
+							ret = src;
 					}
 				}
 			}
@@ -4367,7 +4394,10 @@ namespace cpps {
 					if (symbolfunc.isfunction())
 					{
 						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain)).value;
-						cpps_calculate_expression_quote_real(src, ret, false);
+						if (src.isref())
+							cpps_calculate_expression_quote_real(src, ret, false);
+						else
+							ret = src;
 					}
 				}
 			}

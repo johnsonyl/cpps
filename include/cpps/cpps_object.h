@@ -40,6 +40,7 @@ namespace cpps
 			cpps_std_vector::iterator					begin();
 			cpps_std_vector::iterator					end();
 			void										push_back(object v);
+			void										erase(cpps_integer idx);
 			object										toobject();
 			object										operator[](const cpps_integer k);
 			cpps_std_vector&							realvector();
@@ -65,6 +66,11 @@ namespace cpps
 				return _map->has(key);
 			}
 			template<class T>
+			bool																	erase(const T k) {
+				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
+				return _map->erase(key);
+			}
+			template<class T>
 			object																	operator[](const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
 				cpps_value& value = _map->cpps_find(key);
@@ -74,6 +80,28 @@ namespace cpps
 		private:
 			cpps_value _src_value;
 			cpps_map* _map;
+			C* c;
+		};
+		struct setable
+		{
+		public:
+			static setable															create(C* c);
+		public:
+
+			setable(C* cstate, object obj);
+			cpps_hash_set::iterator													begin();
+			cpps_hash_set::iterator													end();
+			void																	insert(object key);
+			object																	toobject();
+			template<class T>
+			bool																	has(const T k) {
+				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
+				return _set->has(key);
+			}
+			cpps_hash_set&															realset();
+		private:
+			cpps_value _src_value;
+			cpps_set* _set;
 			C* c;
 		};
 
@@ -86,6 +114,7 @@ namespace cpps
 		//class C is required because the string needs GC.
 		//
 		static object	create_with_map(C* c);
+		static object	create_with_setable(C* c);
 		static object	create_with_vector(C* c);
 		static object	create_with_cppsclassvar(C* c,object __classobject);
 		template<class T>
@@ -105,6 +134,7 @@ namespace cpps
 		//check
 		bool					isunorderd_map();
 		bool					ismap();
+		bool					issetbale();
 		bool					isstring();
 		bool					isvector();
 		bool					isrange();
@@ -116,6 +146,7 @@ namespace cpps
 		bool					isfunction();
 		bool					isclass();
 		bool					isclassvar();
+		bool					isref();
 
 		//convert
 		std::string				tostring();

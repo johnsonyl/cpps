@@ -22,7 +22,7 @@ namespace cpps
 	struct cpps_cppsclassvar;
 	struct cpps_vector;
 	struct cpps_map;
-	struct cpps_map;
+	struct cpps_set;
 	struct cpps_value
 	{
 		cpps_value();
@@ -75,6 +75,7 @@ namespace cpps
 		Value					value;		//÷µ°£
 		int8					tt;			//¿‡–Õ
 
+		bool isref();
 	};
 
 #define cpps_integer2number(i) (cpps_number)(i)
@@ -86,6 +87,7 @@ namespace cpps
 	std::string* cpps_get_string(cpps_value obj);
 	cpps_vector* cpps_to_cpps_vector(cpps_value obj);
 	cpps_map* cpps_to_cpps_map(cpps_value obj);
+	cpps_set* cpps_to_cpps_setable(cpps_value obj);
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj);
 	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(cpps_value obj);
 

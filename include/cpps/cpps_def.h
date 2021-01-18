@@ -85,7 +85,7 @@
 #define	CPPS_TUSERDATA			5
 #define CPPS_TFUNCTION			6
 #define CPPS_TDOMAIN			7	//暂时内部用（域）
-#define CPPS_TREGVAR			8	//变量引用（指针)（域）
+#define CPPS_TREF			8	//变量引用（指针)（域）
 #define CPPS_TCLASS				9	//定义类
 #define CPPS_TCLASSVAR			10  //类的对象
 #define CPPS_TLAMBDAFUNCTION	11
@@ -211,7 +211,7 @@ enum
 #define cpps_def_regvar					3
 #define cpps_def_regparentclass			4
 
-#define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREGVAR){ left = *left.value.value;}
+#define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREF){ left = *left.value.value;}
 
 #ifndef CPPS_DECLARE_DEPRECATED
 # define CPPS_DECLARE_DEPRECATED(f)   f;

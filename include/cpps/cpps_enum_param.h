@@ -102,7 +102,7 @@
 
 #define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(c,t,v) CPPS_PP_CAT(CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_,c)(t,v)
 
-#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_REALVAL(v,i) (v[i].tt == CPPS_TREGVAR ? *v[i].value.value : v[i])
+#define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_REALVAL(v,i) (v[i].tt == CPPS_TREF ? *v[i].value.value : v[i])
 
 #define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_0(t,v)
 #define CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_1(t,v) t##1 = cpps_converter<A1>::apply(v.size() >= 1 ? CPPS_PP_ENUM_SET_VARS_WITH_VECTOR_REALVAL(v,0) : cpps::nil);

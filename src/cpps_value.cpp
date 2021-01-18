@@ -100,6 +100,14 @@ namespace cpps
 		cpps_map* ret = (cpps_map*)cppsclassvar->getclsptr();
 		return ret;
 	}
+	cpps_set* cpps_to_cpps_setable(cpps_value obj)
+	{
+		CPPS_TO_REAL_VALUE(obj);
+		if (!obj.isdomain()) return NULL;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
+		cpps_set* ret = (cpps_set*)cppsclassvar->getclsptr();
+		return ret;
+	}
 
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj)
 	{
@@ -211,7 +219,7 @@ namespace cpps
 
 	cpps_value::cpps_value(cpps_value* v)
 	{
-		tt = CPPS_TREGVAR;
+		tt = CPPS_TREF;
 		value.value = v;
 	}
 
@@ -377,6 +385,12 @@ namespace cpps
 	{
 		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR ||tt == CPPS_TSTRING || tt == CPPS_TTUPLE;
 	}
+
+	bool cpps_value::isref()
+	{
+		return tt == CPPS_TREF;
+	}
+
 
 	size_t cpps_value::hash::operator()(const cpps_value& _Keyval) const
 	{
