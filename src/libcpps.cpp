@@ -73,7 +73,7 @@ namespace cpps {
 			cpps_gc_check_gen1(c);
 		}
 		else if ((g0size > CPPS_GEN0_CHECKSIZE
-			/*|| c->getGen0()->size() > CPPS_GEN0_CHECKCOUNT*/
+			|| c->getgen0()->size() > CPPS_GEN0_CHECKCOUNT
 			)) {
 			cpps_gc_check_gen0(c);
 		}
@@ -455,6 +455,7 @@ namespace cpps {
 			node* op = cpps_parse_symbol(c, domain, str, buffer);
 			if (!op) throw(cpps_error(str->filename, buffer.line(), cpps_error_varerror, "invalid operator symbol."));
 			str->s = op->symbol->symbolfuncname;
+			str->symbol = op->symbol;
 			op->release();
 		}
 
@@ -2306,15 +2307,24 @@ namespace cpps {
 		o->size = parent_domain->stacklist ? (int16)parent_domain->stacklist->size() : 0;
 		o->varsize = 0;
 		cppsbuffer buffer(filename.c_str(), str.c_str(), (int32)str.size());
-		while (true) {
-			/* 剔除回车. */
-			cpps_parse_rmspaceandenter(buffer);
-			/* 是否到最后了. */
-			if (buffer.isend()) {
-				break;
+		try{
+			while (true) {
+				/* 剔除回车. */
+				cpps_parse_rmspaceandenter(buffer);
+				/* 是否到最后了. */
+				if (buffer.isend()) {
+					break;
+				}
+				cpps_parse_line(c, domain, o, o, buffer);
 			}
-			cpps_parse_line(c, domain, o, o, buffer);
 		}
+		catch (...){
+			cpps_destory_node(o);
+			CPPSDELETE(o);
+			throw;
+		}
+	
+		
 		if(parent_domain->stacklist) parent_domain->stacklist->resize(o->size);
 		return(o);
 	}
@@ -2788,8 +2798,10 @@ namespace cpps {
 		cpps_domain* execdomain = c->domain_alloc();
 		execdomain->init(domain, cpps_domain_type_exec);
 		execdomain->setexecdomain(domain);
-		if (cpp_bool_value)
-			cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[1]); else cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[2]);
+		CPPS_SUBTRY
+			if (cpp_bool_value) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[1]); else cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[2]);
+		CPPS_SUBCATCH2
+		
 		execdomain->destory(c);
 		c->domain_free(execdomain);
 		cpps_gc_check_step(c);
@@ -2947,7 +2959,9 @@ namespace cpps {
 				break;
 			execdomain->init(whiledomain, cpps_domain_type_exec);
 			execdomain->setexecdomain(whiledomain);
+			CPPS_SUBTRY
 			cpps_step_all(c, CPPS_MUNITRET, execdomain, root, while2);
+			CPPS_SUBCATCH2
 			bool isbreak = execdomain->isbreak;
 			execdomain->destory(c);
 			cpps_gc_check_step(c);
@@ -3059,7 +3073,8 @@ namespace cpps {
 		while (!c->getcallstack()->empty()) {
 			cpps_stack* takestack2 = c->getcallstack()->back();
 			if (here != takestack2) {
-				if(cleanup) CPPSDELETE(  takestack2);
+				//if(cleanup) CPPSDELETE(  takestack2);
+				c->stack_free(takestack2);
 				c->getcallstack()->pop_back();
 			}
 			else break;
@@ -3074,7 +3089,9 @@ namespace cpps {
 		v->setvarname(varName->s);
 		v->setval(cpps_cpp_to_cpps_converter<cpps_trycatch_error*>::apply(c, &e));
 		execdomain2->regvar(c, v);
+		CPPS_SUBTRY
 		cpps_step_all(c, CPPS_MUNITRET, execdomain2, root, catchfun->l[1]);
+		CPPS_SUBCATCH2
 		execdomain2->destory(c);
 		c->domain_free(execdomain2);
 		cpps_gc_check_step(c);
@@ -3184,6 +3201,12 @@ namespace cpps {
 				cppsclass->varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(it2->first, v));
 			}
 		}
+		//注册父类的operator.
+		for (size_t i = 0; i < parentclass->operatorlist.size(); i++) {
+			if (parentclass->operatorlist[i]) {
+				cppsclass[i] = parentclass[i];
+			}
+		}
 		cppsclass->setidxoffset(parentclass, takeoff);
 		for (auto grandfather : parentclass->parentclasslist()) {
 			cpps_step_class_reg_baseclass_idx_offset(cppsclass, grandfather, takeoff);
@@ -3266,6 +3289,12 @@ namespace cpps {
 								func->setasync(true);
 							}
 							func->setquatoreturn(varName->quote);
+
+							/*注册operator.*/
+							if (varName->symbol) {
+								cppsclass->operatorreg(varName->symbol->symboltype, func);
+							}
+
 							v2->setval(cpps_value(func));
 						}
 						cpps_destory_node(o);
@@ -3310,6 +3339,7 @@ namespace cpps {
 			}
 		}
 	}
+
 	void cpps_step_dofile(C* c, cpps_domain* domain, cpps_domain* root, node* o) {
 		for (std::vector<node*>::iterator it = o->l.begin(); it != o->l.end(); ++it) {
 			cpps_domain* leftdomain = NULL;
@@ -3323,7 +3353,9 @@ namespace cpps {
 			cpps_stack* stack = c->stack_alloc();
 			stack->init((*it)->filename.c_str(), (*it)->line, "dofile");
 			c->push_stack(stack);
+			CPPS_SUBTRY
 			cpps_step_all(c, CPPS_MUNITRET, c->_G, c->_G, o);
+			CPPS_SUBCATCH
 			c->pop_stack();
 			cpps_gc_check_step(c);
 			c->stack_free(stack);
@@ -3344,7 +3376,9 @@ namespace cpps {
 		cpps_stack* stack = c->stack_alloc();
 		stack->init(d->filename.c_str(), d->line, "dostring");
 		c->push_stack(stack);
+		CPPS_SUBTRY
 		cpps_step_all(c, CPPS_MUNITRET, domain, root, o);
+		CPPS_SUBCATCH
 		c->pop_stack();
 		c->stack_free(stack);
 		cpps_gc_check_step(c);
@@ -3451,7 +3485,9 @@ namespace cpps {
 		cpps_domain* execdomain = c->domain_alloc();
 		execdomain->init(domain, cpps_domain_type_exec);
 		execdomain->setexecdomain(domain);
+		CPPS_SUBTRY
 		cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d);
+		CPPS_SUBCATCH2
 		execdomain->destory(c);
 		c->domain_free(execdomain);
 		cpps_gc_check_step(c);
@@ -3893,7 +3929,10 @@ namespace cpps {
 		if (left.tt != CPPS_TNIL) {
 			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING  ) {
 				object leftobject = object(left);
-				object symbolfunc = leftobject["[]"]; //operator []
+				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
+				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+				cpps_function*func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+				object symbolfunc = func ?cpps_value(func) : nil;
 				if (symbolfunc.isfunction()) {
 					
 					//tuple
@@ -4160,7 +4199,10 @@ namespace cpps {
 				}
 				else {
 					object leftobject = object(left);
-					object symbolfunc = leftobject["[]"];
+					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
+					cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+					cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+					object symbolfunc = func ? cpps_value(func) : nil;
 					if (symbolfunc.isfunction())
 					{
 						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain)).value;
@@ -4318,7 +4360,10 @@ namespace cpps {
 				}
 				else {
 					object leftobject = object(left);
-					object symbolfunc = leftobject["[]"];
+					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
+					cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+					cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+					object symbolfunc = func ? cpps_value(func) : nil;
 					if (symbolfunc.isfunction())
 					{
 						cpps_value src = doclassfunction(c, leftobject, symbolfunc, cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain)).value;
@@ -4579,7 +4624,9 @@ namespace cpps {
 			cpps_stack* stack = c->stack_alloc();
 			stack->init(d->filename.c_str(), d->line, "dostring");
 			c->push_stack(stack);
+			CPPS_SUBTRY
 			cpps_step_all(c, CPPS_MUNITRET, domain, root, o);
+			CPPS_SUBCATCH
 			c->pop_stack();
 			c->stack_free(stack);
 			if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }

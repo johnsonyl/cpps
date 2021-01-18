@@ -1,4 +1,5 @@
 #include "cpps/cpps.h"
+#include "nedmalloc.h"
 
 cpps::memory_allocal::memory_allocal()
 {
@@ -43,7 +44,7 @@ cpps::memory_allocal& cpps::memory_allocal::instance()
 
 void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, unsigned int _line)
 {
-	void* ret = malloc(__size);
+	void* ret = nedalloc::nedmalloc(__size);
 #ifdef _DEBUG
 	_lock.lock();
 	_size += __size;
@@ -65,8 +66,11 @@ void cpps::memory_allocal_handler::mfree(void* m)
 		memorylist.erase(it);
 	}
 	_lock.unlock();
+	if (m == NULL) {
+		system("pause");
+	}
 #endif
-	free(m);
+	nedalloc::nedfree(m);
 }
 
 

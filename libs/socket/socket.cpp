@@ -119,7 +119,7 @@ std::string  cpps_socket_prasehtml2str(cpps::C* c,cpps_socket_httpserver_request
 						}
 						else if (r.find("@csrf_token") == 0)
 						{
-							object csrftoken = request->getsession()->get("csrftoken",nil);
+							object csrftoken = request->getsession() ? request->getsession()->get("csrftoken",nil) : object();
 							std::string csrfmiddlewaretoken = "<input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken.tostring() + "' />";
 							size += csrfmiddlewaretoken.size();
 							__html.insert(pos, csrfmiddlewaretoken);
@@ -199,6 +199,7 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def("getbuffer", &cpps_socket_httpserver_request::getbuffer)
 		.def("setcookie", &cpps_socket_httpserver_request::setcookie)
 		.def("getcookie", &cpps_socket_httpserver_request::getcookie)
+		.def("createsession", &cpps_socket_httpserver_request::createsession)
 		.def("getfiledata", &cpps_socket_httpserver_request::getfiledata)
 		.def_inside("paramslist", &cpps_socket_httpserver_request::paramslistfunc)
 		.def_inside("getlist", &cpps_socket_httpserver_request::getlistfunc)

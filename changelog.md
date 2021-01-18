@@ -1,6 +1,15 @@
 *更新日志*：
 -
 
+2021-01-18 更新2
+-
+
+1.本次主要增加nedmalloc,虽然它已经7-8年没有更新了.不过以前的项目使用过它.小巧,快速且稳定.
+
+2.优化operator速度.
+
+3.httpserver的session做出了改变.用户当需要用到session时需要先createsession否则session可能一直为空.
+
 2021-01-18 更新
 -
 

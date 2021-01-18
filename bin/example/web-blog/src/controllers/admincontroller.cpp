@@ -15,6 +15,7 @@ class Admin : Controller
 				return;
 			}
 		}
+		request.createsession();
 		request.session().set("loginstate",globalconfig.admin_key);
 		var page = request.get("page");
 		if(isnull(page) || page == "") page = 1;
@@ -26,7 +27,7 @@ class Admin : Controller
 
 	var post(var request)
 	{
-		var loginstate = request.session().get("loginstate","");
+		var loginstate = request.session() ? request.session().get("loginstate","") : "";
 		if(loginstate != globalconfig.admin_key){
 			forbidden(request,"forbidden! you are not administrator.");
 			return;
@@ -45,7 +46,7 @@ class Admin : Controller
 	}
 	var remove(var request)
 	{
-		var loginstate = request.session().get("loginstate","");
+		var loginstate = request.session() ? request.session().get("loginstate","") : "";
 		if(loginstate != globalconfig.admin_key){
 			forbidden(request,"forbidden! you are not administrator.");
 			return;
@@ -66,7 +67,7 @@ class Admin : Controller
 	}
 	var add(var request)
 	{
-		var loginstate = request.session().get("loginstate","");
+		var loginstate = request.session() ? request.session().get("loginstate","") : "";
 		if(loginstate != globalconfig.admin_key){
 			forbidden(request,"forbidden! you are not administrator.");
 			return;
@@ -75,7 +76,7 @@ class Admin : Controller
 	}
 	var add2(var request)
 	{
-		var loginstate = request.session().get("loginstate","");
+		var loginstate = request.session() ? request.session().get("loginstate","") : "";
 		if(loginstate != globalconfig.admin_key){
 			forbidden(request,"forbidden! you are not administrator.");
 			return;
@@ -104,7 +105,7 @@ class Admin : Controller
 	}
 	var save(var request)
 	{
-		var loginstate = request.session().get("loginstate","");
+		var loginstate = request.session() ? request.session().get("loginstate","") : "";
 		if(loginstate != globalconfig.admin_key){
 			forbidden(request,"forbidden! you are not administrator.");
 			return;
@@ -133,7 +134,7 @@ class Admin : Controller
 	}
 	var upload(var request)
 	{
-		var loginstate = request.session().get("loginstate","");
+		var loginstate = request.session() ? request.session().get("loginstate","") : "";
 		if(loginstate != globalconfig.admin_key){
 			forbidden(request,"forbidden! you are not administrator.");
 			return;

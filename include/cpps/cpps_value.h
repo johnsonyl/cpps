@@ -87,6 +87,7 @@ namespace cpps
 	cpps_vector* cpps_to_cpps_vector(cpps_value obj);
 	cpps_map* cpps_to_cpps_map(cpps_value obj);
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj);
+	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(cpps_value obj);
 
 	static cpps_value		nil;
 }

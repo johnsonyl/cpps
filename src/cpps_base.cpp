@@ -140,6 +140,9 @@ namespace cpps
 			cout << "not support  '" << type_s(b).c_str() << "' type..";
 		}
 	}
+	void cpps_base_endl() {
+		cout << endl;
+	}
 	void cpps_base_printfln(C*c,object b)
 	{
 		cpps_base_printf(c,b);
@@ -670,6 +673,7 @@ namespace cpps
 			def_inside("print", cpps_base_printf),
 			def_inside("printfln", cpps_base_printfln),
 			def_inside("println", cpps_base_printfln),
+			def_inside("endl", cpps_base_endl),
 			def_inside("dump", cpps_base_dump),
 			def("exit", cpps_base_exit),
 			def("sleep", cpps_base_sleep),

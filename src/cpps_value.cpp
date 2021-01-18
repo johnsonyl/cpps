@@ -109,7 +109,15 @@ namespace cpps
 		return cppsclassvar;
 	}
 
-	bool cpps_value::operator<(const cpps_value &right) const
+	cpps::cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(cpps_value obj)
+	{
+		CPPS_TO_REAL_VALUE(obj);
+		if (!obj.isdomain()) return NULL;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
+		return cppsclassvar;
+	}
+
+	bool cpps_value::operator<(const cpps_value& right) const
 	{
 		if (tt == right.tt)
 		{
@@ -367,7 +375,7 @@ namespace cpps
 
 	bool cpps_value::isdomain()
 	{
-		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR || tt == CPPS_TTUPLE;
+		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR ||tt == CPPS_TSTRING || tt == CPPS_TTUPLE;
 	}
 
 	size_t cpps_value::hash::operator()(const cpps_value& _Keyval) const

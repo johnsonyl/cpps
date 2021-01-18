@@ -24,6 +24,7 @@ namespace cpps
 		virtual bool isallocclass() { return isalloc; }
 		virtual void release() { CPPSDELETE( this); }
 		virtual size_t size() { return sizeof(*this); }
+		virtual cpps_cppsclass* getcppsclass() { return (cpps_cppsclass * )parent[0]; }
 		bool isalloc;
 		int usecount;
 	};

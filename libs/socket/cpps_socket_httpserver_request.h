@@ -37,6 +37,7 @@ namespace cpps {
 		std::string getcookie(std::string key);
 		cpps_socket_httpserver_session* getsession();
 		void							setsession(cpps_socket_httpserver_session*sess);
+		void		createsession();
 		/*
 		* ·µ»Ø:void
 		* std::string key

@@ -332,6 +332,11 @@ namespace cpps
 		return static_cast<object>(ret);
 	}
 	
+	cpps::cpps_value& object::getval()
+	{
+		return value;
+	}
+
 	cpps::object& object::operator=(const cpps_value k)
 	{
 		value = k;

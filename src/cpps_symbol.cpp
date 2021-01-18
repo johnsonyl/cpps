@@ -1185,9 +1185,12 @@ namespace cpps
 		if (cpps_base_isclassvar(a) || (a.tt == CPPS_TREGVAR  && cpps_base_isclassvar(*a.value.value))) {
 
 			object left = object(a);
-			object symbolfunc = left[d->symbol->symbolfuncname];
-			if (symbolfunc.isfunction()) {
-				ret = doclassfunction(c, left, symbolfunc, cpps_calculate_expression(c, domain, root, d->l[1], leftdomain)).value;
+			cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(a);
+			cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+			cpps_function* func = cppsclass->getoperator(d->symbol->symboltype);
+			if (func) {
+				object symbolfunc = cpps_value(func);
+				ret = doclassfunction(c, left, symbolfunc, cpps_calculate_expression(c, domain, root, d->l[1], leftdomain)).getval();
 				return;
 			}
 		}

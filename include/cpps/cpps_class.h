@@ -14,33 +14,26 @@
 
 namespace cpps
 {
+	struct cpps_function;
 	struct cpps_cppsclassvar;
 	template <class C>
 	struct cpps_classvar;
 	void  cpps_destory_node(node* d);
 	struct cpps_cppsclass : public cpps_domain
 	{
-		cpps_cppsclass(std::string _classname, node *_o, cpps_domain* p, char type)
-			:cpps_domain(p, type, _classname) {
-			if (_o) { o = CPPSNEW( node)(); o->clone(_o); }
-			else o = NULL;
-			classname = _classname;
-		}
-		virtual ~cpps_cppsclass() {
-			if (o) {
-				cpps_destory_node(o); //清理node.
-				CPPSDELETE( o);
-				o = NULL;
-			}
-		}
-		virtual cpps_cppsclassvar *			create(C* c, bool alloc = true){ return (CPPSNEW(cpps_cppsclassvar)(getclassname(), this, cpps_domain_type_classvar, alloc)); }
-		virtual bool						iscppsclass() { return true; }
-		std::string							getclassname(){	return classname; }
-		std::vector<cpps_cppsclass*>&		parentclasslist() { return _parentclasslist; }
-		virtual void						release() { CPPSDELETE( this); }
+		cpps_cppsclass(std::string _classname, node *_o, cpps_domain* p, char type);
+		virtual ~cpps_cppsclass();
+		virtual cpps_cppsclassvar *			create(C* c, bool alloc = true);
+		virtual bool						iscppsclass();
+		std::string							getclassname();
+		std::vector<cpps_cppsclass*>&		parentclasslist();
+		virtual void						release();
+		virtual void						operatorreg(int8 type, cpps_function* func);
+		virtual cpps_function*				getoperator(int8 type);
 		node* o; //定义的变量
 		std::string classname;
-		std::vector<cpps_cppsclass*> _parentclasslist;
+		std::vector<cpps_cppsclass*>		_parentclasslist;
+		std::vector<cpps_function*>			operatorlist; //牺牲内存提高运行效率.
 	};
 
 	template <class T>

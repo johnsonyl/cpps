@@ -142,7 +142,7 @@ namespace cpps
 		void		push_back(object& val);
 		object		operator[](const cpps_integer k);
 
-		
+		cpps_value& getval();
 		
 
 		template<class Type>

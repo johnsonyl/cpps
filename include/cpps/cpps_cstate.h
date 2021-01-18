@@ -27,7 +27,7 @@ namespace cpps
 		void						init(const char* pf, int32 pl, const char *pfunc);
 		cpps_std_vector *			createparams();
 		cpps_value *				create_cpps_value();
-		char		 f[64];
+		char		 f[255];
 		char		 func[64];
 		int32			l;
 	};

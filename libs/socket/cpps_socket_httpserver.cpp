@@ -570,7 +570,7 @@ namespace cpps {
 		}
 	}
 
-	void cpps_socket_httpserver::cpps_socket_httpserver_bindsession(cpps_socket_httpserver* httpserver, cpps_socket_httpserver_request* cpps_request_ptr)
+	void cpps_socket_httpserver::cpps_socket_httpserver_bindsession(cpps_socket_httpserver* httpserver, cpps_socket_httpserver_request* cpps_request_ptr,bool create_session)
 	{
 		if (httpserver->SESSION_ENABLED) {
 			std::string sessionid = cpps_request_ptr->getcookie(httpserver->SESSION_COOKIE_NAME);
@@ -583,7 +583,7 @@ namespace cpps {
 				}
 			}
 			//不应该直接创建session.应该由后台创建.
-			if (!session) {
+			if (!session && create_session) {
 				session = httpserver->create_seesion(httpserver->c);
 				cpps_request_ptr->setcookie(httpserver->SESSION_COOKIE_NAME, session->session_id, cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_PATH), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_DOMAIN), cpps::object::create(httpserver->c, httpserver->SESSION_COOKIE_AGE));
 				object csrftoken = session->get("csrftoken", nil);

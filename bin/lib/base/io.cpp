@@ -24,6 +24,6 @@ module io{
             pwd.push_back(chr);
             print(k);
         }
-        println("");
+        endl();
     }
 }

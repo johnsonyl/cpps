@@ -76,7 +76,7 @@ namespace cpps {
 	public:
 		static void								cb_listener(uv_stream_t* server, int status);
 		static void								generic_handler(struct http_request& req, void* handler);
-		static void								cpps_socket_httpserver_bindsession(cpps_socket_httpserver* httpserver, cpps_socket_httpserver_request* cpps_request_ptr);
+		static void								cpps_socket_httpserver_bindsession(cpps_socket_httpserver* httpserver, cpps_socket_httpserver_request* cpps_request_ptr, bool create_session=false);
 
 	public:
 		cpps::C*								c;

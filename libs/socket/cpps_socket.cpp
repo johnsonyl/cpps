@@ -56,7 +56,9 @@ namespace cpps {
 		int err = uv_write(&req->req,(uv_stream_t*) uv_tcp, &req->buf, 1, on_write_cb);
 		if (err)
 		{
+#ifdef _DEBUG
 			fprintf(stderr, "Write error %s\n", uv_strerror(err));
+#endif
 		}
 
 	}
@@ -71,7 +73,9 @@ namespace cpps {
 		int err = uv_write(&req->req, (uv_stream_t*)uv_tcp, &req->buf, 1, on_write_cb);
 		if (err)
 		{
+#ifdef _DEBUG
 			fprintf(stderr, "Write error %s\n", uv_strerror(err));
+#endif
 		}
 	}
 
@@ -110,7 +114,7 @@ namespace cpps {
 		cpps_socket* sock = (cpps_socket*)client->data;
 		if (sock == NULL) return;
 		if (sock->socket_event_callback) sock->socket_event_callback->onReadCallback(sock, nread, buf);
-		CPPSFREE(buf->base);
+		if(buf && buf->base) CPPSFREE(buf->base);
 	}
 
 	
@@ -118,14 +122,18 @@ namespace cpps {
 	void cpps_socket::on_write_cb(uv_write_t* req, int status)
 	{
 		if (status) {
+#ifdef _DEBUG
 			fprintf(stderr, "Write error %s\n", uv_strerror(status));
+#endif
 		}
 		write_req_t* wr;
 
 		/* Free the read/write buffer and the request */
 		wr = (write_req_t*)req;
-		CPPSFREE(wr->buf.base);
-		CPPSFREE(wr);
+		if (wr && wr->buf.base) {
+			CPPSFREE(wr->buf.base);
+			CPPSFREE(wr);
+		}
 
 	}
 

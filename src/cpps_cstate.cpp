@@ -152,7 +152,7 @@ namespace cpps
 
 	cpps_stack::cpps_stack()
 	{
-		memset(f, 0, 64);
+		memset(f, 0, 255);
 		memset(func, 0, 64);
 		l = 0;
 	}

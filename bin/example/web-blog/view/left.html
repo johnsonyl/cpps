@@ -38,7 +38,7 @@
 				</div>
 				{% 
 					
-					var loginstate = request.session().get("loginstate","");
+					var loginstate = request.session() ? request.session().get("loginstate","") : "";
 					if(loginstate == globalconfig.admin_key){
 				%}
 				<div class="my-2 my-md-3">

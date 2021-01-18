@@ -69,7 +69,7 @@
 #define CPPS_GEN0_CHECKSIZE			(CPPS_GEN1_CHECKSIZE / 8 * 3)
 #define CPPS_GEN0_CHECKCOUNT		64
 #else
-#define CPPS_GEN1_CHECKSIZE			(1024 * 1024 * 128)  // 128 M
+#define CPPS_GEN1_CHECKSIZE			(1024 * 1024 * 8)  // 128 M
 #define CPPS_GEN0_CHECKSIZE			(CPPS_GEN1_CHECKSIZE / 8 * 3)
 #define CPPS_GEN0_CHECKCOUNT		512
 #endif
@@ -211,7 +211,7 @@ enum
 #define cpps_def_regvar					3
 #define cpps_def_regparentclass			4
 
-#define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREGVAR) left = *left.value.value;
+#define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREGVAR){ left = *left.value.value;}
 
 #ifndef CPPS_DECLARE_DEPRECATED
 # define CPPS_DECLARE_DEPRECATED(f)   f;
@@ -287,6 +287,23 @@ for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != 
 	c->resume();\
 }
 
+#define  CPPS_SUBTRY cpps_stack* __takestack = c->getcallstack()->empty() ? NULL : c->getcallstack()->back();\
+try{
+
+#define CPPS_SUBCATCH2 }\
+catch (...) {\
+cpps_pop_stack_to_here(c, __takestack);\
+throw;\
+}\
+
+#define CPPS_SUBCATCH }\
+catch(...){\
+cpps_pop_stack_to_here(c,__takestack);\
+if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }\
+throw;\
+}
+
+
 
 typedef double cpps_number;
 typedef __int64 cpps_integer;
@@ -346,6 +363,7 @@ namespace cpps
 #pragma warning(disable:26495)   //disable unicode code page warning
 #pragma warning(disable:6011)   //disable NULL PTR USED warning
 #pragma warning(disable:4819)   //disable unicode code page warning
+#pragma warning(disable:5003)   //disable unicode code page warning
 #endif
 
 #ifndef _CRT_SECURE_NO_WARNINGS
