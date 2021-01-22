@@ -321,7 +321,7 @@ namespace cpps {
 		}
 		else if (ch == ';')
 		{
-			//ok.!
+			/*ok.!*/
 			return;
 		}
 		else {
@@ -368,7 +368,7 @@ namespace cpps {
 		}
 		else if (buffer.cur() == ':' && buffer.at(buffer.offset()+1) == ':')
 		{
-			// var namespace::namespace::class::func()
+			/* var namespace::namespace::class::func()*/
 			node* lastNode = right;
 			/* 是否使用名空间 */
 			while (!buffer.isend()) {
@@ -478,7 +478,6 @@ namespace cpps {
 			else if (root->type == CPPS_ODEFVAR_FUNC || root->type == CPPS_ODEFVAR_LAMBDA_FUNC) {
 				str->offset = root->size++;
 				str->offsettype = CPPS_OFFSET_TYPE_SELF;
-				//root->regnode(str->s, str);
 
 				if (cpps_parse_checkdomain(domain))
 					domain->nodedomain->regnode(str->s, str);
@@ -520,9 +519,9 @@ namespace cpps {
 			node* str = CPPSNEW( node)(child, child->filename, buffer.line());
 			str->type = CPPS_VARNAME;
 
-			//多返回值
+			/*多返回值*/
 			if (buffer.cur() == '[') {
-				buffer.pop();//pop [
+				buffer.pop();/*pop [*/
 				str->type = CPPS_MULTIVAR;
 
 				if (root->type == CPPS_OCLASS || root->type == CPPS_ONAMESPACE  )
@@ -548,7 +547,7 @@ namespace cpps {
 				if(buffer.cur() != ']')
 					throw(cpps_error(str->filename, buffer.line(), cpps_error_varnotnumber, "Missing ']' when defining multiple return value variable."));
 
-				buffer.pop(); //pop ]
+				buffer.pop(); /*pop ]*/
 
 				node *right = cpps_parse_var_right(c, domain, str, root, buffer, limit, vartype);
 				if (right->type != CPPS_ODEFVAR_VAR)
@@ -584,7 +583,7 @@ namespace cpps {
 		cpps_parse_rmspaceandenter(buffer);
 		child->s = cpps_parse_varname(buffer);
 		if (child->s.empty()) {
-			child->s = "_G"; //全局
+			child->s = "_G"; /*全局*/
 		}
 		cpps_parse_rmspaceandenter(buffer);
 
@@ -783,7 +782,7 @@ namespace cpps {
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
 
-		//char('str')
+		/*char('str')*/
 		if (buffer.cur() != '(') {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '(' after char"));
 		}
@@ -874,7 +873,7 @@ namespace cpps {
 				cpps_parse_rmspaceandenter(buffer);
 				if (buffer.cur() == '{') {
 					param->setparent(root);
-					node* setv = cpps_parse_new_setv(c, domain, param, root, buffer); //root 修改成newvar node 但是这里取不到变量数量呀. 应该取类才对.
+					node* setv = cpps_parse_new_setv(c, domain, param, root, buffer); /*root 修改成newvar node 但是这里取不到变量数量呀. 应该取类才对.*/
 					param->add(setv);
 				}
 			}
@@ -922,7 +921,7 @@ namespace cpps {
 					param->offset = t->offset;
 					param->offsettype = t->offsettype;
 					if (closure && t->offsettype == CPPS_OFFSET_TYPE_SELF){ /*整理修改可能是闭包变量并且增加了计数,当没有使用的时候它就会被释放了..*/
-						t->closure = true; //闭包创建永不删除
+						t->closure = true; /*闭包创建永不删除*/
 					}
 				}
 			}
@@ -1148,7 +1147,7 @@ namespace cpps {
 	node* cpps_parse_last_func(C* c, cppsbuffer& buffer, node* o, node* p, cpps_node_domain* domain, node* root) {
 		/*有后续 */
 		cpps_parse_rmspaceandenter(buffer);
-		while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':')) {
+		while (buffer.cur() == '[' || buffer.cur() == '.' || buffer.cur() == '(' || (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':') || (buffer.cur() == '-' && buffer.at(buffer.offset() + 1) == '>')) {
 			/*  fix  var    .     func();  */
 			if (buffer.cur() == '.') {
 				auto take = buffer.offset();
@@ -1161,8 +1160,23 @@ namespace cpps {
 				}
 				buffer.seek(take);
 			}
-			//fix slice[var::] but slice[var::var] don't work..
+			/*fix slice[var::] but slice[var::var] don't work..*/
 			if (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':') {
+
+				auto take = buffer.offset();
+				buffer.pop();
+				buffer.pop();
+				cpps_parse_rmspaceandenter(buffer);
+
+				if (cpps_parse_isnotvarname(buffer.cur())) {
+					buffer.seek(take);
+
+					break;
+				}
+				buffer.seek(take);
+			}
+			/*fix slice[var::] but slice[var::var] don't work..*/
+			if (buffer.cur() == '-' && buffer.at(buffer.offset() + 1) == '>') {
 
 				auto take = buffer.offset();
 				buffer.pop();
@@ -1189,10 +1203,16 @@ namespace cpps {
 				child->setparent(geto);
 				cpps_parse_getchild_or_slice(c, domain, root, geto,child, buffer);
 			}
-			else if (symblo == '.') {
-				geto->type = CPPS_OGETOBJECT;
+			else if (symblo == '.' || symblo == '-') {
+				if (symblo == '-' && buffer.cur() != '>')
+					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "invalid syntax"));
+				if (symblo == '-') {
+					buffer.pop(); /* pop >*/
+					geto->quote = true; /* -> getsubobject*/
+				}
 
-				//child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
+
+				geto->type = CPPS_OGETOBJECT;
 				child = CPPSNEW( node)(o->filename, buffer.line());
 				child->type = CPPS_VARNAME;
 				cpps_parse_var_varname(buffer, child, c, root, domain);
@@ -1216,7 +1236,7 @@ namespace cpps {
 					throw(cpps_error(o->filename, buffer.line(), cpps_error_unknow, "namespace requires double ':'"));
 				buffer.pop();
 				geto->type = CPPS_OGETOBJECT;
-				//child = cpps_parse_var_param(c, domain, geto, root, buffer, false);
+				
 				child = CPPSNEW( node)(o->filename, buffer.line());
 				child->type = CPPS_VARNAME;
 				cpps_parse_var_varname(buffer, child, c, root, domain);
@@ -1337,10 +1357,10 @@ namespace cpps {
 			str->s = buildlambda();
 			str->type = CPPS_VARNAME;
 
-			//加快运行速度
+			/*加快运行速度*/
 			if (c->buildoffset) {
-				node* r = cpps_get_root_node(root);
-				str->offset = r->size++;
+				node* r2 = cpps_get_root_node(root);
+				str->offset = r2->size++;
 				str->offsettype = CPPS_OFFSET_TYPE_GLOBAL;
 			}
 
@@ -1360,7 +1380,7 @@ namespace cpps {
 				lambdaparam->offset = str->offset;
 				lambdaparam->offsettype = str->offsettype;
 			}
-			lambdaparam->size = takesize; //记录当时使用时它父类长度.
+			lambdaparam->size = takesize; /*记录当时使用时它父类长度.*/
 			lambdaparam->setparent(lastopnode);
 			lambdaparam = cpps_parse_last_func(c, buffer, lastopnode, lambdaparam, domain, root);
 			lastopnode->l.push_back(lambdaparam);
@@ -1747,7 +1767,7 @@ namespace cpps {
 			CPPSNEW( node)(child, child->filename, child->line);
 			return;
 		}
-		//支持multi return
+		/*支持multi return*/
 		while (true) {
 
 			/* 查找后续参数 */
@@ -1756,7 +1776,7 @@ namespace cpps {
 			cpps_parse_rmspaceandenter(buffer);
 			if (buffer.cur() != ',') break;
 			
-			buffer.pop(); // pop ,
+			buffer.pop(); /* pop ,*/
 
 		}
 	}
@@ -1919,7 +1939,7 @@ namespace cpps {
 				if (c->buildoffset) {
 					node* cpyn = CPPSNEW (node)();
 					cpyn->clone(var_node);
-					srcclass->getthird()->add(cpyn); //为了移除用
+					srcclass->getthird()->add(cpyn); /*为了移除用*/
 					if (var_node->l[0]->type != CPPS_ODEFVAR_FUNC) {
 						cpyn->offset = srcclass->varsize++;
 						cpyn->offsettype = CPPS_OFFSET_TYPE_LEFTDOMAIN;
@@ -1981,10 +2001,10 @@ namespace cpps {
 						buffer.pop();
 						buffer.pop();
 						cpps_parse_rmspaceandenter(buffer);
-						node* child = CPPSNEW (node)(lastNode, parents->filename, buffer.line());
-						child->s = cpps_parse_varname(buffer);
-						child->type = CPPS_ONAMESPANCE_CHILD;
-						lastNode = child;
+						node* child2 = CPPSNEW (node)(lastNode, parents->filename, buffer.line());
+						child2->s = cpps_parse_varname(buffer);
+						child2->type = CPPS_ONAMESPANCE_CHILD;
+						lastNode = child2;
 					}
 					else {
 						break;
@@ -2052,7 +2072,7 @@ namespace cpps {
 		child->type = CPPS_OINCLUDE;
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
-		//#include <cpps/cpps.cpp> √
+		/*#include <cpps/cpps.cpp> √*/
 		if (buffer.cur() != '<') {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '<' after include"));
 		}
@@ -2391,7 +2411,7 @@ namespace cpps {
 		std::string fileSrc;
 		cpps_load_filebuffer(path, fileSrc);
 		node* o = loadbuffer(c,c->_G, fileSrc, path);
-		//c->buildoffset = false;
+		
 		if (o) {
 			c->push(o);
 			return(CPPS_NOERROR);
@@ -2437,7 +2457,7 @@ namespace cpps {
 		cpps_unregasyncio(c);
 		gc_cleanup(c);
 		c->_class_map_classvar.clear();
-		//asyncio需要特殊处理
+		
 		c->_G->release();
 		c->_G = NULL;
 		delete c;
@@ -2514,7 +2534,7 @@ namespace cpps {
 	}
 
 	void cpps_step_def_var(C* c, cpps_domain* domain, cpps_domain* root, node* d, node_var_type isasync) {
-		/* d->s //变量名字 */
+		/* d->s 变量名字 */
 		for (size_t i = 0; i < d->l.size(); ++i) {
 			node* varName = d->l[i];
 			if (varName->type == CPPS_MULTIVAR) {
@@ -2545,11 +2565,11 @@ namespace cpps {
 							}
 							ii++;
 						}
-						//就用一下
+						/*就用一下*/
 						value = nil;
 					}
 					else {
-						//只返回一个..
+						/*只返回一个..*/
 						if (!multiresult.empty()) {
 							cpps_regvar* firstregv = multiresult[0];
 							cpps_step_def_var_createvar_setval(value, firstregv, c);
@@ -2645,7 +2665,7 @@ namespace cpps {
 								if (v->getval().tt == CPPS_TCLASS) {
 									cpps_cppsclass* pclsthis = cpps_to_cpps_cppsclass(v->getval());
 									if (pclsthis == cppsfunc->getclass()) {
-										cppsfunc->rebuildfunc(takenode->getleft(), takenode->getright(), takenode->size); //不是继承来的替换.
+										cppsfunc->rebuildfunc(takenode->getleft(), takenode->getright(), takenode->size); /*不是继承来的替换.*/
 									}
 									/*继承来的暂时不可以修改. 并且也不能创建.*/
 								}
@@ -3099,7 +3119,6 @@ namespace cpps {
 		while (!c->getcallstack()->empty()) {
 			cpps_stack* takestack2 = c->getcallstack()->back();
 			if (here != takestack2) {
-				//if(cleanup) CPPSDELETE(  takestack2);
 				c->stack_free(takestack2);
 				c->getcallstack()->pop_back();
 			}
@@ -3227,7 +3246,7 @@ namespace cpps {
 				cppsclass->varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(it2->first, v));
 			}
 		}
-		//注册父类的operator.
+		/*注册父类的operator.*/
 		for (size_t i = 0; i < parentclass->operatorlist.size(); i++) {
 			if (parentclass->operatorlist[i]) {
 				cppsclass[i] = parentclass[i];
@@ -3375,17 +3394,17 @@ namespace cpps {
 			std::string	fpath = cpps_to_string(path);
 			std::string fileSrc;
 			cpps_load_filebuffer(fpath.c_str(), fileSrc);
-			node* o = loadbuffer(c, c->_G, fileSrc, fpath);
+			node* o2 = loadbuffer(c, c->_G, fileSrc, fpath);
 			cpps_stack* stack = c->stack_alloc();
 			stack->init((*it)->filename.c_str(), (*it)->line, "dofile");
 			c->push_stack(stack);
 			CPPS_SUBTRY
-			cpps_step_all(c, CPPS_MUNITRET, c->_G, c->_G, o);
+			cpps_step_all(c, CPPS_MUNITRET, c->_G, c->_G, o2);
 			CPPS_SUBCATCH
 			c->pop_stack();
 			cpps_gc_check_step(c);
 			c->stack_free(stack);
-			if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
+			if (o2) { cpps_destory_node(o2); CPPSDELETE(o2); o2 = NULL; }
 		}
 	}
 	void cpps_step_dostring(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
@@ -3463,17 +3482,17 @@ namespace cpps {
 						for (size_t i = 0; i < rr->l.size(); i++) {
 							node* k = rr->l[i]->getleft();
 
-							//execdomain->init(cppsclassvar, cpps_domain_type_func);
-						//	execdomain->setexecdomain(cppsclassvar);
+							
+						
 							cpps_domain* takedomain3 = NULL;
-							cpps_value v = cpps_calculate_expression(c, domain, root, rr->l[i]->getright()->getleft(), takedomain3);
-							CPPS_TO_REAL_VALUE(v);
+							cpps_value v2 = cpps_calculate_expression(c, domain, root, rr->l[i]->getright()->getleft(), takedomain3);
+							CPPS_TO_REAL_VALUE(v2);
 
-							/* m->insert(cpps_value(c, k->s), v); */
+						
 							cpps_regvar* var = cppsclassvar->getvar(k->s, leftdomain);
 							if (var)
-								var->setval(v);
-							//execdomain->destory(c);
+								var->setval(v2);
+						
 
 						}
 
@@ -3587,7 +3606,7 @@ namespace cpps {
 			cpps_step_dofile(c, domain, root, d);
 		}
 		else if (d->type == CPPS_OINCLUDE) {
-			//do nothing...
+			/*do nothing...*/
 		}
 		else if (d->type == CPPS_OIMPORT) {
 			cpps_step_import(c, domain, root, d);
@@ -3748,67 +3767,19 @@ namespace cpps {
 
 		return cpps_calculate_expression_offset_getclassvar(root->parent[1]);
 	}
-	void cpps_calculate_expression_offset(node* d, C* c, cpps_value& ret, cpps_domain* root, cpps_domain*& leftdomain) {
-		/* 快速读取 */
-		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
-			cpps_regvar* var = c->_G->getregidxvar(d->offset);
-			if (var) {
-				ret = var->getval();
-#ifndef NDEBUG
-				//printf(" //global[%d]", d->offset);
-#endif
-			}
-		}
-		else if (d->offsettype == CPPS_OFFSET_TYPE_SELF) {
-			cpps_regvar* var = root->getregidxvar(d->offset);
-			if (var) {
-				ret = var->getval();
-#ifndef NDEBUG
-				//printf(" //self[%d]", d->offset);
-#endif
-			}
-		}
-		else if (d->offsettype == CPPS_OFFSET_TYPE_LEFTCLASS) {
-			cpps_regvar* var = c->_G->getregidxvar(d->offset);
-			if (var) {
-				ret = var->getval();
-#ifndef NDEBUG
-				//printf(" //left-class[%d]", d->offset);
-#endif
-				cpps_domain* _classvarroot = cpps_calculate_expression_offset_getclassvar(root);
-				assert(_classvarroot);
-				leftdomain = _classvarroot;
-			}
-		}
-		else if (d->offsettype == CPPS_OFFSET_TYPE_LEFTDOMAIN) {
-			cpps_domain* _classvarroot = cpps_calculate_expression_offset_getclassvar(root);
-			assert(_classvarroot);
-
-			cpps_regvar* var = _classvarroot->parent[1]->getregidxvar(_classvarroot->parent[1]->parent[0]->getidxoffset(_classvarroot->parent[0]) + d->offset);
-			if (var) {
-				ret = var->getval();
-#ifndef NDEBUG
-				//printf(" //left[%d]", d->offset);
-#endif
-			}
-		}
-	}
+	
 	void cpps_calculate_expression_quoteoffset(node* d, C* c, cpps_value& ret, cpps_domain* root, cpps_domain*& leftdomain) {
 		/* 快速读取 */
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			cpps_regvar* var = c->_G->getregidxvar(d->offset);
 			if (var) {
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-				/*ret.tt = CPPS_TREF;
-				ret.value.value = &var->getval();*/
 			}
 		}
 		else if (d->offsettype == CPPS_OFFSET_TYPE_SELF) {
 			cpps_regvar* var = root->getregidxvar(d->offset);
 			if (var) {
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-				/*ret.tt = CPPS_TREF;
-				ret.value.value = &var->getval();*/
 			}
 		}
 		else if (d->offsettype == CPPS_OFFSET_TYPE_LEFTCLASS) {
@@ -3816,8 +3787,6 @@ namespace cpps {
 			if (var) {
 
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-			/*	ret.tt = CPPS_TREF;
-				ret.value.value = &var->getval();*/
 
 				cpps_domain* _classvarroot = cpps_calculate_expression_offset_getclassvar(root);
 				assert(_classvarroot);
@@ -3831,8 +3800,6 @@ namespace cpps {
 			cpps_regvar* var = _classvarroot->parent[1]->getregidxvar(_classvarroot->parent[1]->parent[0]->getidxoffset(_classvarroot->parent[0]) + d->offset);
 			if (var) {
 				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
-				/*ret.tt = CPPS_TREF;
-				ret.value.value = &var->getval();*/
 			}
 		}
 	}
@@ -3896,22 +3863,7 @@ namespace cpps {
 			leftdomain = takedomain;
 		}
 	}
-	void cpps_calculate_expression_varname(C*c,cpps_domain*& leftdomain, cpps_domain* domain, node* d, cpps_value& ret) {
 
-		cpps_regvar* v = NULL;
-		if (leftdomain)
-			v = leftdomain->getvar(d->s, leftdomain, true, true);
-		else
-			v = domain->getvar(d->s, leftdomain);
-
-		if (v) {
-			ret = v->getval();
-		}
-		else {
-			if(!c->disabled_non_def_var)
-				printf("Warning:  got a not existent variable of [%s].  line: %d file: %s\n", d->s.c_str(), d->line, d->filename.c_str());
-		}
-	}
 	void cpps_calculate_expression_lambda(C*c,cpps_domain* domain,cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
 		cpps_regvar* v = NULL;
 		if (d->offset != -1) {
@@ -3927,20 +3879,20 @@ namespace cpps {
 			func->c = c;
 			func->setrealfunc((cpps_cppsfunction*)v->getval().value.func);
 			if (root->parent[0] && root->parent[0]->domainType == cpps_domain_type_func && root->stacklist) {
-				size_t c = d->size;
-				if (c > 0) {
+				size_t c2 = d->size;
+				if (c2 > 0) {
 					func->stacklist = CPPSNEW (std::vector<cpps_regvar*>)();
 
-					//check
-					assert(c <= root->stacklist->size());
-					for (size_t i = 0; i < c; i++) {
+					/*check*/
+					assert(c2 <= root->stacklist->size());
+					for (size_t i = 0; i < c2; i++) {
 						auto no = (*(root->stacklist))[i];
 						if (no && no->closeure) {
 							func->stacklist->push_back(no);
-							no->closeureusecount++;//计数
+							no->closeureusecount++;/*计数*/
 						}
 						else {
-							func->stacklist->push_back(NULL);//占位
+							func->stacklist->push_back(NULL);/*占位*/
 						}
 					}
 				}
@@ -3961,10 +3913,10 @@ namespace cpps {
 				object symbolfunc = func ?cpps_value(func) : nil;
 				if (symbolfunc.isfunction()) {
 					
-					//tuple
+					/*tuple*/
 					cpps_vector* vct = NULL;
 					cpps_value tuple_value = newclass(c, &vct);
-					tuple_value.tt = CPPS_TTUPLE; //设置成元组.
+					tuple_value.tt = CPPS_TTUPLE; /*设置成元组.*/
 
 					for (auto nn : d->getright()->l) {
 						node* first_node = nn->l[0];
@@ -3999,12 +3951,12 @@ namespace cpps {
 							step_index = third.toint();
 
 
-						//step 为0 非法.
+						/*step 为0 非法.*/
 						if (step_index == 0) {
 							return;
 						}
 
-						//如果它不是空也不是整数说明它需要独立存在
+						/*如果它不是空也不是整数说明它需要独立存在*/
 						if (!first.isint() && !first.isnull())
 						{
 							vct->push_back(first.value);
@@ -4027,7 +3979,7 @@ namespace cpps {
 				}
 				else
 				{
-					//cpps 暂时不支持多为数组.
+					/*cpps 暂时不支持多为数组.*/
 					node* first_node = d->getright()->getleft()->l[0];
 					node* second_node = d->getright()->getleft()->l[1];
 					node* third_node = d->getright()->getleft()->l[2];
@@ -4060,7 +4012,7 @@ namespace cpps {
 
 
 
-					//step 为0 非法.
+					/*step 为0 非法.*/
 					if (step_index == 0) {
 						return;
 					}
@@ -4080,7 +4032,7 @@ namespace cpps {
 								end_index = vct->size() - 1;
 						}
 
-						//计算真实值.
+						/*计算真实值.*/
 						if (start_index < 0) {
 							start_index = vct->size() + start_index;
 						}
@@ -4091,13 +4043,13 @@ namespace cpps {
 
 
 
-						//???? a[1:1]??
+						/*???? a[1:1]??*/
 						if (start_index == end_index) {
 							ret_vec.push_back(vct->at(start_index));
 							return;
 						}
 
-						//越走越远说明有问题.
+						/*越走越远说明有问题.*/
 						auto count = abs(end_index - start_index);
 						if (abs(end_index - (start_index + step_index)) > count) {
 							return;
@@ -4116,15 +4068,7 @@ namespace cpps {
 							}
 						}
 
-						////从右至左,但step为正数. 非法
-						//if (start_index < 0 && step_index > 0) {
-						//	return;
-						//}
-						////从左至右 但step为负数 ,非法.
-						//if (start_index >= 0 && step_index < 0) {
-						//	return;
-						//}
-
+					
 					}
 					else if (leftobject.isstring())
 					{
@@ -4138,7 +4082,7 @@ namespace cpps {
 								end_index = str->size() - 1;
 						}
 
-						//计算真实值.
+						/*计算真实值.*/
 						if (start_index < 0) {
 							start_index = str->size() + start_index;
 						}
@@ -4149,13 +4093,13 @@ namespace cpps {
 
 
 
-						//???? a[1:1]??
+						/*???? a[1:1]??*/
 						if (start_index == end_index) {
 							ret_str.push_back(str->at(start_index));
 							return;
 						}
 
-						//越走越远说明有问题.
+						/*越走越远说明有问题.*/
 						auto count = abs(end_index - start_index);
 						if (abs(end_index - (start_index + step_index)) > count) {
 							return;
@@ -4204,7 +4148,6 @@ namespace cpps {
 					leftdomain = takedomain;
 					if (pVec->size() <= right.value.integer)
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), right.value.integer));
-					//ret = pVec->at(right.value.integer);
 					cpps_integer idx = right.value.integer;
 					if (idx < 0) {
 						idx = pVec->size() + idx;
@@ -4220,14 +4163,13 @@ namespace cpps {
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
-					//ret = pMap->find(right);
 					cpps_calculate_expression_quote_real(pMap->cpps_find(right), ret, false);
 				}
 				else {
 					object leftobject = object(left);
 					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
-					cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
-					cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+					cpps_cppsclass* cppsclass2 = cppsclassvar->getcppsclass();
+					cpps_function* func = cppsclass2->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
 					object symbolfunc = func ? cpps_value(func) : nil;
 					if (symbolfunc.isfunction())
 					{
@@ -4259,77 +4201,17 @@ namespace cpps {
 				}
 
 				ret = (cpps_integer)str->at(idx);
-				//ret = cpps_value(&str->at(right.value.integer));
 			}
-			/*	else if (left.tt == CPPS_TDOMAIN) {
-					leftdomain = left.value.domain;
-					ret = cpps_calculate_expression(c, left.value.domain, root, d->getright(), leftdomain);
-				}*/
+			
 		}
 		else {
 			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
 		}
 	}
-	void cpps_calculate_expression_getobject(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
-		cpps_value left = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
-		CPPS_TO_REAL_VALUE(left);
-
-		if (left.tt != CPPS_TNIL) {
-			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING || left.tt == CPPS_TTUPLE) {
-				/* cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0]; */
-				cpps_domain* execdomain = c->domain_alloc();
-				execdomain->init(c->_G, cpps_domain_type_exec);
-				/* cpps_domain *takedomain = leftdomain; */
-				leftdomain = left.value.domain;
-				execdomain->setexecdomain(left.value.domain);
-				ret = cpps_calculate_expression(c, execdomain, root, d->getright(), leftdomain);
-				/* leftdomain = takedomain; */
-				execdomain->destory(c);
-				c->domain_free(execdomain);
-			}
-			else if (left.tt == CPPS_TCLASS && root->parent[1] && root->parent[1]->domainType == cpps_domain_type_classvar) {
-				cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain;
-				cpps_domain* takedomain = NULL;
-				/* check this class is parent class.. */
-				cpps_cppsclass* selfclass = (cpps_cppsclass*)root->parent[1]->parent[0];
-				bool is_parent_class = cpps_check_parent_class(selfclass, cppsclass);
-				if (!is_parent_class)
-					throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "Non parent function executed: [%s::%s].", d->getleft()->s.c_str(), d->getright()->s.c_str()));
-
-				std::string funcname = d->getright()->s;
-				if (d->getright()->s == cppsclass->getclassname()) {
-					funcname = "constructor";
-				}
-
-				cpps_regvar* var = cppsclass->getvar(funcname, takedomain, false);
-				if (var && var->getval().tt == CPPS_TFUNCTION) {
-					ret = var->getval();
-					leftdomain = root->parent[1];
-				}
-			}
-			else if (left.tt == CPPS_TDOMAIN) {
-				/* cpps_domain* takedomain = leftdomain; */
-				leftdomain = left.value.domain;
-				ret = cpps_calculate_expression(c, left.value.domain, root, d->getright(), leftdomain);
-				/*
-				 * if (left.value.domain->domainType == cpps_domain_type_namespace) //名空间不更改左域
-				 * leftdomain = takedomain;
-				 */
-			}
-		}
-		else {
-			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
-		}
-	}
+	
 
 	void cpps_calculate_expression_quotevarname(C* c, cpps_domain*& leftdomain, cpps_domain* domain, node* d, cpps_value& ret) {
-// 		cpps_regvar* v = (leftdomain ? leftdomain : domain)->getvar(d->s, leftdomain);
-// 		if (v) {
-// 			cpps_calculate_expression_quote_real(v->getval(),ret,v->isconst());
-// 		}
-// 		else {
-// 			printf("cpps warring: [%s] is not define.. line : %d, file : %s\n", d->s.c_str(), d->line, d->filename.c_str());
-// 		}
+
 
 		cpps_regvar* v = NULL;
 		if (leftdomain)
@@ -4339,7 +4221,6 @@ namespace cpps {
 
 		if (v) {
 			cpps_calculate_expression_quote_real(v->getval(),ret,false);
-			//ret = v->getval();
 		}
 		else {
 			if (!c->disabled_non_def_var)
@@ -4368,7 +4249,6 @@ namespace cpps {
 					leftdomain = takedomain;
 					if (pVec->size() <= right.value.integer)
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), right.value.integer));
-					//ret = pVec->at(right.value.integer);
 					cpps_integer idx = right.value.integer;
 					if (idx < 0) {
 						idx = pVec->size() + idx;
@@ -4384,14 +4264,13 @@ namespace cpps {
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
-					//ret = pMap->find(right);
 					cpps_calculate_expression_quote_real(pMap->cpps_find(right), ret, false);
 				}
 				else {
 					object leftobject = object(left);
 					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
-					cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
-					cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+					cpps_cppsclass* cppsclass2 = cppsclassvar->getcppsclass();
+					cpps_function* func = cppsclass2->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
 					object symbolfunc = func ? cpps_value(func) : nil;
 					if (symbolfunc.isfunction())
 					{
@@ -4423,55 +4302,51 @@ namespace cpps {
 					idx = str->size() + idx;
 				}
 
-				//ret = (cpps_integer)str->at(right.value.integer);
 				ret = cpps_value(str->at(idx));
 			}
-			/*	else if (left.tt == CPPS_TDOMAIN) {
-					leftdomain = left.value.domain;
-					ret = cpps_calculate_expression(c, left.value.domain, root, d->getright(), leftdomain);
-				}*/
 		}
 		else {
 			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
 		}
 	}
 	void cpps_calculate_expression_quotegetobject(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
-// 		cpps_value left = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
-// 		CPPS_TO_REAL_VALUE(left);
-// 
-// 		if (left.tt != CPPS_TNIL) {
-// 			if (left.tt == CPPS_TCLASSVAR) {
-// 				/* cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0]; */
-// 				cpps_regvar* v = getregvar(left.value.domain, d->getright());
-// 				if (v) {
-// 					cpps_calculate_expression_quote_real(v->getval(), ret, v->isconst());
-// 					/*cpps_value tmp = v->getval();
-// 					ret = cpps_value(v->isconst() ? (&tmp) : (&v->getval()));*/
-// 				}
-// 				else {
-// 					printf("cpps warring: [%s] is not define.. line : %d, file : %s\n", d->getright()->s.c_str(), d->getright()->line, d->getright()->filename.c_str());
-// 				}
-// 			}
-// 		}
-// 		else {
-// 			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "[%s] must be a class object or a domain before the '.'", d->getleft()->s.c_str()));
-// 		}
+
 
 		cpps_value left = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
 		CPPS_TO_REAL_VALUE(left);
 
 		if (left.tt != CPPS_TNIL) {
 			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TSTRING || left.tt == CPPS_TTUPLE) {
-				/* cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0]; */
+				if (d->quote)
+				{
+					object leftobject = object(left);
+					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
+					cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+					cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETSUBOBJECT);
+					object symbolfunc = func ? cpps_value(func) : nil;
+					if (symbolfunc.isfunction())
+					{
+						cpps_value src = doclassfunction(c, leftobject, symbolfunc).value;
+						if (src.isref())
+							left = src.real();
+						else
+							left = src;
+						
+						if (!cpps_base_isclassvar(left))
+							throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "-> returnd not a classvar."));
+					}
+					else {
+						/*没找到这个函数?*/
+						throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "-> not found the operator function."));
+
+					}
+				}
 				cpps_domain* execdomain = c->domain_alloc();
 				execdomain->init(c->_G, cpps_domain_type_exec);
-				/* cpps_domain *takedomain = leftdomain; */
 				leftdomain = left.value.domain;
 				execdomain->setexecdomain(left.value.domain);
-				//ret = ;
 				cpps_value src = cpps_calculate_expression(c, execdomain, root, d->getright(), leftdomain);
 				cpps_calculate_expression_quote_real(src, ret, false);
-				/* leftdomain = takedomain; */
 				execdomain->destory(c);
 				c->domain_free(execdomain);
 			}
@@ -4496,15 +4371,9 @@ namespace cpps {
 				}
 			}
 			else if (left.tt == CPPS_TDOMAIN) {
-				/* cpps_domain* takedomain = leftdomain; */
 				leftdomain = left.value.domain;
-				//ret = cpps_calculate_expression(c, left.value.domain, root, d->getright(), leftdomain);
 				cpps_value src = cpps_calculate_expression(c, left.value.domain, root, d->getright(), leftdomain);
 				cpps_calculate_expression_quote_real(src, ret, false);
-				/*
-				 * if (left.value.domain->domainType == cpps_domain_type_namespace) //名空间不更改左域
-				 * leftdomain = takedomain;
-				 */
 			}
 		}
 		else {
@@ -4540,7 +4409,6 @@ namespace cpps {
 	cpps_value cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain) {
 		cpps_value ret;
 		if (d->type == CPPS_OOFFSET) {
-			//cpps_calculate_expression_offset(d, c, ret, root, leftdomain);
 			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
 		}
 		else if (d->type == CPPS_FUNCNAME) {
@@ -4550,7 +4418,6 @@ namespace cpps {
 			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
 		}
 		else if (d->type == CPPS_VARNAME) {
-			//cpps_calculate_expression_varname(c,leftdomain, domain, d, ret);
 			cpps_calculate_expression_quotevarname(c, leftdomain, domain, d, ret);
 		}
 		else if (d->type == CPPS_ODOFUNCTION) {
@@ -4575,9 +4442,9 @@ namespace cpps {
 			cpps_calculate_expression_newvar(domain, d, c, root, leftdomain, ret);
 		}
 		else if (d->type == CPPS_OBRACKET) {
-			cpps_domain* leftdomain = NULL;
+			cpps_domain* leftdomain2 = NULL;
 			/* 获取第一个节点 */
-			if (d->getleft()) ret = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
+			if (d->getleft()) ret = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain2);
 
 		}
 		else if (d->type == CPPS_OARRAY) {
@@ -4612,7 +4479,6 @@ namespace cpps {
 			cpps_calculate_expression_slice(c, domain, root, d, leftdomain, ret);
 		}
 		else if (d->type == CPPS_OGETOBJECT) {
-			//cpps_calculate_expression_getobject(c, domain, root, d, leftdomain, ret);
 			cpps_calculate_expression_quotegetobject(c, domain, root, d, leftdomain, ret);
 		}
 		else if (d->type == CPPS_QUOTEVARNAME) {

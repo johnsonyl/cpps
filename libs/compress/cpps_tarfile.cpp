@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "compress.h"
 #include "cpps_tarfile.h"
 namespace cpps {
 	bool cpps_io_file_exists(std::string path);

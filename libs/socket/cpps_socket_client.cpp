@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "cpps_socket_client.h"
 
 namespace cpps

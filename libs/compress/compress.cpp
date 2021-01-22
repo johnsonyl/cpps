@@ -1,7 +1,4 @@
-﻿// libdemo.cpp : 定义 DLL 应用程序的导出函数。
-//
-#include "stdafx.h"
-
+﻿#include "compress.h"
 #include <cpps/cpps.h>
 #include <zlib.h>
 #include "cpps_zlib.h"

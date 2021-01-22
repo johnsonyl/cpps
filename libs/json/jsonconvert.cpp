@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "json/json.h"
 #include "jsonconvert.h"
 

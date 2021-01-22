@@ -41,11 +41,6 @@ documentation and/or software.
  */
 
 
-
-
-#include "stdafx.h"
-
-
 #include "MD5.h"
 
 #include <assert.h>

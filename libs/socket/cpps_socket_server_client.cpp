@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "cpps_socket_server_client.h"
 #include "cpps_socket_server.h"
 

@@ -69,9 +69,9 @@ namespace cpps {
 
 		/*回收协程*/
 		for (auto vtask : _tasks) {
-			cpps_async_task* task = cpps_converter<cpps_async_task*>::apply(vtask);
-			if (task && task->rt != MAXUINT64)
-				coroutine::destroy(ordinator,task->rt); 
+			cpps_async_task* task2 = cpps_converter<cpps_async_task*>::apply(vtask);
+			if (task2 && task2->rt != MAXUINT64)
+				coroutine::destroy(ordinator, task2->rt);
 		}
 		_tasks.clear();
 

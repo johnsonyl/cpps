@@ -367,10 +367,20 @@ namespace cpps
 #elif defined _WIN32 
 
 #ifdef __cplusplus
-#pragma warning(disable:26495)   //disable unicode code page warning
-#pragma warning(disable:6011)   //disable NULL PTR USED warning
-#pragma warning(disable:4819)   //disable unicode code page warning
-#pragma warning(disable:5003)   //disable unicode code page warning
+#pragma warning(disable: 26495)
+#pragma warning(disable: 26812)
+#pragma warning(disable: 28182)
+#pragma warning(disable: 26444)
+#pragma warning(disable: 26451)
+#pragma warning(disable: 6011) 
+#pragma warning(disable: 4819) 
+#pragma warning(disable: 5003) 
+#pragma warning(disable: 4100)  
+#pragma warning(disable: 4702) 
+#pragma warning(disable: 4706) 
+#pragma warning(disable: 4458) 
+#pragma warning(disable: 6285) 
+#pragma warning(disable: 6255) 
 #endif
 
 #ifndef _CRT_SECURE_NO_WARNINGS

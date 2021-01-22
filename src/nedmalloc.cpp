@@ -1,3 +1,4 @@
+#ifdef USE_NEDMALLOC
 /* Alternative malloc implementation for multiple threads without
 lock contention based on dlmalloc. (C) 2005-2012 Niall Douglas
 
@@ -690,6 +691,7 @@ NEDMALLOCNOALIASATTR NEDMALLOCPTRATTR void **nedindependent_comalloc(size_t elem
 
 #ifdef WIN32
 typedef unsigned __int64 timeCount;
+#if ENABLE_LOGGING
 static timeCount GetTimestamp()
 {
 	static LARGE_INTEGER ticksPerSec;
@@ -710,6 +712,7 @@ static timeCount GetTimestamp()
 	if(!baseCount) baseCount=ret;
 	return ret-baseCount;
 }
+#endif
 #else
 #include <sys/time.h>
 
@@ -2058,11 +2061,17 @@ NEDMALLOCNOALIASATTR void   nedpfree2(nedpool *p, void *mem, unsigned flags) THR
 		return;
 	}
 	memsize=nedblksize(&isforeign, mem, flags);
-	assert(memsize);
+	//assert(memsize);
 	if(!memsize)
 	{
+#ifdef DEBUG
+
 		fprintf(stderr, "nedmalloc: nedpfree() called with a block not created by nedmalloc!\n");
-		abort();
+		//abort();
+		return;
+#else
+		return; // other lib nedmalloc created.  
+#endif
 	}
 	GetThreadCache(&p, &tc, &mymspace, 0);
 #if THREADCACHEMAX
@@ -2289,4 +2298,6 @@ NEDMALLOCNOALIASATTR NEDMALLOCPTRATTR void **nedpindependent_comalloc(nedpool *p
 
 #ifdef _MSC_VER
 #pragma warning(pop)
+#endif
+
 #endif

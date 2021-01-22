@@ -1,9 +1,7 @@
-﻿// libdemo.cpp : 定义 DLL 应用程序的导出函数。
-//
-
-#include "stdafx.h"
+﻿
 #include <cpps/cpps.h>
 #ifdef _WIN32
+#pragma warning(disable: 4098) 
 #include <Windows.h>
 #include <WinSock2.h>
 #endif

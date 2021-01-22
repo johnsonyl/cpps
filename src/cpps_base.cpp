@@ -602,32 +602,32 @@ namespace cpps
 
 		if (cpps_base_isvector(v)) {
 			cpps_vector* vct = cpps_to_cpps_vector(v);
-			cpps_value v = newcppsclasvar(c, cppsclass);
-			if (vct->realvector().size() == v.value.domain->stacklist->size())
+			cpps_value v2 = newcppsclasvar(c, cppsclass);
+			if (vct->realvector().size() == v2.value.domain->stacklist->size())
 			{
-				size_t c = vct->size();
+				size_t size = vct->size();
 				
-				for (size_t i = 0; i < c; i++) {
-					cpps_regvar* regv = (*(v.value.domain->stacklist))[i];
+				for (size_t i = 0; i < size; i++) {
+					cpps_regvar* regv = (*(v2.value.domain->stacklist))[i];
 					regv->setval(vct->realvector()[i]);
 				}
-				ret = v;
+				ret = v2;
 			}
 		}
 		else if(cpps_base_ismap(v)){
 			cpps_map* m = cpps_to_cpps_map(v);
-			cpps_value v = newcppsclasvar(c, cppsclass);
-			if (m->realmap().size() == v.value.domain->stacklist->size())
+			cpps_value v2 = newcppsclasvar(c, cppsclass);
+			if (m->realmap().size() == v2.value.domain->stacklist->size())
 			{
 				for (auto it : m->realmap()) {
 					cpps_domain* leftdomain = NULL;
-					cpps_regvar * regv = v.value.domain->getvar(cpps_to_string(it.first), leftdomain, false);
+					cpps_regvar * regv = v2.value.domain->getvar(cpps_to_string(it.first), leftdomain, false);
 					if (regv)
 					{
 						regv->setval(it.second);
 					}
 				}
-				ret = v;
+				ret = v2;
 			}
 
 		}

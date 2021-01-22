@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "cpps_curl.h"
 
 cpps_curl::cpps_curl()

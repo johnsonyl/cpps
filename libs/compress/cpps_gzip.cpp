@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "compress.h"
 #include "cpps_gzip.h"
 
 namespace cpps {

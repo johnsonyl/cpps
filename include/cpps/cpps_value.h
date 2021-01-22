@@ -77,6 +77,7 @@ namespace cpps
 		int8					tt;			//¿‡–Õ
 
 		bool isref();
+		cpps_value real();
 	};
 
 #define cpps_integer2number(i) (cpps_number)(i)

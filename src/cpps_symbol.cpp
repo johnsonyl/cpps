@@ -468,7 +468,7 @@ namespace cpps
 					else
 					{
 						std::string* str;
-						cpps_value ret = newclass<std::string>(c, &str);
+						cpps_value ret2 = newclass<std::string>(c, &str);
 
 
 						cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.value->value.domain;
@@ -476,7 +476,7 @@ namespace cpps
 
 						str->append(tmpStr->c_str());
 
-						*(a.value.value) = ret;
+						*(a.value.value) = ret2;
 					}
 
 				}
@@ -499,13 +499,13 @@ namespace cpps
 					else
 					{
 						std::string* str;
-						cpps_value ret = newclass<std::string>(c, &str);
+						cpps_value ret2 = newclass<std::string>(c, &str);
 
 						cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.domain;
 						std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
 
 						str->append(tmpStr->begin(), tmpStr->end());
-						*(a.value.value) = ret;
+						*(a.value.value) = ret2;
 					}
 				}
 				else
@@ -1133,6 +1133,7 @@ namespace cpps
 		symbolmap["/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"/=",		CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT);
 		symbolmap["..="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..",		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT);
 		symbolmap["[]"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"[]",		CPPS_SYMBOL_TYPE_GETOBJECT);
+		symbolmap["->"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"->",		CPPS_SYMBOL_TYPE_GETSUBOBJECT);
 
 		symbolleftasso[0] = false;
 		symbolleftasso[1] = true;
@@ -1184,7 +1185,7 @@ namespace cpps
 		cpps_value a = cpps_calculate_expression(c, domain,root, d->l[0], leftdomain);
 		leftdomain = NULL;
 
-		if (cpps_base_isclassvar(a) || (a.tt == CPPS_TREF  && cpps_base_isclassvar(*a.value.value))) {
+		if ((cpps_base_isclassvar(a) || (a.tt == CPPS_TREF  && cpps_base_isclassvar(*a.value.value)))) {
 
 			object left = object(a);
 			cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(a);
@@ -1195,7 +1196,6 @@ namespace cpps
 				ret = doclassfunction(c, left, symbolfunc, cpps_calculate_expression(c, domain, root, d->l[1], leftdomain)).getval();
 				return;
 			}
-			return;
 		}
 
 		switch (d->symbol->symboltype)

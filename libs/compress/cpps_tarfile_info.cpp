@@ -1,3 +1,4 @@
+#include "compress.h"
 #include "cpps_tarfile_info.h"
 namespace cpps {
 

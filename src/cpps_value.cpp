@@ -398,6 +398,10 @@ namespace cpps
 		return cpps_value(this);
 	}
 
+	cpps::cpps_value cpps_value::real()
+	{
+		return *value.value;
+	}
 
 	size_t cpps_value::hash::operator()(const cpps_value& _Keyval) const
 	{

@@ -177,14 +177,14 @@ namespace cpps
 			if (parent[1] )
 			{
 				if (parent[1]->domainType != cpps_domain_type_root || !filterroot) {
-					cpps_regvar* ret = parent[1]->getvar(s, leftdomain, findparent, filterroot);
+					ret = parent[1]->getvar(s, leftdomain, findparent, filterroot);
 					if (ret) return ret;
 				}
 			}
 			if (parent[0])
 			{
 				if (parent[0]->domainType != cpps_domain_type_root || !filterroot) {
-					cpps_regvar* ret = parent[0]->getvar(s, leftdomain,findparent,filterroot);
+					ret = parent[0]->getvar(s, leftdomain,findparent,filterroot);
 					if (leftdomain == NULL && parent[0]->domainType == cpps_domain_type_class)
 					{
 						leftdomain = this;

@@ -12,6 +12,11 @@
 #ifndef __STRNORMALIZE_H__
 #define __STRNORMALIZE_H__
 
+#ifdef _WIN32
+#pragma warning(disable: 6292) 
+#pragma warning(disable: 4819) 
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

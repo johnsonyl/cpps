@@ -490,8 +490,8 @@ namespace cpps{
                         }
 
                         // handle windows \r\n-line breaks
-                        if(line_end != data_begin && buffer[size_t(line_end-int(1))] == '\r')
-                                buffer[size_t(line_end-int(1))] = '\0';
+                        if(line_end != data_begin && buffer[size_t(size_t(line_end)-1)] == '\r')
+                                buffer[size_t(size_t(line_end) - 1)] = '\0';
 
                         char*ret = buffer.get() + data_begin;
                         data_begin = line_end+1;

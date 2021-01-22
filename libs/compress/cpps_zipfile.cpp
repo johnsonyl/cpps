@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "compress.h"
 #include "cpps_zipfile.h"
 #include "cpps_zipfile_info.h"
 #include <fstream>
