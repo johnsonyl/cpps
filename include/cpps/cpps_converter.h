@@ -296,10 +296,6 @@ namespace cpps
 		}
 		static cpps_value apply(C *c, cpps_value value)
 		{
-			if (value.tt == CPPS_TREF)
-			{
-				return *(value.value.value);
-			}
 			return value;
 		}
 	};
@@ -343,12 +339,12 @@ namespace cpps
 	template<>
 	struct cpps_cpp_to_cpps_converter<object>
 	{
-		static bool match(C *c, object v)
+		static bool match(C *c, object& v)
 		{
 			//ºÏ≤‚ «∑Ò÷ß≥÷
 			return true;
 		}
-		static cpps_value apply(C *c, object v)
+		static cpps_value apply(C *c, object& v)
 		{
 			return v.value;
 		}

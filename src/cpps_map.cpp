@@ -282,9 +282,9 @@ namespace cpps
 
 	void cpps_set::merge(cpps_value right)
 	{
-		if (!cpps_base_issetable(right)) return;
+		if (!cpps_base_isset(right)) return;
 
-		cpps_set* rightset = cpps_to_cpps_setable(right);
+		cpps_set* rightset = cpps_to_cpps_set(right);
 		for (auto it : rightset->realset()) {
 			insert(it);
 		}

@@ -100,7 +100,7 @@ namespace cpps
 		cpps_map* ret = (cpps_map*)cppsclassvar->getclsptr();
 		return ret;
 	}
-	cpps_set* cpps_to_cpps_setable(cpps_value obj)
+	cpps_set* cpps_to_cpps_set(cpps_value obj)
 	{
 		CPPS_TO_REAL_VALUE(obj);
 		if (!obj.isdomain()) return NULL;
@@ -371,24 +371,31 @@ namespace cpps
 
 	void cpps_value::decruse()
 	{
+		if (tt == CPPS_TNIL) return ;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->decruse();
 	}
 
 	 void cpps_value::incruse()
 	{
-		if ( tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
+		 if (tt == CPPS_TNIL) return ;
+		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->incruse();
 	}
 
 	bool cpps_value::isdomain()
 	{
-		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR ||tt == CPPS_TSTRING || tt == CPPS_TTUPLE;
+		if (tt == CPPS_TNIL) return false;
+		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE;
 	}
 
 	bool cpps_value::isref()
 	{
 		return tt == CPPS_TREF;
+	}
+	cpps_value	cpps_value::ref()
+	{
+		return cpps_value(this);
 	}
 
 

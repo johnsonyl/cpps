@@ -47,11 +47,11 @@ namespace setuptools{
 
 
 			var is_nocpps_build = false;
-			if(isset(install_path)) {
+			if(isvalid(install_path)) {
 				real_install_path = install_path;
 				work_path = install_path;
 			}
-			if(isset(build_type))
+			if(isvalid(build_type))
 				real_build_type = build_type;
 			if( option["link_type"] != null)
 				link_type = option["link_type"];
@@ -95,7 +95,7 @@ namespace setuptools{
 					}
 				}
 			}
-			if(isset(compiler_result)) compiler_result = true; //返回通知编译结果.
+			if(isvalid(compiler_result)) compiler_result = true; //返回通知编译结果.
 		}
 		
 	}

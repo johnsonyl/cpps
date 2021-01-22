@@ -18,6 +18,7 @@ public:
 class CppClassTest : public CppParentClassTest
 {
 public:
+	object	a;
 	void	testFunc(cpps::object val)
 	{
 		i = 100;
@@ -27,6 +28,16 @@ public:
 		}
 		printf("%s:%s\r\n", "CppClassTest::testFunc",type_s(val).c_str());
 	}
+	object test_operator(cpps::object right)
+	{
+		return a.ref();//返回它的引用.,
+	}
+};
+
+enum TESTENUM
+{
+	ENUM_ONE = 1,
+	ENUM_TWO,
 };
 int32 main(int argc,char **argv)
 {
@@ -53,7 +64,11 @@ int32 main(int argc,char **argv)
 			.def("parentTestFunc",&CppParentClassTest::parentTestFunc),
 		_class<CppClassTest>("CppClassTest")
 			.base<CppParentClassTest>()
-			.def("testFunc",&CppClassTest::testFunc)
+			.def_operator("[]",&CppClassTest::test_operator)
+			.def("testFunc",&CppClassTest::testFunc),
+		_enum(c,"TESTENUM")
+			.value("ENUM_ONE", TESTENUM::ENUM_ONE)
+			.value("ENUM_TWO", TESTENUM::ENUM_TWO)
 	];
 
 	_CPPS_TRY
@@ -77,121 +92,109 @@ int32 main(int argc,char **argv)
 	var b = { a:1 , b:2 ,c:3};
 	
 	*/
-
-	//loop vector
-	cpps::object a = cpps::object::globals(c)["a"];
-	for (cpps::object v : cpps::object::vector(a))
 	{
-		cpps_integer val = v.toint();
-		cout << val << endl;
-	}
-	//print vector a value
-	cpps::object vv = a[4];
-	cout << "a[4] = " << object_cast<cpps_integer>(vv) << endl; 
-	a.set(4, cpps::object::create(c, 2000));
-	vv = a[4];
-	cout << "a[4] = " << object_cast<cpps_integer>(vv) << endl;
-
-	cpps::object::vector vec(a);
-	vec[4] = cpps::object::create(c, 3000);
-	cout << "a[4] = " << object_cast<cpps_integer>(vec[4]) << endl;
-
-
-	//////////////////////////////////////////////////////////////////////////
-
-	//loop map
-	cpps::object b = cpps::object::globals(c)["b"];
-	for (auto v : cpps::object::map(c,b))
-	{
-		std::string key = object_cast<std::string>(v.first); // object_cast or std::string key = object(v.first).tostring();
-		cpps_integer val = cpps::object(v.second).toint();
-
-		cout << key << ":" << val << endl;
-	}
-	//print map a value.
-	cpps::object bb = b["b"];
-	cout << "b['b'] = " << object_cast<cpps_integer>(bb) << endl;
-	b.set("b", cpps::object::create(c, 2000)); // It's Work.
-	bb = b["b"];
-	cout << "It's Work b['b'] = " << object_cast<cpps_integer>(bb) << endl;
-
-
-	b.set("z", cpps::object::create(c, 2000)); //  It doesn't work. Because z doesn't exist
-	cpps::object bz = b["z"];
-	cout << "doesn't work b['z'] type = " << cpps::type_s(bz) << endl;
-
-
-	cpps::object key = cpps::object::create(c, "z");
-	b.set(key, cpps::object::create(c, 2000));  // It's Work. z must be created.
-	bz = b["z"];
-	cout << " It's Work b['z'] = " << object_cast<cpps_integer>(bz) << endl;
-
-
-	cpps::object::map bmap(c, b);
-	bmap["z00"] = cpps::object::create(c, "hello world");
-	cout << "bmap-> It's Work bmap['z00'] = " << object_cast<std::string>(bmap["z00"]).c_str() << endl;
-
-	bmap[1] = cpps::object::create(c, "interge key it's work too");
-	cout << "bmap-> It's Work bmap[1] = " << object_cast<std::string>(bmap[1]).c_str() << endl;
-
-	//////////////////////////////////////////////////////////////////////////
-
-	//defined a global var;
-	cpps::object::define(c, "x", cpps::object::create(c, "hello world"));
-
-	cout << "x = " << object_cast<std::string>(cpps::object::globals(c)["x"]).c_str() << endl;
-	cpps::object::globals(c)["x"] = cpps::object::create(c, "wonderful world");
-	cout << "x = " << object_cast<std::string>(cpps::object::globals(c)["x"]).c_str() << endl;
-
-	_G(c)["x"] = cpps::object::create(c, "_G get var it's work.");// work too
-	cout << "x = " << object_cast<std::string>(_G(c)["x"]).c_str() << endl;
-
-	//////////////////////////////////////////////////////////////////////////
-
-	//new script class var ,and set dofunction.
-	cpps::object Agent = cpps::object::globals(c)["Agent"];
-	if (Agent.isclass())
-	{
-		cpps::object Agentvar = cpps::object::create_with_cppsclassvar(c, Agent);
-		Agentvar.set("val", cpps::object::create(c, "this is string.") );
-		cpps::object testfunc = Agentvar["test"];
-		if (testfunc.isfunction())
+		//loop vector
+		cpps::object a = cpps::object::globals(c)["a"];
+		for (cpps::object v : cpps::object::vector(a))
 		{
-			cpps::doclassfunction(c, Agentvar,testfunc);
+			cpps_integer val = v.toint();
+			cout << val << endl;
 		}
-		Agentvar["val"] = cpps::object::create(c, "change string value.");
-		if (testfunc.isfunction())
+		//print vector a value
+		cpps::object vv = a[4];
+		cout << "a[4] = " << object_cast<cpps_integer>(vv) << endl;
+
+		cpps::object::vector vec(a);
+		vec[4] = cpps::object::create(c, 3000);
+		cout << "a[4] = " << object_cast<cpps_integer>(vec[4]) << endl;
+
+
+		//////////////////////////////////////////////////////////////////////////
+
+		//loop map
+		cpps::object b = cpps::object::globals(c)["b"];
+		for (auto v : cpps::object::map(c, b))
 		{
-			cpps::doclassfunction(c, Agentvar, testfunc);
+			std::string key = object_cast<std::string>(v.first); // object_cast or std::string key = object(v.first).tostring();
+			cpps_integer val = cpps::object(v.second).toint();
+
+			cout << key << ":" << val << endl;
 		}
+		//print map a value.
+		cpps::object bb = b["b"];
+		cout << "b['b'] = " << object_cast<cpps_integer>(bb) << endl;
+
+
+
+		cpps::object key = cpps::object::create(c, "z");
+
+
+
+		cpps::object::map bmap(c, b);
+		bmap["z00"] = cpps::object::create(c, "hello world");
+		cout << "bmap-> It's Work bmap['z00'] = " << object_cast<std::string>(bmap["z00"]).c_str() << endl;
+
+		bmap[1] = cpps::object::create(c, "interge key it's work too");
+		cout << "bmap-> It's Work bmap[1] = " << object_cast<std::string>(bmap[1]).c_str() << endl;
+
+		//////////////////////////////////////////////////////////////////////////
+
+		//defined a global var;
+		cpps::object::define(c, "x", cpps::object::create(c, "hello world"));
+
+		cout << "x = " << object_cast<std::string>(cpps::object::globals(c)["x"]).c_str() << endl;
+		cpps::object::globals(c)["x"] = cpps::object::create(c, "wonderful world");
+		cout << "x = " << object_cast<std::string>(cpps::object::globals(c)["x"]).c_str() << endl;
+
+		_G(c)["x"] = cpps::object::create(c, "_G get var it's work.");// work too
+		cout << "x = " << object_cast<std::string>(_G(c)["x"]).c_str() << endl;
+
+		//////////////////////////////////////////////////////////////////////////
+
+		//new script class var ,and set dofunction.
+		cpps::object Agent = cpps::object::globals(c)["Agent"];
+		if (Agent.isclass())
+		{
+			cpps::object Agentvar = cpps::object::create_with_cppsclassvar(c, Agent);
+			Agentvar["val"] = cpps::object::create(c, "this is string.");
+			cpps::object testfunc = Agentvar["test"];
+			if (testfunc.isfunction())
+			{
+				cpps::doclassfunction(c, Agentvar, testfunc);
+			}
+			Agentvar["val"] = cpps::object::create(c, "change string value.");
+			if (testfunc.isfunction())
+			{
+				cpps::doclassfunction(c, Agentvar, testfunc);
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+
+		//new cpp class var
+		CppClassTest* ptr = NULL; //You don't need to delete it. it has GC to delete it.
+		cpps::object cppclassvar = cpps::object::create_with_classvar< CppClassTest >(c, &ptr);
+		//ptr->testFunc(xxx); //you can do something in cpp .
+
+		cpps::object testFunc = cppclassvar["testFunc"];
+		if (testFunc.isfunction()) {
+			cpps::doclassfunction(c, cppclassvar, testFunc); //or get function and call it.
+		}
+
+		if (testFunc.isfunction()) {
+			cpps::doclassfunction(c, cppclassvar, testFunc, cpps::object::create(c, 123456)); //or get function and call it.
+		}
+
+		if (testFunc.isfunction()) {
+			cpps::doclassfunction(c, cppclassvar, testFunc, cpps::object::create(c, "asdfsadf")); //or get function and call it.
+		}
+
+		cpps::object parentTestFunc = cppclassvar["parentTestFunc"];
+		if (parentTestFunc.isfunction()) {
+			cpps::doclassfunction(c, cppclassvar, parentTestFunc); //or get function and call it.
+		}
+
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-
-	//new cpp class var
-	CppClassTest* ptr = NULL; //You don't need to delete it. it has GC to delete it.
-	cpps::object cppclassvar = cpps::object::create_with_classvar< CppClassTest >(c, &ptr);
-	//ptr->testFunc(xxx); //you can do something in cpp .
-
-	cpps::object testFunc = cppclassvar["testFunc"];
-	if (testFunc.isfunction()) {
-		cpps::doclassfunction(c, cppclassvar, testFunc); //or get function and call it.
-	}
-
-	if (testFunc.isfunction()) {
-		cpps::doclassfunction(c, cppclassvar, testFunc,cpps::object::create(c,123456)); //or get function and call it.
-	}
-
-	if (testFunc.isfunction()) {
-		cpps::doclassfunction(c, cppclassvar, testFunc,cpps::object::create(c,"asdfsadf")); //or get function and call it.
-	}
-
-	cpps::object parentTestFunc = cppclassvar["parentTestFunc"];
-	if (parentTestFunc.isfunction()) {
-		cpps::doclassfunction(c, cppclassvar, parentTestFunc); //or get function and call it.
-	}
-
-
 	cpps::close(c);
 
 	return 0;

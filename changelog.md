@@ -1,6 +1,44 @@
 *更新日志*：
 -
 
+2021-01-22 更新
+-
+
+1.isset 修改为 isvalid
+
+isset 变成是否为 set类对象
+
+setable 全部修改成 set
+
+object set函数被移除了.
+
+2.增加了c++层给脚本定义enum枚举.
+
+```
+c++ page:
+enum TESTENUM
+{
+	ENUM_ONE = 1,
+	ENUM_TWO,
+};
+cpps::_module(c)[
+		_enum(c,"TESTENUM")
+			.value("ENUM_ONE", TESTENUM::ENUM_ONE)
+			.value("ENUM_TWO", TESTENUM::ENUM_TWO)
+	];
+	
+cpps page:
+
+println(TESTENUM::ENUM_ONE);
+println(TESTENUM::ENUM_TWO);
+
+
+```
+
+3.增加了一个_unmodule函数,卸载module接口,以及清理内存.
+
+4.增加一个iskindof函数判断对象是否为类对象.
+
 2021-01-19 更新
 -
 

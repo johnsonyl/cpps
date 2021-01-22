@@ -533,7 +533,6 @@ namespace cpps
 		if (a.tt == CPPS_TREF) {
 
 			cpps_value& v = *(a.value.value);
-			v.decruse();
 
 			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
@@ -544,6 +543,8 @@ namespace cpps
 			switch (v.tt)
 			{
 			case CPPS_TINTEGER:
+				v.decruse();
+
 				if (b.tt == CPPS_TINTEGER)
 				{
 					v.value.integer += cpps_to_integer(b);
@@ -561,6 +562,7 @@ namespace cpps
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
+				v.decruse();
 				v.tt = CPPS_TNUMBER;
 				v.value.number = cpps_to_number(v) + cpps_to_number(b);
 				break;
@@ -1193,6 +1195,7 @@ namespace cpps
 				ret = doclassfunction(c, left, symbolfunc, cpps_calculate_expression(c, domain, root, d->l[1], leftdomain)).getval();
 				return;
 			}
+			return;
 		}
 
 		switch (d->symbol->symboltype)

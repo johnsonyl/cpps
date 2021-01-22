@@ -65,6 +65,8 @@ cpps_export_void cpps_attach(cpps::C* c)
 }
 cpps_export_void  cpps_detach(cpps::C * c)
 {
+	cpps::_unmodule(c, "httpproxy");
+	cpps::_unmodule(c, "http");
     curl_global_cleanup();
 }
 

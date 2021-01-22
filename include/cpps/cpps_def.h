@@ -96,78 +96,83 @@
 #define CPPS_SINGLERET		0
 #define CPPS_MUNITRET		1
 
+//step
+#define CPPS_OEXPRESSION		100 //表达式
+#define CPPS_ODEFVAR			101 //定义变量
+#define CPPS_ODEFCONSTVAR		102 //变量名字const
+#define CPPS_ODEFASYNCVAR		103 //定义协程函数
+#define CPPS_OASSEMBLE			104 //执行集
+#define CPPS_ORETURN			105	//执行if else
+#define CPPS_OTHROW				106	//执行if else
+#define CPPS_OECHO				107 //ECHO.
+#define	CPPS_OBREAK				108	//break
+#define	CPPS_OCONTINUE			109	//continue
+#define CPPS_OYIELD				110 //字符串参数
+#define CPPS_OIF				111	//执行if else
+#define CPPS_OFOR				112	//for循环
+#define CPPS_OFOREACH			113	//foreach循环
+#define	CPPS_OWHILE				114	//while循环
+#define	CPPS_OCLASS				115	//class类
+#define	CPPS_ONAMESPACE			116	//名空间
+#define CPPS_OMODULE			117 //模块
+#define CPPS_OENUM				118 //ENUM 枚举.
+#define CPPS_OTRYCATCH			119 //trycatch
+#define	CPPS_ODOFILE			120	//dofile
+#define	CPPS_OINCLUDE			121	//include
+#define	CPPS_OIMPORT			122	//import导入库
+#define	CPPS_ODOSTRING			123	//dostring
+
+//expression
+#define	CPPS_OOFFSET			200	//offset相对定位免查找更快速执行
+#define CPPS_FUNCNAME			201 //变量名字
+#define	CPPS_QUOTEOFFSET		202	//offset引用
+#define CPPS_VARNAME			203 //变量名字
+#define CPPS_ODOFUNCTION		204 //执行函数
+#define CPPS_OSTR				205 //字符串
+#define CPPS_ONUMBER			206 //数字(浮点数）
+#define CPPS_OINTEGER			207 //数字（整数）
+#define CPPS_OINTEGER16			208 //数字（整数）
+#define CPPS_ONEWVAR			209	//创建对象
+#define CPPS_OBRACKET			210	//括号
+#define CPPS_OARRAY				211	//数组{}
+#define CPPS_OOBJECT			212	//数组{}
+#define CPPS_OBOOL				213 //字符串参数
+#define CPPS_OTHIS				214 //this关键字的重写
+#define CPPS_OAWAIT				215 //await 等待异步函数
+#define CPPS_VARNAME_LAMBDA		216	//lambda变量名
+#define CPPS_OELLIPSIS			217 //...
+#define CPPS_OGETCHIILD			218	//执行 [ ] 函数
+#define CPPS_OSLICE				219 //切片.
+#define CPPS_OGETOBJECT			220	//获取子对象
+#define CPPS_QUOTEVARNAME		221 //引用变量名字
+#define CPPS_QUOTEGETCHIILD		222  //引用变量名字
+#define CPPS_QUOTEGETOBJECT		223  //引用变量名字
+
+
 
 
 #define CPPS_ONIL				0 //空 约等于NULL
-#define CPPS_ODOFUNCTION		1 //执行函数
 #define CPPS_ONUMPARAM			2 //数字参数
 #define CPPS_OSTRPARAM			3 //字符串参数
-#define CPPS_OSTR				4 //字符串
 #define CPPS_ROOT				5 //根节点
 #define CPPS_ORETLIST			6 //返回值列表
 #define CPPS_OPARAMLIST			7 //参数列表
-#define CPPS_ODEFVAR			8 //定义变量
-#define CPPS_VARNAME			9 //变量名字
 #define CPPS_ODEFVAR_VAR		10	//变量确实为变量啊？
 #define CPPS_ODEFVAR_FUNCTION	11	//变量为函数
 #define CPPS_OVARPARAM			12 //变量参数
-#define CPPS_FUNCNAME			13 //变量名字
-#define CPPS_ONUMBER			14 //数字(浮点数）
-#define CPPS_OINTEGER			15 //数字（整数）
 #define CPPS_ODEFVAR_FUNC		16 //定义函数
 #define CPPS_ODEFVAR_NIL		17 // NIL
 #define CPPS_OBOOLPARAM			18 //字符串参数
-#define CPPS_OBOOL				19 //字符串参数
-#define CPPS_OASSEMBLE			20 //执行集
-#define CPPS_OIF				21	//执行if else
-#define CPPS_ORETURN			22	//执行if else
-#define CPPS_OBRACKET			23	//括号
-#define CPPS_OFOR				24	//for循环
-#define CPPS_QUOTEVARNAME		25 //引用变量名字
-#define CPPS_OEXPRESSION		26 //表达式
-#define CPPS_OGETOBJECT			27	//获取子对象
 #define CPPS_CHILDVARNAME		28	//子对象名字
-#define	CPPS_OWHILE				29	//while循环
-#define	CPPS_OCLASS				30	//class类
-#define CPPS_ONEWVAR			31	//创建对象
-#define CPPS_QUOTEGETOBJECT		32  //引用变量名字
-#define	CPPS_ODOFILE			33	//dofile
-#define	CPPS_ODOSTRING			34	//dostring
-#define	CPPS_OBREAK				35	//break
-#define	CPPS_OCONTINUE			36	//continue
-#define CPPS_OGETCHIILD			37	//执行 [ ] 函数
-#define CPPS_QUOTEGETCHIILD		38  //引用变量名字
-#define	CPPS_OINCLUDE			39	//include
-#define CPPS_VARNAME_LAMBDA		40	//lambda变量名
-#define CPPS_OARRAY				41	//数组{}
-#define	CPPS_ONAMESPACE			42	//名空间
-#define CPPS_OINTEGER16			43 //数字（整数）
-#define CPPS_OTRYCATCH			44 //trycatch
-#define CPPS_OTHROW				45	//执行if else
-#define CPPS_OOBJECT			46	//数组{}
 #define CPPS_ONAMESPANCE_CHILD	47	//namespace::class
 #define CPPS_OCLASS_CONSTRUCTOR	48	//new class(XX)
-#define CPPS_ODEFCONSTVAR		49 //变量名字const
 #define CPPS_ONEW_SETV			50	//new Class(){ this }
-#define CPPS_OFOREACH			51	//foreach循环
-#define	CPPS_OIMPORT			52	//import导入库
-#define	CPPS_OOFFSET			53	//offset相对定位免查找更快速执行
-#define	CPPS_QUOTEOFFSET		54	//offset引用
 #define CPPS_OCATCH				55 //catch
 #define CPPS_ODEFVAR_LAMBDA_FUNC 56 //定义函数
-#define CPPS_ODEFASYNCVAR		 57 //定义协程函数
-#define CPPS_OAWAIT				58 //await 等待异步函数
-#define CPPS_OMODULE			59 //模块
 #define CPPS_VARNAMES			60 //模块
 #define CPPS_MULTIVAR			61 //模块
-#define CPPS_OTHIS				62 //this关键字的重写
 #define CPPS_OTHISPARAM			63 //字符串参数
-#define CPPS_OYIELD				64 //字符串参数
 #define CPPS_ODEFVAR_HOTUPDATE  65 //子函数.
-#define CPPS_OECHO				66 //ECHO.
-#define CPPS_OENUM				67 //ENUM 枚举.
-#define CPPS_OSLICE				68 //切片.
-#define CPPS_OELLIPSIS			69 //...
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 
@@ -210,6 +215,8 @@ enum
 #define cpps_def_regclass				2
 #define cpps_def_regvar					3
 #define cpps_def_regparentclass			4
+#define cpps_def_regenum				5
+
 
 #define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREF){ left = *left.value.value;}
 

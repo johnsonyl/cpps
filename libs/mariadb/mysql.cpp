@@ -38,6 +38,7 @@ cpps_export_void  cpps_attach(cpps::C* c)
 }
 cpps_export_void  cpps_detach(cpps::C * c)
 {
+	cpps::_unmodule(c, "mariadb");
 }
 
 cpps_export_finish

@@ -15,7 +15,7 @@
 namespace cpps
 {
 	template<class R>
-	cpps_regfunction* make_regfunction(std::string func, R(*f)(const char* fmt, ...), bool isasync = false);
+	cpps_regfunction* make_regfunction(std::string func, R(*f)(const char* fmt, ...), bool isasync = false,bool isoperator = false);
 	struct cpps_reg_class
 	{
 		cpps_reg* f;
@@ -58,7 +58,18 @@ namespace cpps
 		}
 		cpps_reg* f;
 	};
-
+	struct _enum : public cpps_reg_class 
+	{
+		_enum(C*cstate,std::string name)
+		{
+			c = cstate;
+			_enum_domain = CPPSNEW(cpps_domain)(NULL, cpps_domain_type_enum, name);
+			f = CPPSNEW(cpps_regenum)(name, _enum_domain);
+		}
+		_enum& value(std::string varname, cpps_integer v);
+		cpps_domain* _enum_domain;
+		C* c;
+	};
 	template< class C>
 	struct _class : public cpps_reg_class
 	{
@@ -146,28 +157,49 @@ namespace cpps
 
 	struct cpps_module
 	{
-		cpps_module(C* c,std::string _domain) //默认注册给_G
+		cpps_module(C* c,std::string _domain,bool isinit) //默认注册给_G
 		{
 			cState = c;
 			domain = cState->_G;//默认是根节点
-			if (!_domain.empty())//如果定义名字了 那就是自己的一个。。。
-			{
-				cpps_domain* leftdomain = NULL;
-
-				cpps_regvar * v = domain->getvar(_domain,leftdomain);
-				if (!v)
+			if (isinit) {
+				if (!_domain.empty())//如果定义名字了 那就是自己的一个。。。
 				{
-					cpps_domain *temp_domain =  CPPSNEW(cpps_domain)(c->_G, cpps_domain_type_module, _domain.c_str());//创建根节点域
+					cpps_domain* leftdomain = NULL;
+
+					cpps_regvar* v = domain->getvar(_domain, leftdomain);
+					if (!v)
+					{
+						cpps_domain* temp_domain = CPPSNEW(cpps_domain)(c->_G, cpps_domain_type_module, _domain.c_str());//创建根节点域
 
 
-					v = CPPSNEW(cpps_regvar)();//_G 为根节点
-					v->setvarname(_domain);
-					v->setval(cpps_value(temp_domain)); //域列表会copy进去
-					domain->regvar(NULL,v); //将自己注册成_G..
-					v->setsource(true);
+						v = CPPSNEW(cpps_regvar)();//_G 为根节点
+						v->setvarname(_domain);
+						v->setval(cpps_value(temp_domain)); //域列表会copy进去
+						domain->regvar(NULL, v); //将自己注册成_G..
+						v->setsource(true);
+					}
+					domain = v->getval().value.domain;
 				}
-				domain = v->getval().value.domain;
 			}
+			else {
+				if (!_domain.empty())//如果定义名字了 那就是自己的一个。。。
+				{
+					cpps_domain* leftdomain = NULL;
+
+					cpps_regvar* v = domain->getvar(_domain, leftdomain);
+					if (v)
+					{
+						cpps_domain* temp_domain = v->getval().value.domain;
+						if (v->getval().isdomain()) {
+							temp_domain->destory(c, true);
+						}
+						temp_domain->release();
+						domain->unregvar(c, v);
+						CPPSDELETE(v);
+					}
+				}
+			}
+			
 		}
 
 		void	operator [](regxmodule m)
@@ -182,6 +214,7 @@ namespace cpps
 
 
 	cpps_module _module(C* c, std::string _domain = "");
+	void		_unmodule(C* c, std::string _domain);
 
 
 }

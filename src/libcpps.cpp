@@ -82,7 +82,7 @@ namespace cpps {
 		return(ch >= 48 && ch <= 57);
 	}
 	bool cpps_parse_isspace(char ch) {
-		return(ch == ' ' || ch == '	' || ch == '\t');
+		return(ch == ' ' || ch == '	');
 	}
 	bool cpps_parse_isenter(char ch) {
 		return(ch == '\n' || ch == '\r');
@@ -1531,7 +1531,7 @@ namespace cpps {
 			p->setparent(lastopnode);
 			lastopnode->l.push_back(op);
 			if (lastopnode->symbol && lastopnode->symbol->getparamleftlimit()) {
-				if (op->type != CPPS_VARNAME && op->type != CPPS_OOFFSET && op->type != CPPS_OGETOBJECT && op->type != CPPS_OGETCHIILD) {
+				if (op->type != CPPS_VARNAME && op->type != CPPS_OOFFSET && op->type != CPPS_OGETOBJECT && op->type != CPPS_OSLICE && op->type != CPPS_OGETCHIILD) {
 					throw(cpps_error(op->filename, op->line, cpps_error_paramerror, "The left side of %s must be a variable", lastopnode->s.c_str()));
 				}
 				if (op->type == CPPS_VARNAME)
@@ -1542,7 +1542,7 @@ namespace cpps {
 			}
 			if (lastopnode->symbol && lastopnode->symbol->getparamrightlimit()
 				&& lastopnode->symbol->getparamnum() == 1) {
-				if (op->type != CPPS_VARNAME && op->type != CPPS_OOFFSET && op->type != CPPS_OGETOBJECT && op->type != CPPS_OGETCHIILD) {
+				if (op->type != CPPS_VARNAME && op->type != CPPS_OOFFSET && op->type != CPPS_OGETOBJECT && op->type != CPPS_OSLICE && op->type != CPPS_OGETCHIILD) {
 					throw(cpps_error(op->filename, op->line, cpps_error_paramerror, " The right side of %s must be a variable", lastopnode->s.c_str()));
 				}
 				if (op->type == CPPS_VARNAME)
@@ -2416,7 +2416,9 @@ namespace cpps {
 	void cpps_free_all_library(cpps::C*& c)
 	{
 		for (auto lib : c->modulelist) {
-			if(lib.second != NULL) cpps_detach_library(lib.second, lib.first, c);
+			if (lib.second != NULL) {
+				cpps_detach_library(lib.second, lib.first, c);
+			}
 		}
 		c->modulelist.clear();
 	}
@@ -2424,6 +2426,7 @@ namespace cpps {
 	int32 close(cpps::C*& c) {
 	
 		/* 清理内存 */
+		cpps_free_all_library(c);
 
 		c->barrierList.clear();
 		c->_callstack->clear();
@@ -2434,7 +2437,6 @@ namespace cpps {
 		cpps_unregasyncio(c);
 		gc_cleanup(c);
 		c->_class_map_classvar.clear();
-		cpps_free_all_library(c);
 		//asyncio需要特殊处理
 		c->_G->release();
 		c->_G = NULL;
@@ -3521,7 +3523,10 @@ namespace cpps {
 		/*记录当前执行的node*/
 		c->curnode = d;
 
-		if (d->type == CPPS_ODEFVAR) {
+		if (d->type == CPPS_OEXPRESSION) {
+		cpps_domain* leftdomain = NULL;	cpps_calculate_expression(c, domain, root, d->l[0], leftdomain);
+		}
+		else if (d->type == CPPS_ODEFVAR) {
 			cpps_step_def_var(c, domain, root, d , node_var_type::node_var_type_var);
 		}
 		else if (d->type == CPPS_ODEFCONSTVAR) {
@@ -3532,9 +3537,6 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_OASSEMBLE) {
 			cpps_step_assemble(c, domain, root, d);
-		}
-		else if (d->type == CPPS_OEXPRESSION) {
-			cpps_domain* leftdomain = NULL;	cpps_calculate_expression(c, domain, root, d->l[0], leftdomain);
 		}
 		else if (d->type == CPPS_ORETURN) {
 			cpps_step_return(c, domain, root, d);
@@ -4541,8 +4543,15 @@ namespace cpps {
 			//cpps_calculate_expression_offset(d, c, ret, root, leftdomain);
 			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
 		}
+		else if (d->type == CPPS_FUNCNAME) {
+			cpps_symbol_handle(c, domain, root, d, ret);
+		}
 		else if (d->type == CPPS_QUOTEOFFSET) {
 			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
+		}
+		else if (d->type == CPPS_VARNAME) {
+			//cpps_calculate_expression_varname(c,leftdomain, domain, d, ret);
+			cpps_calculate_expression_quotevarname(c, leftdomain, domain, d, ret);
 		}
 		else if (d->type == CPPS_ODOFUNCTION) {
 			cpps_calculate_expression_dofunction(c, domain, root, d, leftdomain, ret);
@@ -4590,18 +4599,11 @@ namespace cpps {
 		{
 			cpps_calculate_expression_await(c, domain, root, d, leftdomain, ret);
 		}
-		else if (d->type == CPPS_VARNAME) {
-			//cpps_calculate_expression_varname(c,leftdomain, domain, d, ret);
-			cpps_calculate_expression_quotevarname(c, leftdomain, domain, d, ret);
-		}
 		else if (d->type == CPPS_VARNAME_LAMBDA) {
 			cpps_calculate_expression_lambda(c,domain,root, d, leftdomain, ret);
 		}
 		else if (d->type == CPPS_OELLIPSIS){
 			ret.tt = CPPS_TELLIPSIS;
-		}
-		else if (d->type == CPPS_FUNCNAME) {
-			cpps_symbol_handle(c, domain, root, d, ret);
 		}
 		else if (d->type == CPPS_OGETCHIILD) {
 			cpps_calculate_expression_getchild(c, domain, root, d, leftdomain, ret);
@@ -4701,7 +4703,7 @@ namespace cpps {
 		}
 		if (func.tt == CPPS_TFUNCTION) {
 			cpps_function* f = func.value.func;
-			if (f->funcname == "isset") c->disabled_non_def_var = true;
+			if (f->funcname == "isvalid") c->disabled_non_def_var = true;
 			cpps_std_vector params;
 			cpps_value		isNeedC;
 			if (f->getIsNeedC()) {

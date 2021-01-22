@@ -66,9 +66,9 @@ namespace cpps
 				return _map->has(key);
 			}
 			template<class T>
-			bool																	erase(const T k) {
+			void																	erase(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
-				return _map->erase(key);
+				_map->erase(key);
 			}
 			template<class T>
 			object																	operator[](const T k) {
@@ -82,13 +82,13 @@ namespace cpps
 			cpps_map* _map;
 			C* c;
 		};
-		struct setable
+		struct set
 		{
 		public:
-			static setable															create(C* c);
+			static set																create(C* c);
 		public:
 
-			setable(C* cstate, object obj);
+			set(C* cstate, object obj);
 			cpps_hash_set::iterator													begin();
 			cpps_hash_set::iterator													end();
 			void																	insert(object key);
@@ -114,7 +114,7 @@ namespace cpps
 		//class C is required because the string needs GC.
 		//
 		static object	create_with_map(C* c);
-		static object	create_with_setable(C* c);
+		static object	create_with_set(C* c);
 		static object	create_with_vector(C* c);
 		static object	create_with_cppsclassvar(C* c,object __classobject);
 		template<class T>
@@ -134,7 +134,7 @@ namespace cpps
 		//check
 		bool					isunorderd_map();
 		bool					ismap();
-		bool					issetbale();
+		bool					isset();
 		bool					isstring();
 		bool					isvector();
 		bool					isrange();
@@ -154,6 +154,7 @@ namespace cpps
 		cpps_number				tonumber();
 		bool					tobool();
 		object					toreal();
+		cpps_value				ref();
 
 
 		//vector ,map ,string .
@@ -165,10 +166,7 @@ namespace cpps
 		
 		//map  only.
 		void		insert(object key,object val);
-		void		set(object key, object val); //and domain, Does not exist and can be created.  domain classvar don't use it. CPP cannot create new variables for script domain or classvar
-		void		set(std::string key, object val); // and domain ,Only variables that already exist can be set
-		void		set(cpps_integer key, object val); // and vecotr
-		
+	
 		//vector only.
 		void		push_back(object& val);
 		object		operator[](const cpps_integer k);

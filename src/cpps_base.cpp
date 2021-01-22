@@ -9,6 +9,7 @@ namespace cpps
 	std::string getfilenamenotext(std::string str);
 	std::string cpps_rebuild_filepath(std::string path);
 	cpps_integer cpps_math_rand();
+	bool cpps_io_isdir(std::string p);
 	bool cpps_base_isdebug() {
 #ifdef _DEBUG
 		return true;
@@ -16,7 +17,7 @@ namespace cpps
 		return false;
 #endif
 	}
-	bool cpps_base_isset(cpps_value v)
+	bool cpps_base_isvalid(cpps_value v)
 	{
 		return v.tt != CPPS_TNIL;
 	}
@@ -207,7 +208,7 @@ namespace cpps
 	{
 		return (v.isdomain() && (v.value.domain->domainname == "map"));
 	}
-	bool cpps_base_issetable(cpps_value v)
+	bool cpps_base_isset(cpps_value v)
 	{
 		return (v.isdomain() && (v.value.domain->domainname == "set"));
 	}
@@ -244,6 +245,14 @@ namespace cpps
 	bool cpps_base_istuple(cpps_value v)
 	{
 		return v.tt == CPPS_TTUPLE;
+	}
+	bool cpps_base_iskindof(cpps_value _cls, cpps_value _var) {
+		if (!cpps_base_isclass(_cls) || !cpps_base_isclassvar(_var)) return false;
+
+		auto cls = cpps_to_cpps_cppsclass(_cls);
+		auto clsvar = cpps_to_cpps_cppsclassvar(_var);
+
+		return clsvar->getcppsclass() == cls;
 	}
 
 	bool cpps_base_isfunction(cpps_value v)
@@ -307,6 +316,9 @@ namespace cpps
 		std::string path = "lib/"+ libname + "/";
 		std::string fpath;
 
+		bool bexits = false;
+		
+
 		if (c->modulelist.find(libname) != c->modulelist.end()) return true;
 		bool sv = false;
 #ifdef _WIN32
@@ -314,6 +326,7 @@ namespace cpps
 		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
 		if (!fpath.empty())
 		{
+			bexits = true;
 			HMODULE module = ::LoadLibraryA(fpath.c_str());
 			std::string libfuncname = "cpps_attach";
 			if (module == NULL)
@@ -371,6 +384,7 @@ namespace cpps
 		fpath = cpps_rebuild_filepath(path + "main.cpp");
 		if (!fpath.empty())
 		{
+			bexits = true;
 			if(!sv)
 				c->modulelist.insert(phmap::flat_hash_map<std::string, HMODULE>::value_type(libname, NULL));
 			std::string fileSrc;
@@ -385,6 +399,10 @@ namespace cpps
 			c->stack_free(stack);
 			if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
 		}
+
+		if (!bexits)
+			throw cpps_error(c->curnode->filename, c->curnode->line, cpps_error_normalerror, "No Found %s module", libname.c_str());
+
 		return true;
 	}
 
@@ -398,7 +416,7 @@ namespace cpps
 		cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
 		if (cpps_detach == NULL)
 		{
-			printf("Free Module¡¾%s¡¿ faild.\r\n", libname.c_str());
+			printf("Free Moduleï¿½ï¿½%sï¿½ï¿½ faild.\r\n", libname.c_str());
 		}
 		else
 		{
@@ -471,7 +489,7 @@ namespace cpps
 #if defined _WIN32
 	std::string cpps_base_win_execmd(std::string pszCmd)
 	{
-		// ´´½¨ÄäÃû¹ÜµÀ
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½
 		SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
 		HANDLE hRead, hWrite;
 		if (!CreatePipe(&hRead, &hWrite, &sa, 0))
@@ -479,7 +497,7 @@ namespace cpps
 			return "";
 		}
 
-		// ÉèÖÃÃüÁîÐÐ½ø³ÌÆô¶¯ÐÅÏ¢(ÒÔÒþ²Ø·½Ê½Æô¶¯ÃüÁî²¢¶¨Î»ÆäÊä³öµ½hWrite
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢(ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î²¢ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½hWrite
 		STARTUPINFO si = { sizeof(STARTUPINFO) };
 		GetStartupInfo(&si);
 		si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
@@ -487,17 +505,17 @@ namespace cpps
 		si.hStdError = hWrite;
 		si.hStdOutput = hWrite;
 
-		// Æô¶¯ÃüÁîÐÐ
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		PROCESS_INFORMATION pi;
 		if (!CreateProcessA(NULL, (LPSTR)pszCmd.c_str(), NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
 		{
 			return "";
 		}
 
-		// Á¢¼´¹Ø±ÕhWrite
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ø±ï¿½hWrite
 		CloseHandle(hWrite);
 
-		// ¶ÁÈ¡ÃüÁîÐÐ·µ»ØÖµ
+		// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½Öµ
 		std::string strRetTmp;
 		char buff[4096] = { 0 };
 		DWORD dwRead = 0;
@@ -659,7 +677,7 @@ namespace cpps
 
 		for (size_t i = 0; i < n; i++)
 		{
-			//±£Ö¤Ã¿´ÎµÚiÎ»µÄÖµ²»»áÉæ¼°µ½µÚiÎ»ÒÔÇ°
+			//ï¿½ï¿½Ö¤Ã¿ï¿½Îµï¿½iÎ»ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½æ¼°ï¿½ï¿½ï¿½ï¿½iÎ»ï¿½ï¿½Ç°
 			size_t index = i + ((size_t)cpps_math_rand()) % (n - i);
 			std::swap(vec[index], vec[i]);
 		}
@@ -720,6 +738,7 @@ namespace cpps
 			def("isclass", cpps_base_isclass),
 			def("isellipsis", cpps_base_isellipsis),
 			def("istuple", cpps_base_istuple),
+			def("iskindof", cpps_base_iskindof),
 			def("objtype", cpps_base_objtype),
 			def("type", cpps_base_type),
 			def("system", cpps_base_system),
@@ -727,7 +746,7 @@ namespace cpps
 			def("sort", cpps_base_sort),
 			def("shuffle", cpps_base_shuffle),
 			def("reverse", cpps_base_reverse),
-			def("isset", cpps_base_isset),
+			def("isvalid", cpps_base_isvalid),
 			def("isdebug", cpps_base_isdebug),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
 			def("assert", cpps_assert),

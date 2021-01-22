@@ -449,6 +449,7 @@ cpps_export_void  cpps_detach(cpps::C * c)
 	cpps_logging_data* data = (cpps_logging_data*)c->getmoduledata("logging");
 	delete data;
 	c->setmoduledata("logging", NULL);
+	cpps::_unmodule(c, "logging");
 }
 
 cpps_export_finish

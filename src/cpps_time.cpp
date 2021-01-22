@@ -267,10 +267,10 @@ namespace cpps
 	std::string cpps_time_strftime(std::string fmt, cpps_integer t)
 	{
 		struct tm tt = time2tm(t);
-		char *str = new char[fmt.size() + 256];
+		char *str = (char *) CPPSMALLOC(fmt.size() + 256);
 		strftime(str, fmt.size() + 256, fmt.c_str(), &tt);
 		std::string ret = str;
-		delete [] str;
+		CPPSFREE( str);
 		return ret;
 	}
 

@@ -166,7 +166,7 @@ namespace cpps
 			}
 			if (symbol && symbol->getparamleftlimit())
 			{
-				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD && p->type != CPPS_OOFFSET)
+				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD && p->type != CPPS_OSLICE && p->type != CPPS_OOFFSET)
 				{
 					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, " The left side of %s must be a variable.",s.c_str()));
 				}
@@ -183,7 +183,7 @@ namespace cpps
 			if (symbol && symbol->getparamrightlimit() 
 				&& symbol->getparamnum() == 1)
 			{
-				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD && p->type != CPPS_OOFFSET)
+				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD && p->type != CPPS_OSLICE && p->type != CPPS_OOFFSET)
 				{
 					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, "The right side of %s must be a variable.", s.c_str()));
 				}
@@ -218,7 +218,7 @@ namespace cpps
 			if (symbol && symbol->getparamrightlimit()
 				&& symbol->getparamnum() >=2)
 			{
-				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD && p->type != CPPS_OOFFSET)
+				if (p->type != CPPS_VARNAME && p->type != CPPS_OGETOBJECT && p->type != CPPS_OGETCHIILD && p->type != CPPS_OSLICE && p->type != CPPS_OOFFSET)
 				{
 					throw(cpps_error(p->filename, p->line, cpps_error_paramerror, " The left side of %s must be a variable", s.c_str()));
 				}

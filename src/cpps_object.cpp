@@ -47,8 +47,8 @@ namespace cpps
 			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 			ret = vct->size();
 		}
-		else if (cpps_base_issetable(SAFE_VALUE)) {
-			cpps_set* vct = cpps_to_cpps_setable(SAFE_VALUE);
+		else if (cpps_base_isset(SAFE_VALUE)) {
+			cpps_set* vct = cpps_to_cpps_set(SAFE_VALUE);
 			ret = vct->size();
 		}
 		else if (cpps_base_isstring(SAFE_VALUE)) {
@@ -147,7 +147,10 @@ namespace cpps
 	{
 		return SAFE_VALUE;
 	}
-
+	cpps_value object::ref()
+	{
+		return SAFE_VALUE.ref();
+	}
 	void object::clear()
 	{
 
@@ -192,48 +195,7 @@ namespace cpps
 	}
 
 
-	void object::set(object key, object val)
-	{
-		if (cpps_base_ismap(SAFE_VALUE)) {
-			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
-			cpps_value& takeval = m->cpps_find(key.value);
-			takeval = val.value;;
-		}
-	}
-
-	void object::set(std::string key, object val)
-	{
-		if (cpps_base_ismap(SAFE_VALUE)) {
-			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
-			cpps_value key_val = cpps_new_tmp_string(key);
-			m->set(key_val, val.value);
-			cpps_delete_tmp_string(key_val);
-		}
-		else if (value.isdomain()) {
-			cpps_domain* leftdomain = NULL;
-			cpps_regvar* var = SAFE_VALUE.value.domain->getvar(key, leftdomain, true, true);
-			if (var) {
-				var->setval(val.value);
-			}
-		}
-	}
-
-	void object::set(cpps_integer key, object val)
-	{
-		if (SAFE_VALUE.isdomain()) {
-			if (cpps_base_isvector(SAFE_VALUE)) {
-				cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
-				vct->realvector()[(size_t)key] = val.value;
-			}
-			else if (cpps_base_ismap(SAFE_VALUE)) {
-				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
-				cpps_value key_val(key);
-				cpps_value& takeval = m->cpps_find(key_val);
-				takeval = val.value;
-			}
-		}
-	}
-
+	
 	void object::push_back(object& val)
 	{
 		if (cpps_base_isvector(SAFE_VALUE)) {
@@ -357,7 +319,7 @@ namespace cpps
 		cpps_create_class_var(cpps_map, c, cpps_value_map, cpps_map_ptr);
 		return  static_cast<object>(cpps_value_map);
 	}
-	object object::create_with_setable(C* c)
+	object object::create_with_set(C* c)
 	{
 		cpps_create_class_var(cpps_set, c, cpps_value_map, cpps_map_ptr);
 		return  static_cast<object>(cpps_value_map);
@@ -463,40 +425,40 @@ namespace cpps
 		return cpps::object::map(c,cpps::object::create_with_map(c));
 	}
 
-	object::setable object::setable::create(C* c)
+	object::set object::set::create(C* c)
 	{
-		return cpps::object::setable(c, cpps::object::create_with_setable(c));
+		return cpps::object::set(c, cpps::object::create_with_set(c));
 
 	}
 
-	object::setable::setable(C* cstate, object obj)
+	object::set::set(C* cstate, object obj)
 	{
-		_set = cpps_to_cpps_setable(obj.value);
+		_set = cpps_to_cpps_set(obj.value);
 		c = cstate;
 		_src_value = obj.value;
 	}
 
-	cpps::cpps_hash_set::iterator object::setable::begin()
+	cpps::cpps_hash_set::iterator object::set::begin()
 	{
 		return _set->realset().begin();
 	}
 
-	cpps::cpps_hash_set::iterator object::setable::end()
+	cpps::cpps_hash_set::iterator object::set::end()
 	{
 		return _set->realset().end();
 	}
 
-	void object::setable::insert(object key)
+	void object::set::insert(object key)
 	{
 		_set->insert(key.getval());
 	}
 
-	cpps::object object::setable::toobject()
+	cpps::object object::set::toobject()
 	{
 		return _src_value;
 	}
 
-	cpps::cpps_hash_set& object::setable::realset()
+	cpps::cpps_hash_set& object::set::realset()
 	{
 		return _set->realset();
 	}

@@ -123,12 +123,12 @@ namespace cpps
 		if (file)
 		{
 			cpps_integer size = cpps_io_size(file);
-			char* buf = new char[size];
+			char* buf = (char*)CPPSMALLOC(size);
 			memset(buf, 0, size);
 			if (fread(buf, size, 1, file)) {};
 			fclose(file);
 			ret.append(buf, size);
-			delete[] buf;
+			CPPSFREE( buf);
 			buf = NULL;
 		}
 		return ret;
@@ -1096,7 +1096,7 @@ namespace cpps
 
 	void Buffer::clear()
 	{
-		if (buff) delete[] buff;
+		if (buff) CPPSFREE( buff);
 		buff = NULL;
 		buffsize = 0;
 		offset = 0;
@@ -1110,13 +1110,13 @@ namespace cpps
 			return;
 		}
 		size_t newsize = static_cast<size_t>(s);
-		char* newbuff = new char[newsize + 1];
+		char* newbuff = (char*) CPPSMALLOC(newsize + 1);
 		memset(newbuff, 0, (size_t)newsize + 1);
 
 		if (buff)
 		{
 			memcpy(newbuff, buff, (size_t)buffsize);
-			delete[] buff;
+			CPPSFREE( buff);
 		}
 
 		buff = newbuff;

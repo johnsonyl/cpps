@@ -19,22 +19,22 @@ module smtp
         var times = time.strftime("%a,%d %b %Y-%m-%d %H:%M:%S %z ",time.gettime());
         content ..= "Date: {times}\r\n";
 
-        if(isset(opt["messageid"]))
+        if(isvalid(opt["messageid"]))
             content ..= "Message-ID: <{opt["messageid"]}>\r\n";
         
         var mailfrom ;
-        if(isset(opt["mailfrom"]))
+        if(isvalid(opt["mailfrom"]))
             mailfrom = opt["mailfrom"];
         else
             mailfrom = opt["username"];
 
         var sender;
-        if(isset(opt["sender"]))
+        if(isvalid(opt["sender"]))
             sender = opt["sender"];
         else
             sender = string.split(mailfrom,"@",1)[0];
         var from;
-        if(isset(opt["from"]))
+        if(isvalid(opt["from"]))
             from = opt["from"];
         else
             from = mailfrom;
@@ -82,22 +82,22 @@ module smtp
         if(cc && !cc.empty()) content ..= "Cc: {ccs}\r\n";
         
         var subject;
-        if(isset(opt["subject"]))
+        if(isvalid(opt["subject"]))
             subject = opt["subject"];
         
         content ..= "Subject: {subject}\r\n";
         var charset = "UTF-8";
-        if(isset(opt["charset"]))
+        if(isvalid(opt["charset"]))
             charset = opt["charset"];
 
         var mixed_smtp_boundary = makeboundary();
         content ..= 'Content-Type: multipart/alternative; charset={charset}; boundary="{mixed_smtp_boundary}"\r\n';
         content ..= "MIME-Version: 1.0\r\n";
 
-        if(isset(opt["xmailer"]))
+        if(isvalid(opt["xmailer"]))
             content ..= "X-Mailer: {opt["xmailer"]}\r\n";
 
-        if(isset(opt["headers"]))
+        if(isvalid(opt["headers"]))
             foreach(var header : opt["headers"])
                 content ..= "{header.first()}: {header.second()}\r\n";
             
@@ -106,7 +106,7 @@ module smtp
 
         var boundary;
         
-        if(isset(opt["boundary"]))
+        if(isvalid(opt["boundary"]))
             boundary = opt["boundary"];
         else
             boundary = makeboundary();
@@ -115,7 +115,7 @@ module smtp
         content ..= "--{mixed_smtp_boundary}\r\nContent-Type: multipart/alternative;\n	boundary=\"{boundary}\"\r\n\r\n";
 
         var mail_content = "";
-        if(isset(opt["content"]))
+        if(isvalid(opt["content"]))
             mail_content = opt["content"];
 
         var mail_content_text_plain = "";
@@ -126,7 +126,7 @@ module smtp
         
         var mail_encoding_type = ["8bit","base64","quoted-printable"];
         var mail_encoding_type_index = 1; //default base64;
-        if(isset(opt["encoding"]))
+        if(isvalid(opt["encoding"]))
             mail_encoding_type_index = opt["encoding"];
         
         content ..= "--{boundary}\r\n";
@@ -164,20 +164,20 @@ module smtp
             content ..= "{quotedprintable.encode(mail_content)}\r\n\r\n";
         
 
-        if(isset(opt["attachments"])){
+        if(isvalid(opt["attachments"])){
             foreach(var file: opt["attachments"]){
                 var filename = encodeutf8text(file.first());
                 var file_content = file.second();
                 var file_content_content = " ";
-                if(isset(file_content["content"]))
+                if(isvalid(file_content["content"]))
                     file_content_content = file_content["content"];
 
                 var file_content_type = "application/x-msdownload"; //默认附件
                 var file_encoding = "base64";
                 var file_id ;
-                if(isset(file_content["id"]))
+                if(isvalid(file_content["id"]))
                     file_id = file_content["id"];
-                if(isset(file_content["type"]))
+                if(isvalid(file_content["type"]))
                     file_content_type = file_content["type"];
                 
 

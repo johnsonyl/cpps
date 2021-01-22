@@ -137,6 +137,19 @@ namespace cpps
 		virtual void release() { CPPSDELETE( this); }
 	};
 
+	struct cpps_regenum : public cpps_reg
+	{
+		cpps_regenum(std::string name, cpps_domain* c)
+		{
+			type = cpps_def_regenum;
+			_enum_domain = c;
+			varname = name;
+		}
+		virtual ~cpps_regenum() {}
+		virtual void release() { CPPSDELETE(this); }
+		cpps_domain* _enum_domain;
+	};
+
 
 	
 	template<class R>

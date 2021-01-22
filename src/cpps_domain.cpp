@@ -139,6 +139,21 @@ namespace cpps
 					__self_var->setsource(false);
 					__self_var->setval(__var->getval());
 				}
+				cpps_cppsclass* cppsclass = (cpps_cppsclass*)this;
+
+				//注册父类的operator.
+				for (size_t i = 0; i < _parent->operatorlist.size(); i++) {
+					if (_parent->operatorlist[i]) {
+						cppsclass[i] = _parent[i];
+					}
+				}
+			}
+			else if (f->type == cpps_def_regenum)
+			{
+				cpps_regenum* _regenum = (cpps_regenum*)f;
+				var->setval(cpps_value(_regenum->_enum_domain));
+				var->setsource(true);
+				var->setconst(true);
 			}
 			cpps_reg* take = f;
 			f = f->next;
@@ -210,6 +225,7 @@ namespace cpps
 			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
 			{
 				cpps_regvar* v = it->second;
+				std::string name = it->first;
 				if ((!v->closeure || v->closeureusecount <= 0) || isclose) { /*闭包不删除,但是必须有人使用*/
 					cpps_gc_remove_barrier(c, v);
 					if (!isclose && v->stackdomain && v->offset != -1) {

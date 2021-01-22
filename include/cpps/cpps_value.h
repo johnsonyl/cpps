@@ -54,6 +54,7 @@ namespace cpps
 		void				decruse();
 		void				incruse();
 		bool				isdomain();
+		cpps_value			ref();
 
 		struct hash
 		{	
@@ -87,7 +88,7 @@ namespace cpps
 	std::string* cpps_get_string(cpps_value obj);
 	cpps_vector* cpps_to_cpps_vector(cpps_value obj);
 	cpps_map* cpps_to_cpps_map(cpps_value obj);
-	cpps_set* cpps_to_cpps_setable(cpps_value obj);
+	cpps_set* cpps_to_cpps_set(cpps_value obj);
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj);
 	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(cpps_value obj);
 
