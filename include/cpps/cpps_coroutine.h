@@ -43,8 +43,7 @@ using ::std::wstring;
 namespace cpps {
 	namespace coroutine {
 
-		typedef cpps::usint64 routine_t;
-
+	typedef cpps::usint64 routine_t;
 #ifdef _MSC_VER
 
 		struct Routine
@@ -105,19 +104,19 @@ namespace cpps {
 			{
 				routine_t id = ordinator.indexes.front();
 				ordinator.indexes.pop_front();
-				assert(ordinator.routines[id - 1] == nullptr);
-				ordinator.routines[id - 1] = routine;
+				assert(ordinator.routines[size_t(id - 1)] == nullptr);
+				ordinator.routines[size_t(id - 1)] = routine;
 				return id;
 			}
 		}
 
 		inline void destroy(Ordinator& ordinator, routine_t id)
 		{
-			Routine* routine = ordinator.routines[id - 1];
+			Routine* routine = ordinator.routines[size_t(id - 1)];
 			assert(routine != nullptr);
 
 			delete routine;
-			ordinator.routines[id - 1] = nullptr;
+			ordinator.routines[size_t(id - 1)] = nullptr;
 			ordinator.indexes.push_back(id);
 		}
 
@@ -125,7 +124,7 @@ namespace cpps {
 		{
 			Ordinator& ordinator = *((Ordinator*)lpParameter);
 			routine_t id = ordinator.current;
-			Routine* routine = ordinator.routines[id - 1];
+			Routine* routine = ordinator.routines[size_t(id - 1)];
 			assert(routine != nullptr);
 
 			routine->func();
@@ -140,7 +139,7 @@ namespace cpps {
 		{
 			assert(ordinator.current == 0);
 
-			Routine* routine = ordinator.routines[id - 1];
+			Routine* routine = ordinator.routines[size_t(id - 1)];
 			if (routine == nullptr)
 				return -1;
 
@@ -165,7 +164,7 @@ namespace cpps {
 		inline void yield(Ordinator& ordinator)
 		{
 			routine_t id = ordinator.current;
-			Routine* routine = ordinator.routines[id - 1];
+			Routine* routine = ordinator.routines[size_t(id - 1)];
 			assert(routine != nullptr);
 
 			ordinator.current = 0;

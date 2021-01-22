@@ -122,7 +122,7 @@ namespace cpps
 		FILE* file = cpps_io_open(filepath, "rb");
 		if (file)
 		{
-			cpps_integer size = cpps_io_size(file);
+			size_t size = (size_t)cpps_io_size(file);
 			char* buf = (char*)CPPSMALLOC(size);
 			memset(buf, 0, size);
 			if (fread(buf, size, 1, file)) {};
@@ -238,7 +238,7 @@ namespace cpps
 	{
 		std::string strdir = szdir;
 		cpps_integer iret = 0;
-		cpps_integer index = strdir.find_last_of('/');
+		size_t index = strdir.find_last_of('/');
 		if (0 < index) //存在多级目录
 		{
 			strdir.erase(index, strdir.length() - index);
@@ -964,7 +964,7 @@ namespace cpps
 	std::string Buffer::tostring()
 	{
 		std::string ret;
-		ret.append(getbuffer(), buffsize);
+		ret.append(getbuffer(),(size_t) buffsize);
 		return ret;
 	}
 
@@ -1022,7 +1022,7 @@ namespace cpps
 	std::string Buffer::readstring(cpps_integer len)
 	{
 		std::string ret;
-		ret.resize(len);
+		ret.resize(size_t(len));
 		_read((char*)ret.c_str(), len);
 		return ret;
 	}

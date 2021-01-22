@@ -82,6 +82,8 @@ namespace cpps
 #ifdef _WIN32
 #ifdef _M_X64
 	def_cpps_number_cast(size_t, integer);
+#else
+	def_cpps_number_cast(unsigned __int64, integer);
 #endif
 #endif
 
@@ -381,6 +383,8 @@ namespace cpps
 #ifdef _WIN32
 #ifdef _M_X64
 	def_cpps_cpp_to_cpps_number_cast(size_t, integer);
+#else
+	def_cpps_cpp_to_cpps_number_cast(unsigned __int64, integer);
 #endif
 #endif
 	def_cpps_cpp_to_cpps_number_cast(float, number);

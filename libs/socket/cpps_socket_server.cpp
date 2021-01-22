@@ -272,7 +272,7 @@ namespace cpps {
 			{
 				buffer_ptr->clear();
 				buffer_ptr->realloc(packetsize);
-				client->buffer_remove( buffer_ptr->getbuffer(), packetsize);
+				client->buffer_remove( buffer_ptr->getbuffer(), size_t(packetsize));
 
 				if (cpps::type(server_option.option_data) == CPPS_TFUNCTION)
 				{
@@ -286,7 +286,7 @@ namespace cpps {
 					buffer_ptr->clear();
 					buffer_ptr->realloc(server_option.option_headsize);
 					buffer_ptr->seek(0);
-					client->buffer_copyout( buffer_ptr->getbuffer(), server_option.option_headsize);
+					client->buffer_copyout( buffer_ptr->getbuffer(), size_t(server_option.option_headsize));
 					if (cpps::type(server_option.option_parser) == CPPS_TFUNCTION)
 					{
 						cpps_integer size = object_cast<cpps_integer>(cpps::dofunction(c, server_option.option_parser, buffer_var));
@@ -305,7 +305,7 @@ namespace cpps {
 							buffer_ptr->clear();
 							buffer_ptr->realloc(size);
 							buffer_ptr->seek(0);
-							client->buffer_remove( buffer_ptr->getbuffer(), size);
+							client->buffer_remove( buffer_ptr->getbuffer(), size_t(size));
 							if (cpps::type(server_option.option_data) == CPPS_TFUNCTION)
 							{
 								cpps::dofunction(c, server_option.option_data, client->socket_index, buffer_var);

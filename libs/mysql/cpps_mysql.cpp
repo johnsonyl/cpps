@@ -71,10 +71,10 @@ namespace cpps
 		std::vector< MYSQL_BIND > paramlist;
 		std::vector< MYSQL_BINDDATA > paramDatalist;
 		if (vec->size() > 0) {
-			paramlist.resize(vec->size());
-			paramDatalist.resize(vec->size());
+			paramlist.resize(size_t(vec->size()));
+			paramDatalist.resize(size_t(vec->size()));
 
-			memset(paramlist.data(), 0, sizeof(MYSQL_BIND) * vec->size());
+			memset(paramlist.data(), 0, sizeof(MYSQL_BIND) * size_t(vec->size()));
 
 			//填充参数数据
 			for (size_t i = 0; i < vec->realvector().size(); i++)

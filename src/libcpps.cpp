@@ -4095,7 +4095,7 @@ namespace cpps {
 
 						/*???? a[1:1]??*/
 						if (start_index == end_index) {
-							ret_str.push_back(str->at(start_index));
+							ret_str.push_back(str->at(size_t(start_index)));
 							return;
 						}
 
@@ -4108,13 +4108,13 @@ namespace cpps {
 						if (start_index < end_index) {
 
 							for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
-								ret_str.push_back(str->at(i));
+								ret_str.push_back(str->at(size_t(i)));
 							}
 						}
 						else {
 
 							for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
-								ret_str.push_back(str->at(i));
+								ret_str.push_back(str->at(size_t(i)));
 							}
 						}
 
@@ -4200,7 +4200,7 @@ namespace cpps {
 					idx = str->size() + idx;
 				}
 
-				ret = (cpps_integer)str->at(idx);
+				ret = (cpps_integer)str->at(size_t(idx));
 			}
 			
 		}
@@ -4302,7 +4302,7 @@ namespace cpps {
 					idx = str->size() + idx;
 				}
 
-				ret = cpps_value(str->at(idx));
+				ret = cpps_value(str->at(size_t(idx)));
 			}
 		}
 		else {

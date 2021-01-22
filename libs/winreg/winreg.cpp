@@ -172,7 +172,7 @@ std::string cpps_winreg_enumkey(object key, cpps_integer index)
 	return "";
 }
 void cpps_winreg_getvalue_swap(char* ptr, size_t size, size_t nitems) {
-	int i;
+	size_t i;
 	char tmp, * lptr, * uptr;
 
 	/* check for quick return */

@@ -431,12 +431,12 @@ namespace cpps {
 		sprintf(info->header.chksum, "%06o", (usint16)sum); info->header.chksum[6] = '\0';  info->header.chksum[7] = ' ';
 
 		if (S_ISDIR(statinfo.st_mode) == false) {
-			info->buf = new Byte[statinfo.st_size];
+			info->buf = new Byte[size_t(statinfo.st_size)];
 			FILE* file = fopen(name.c_str(), "rb");
 			if (file) {
-				if (fread(info->buf, statinfo.st_size, 1, file)) {}
+				if (fread(info->buf, size_t(statinfo.st_size), 1, file)) {}
 				fclose(file);
-				info->file_size = statinfo.st_size;
+				info->file_size = size_t(statinfo.st_size);
 			}
 			info->needdelete = true;
 		}

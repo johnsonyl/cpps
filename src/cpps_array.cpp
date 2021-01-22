@@ -75,7 +75,7 @@ namespace cpps
 
 	void cpps_vector::insert(cpps_integer idx, cpps_value v)
 	{
-		_vec.insert(_vec.begin() + idx, v);
+		_vec.insert(_vec.begin() + (size_t)idx, v);
 	}
 
 	cpps::cpps_value cpps_vector::at(cpps_integer idx)
@@ -100,7 +100,7 @@ namespace cpps
 
 	void cpps_vector::erase(cpps_integer idx)
 	{
-		_vec.erase(_vec.begin() + idx);
+		_vec.erase(_vec.begin() + (size_t)idx);
 	}
 
 	void cpps_vector::pop()

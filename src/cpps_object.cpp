@@ -371,7 +371,7 @@ namespace cpps
 
 	cpps::object object::vector::operator[](const cpps_integer k)
 	{
-		cpps_value& v = _vec->realvector()[k];
+		cpps_value& v = _vec->realvector()[size_t(k)];
 		return cpps_value(&v);
 	}
 

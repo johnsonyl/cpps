@@ -11,22 +11,33 @@
 //@website		:	http://cppscript.org
 //==================================
 
+
+
 #if defined _WIN32
-#ifdef _X86_
+#ifndef _WIN64
+#define _CPPS_X86 1
+#endif 
+#ifdef _CPPS_X86
 #define CPPS_CURRENT_PLANTFORM "win32"
 #else
 #define CPPS_CURRENT_PLANTFORM "win64"
 #endif
 #define CPPS_CURRENT_EASYPLANTFORM "windows"
 #elif defined LINUX
-#ifdef _X86_
+#ifndef __x86_64__
+#define _CPPS_X86 1
+#endif
+#ifdef _CPPS_X86
 #define CPPS_CURRENT_PLANTFORM "linux32"
 #else
 #define CPPS_CURRENT_PLANTFORM "linux64"
 #endif
 #define CPPS_CURRENT_EASYPLANTFORM "linux"
 #elif defined __APPLE__
-#ifdef _X86_
+#ifndef __x86_64__
+#define _CPPS_X86 1
+#endif
+#ifdef _CPPS_X86
 #define CPPS_CURRENT_PLANTFORM "macos32"
 #else
 #define CPPS_CURRENT_PLANTFORM "macos64"
@@ -36,7 +47,7 @@
 #define CPPS_CURRENT_PLANTFORM "unknow OS system."
 #endif
 
-#ifdef _X86_
+#ifdef _CPPS_X86
 #define CPPS_CURRENT_ARCH "x86"
 #else
 #define CPPS_CURRENT_ARCH "x64"

@@ -68,7 +68,7 @@ namespace cpps {
 			throw(cpps_error("", 0, cpps_error_normalerror, "decompress data just support Buffer or string."));
 		}
 
-		Bytef* dest = new Bytef[nbufsize];
+		Bytef* dest = new Bytef[size_t(nbufsize)];
 		uLong destlen = (uLong)nbufsize;
 
 		int32 err = uncompress2(dest, &destlen, buf, &len);

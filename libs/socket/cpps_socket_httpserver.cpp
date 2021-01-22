@@ -537,7 +537,7 @@ namespace cpps {
 					return;
 				}
 				request.body_buf = client->buffer.c_str() + parsed + 1;
-				request.body_len = content_length;
+				request.body_len = size_t(content_length);
 
 			}
 			else if ((parsed + 1) != client->buffer.size()) {

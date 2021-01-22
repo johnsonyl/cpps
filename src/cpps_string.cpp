@@ -25,14 +25,14 @@ namespace cpps
 		if (v.tt != CPPS_TSTRING) return std::string::npos;
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-		return tmpStr->find(v2,off);
+		return tmpStr->find(v2, size_t(off));
 	}
 	cpps_integer	cpps_string_rfind(cpps_value v, std::string v2, cpps_integer off)
 	{
 		if (v.tt != CPPS_TSTRING) return std::string::npos;
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-		return tmpStr->rfind(v2, off);
+		return tmpStr->rfind(v2, size_t(off));
 	}
 	
 	void	cpps_string_copyto(cpps_value src, cpps_value tar, cpps_value off,cpps_value len ) {
@@ -255,7 +255,7 @@ namespace cpps
 		cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
 		std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
 
-		return tmpStr->substr(pos, 1);
+		return tmpStr->substr(size_t(pos), 1);
 	}
 	std::string cpps_string_format(const char* fmt, ...)
 	{
@@ -653,14 +653,14 @@ namespace cpps
 	std::string string::cpps_string_sub(cpps_integer off, object len)
 	{
 		size_t nlen = std::string::npos;
-		if (len.isint()) nlen = len.toint();
+		if (len.isint()) nlen = (size_t)len.toint();
 
-		return substr(off, nlen);
+		return substr(size_t(off), nlen);
 	}
 
 	cpps_integer string::cpps_string_at(cpps_integer off)
 	{
-		return (cpps_integer)at(off);
+		return (cpps_integer)at(size_t(off));
 	}
 
 	std::string string::cpps_string_tolower()

@@ -70,7 +70,7 @@ namespace cpps
 
 		strstream->read(data, num_bytes);
 
-		return strstream->gcount();
+		return size_t(strstream->gcount());
 	}
 	size_t cpps_smtp_header_callback(const char* ptr, size_t size, size_t nmemb, cpps_smtp* smtp_ptr)
 	{

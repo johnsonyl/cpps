@@ -51,7 +51,7 @@ namespace cpps {
 
 		req->buf = uv_buf_init((char*)CPPSMALLOC((size_t)buffer->length()), (usint32)buffer->length());
 		req->req.data = req->buf.base;
-		memcpy(req->buf.base, buffer->getbuffer(), buffer->length());
+		memcpy(req->buf.base, buffer->getbuffer(), size_t(buffer->length()));
 		int err = uv_write(&req->req,(uv_stream_t*) uv_tcp, &req->buf, 1, on_write_cb);
 		if (err)
 		{

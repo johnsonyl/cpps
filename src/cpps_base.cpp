@@ -605,7 +605,7 @@ namespace cpps
 			cpps_value v2 = newcppsclasvar(c, cppsclass);
 			if (vct->realvector().size() == v2.value.domain->stacklist->size())
 			{
-				size_t size = vct->size();
+				size_t size = (size_t)vct->size();
 				
 				for (size_t i = 0; i < size; i++) {
 					cpps_regvar* regv = (*(v2.value.domain->stacklist))[i];
@@ -666,7 +666,7 @@ namespace cpps
 	{
 		if (v.isvector()) {
 			cpps_vector* vec = cpps_to_cpps_vector(v.value);
-			quickSort(vec->realvector(), 0, vec->size() - 1);
+			quickSort(vec->realvector(), 0,size_t( vec->size() - 1));
 		}
 	}
 	void cpps_base_real_shuffle(cpps_std_vector& vec)

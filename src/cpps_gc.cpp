@@ -348,7 +348,7 @@ namespace cpps
 		//c->gclock.lock();
 		std::string ret = "";
 #ifdef _WIN32
-
+#ifdef _WIN64
 		char buffer[1024];
 		sprintf(buffer,"gen0 memory %I64d b\n", c->getgen0size());
 		ret += buffer;
@@ -372,6 +372,7 @@ namespace cpps
 				printf("%s\r\n", tmpStr->c_str());
 			}
 		}
+#endif
 #endif
 		return ret;
 	}

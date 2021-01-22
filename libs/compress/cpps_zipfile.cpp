@@ -324,7 +324,7 @@ namespace cpps
 	{
 		std::fstream f(file.c_str(), std::ios::binary | std::ios::in);
 		f.seekg(0, std::ios::end);
-		size_t size = f.tellg();
+		size_t size = size_t(f.tellg());
 		f.seekg(0, std::ios::beg);
 		if (size <= 0)
 		{

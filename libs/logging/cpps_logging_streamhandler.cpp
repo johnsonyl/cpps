@@ -37,7 +37,7 @@ namespace cpps
 	void cpps_logging_streamhandler::setcolor(cpps_value v)
 	{
 		cpps_vector* vct = cpps_to_cpps_vector(v);
-		size_t c = vct->size() < 5 ? vct->size() : 5;
+		size_t c = size_t(vct->size() < 5 ? vct->size() : 5);
 		for (size_t i = 0; i < c; i++)
 			color[i] = (int8)cpps_to_integer( vct->at(i) );
 	}

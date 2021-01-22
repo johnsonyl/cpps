@@ -81,7 +81,7 @@ cpps_logging_handler* cpps_create_logging_handler(C* c, std::string cls, cpps_ma
 		cpps_vector* color = cpps_to_cpps_vector(cpps_map_get_value(config, "color"));
 		if (color)
 		{
-			size_t c = color->size() < 5 ? color->size() : 5;
+			size_t c = size_t(color->size() < 5 ? color->size() : 5);
 			for (size_t i = 0; i < c; i++) {
 				handler->color[i] = (int8)cpps_to_integer(color->at(i));
 			}
