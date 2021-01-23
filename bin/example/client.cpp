@@ -3,13 +3,13 @@ system("chcp 65001"); //use utf8 string
 #import "socket"
 
 
-//客户端部分
+//client
 var socket_connected()
 {
-	println("连接成功啦");
+	println("connected");
 
 	var writer = new Buffer();
-	writer.writeString("这是一个乒乓消息");
+	writer.writeString("this is a pingpong msg");
 	socket_send(writer);
 }
 var socket_data(var buffer)
@@ -27,7 +27,7 @@ var socket_data(var buffer)
 }
 var socket_close(var err,var errstr)
 {
-	println("检测到有一个关闭:err:{err},errstr:{errstr}");
+	println("closed:err:{err},errstr:{errstr}");
 }
 var socket_parser(var headerbuffer)
 {
@@ -47,7 +47,7 @@ client.setoption(new ClientOption(){
 							connected = socket_connected,
 							data = socket_data,
 							close = socket_close
-							headersize = 4,//字节
+							headersize = 4,//header 4 bytes
 							parser = socket_parser
 							});
 

@@ -5,10 +5,10 @@ system("chcp 65001"); //use utf8 string
 
 
 
-//服务端部分
+//server
 var socket_accept(var socketIndex)
 {
-	println("检测到有一个连接:{socketIndex}");
+	println("acceptd:{socketIndex}");
 }
 var socket_data(var socketIndex,var buffer) 
 {
@@ -28,7 +28,7 @@ var socket_data(var socketIndex,var buffer)
 }
 var socket_close(var socketIndex,var err,var errstr) 
 {
-	println("检测到有一个关闭:{socketIndex},err:{err},errstr:{errstr}");
+	println("closed :{socketIndex},err:{err},errstr:{errstr}");
 }
 var socket_parser(var headerbuffer)
 {
@@ -44,16 +44,11 @@ var socket_send(var socketIndex,var buffer)
 }
 
 println("start server");
-// var srv = new socket::server().setoption(new ServerOption(){
-// 							ip = "0.0.0.0",
-// 							accept = socket_accept,
-// 							data = socket_data,
-// 							close = socket_close
-// 							}).listen(4060);
+
 
 var srv = new socket::server().setoption(new ServerOption(){
 							ip = "0.0.0.0",
-							headersize = 4,//字节
+							headersize = 4,//header 4 bytes
 							accept = socket_accept,
 							data = socket_data,
 							close = socket_close,
