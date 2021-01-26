@@ -109,6 +109,15 @@ namespace cpps
 		return ret;
 	}
 
+	cpps::cpps_pair* cpps_to_cpps_pair(cpps_value obj)
+	{
+		CPPS_TO_REAL_VALUE(obj);
+		if (!obj.isdomain()) return NULL;
+		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
+		cpps_pair* ret = (cpps_pair*)cppsclassvar->getclsptr();
+		return ret;
+	}
+
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj)
 	{
 		CPPS_TO_REAL_VALUE(obj);

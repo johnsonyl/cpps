@@ -144,6 +144,7 @@ checkdepsfile("mariadb-connector-c-3.1.11-src.tar.gz");
 checkdepsfile("openssl-1.1.1h.tar.gz");
 checkdepsfile("zlib-1.2.11.tar.gz");
 checkdepsfile("hiredis-1.0.0.tar.gz");
+checkdepsfile("re2-2020-11-01.tar.gz");
 
 var depspath = "{io.getrealpath()}../deps";
 depspath = io.normpath(depspath);
@@ -159,6 +160,7 @@ uncompress(depspath,"mariadb-connector-c-3.1.11-src.tar.gz");
 uncompress(depspath,"openssl-1.1.1h.tar.gz");
 uncompress(depspath,"zlib-1.2.11.tar.gz");
 uncompress(depspath,"hiredis-1.0.0.tar.gz");
+uncompress(depspath,"re2-2020-11-01.tar.gz");
 
 
 if(sys.os != "macos")
@@ -221,6 +223,15 @@ println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
 system("./configure");
+system("make");
+system("sudo make install");
+
+//build re2-2020-11-01
+var buildname = "re2-2020-11-01";
+var buildpath = "{depspath}/{buildname}";
+println("-- Entered the directory: {buildpath}");
+println("-- Building for : {buildname}");
+io.chdir(buildpath);
 system("make");
 system("sudo make install");
 

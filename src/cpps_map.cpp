@@ -8,9 +8,12 @@ namespace cpps
 	void cpps_regmap(C *c)
 	{
 		cpps::_module(c)[
-			_class<cpps_map_node>("cpps_map_node")
-				.def("first", &cpps_map_node::first)
-				.def("second", &cpps_map_node::second),
+			_class<cpps_pair>("pair")
+				.def("constructor", &cpps_pair::constructor)
+				.def("first", &cpps_pair::first)
+				.def("second", &cpps_pair::second)
+				.def_operator("==", &cpps_pair::equalfunc)
+				.def_operator("[]", &cpps_pair::getobject),
 			_class<cpps_map>("map")
 				.def("insert", &cpps_map::insert)
 				.def("find", &cpps_map::find)
@@ -319,6 +322,40 @@ namespace cpps
 	cpps::cpps_hash_set& cpps_set::realset()
 	{
 		return _set;
+	}
+
+	cpps_pair::cpps_pair(object __first, object __second)
+	{
+		_first = __first.getval();
+		_second = __first.getval();
+	}
+
+	void cpps_pair::constructor(object __first, object __second)
+	{
+		_first = __first.getval();
+		_second = __first.getval();
+	}
+
+	object cpps_pair::getobject(object right)
+	{
+		if (right.isint()) {
+			cpps_integer idx = right.toint();
+			if (idx == 0) {
+				return _first;
+			}
+			else {
+				return _second;
+			}
+		}
+		return nil;
+	}
+	bool cpps_pair::equalfunc(object right)
+	{
+		if (right.ispair()) {
+			auto rightpair = object_cast<cpps_pair*>(right);
+			return first() == rightpair->first() && second() == rightpair->second();
+		}
+		return false;
 	}
 
 }

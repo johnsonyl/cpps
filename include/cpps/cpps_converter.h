@@ -22,7 +22,7 @@ namespace cpps
 	{
 		static bool	match(cpps_value obj)
 		{
-			return obj.tt == CPPS_TCLASSVAR || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TCLASSVAR || obj.tt == CPPS_TNIL || obj.tt == CPPS_TUSERDATA;
 		}
 		static R		apply(cpps_value obj)
 		{
@@ -30,7 +30,7 @@ namespace cpps
 				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to %s, cppsvalue type is %s , conversion failed.", typeid(R).name() ,type_s(obj).c_str()));
 
 			if (obj.tt == CPPS_TNIL) return NULL;
-
+			if (obj.tt == CPPS_TUSERDATA) return static_cast<R>(obj.value.p);
 			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
 			return static_cast<R>(clsvar->getclsptr());
 		}
@@ -260,12 +260,19 @@ namespace cpps
 			if (v == NULL) //NULL  == nil
 				return ret;
 
+			//USERDATA
+			if (cpps_class_singleton<Type>::instance()->getcls() == NULL) {
+				ret.tt = CPPS_TUSERDATA;
+				ret.value.p = (void*)v;
+				return ret;
+			}
+
 			ret.tt = CPPS_TCLASSVAR;
 			
 #ifdef _DEBUG
-			std::map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+			std::map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find((void*)v);
 #else
-			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find((void*)v);
 #endif
 
 			

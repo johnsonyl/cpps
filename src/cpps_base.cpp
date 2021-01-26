@@ -74,8 +74,10 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TSTRING)
 		{
+			cout << "'";
 			std::string s = object_cast<std::string>(b);
 			cout << s.c_str();
+			cout << "'";
 		}
 		else if (type(b) == CPPS_TBOOLEAN)
 		{
@@ -94,10 +96,12 @@ namespace cpps
 				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
 				if (v)
 				{
+					bool first = true;
 					for (v->begin(); v->end(); v->next())
 					{
+						if (!first) cout << ",";
+						first = false;
 						cpps_base_printf(c,v->it());
-						cout << ",";
 					}
 				}
 				cout << "]";
@@ -105,13 +109,15 @@ namespace cpps
 			else if (b.value.value.domain->domainname == "set")
 			{
 				cout << "[";
+				bool first = true;
 				cpps_set* v = cpps_converter<cpps_set*>::apply(b.value);
 				if (v)
 				{
 					for (v->begin(); v->end(); v->next())
 					{
+						if(!first) cout << ",";
+						first = false;
 						cpps_base_printf(c, v->it());
-						cout << ",";
 					}
 				}
 				cout << "]";
@@ -122,15 +128,27 @@ namespace cpps
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
 				if (v)
 				{
+					bool first = true;
 					for (v->begin(); v->end(); v->next())
 					{
+
+						if (!first) cout << ",";
+						first = false;
 						cpps_base_printf(c,v->key());
 						cout << ":";
 						cpps_base_printf(c,v->it());
-						cout << ",";
 					}
 				}
 				cout << "}";
+			}
+			else if (b.value.value.domain->domainname == "pair") {
+
+				cpps_pair* v = cpps_converter<cpps_pair*>::apply(b.value);
+				cout << "(";
+				cpps_base_printf(c, v->first());
+				cout << ",";
+				cpps_base_printf(c, v->second());
+				cout << ")";
 			}
 			else
 			{
@@ -147,10 +165,13 @@ namespace cpps
 		{
 			cpps_vector* vec = cpps_to_cpps_vector(b.value);
 			cout << "[";
+			bool first = true;
 			for (auto v : vec->realvector())
 			{
+
+				if (!first) cout << ",";
+				first = false;
 				cpps_base_printf(c,v);
-				cout << ",";
 			}
 			cout << "]";
 
@@ -207,6 +228,10 @@ namespace cpps
 	bool cpps_base_ismap(cpps_value v)
 	{
 		return (v.isdomain() && (v.value.domain->domainname == "map"));
+	}
+	bool cpps_base_ispair(cpps_value v)
+	{
+		return (v.isdomain() && (v.value.domain->domainname == "pair"));
 	}
 	bool cpps_base_isset(cpps_value v)
 	{

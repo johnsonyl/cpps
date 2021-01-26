@@ -33,7 +33,7 @@ namespace cpps {
 	bool cpps_io_file_exists(std::string path);
 	std::string cpps_getcwd();
 	std::string cpps_real_path();
-	void		gc_cleanup(C* c);
+	void		gc_cleanup(C* c,bool cleanall = false);
 	void cpps_detach_library(HMODULE module, const std::string& libname, C* c);
 
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc)
@@ -1104,6 +1104,11 @@ namespace cpps {
 
 			geto->type = CPPS_OSLICE;
 
+
+			if (buffer.cur() == ']') {
+				buffer.pop();
+				return;
+			}
 
 			cpps_parse_rmspaceandenter(buffer);
 			if (buffer.cur() != ':') {
@@ -2445,6 +2450,7 @@ namespace cpps {
 
 	int32 close(cpps::C*& c) {
 	
+		gc_cleanup(c);
 		/* 清理内存 */
 		cpps_free_all_library(c);
 
@@ -2455,9 +2461,9 @@ namespace cpps {
 		c->domain_pool.freeall();
 		c->stack_pool.freeall();
 		cpps_unregasyncio(c);
-		gc_cleanup(c);
+		gc_cleanup(c,true);
 		c->_class_map_classvar.clear();
-		
+
 		c->_G->release();
 		c->_G = NULL;
 		delete c;
@@ -2724,7 +2730,7 @@ namespace cpps {
 				cpps_func_domain->funcRet = ret_value;
 			}
 			else {
-				throw(cpps_error(d->filename, d->line, cpps_error_trycatherror, "Illegal throw. please define in try."));
+				throw(cpps_error(d->filename, d->line, cpps_error_trycatherror, cpps_to_string(ret_value).c_str()));
 			}
 		}
 		else {
@@ -2814,14 +2820,24 @@ namespace cpps {
 		cpp_bool_value = if_value.value.b;
 		if (if_value.tt == CPPS_TSTRING)
 			cpp_bool_value = 1;
-		/* 要不要报错呢？？？ */ else if (if_value.tt == CPPS_TNIL)
-			cpp_bool_value = 0; else if (if_value.tt == CPPS_TCLASSVAR)
+		else if (if_value.tt == CPPS_TNIL)
+			cpp_bool_value = 0;
+		else if (if_value.tt == CPPS_TCLASSVAR)
 			cpp_bool_value = 1;
+		else if (if_value.tt == CPPS_TUSERDATA)
+			cpp_bool_value = 1;
+		
 		cpps_domain* execdomain = c->domain_alloc();
 		execdomain->init(domain, cpps_domain_type_exec);
 		execdomain->setexecdomain(domain);
 		CPPS_SUBTRY
-			if (cpp_bool_value) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[1]); else cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[2]);
+			if (cpp_bool_value)
+			{
+				cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[1]);
+			}
+			else {
+				cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[2]);
+			}
 		CPPS_SUBCATCH2
 		
 		execdomain->destory(c);
@@ -2932,8 +2948,8 @@ namespace cpps {
 			}
 		}
 		else if (v.isdomain() && v.value.domain->domainname == "map") {
-			cpps_map_node* mapnode;
-			cpps_value	ret = newclass<cpps_map_node>(c, &mapnode);
+			cpps_pair* mapnode;
+			cpps_value	ret = newclass<cpps_pair>(c, &mapnode);
 			if (for1_v)
 				for1_v->setval(ret);
 			cpps_map* vmap = cpps_converter<cpps_map*>::apply(v);
@@ -2964,7 +2980,7 @@ namespace cpps {
 				if (for1_v)
 					for1_v->getval().tt = CPPS_TINTEGER;
 				cpps_domain* execdomain = c->domain_alloc();
-				for (cpps_integer begin = range->begin; begin <= range->end; begin += range->inc) {
+				for (cpps_integer begin = range->begin; begin < range->end; begin += range->inc) {
 					if (for1_v)
 						for1_v->getval().value.integer = begin;
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
@@ -3806,6 +3822,11 @@ namespace cpps {
 	void cpps_calculate_expression_dofunction(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
 		cpps_value var = cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain);
 		CPPS_TO_REAL_VALUE(var);
+		cpps_value left;
+		if (leftdomain && leftdomain->domainType == cpps_domain_type_classvar) {
+			cpps_cppsclassvar* clsvar = (cpps_cppsclassvar*)leftdomain;
+			left = clsvar;
+		}
 
 		cpps_domain* execdomain = c->domain_alloc();
 		execdomain->init(domain, cpps_domain_type_func);
@@ -4029,7 +4050,7 @@ namespace cpps {
 							if (start_index < 0)
 								end_index = 0;
 							else
-								end_index = vct->size() - 1;
+								end_index = vct->size();
 						}
 
 						/*计算真实值.*/
@@ -4038,9 +4059,10 @@ namespace cpps {
 						}
 
 						if (end_index < 0) {
-							end_index = vct->size() + end_index;
+							end_index = vct->size() + end_index + 1;
 						}
 
+						if (start_index >= vct->size()) return;
 
 
 						/*???? a[1:1]??*/
@@ -4057,13 +4079,13 @@ namespace cpps {
 
 						if (start_index < end_index) {
 
-							for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
+							for (cpps_integer i = (cpps_integer)start_index; i < (cpps_integer)end_index; i += step_index) {
 								ret_vec.push_back(vct->at(i));
 							}
 						}
 						else {
 
-							for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
+							for (cpps_integer i = (cpps_integer)start_index; i > (cpps_integer)end_index; i += step_index) {
 								ret_vec.push_back(vct->at(i));
 							}
 						}
@@ -4079,7 +4101,7 @@ namespace cpps {
 							if (start_index < 0)
 								end_index = 0;
 							else
-								end_index = str->size() - 1;
+								end_index = str->size();
 						}
 
 						/*计算真实值.*/
@@ -4088,14 +4110,18 @@ namespace cpps {
 						}
 
 						if (end_index < 0) {
-							end_index = str->size() + end_index;
+							end_index = str->size() + end_index + 1;
 						}
 
-
+						if (start_index >= (cpps_integer)str->size()) {
+							ret = cpps_value(c, ret_str); 
+							return;
+						}
 
 						/*???? a[1:1]??*/
 						if (start_index == end_index) {
 							ret_str.push_back(str->at(size_t(start_index)));
+							ret = cpps_value(c, ret_str);
 							return;
 						}
 
@@ -4107,13 +4133,13 @@ namespace cpps {
 
 						if (start_index < end_index) {
 
-							for (cpps_integer i = (cpps_integer)start_index; i <= (cpps_integer)end_index; i += step_index) {
+							for (cpps_integer i = (cpps_integer)start_index; i < (cpps_integer)end_index; i += step_index) {
 								ret_str.push_back(str->at(size_t(i)));
 							}
 						}
 						else {
 
-							for (cpps_integer i = (cpps_integer)start_index; i >= (cpps_integer)end_index; i += step_index) {
+							for (cpps_integer i = (cpps_integer)start_index; i > (cpps_integer)end_index; i += step_index) {
 								ret_str.push_back(str->at(size_t(i)));
 							}
 						}
@@ -4398,12 +4424,13 @@ namespace cpps {
 		}
 	}
 
-	void cpps_calculate_expression_this(cpps_domain* root, cpps_value& ret)
+	void cpps_calculate_expression_this(node *d,cpps_domain* root, cpps_value& ret)
 	{
-		if (root->parent[1] && root->parent[1]->domainType == cpps_domain_type_classvar)
-		{
-			ret = cpps_value((cpps_cppsclassvar*)root->parent[1]);
-		}			
+		cpps_domain* _classvarroot = cpps_calculate_expression_offset_getclassvar(root);
+		if (!_classvarroot)
+			throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "this need use in class function."));
+		if (_classvarroot->parent[1] && _classvarroot->parent[1]->domainType == cpps_domain_type_classvar)
+			ret = cpps_value((cpps_cppsclassvar*)_classvarroot->parent[1]);
 	}
 
 	cpps_value cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain) {
@@ -4460,7 +4487,7 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_OTHIS)
 		{
-			cpps_calculate_expression_this(root, ret);
+			cpps_calculate_expression_this(d,root, ret);
 		}
 		else if (d->type == CPPS_OAWAIT)
 		{

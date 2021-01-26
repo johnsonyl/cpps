@@ -1,4 +1,6 @@
 #include "cpps/cpps.h"
+
+
 #ifdef USE_NEDMALLOC
 #include "nedmalloc.h"
 #endif
@@ -49,7 +51,13 @@ void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, uns
 #ifdef USE_NEDMALLOC
 	void* ret = nedalloc::nedmalloc(__size);
 #else
+#ifdef _WIN32
+	auto hMem = GlobalAlloc(GMEM_MOVEABLE | GMEM_SHARE, __size);
+	void* ret = GlobalLock(hMem);
+	GlobalUnlock(hMem);
+#else
 	void* ret = malloc(__size);
+#endif
 #endif
 #ifdef _DEBUG
 	_lock.lock();
@@ -79,7 +87,12 @@ void cpps::memory_allocal_handler::mfree(void* m)
 #ifdef USE_NEDMALLOC
 	nedalloc::nedfree(m);
 #else
+#ifdef _WIN32
+	auto pMem = GlobalHandle(m);
+	GlobalFree(pMem);
+#else
 	free(m);
+#endif
 #endif
 }
 

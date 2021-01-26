@@ -255,7 +255,7 @@ namespace cpps
 						domain->destory(c, isclose);
 						domain->release();
 					}
-					CPPSDELETE( v);
+					v->release();
 				}
 			}
 			varList.clear();

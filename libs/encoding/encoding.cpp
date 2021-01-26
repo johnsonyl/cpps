@@ -4,6 +4,7 @@
 #include <fstream>
 #include "strnormalize.h"
 #include "ConvertUTF.h"
+#include <string.h>
 
 bool cpps_check_utf8(char* str, size_t length)
 {
@@ -262,6 +263,74 @@ void codepoint_to_utf8(cpps_integer codepoint, cpps::object target)
 	targetstr->resize(resultptr - take);
 }
 
+cpps::int32 hex2dec(char* s) {
+	size_t L = strlen(s);
+	char c;
+	cpps::int32 re = 0;
+	while ((c = ((s++)[0]))) {
+		if (c >= '0' && c <= '9') {
+			c -= 48;
+		}
+		else {
+			c = c > 'Z' ? c - 32 : c;
+			c -= 'A' - 10;
+		}
+		re += c * (cpps::int32)pow(16, --L);
+	}
+	return (cpps::int32)re;
+}
+std::string utf8_unescape(std::string text) {
+	std::string rets; 
+	const char* str = text.c_str();
+	char* re = (char*)calloc(strlen(str) + 1, 1);
+	const char* _str;
+	char* _re = re;
+	char code[5] = { 0 };
+	UTF16 wc;
+	size_t n;
+	while (str) {
+		_str = strchr(str, '%');
+		if (!_str) break;
+		if ((n = (_str - str))) {
+			memcpy(_re, str, n);
+			_re += n;
+		}
+		memset(code, 0, 5);
+		if (_str[1] == 'u') {
+			memcpy(code, _str + 2, 4);
+			str = _str + 6;
+			wc = (UTF16) hex2dec(code);
+			memset(code, 0, 5);
+
+
+			const UTF16* Src = reinterpret_cast<const UTF16*>(&wc);
+			const UTF16* SrcEnd = Src + 1;
+			
+			UTF8* Dst = reinterpret_cast<UTF8*>(&code);
+			UTF8* DstEnd = reinterpret_cast<UTF8*>((&code) + 5);
+
+			ConversionResult result = ConvertUTF16toUTF8(&Src, SrcEnd, &Dst, DstEnd, ConversionFlags::strictConversion);
+			if (result != conversionOK) {
+				break;
+			}
+			code[4] = '\0';
+			memcpy(_re, code, 2);
+			_re += 2;
+		}
+		else {
+			memcpy(code, _str + 1, 2);
+			str = _str + 3;
+			_re[0] = (char) hex2dec(code);
+			_re++;
+		}
+	}
+	strcpy(_re, str);
+	rets = re;
+	free(re);
+
+	return re;
+}
+
 using namespace cpps;
 using namespace std;
 cpps_export_void cpps_attach(cpps::C* c)
@@ -281,6 +350,7 @@ cpps_export_void cpps_attach(cpps::C* c)
 		def("utf32_to_utf16", utf32_to_utf16),
 		def("codepoint16_to_utf8", codepoint16_to_utf8),
 		def("codepoint_to_utf8", codepoint_to_utf8),
+		def("unescape", utf8_unescape),
 		defvar(c,"UTF8", CPPS_ENCODING_UTF8),
 		defvar(c,"GBK", CPPS_ENCODING_GBK)
 	];

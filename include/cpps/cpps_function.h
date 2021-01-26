@@ -151,12 +151,29 @@ namespace cpps
 	template<class context, CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, class A) >
 	void call_normal(C *c_state, cpps_domain *domain, cpps_std_vector &o, context c, void(*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, A)))
 	{
+		if (domain && domain->domainType == cpps_domain_type_classvar)
+		{
+			cpps_cppsclassvar* classvar = (cpps_cppsclassvar *) domain;
+			o.push_back(cpps_value(classvar));
+			CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
+			f(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
+			return;
+		}
+
 		CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
 		f(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 	}
 	template <class Ret, class context, CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, class A) >
 	Ret call_member(C *c_state, cpps_domain *domain, cpps_std_vector &o, context c, Ret(*f)(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, A)))
 	{
+		if (domain && domain->domainType == cpps_domain_type_classvar)
+		{
+			cpps_cppsclassvar* classvar = (cpps_cppsclassvar*)domain;
+			o.push_back(cpps_value(classvar));
+			CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
+			return f(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
+		}
+
 		CPPS_PP_ENUM_SET_VARS_WITH_VECTOR(CPPS_FUNCTION_ITER_C, c.vec.param, o);
 		return f(CPPS_PP_ENUM_PARAMS(CPPS_FUNCTION_ITER_C, c.vec.param));
 	}

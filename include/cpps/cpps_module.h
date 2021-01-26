@@ -195,7 +195,7 @@ namespace cpps
 						}
 						temp_domain->release();
 						domain->unregvar(c, v);
-						CPPSDELETE(v);
+						v->release();
 					}
 				}
 			}

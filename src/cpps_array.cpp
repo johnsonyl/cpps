@@ -15,6 +15,7 @@ namespace cpps
 				.def("add", &cpps_vector::push_back)
 				.def("append", &cpps_vector::push_back)
 				.def("assign", &cpps_vector::assign)
+				.def("extend", &cpps_vector::extend)
 				.def("push_front", &cpps_vector::push_front)
 				.def("pop_back", &cpps_vector::pop_back)
 				.def("pop_front", &cpps_vector::pop_front)
@@ -56,6 +57,11 @@ namespace cpps
 	void cpps_vector::assign(cpps_vector* v)
 	{
 		_vec.assign(v->realvector().begin(), v->realvector().end());
+	}
+
+	void cpps_vector::extend(cpps_vector* v)
+	{
+		_vec.insert(_vec.end(),v->realvector().begin(), v->realvector().end());
 	}
 
 	void cpps_vector::pop_back()

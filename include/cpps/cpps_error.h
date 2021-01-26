@@ -62,4 +62,8 @@ struct cpps_error
 	cpps::usint32 _line;
 	std::string s;
 };
+
+namespace cpps {
+	void fail(std::string msg, int32 n = cpps_error_normalerror,const char* f = __FILE__, usint32 l = __LINE__);
+}
 #endif // CPPS_ERROR_CPPS_HEAD_

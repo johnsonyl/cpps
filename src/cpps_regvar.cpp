@@ -74,4 +74,9 @@ namespace cpps
 		return varName;
 	}
 
+	void cpps_regvar::release()
+	{
+		CPPSDELETE(this);
+	}
+
 }

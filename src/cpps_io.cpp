@@ -61,9 +61,9 @@ namespace cpps
 		new_settings.c_cc[VMIN] = 1;
 		tcsetattr(0, TCSANOW, &new_settings);
 
-		system("stty -echo");
+		if (system("stty -echo")) {}
 		int ret = getchar();
-		system("stty echo");
+		if (system("stty echo")) {}
 		tcsetattr(0, TCSANOW, &stored_settings);
 #endif
 		return (cpps_integer)ret;

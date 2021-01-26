@@ -269,7 +269,7 @@ namespace cpps
 
 
 	}
-	void		gc_cleanup(C *c )
+	void		gc_cleanup(C *c,bool cleanall )
 	{
 		
 
@@ -294,7 +294,7 @@ namespace cpps
 		}
 #ifdef _DEBUG
 		if (!c->getgen0()->empty()) {
-			printf("no cleanup:%d\r\n", (int)c->getgen0()->size());
+			if(cleanall)printf("gen0 no cleanup:%d\r\n", (int)c->getgen0()->size());
 			for (auto item : *c->getgen0()) {
 				c->getgen1()->insert(item);
 			}
@@ -327,10 +327,14 @@ namespace cpps
 		}
 #ifdef _DEBUG
 		if (!c->getgen1()->empty()) {
-			printf("no cleanup:%d\r\n", (int)c->getgen1()->size());
+			if(cleanall)printf("no cleanup:%d\r\n", (int)c->getgen1()->size());
 			std::vector< cpps_cppsclassvar* > tmp;
 			for (auto item : *c->getgen1()) {
-				tmp.push_back(item);
+				if (cleanall)
+				{
+					item->destory(c);
+					item->release();
+				}
 			}
 		}
 #endif

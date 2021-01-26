@@ -58,6 +58,11 @@ namespace cpps
 		return ret;
 	}
 
+	bool object::ispair()
+	{
+		return cpps_base_ispair(SAFE_VALUE);
+	}
+
 	bool object::ismap()
 	{
 		return cpps_base_ismap(SAFE_VALUE);
@@ -240,6 +245,7 @@ namespace cpps
 			v->setval(val.value);
 	}
 
+	
 	object& object::operator=(const object& k)
 	{
 		if (value.tt == CPPS_TREF) {
@@ -312,6 +318,11 @@ namespace cpps
 	{
 		value = k;
 		return *this;
+	}
+	object object::create_with_pair(C* c)
+	{
+		cpps_create_class_var(cpps_pair, c, cpps_value_map, cpps_map_ptr);
+		return  static_cast<object>(cpps_value_map);
 	}
 
 	object object::create_with_map(C* c)
@@ -461,6 +472,36 @@ namespace cpps
 	cpps::cpps_hash_set& object::set::realset()
 	{
 		return _set->realset();
+	}
+
+	object::pair object::pair::create(C* c, object first, object second)
+	{
+		auto ret = cpps::object::pair(c, cpps::object::create_with_pair(c));
+		ret._pair->_first = first.getval();
+		ret._pair->_second = second.getval();
+		return ret;
+	}
+
+	object::pair::pair(C* cstate, object obj)
+	{
+		_pair = cpps_to_cpps_pair(obj.value);
+		c = cstate;
+		_src_value = obj.value;
+	}
+
+	cpps::object object::pair::first()
+	{
+		return _pair->first();
+	}
+
+	cpps::object object::pair::second()
+	{
+		return _pair->second();
+	}
+
+	cpps::object object::pair::toobject()
+	{
+		return _src_value;
 	}
 
 }

@@ -23,6 +23,7 @@ namespace cpps
 	struct cpps_vector;
 	struct cpps_map;
 	struct cpps_set;
+	struct cpps_pair;
 	struct cpps_value
 	{
 		cpps_value();
@@ -90,6 +91,7 @@ namespace cpps
 	cpps_vector* cpps_to_cpps_vector(cpps_value obj);
 	cpps_map* cpps_to_cpps_map(cpps_value obj);
 	cpps_set* cpps_to_cpps_set(cpps_value obj);
+	cpps_pair* cpps_to_cpps_pair(cpps_value obj);
 	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj);
 	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(cpps_value obj);
 

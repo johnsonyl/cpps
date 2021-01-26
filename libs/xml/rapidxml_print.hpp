@@ -101,11 +101,69 @@ namespace rapidxml
 
         ///////////////////////////////////////////////////////////////////////////
         // Internal printing operations
-
+    
         // Print node
         template<class OutIt, class Ch>
-        inline OutIt print_node(OutIt out, const xml_node<Ch> *node, int flags, int indent);
-    
+        inline OutIt print_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            // Print proper node type
+            switch (node->type())
+            {
+
+            // Document
+            case node_document:
+                out = print_children(out, node, flags, indent);
+                break;
+
+            // Element
+            case node_element:
+                out = print_element_node(out, node, flags, indent);
+                break;
+            
+            // Data
+            case node_data:
+                out = print_data_node(out, node, flags, indent);
+                break;
+            
+            // CDATA
+            case node_cdata:
+                out = print_cdata_node(out, node, flags, indent);
+                break;
+
+            // Declaration
+            case node_declaration:
+                out = print_declaration_node(out, node, flags, indent);
+                break;
+
+            // Comment
+            case node_comment:
+                out = print_comment_node(out, node, flags, indent);
+                break;
+            
+            // Doctype
+            case node_doctype:
+                out = print_doctype_node(out, node, flags, indent);
+                break;
+
+            // Pi
+            case node_pi:
+                out = print_pi_node(out, node, flags, indent);
+                break;
+
+                // Unknown
+            default:
+                assert(0);
+                break;
+            }
+            
+            // If indenting not disabled, add line break after node
+            if (!(flags & print_no_indenting))
+                *out = Ch('\n'), ++out;
+
+            // Return modified iterator
+            return out;
+        }
+        
         // Print children of the node                               
         template<class OutIt, class Ch>
         inline OutIt print_children(OutIt out, const xml_node<Ch> *node, int flags, int indent)
@@ -315,84 +373,6 @@ namespace rapidxml
             return out;
         }
 
-        // Print literal node
-        template<class OutIt, class Ch>
-        inline OutIt print_literal_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            assert(node->type() == node_literal);
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            out = copy_chars(node->value(), node->value() + node->value_size(), out);
-            return out;
-        }
-
-        // Print node
-        // Print node
-        template<class OutIt, class Ch>
-        inline OutIt print_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            // Print proper node type
-            switch (node->type())
-            {
-
-            // Document
-            case node_document:
-                out = print_children(out, node, flags, indent);
-                break;
-
-            // Element
-            case node_element:
-                out = print_element_node(out, node, flags, indent);
-                break;
-            
-            // Data
-            case node_data:
-                out = print_data_node(out, node, flags, indent);
-                break;
-            
-            // CDATA
-            case node_cdata:
-                out = print_cdata_node(out, node, flags, indent);
-                break;
-
-            // Declaration
-            case node_declaration:
-                out = print_declaration_node(out, node, flags, indent);
-                break;
-
-            // Comment
-            case node_comment:
-                out = print_comment_node(out, node, flags, indent);
-                break;
-            
-            // Doctype
-            case node_doctype:
-                out = print_doctype_node(out, node, flags, indent);
-                break;
-
-            // Pi
-            case node_pi:
-                out = print_pi_node(out, node, flags, indent);
-                break;
-
-            case node_literal:
-                out = print_literal_node(out, node, flags, indent);
-                break;
-
-                // Unknown
-            default:
-                assert(0);
-                break;
-            }
-            
-            // If indenting not disabled, add line break after node
-            if (!(flags & print_no_indenting))
-                *out = Ch('\n'), ++out;
-
-            // Return modified iterator
-            return out;
-        }
-        
     }
     //! \endcond
 

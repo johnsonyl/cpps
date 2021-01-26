@@ -21,6 +21,7 @@ namespace cpps
 		virtual ~cpps_vector();
 		void								push_back(cpps_value v);
 		void								assign(cpps_vector* v);
+		void								extend(cpps_vector* v);
 		void								pop_back();
 		void								push_front(cpps_value v);
 		void								pop_front();

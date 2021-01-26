@@ -15,10 +15,12 @@ public:
 		printf("call CppParentClassTest::parentTestFunc() : %d",i);
 	}
 };
+
 class CppClassTest : public CppParentClassTest
 {
 public:
 	object	a;
+	object	b;
 	void	testFunc(cpps::object val)
 	{
 		i = 100;
@@ -32,7 +34,18 @@ public:
 	{
 		return a.ref();//返回它的引用.,
 	}
+	void testcb(C*c,object cb) {
+		b = cb;
+
+		dofunction(c, b);
+	}
 };
+
+
+void globalfunc(CppClassTest *pself)
+{
+	printf("globalfunc %lld\r\n",pself->a.toint());
+}
 
 enum TESTENUM
 {
@@ -65,7 +78,9 @@ int32 main(int argc,char **argv)
 		_class<CppClassTest>("CppClassTest")
 			.base<CppParentClassTest>()
 			.def_operator("[]",&CppClassTest::test_operator)
-			.def("testFunc",&CppClassTest::testFunc),
+			.def("testFunc",&CppClassTest::testFunc)
+			.def("globalfunc", globalfunc)
+			.def_inside("testcb",&CppClassTest::testcb),
 		_enum(c,"TESTENUM")
 			.value("ENUM_ONE", TESTENUM::ENUM_ONE)
 			.value("ENUM_TWO", TESTENUM::ENUM_TWO)

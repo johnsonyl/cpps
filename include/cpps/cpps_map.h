@@ -17,7 +17,7 @@ namespace cpps
 
 	typedef phmap::flat_hash_map<cpps_value, cpps_value, cpps_value::hash> cpps_hash_map;
 	typedef phmap::flat_hash_set<cpps_value, cpps_value::hash> cpps_hash_set;
-
+	struct object;
 	struct cpps_map
 	{
 
@@ -80,17 +80,25 @@ namespace cpps
 
 	void	cpps_regmap(C *c);
 
-	class cpps_map_node
+	struct cpps_pair
 	{
 	public:
-		cpps_map_node(){}
-		virtual~cpps_map_node(){}
+		cpps_pair(){}
+		cpps_pair(cpps_value __first,cpps_value __second){
+			_first = __first;
+			_second = __second;
+		}
+		cpps_pair(object __first, object __second);
+		virtual~cpps_pair(){}
 		cpps_value first() {
 			return _first;
 		}
 		cpps_value second() {
 			return _second;
 		}
+		void	constructor(object __first, object __second);
+		object	getobject(object right);
+		bool	equalfunc(object right);
 		cpps_value _first;
 		cpps_value _second;
 	};

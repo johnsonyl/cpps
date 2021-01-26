@@ -325,9 +325,6 @@ throw;\
 
 typedef double cpps_number;
 typedef __int64 cpps_integer;
-//typedef unsigned char byte;
-
-//long ,unsigned long,float ,double
 
 namespace cpps
 {
@@ -481,6 +478,16 @@ namespace cpps
 	struct cpps_value;
 	typedef std::vector<cpps_value> cpps_std_vector;
 }
+
+
+#if !defined(_SSIZE_T_) && !defined(_SSIZE_T_DEFINED) && !defined(SSIZE_MAX)
+typedef intptr_t ssize_t;
+# define SSIZE_MAX INTPTR_MAX
+# define _SSIZE_T_
+# define _SSIZE_T_DEFINED
+#endif
+
+
 #ifdef _WIN32
 typedef void(__stdcall*cpps_attach_func)(cpps::C *c);
 typedef void(__stdcall*cpps_detach_func)(cpps::C *c);
@@ -489,16 +496,5 @@ typedef void(*cpps_attach_func)(cpps::C *c);
 typedef void(*cpps_detach_func)(cpps::C *c);
 #endif
 //////////////////////////////////////////////////////////////////////////
-
-
-//让脚本在vs里更好看
-typedef  void var;
-void println(std::string asd);
-void printfln(std::string asd);
-void sleep(int time);
-typedef void math;
-void random(int min, int max);
-void gettime();
-void gettickcount();
 
 #endif // CPPS_DEF_CPPS_HEAD_

@@ -104,7 +104,21 @@ namespace cpps
 			cpps_set* _set;
 			C* c;
 		};
+		struct pair
+		{
+		public:
+			static pair																create(C* c,object first,object second);
+		public:
+			pair(C* cstate, object obj);
 
+			object																	first();
+			object																	second();
+			object																	toobject();
+
+			cpps_pair*																_pair;
+			cpps_value																_src_value;
+			C* c;
+		};
 		
 
 
@@ -113,6 +127,7 @@ namespace cpps
 		//create object.
 		//class C is required because the string needs GC.
 		//
+		static object	create_with_pair(C* c);
 		static object	create_with_map(C* c);
 		static object	create_with_set(C* c);
 		static object	create_with_vector(C* c);
@@ -133,6 +148,7 @@ namespace cpps
 
 		//check
 		bool					isunorderd_map();
+		bool					ispair();
 		bool					ismap();
 		bool					isset();
 		bool					isstring();

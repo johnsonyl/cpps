@@ -157,5 +157,9 @@ namespace cpps
 			def("tan", cpps_math_tan)
 
 		];
+		cpps::_module(c)[
+			def("max", cpps_math_max),
+			def("min", cpps_math_min)
+		];
 	}
 }

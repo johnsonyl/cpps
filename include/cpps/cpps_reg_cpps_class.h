@@ -35,7 +35,7 @@ namespace cpps
 		cpps::cpps_reg_cpps_class<cpps_io_stat>(c, "statinfo", "_G");
 		cpps::cpps_reg_cpps_class<cpps_trycatch_error>(c, "cpps_trycatch_error", "_G");
 		cpps::cpps_reg_cpps_class<cpps_map>(c, "map", "_G");
-		cpps::cpps_reg_cpps_class<cpps_map_node>(c, "cpps_map_node", "_G");
+		cpps::cpps_reg_cpps_class<cpps_pair>(c, "pair", "_G");
 		cpps::cpps_reg_cpps_class<cpps_range>(c, "RANGE", "_G");
 		cpps::cpps_reg_cpps_class<cpps_async_object>(c, "ASYNC_OBJECT", "asyncio");
 		cpps::cpps_reg_cpps_class<cpps_async_loop>(c, "ASYNC_LOOP", "asyncio");
