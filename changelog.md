@@ -24,8 +24,11 @@ kb
 5.增加itertools模块, 暂时只有islice函数.
 
 6.vector 更新
+
 	6.1增加 operator* 函数
+	
 	6.2增加 operaotr+ 函数
+	
 	6.3vector增加构造函数支持,可以传入range,set,vector.
 	
 ```
