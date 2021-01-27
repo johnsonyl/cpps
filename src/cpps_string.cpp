@@ -714,5 +714,10 @@ namespace cpps
 		__str.append(v);
 	}
 
+	std::string& string::real()
+	{
+		return __str;
+	}
+
 }
 

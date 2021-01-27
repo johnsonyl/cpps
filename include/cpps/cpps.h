@@ -45,7 +45,6 @@
 #include "cpps_object.h"
 #include "cpps_mulitreturn.h"
 #include "cpps_converter.h"
-#include "cpps_newptr.h"
 #include "cpps_cast.h"
 #include "cpps_dofunction.h"
 #include "cpps_gc.h"
@@ -69,6 +68,7 @@
 #include "cpps_console.h"
 #include "cpps_reg_cpps_class.h"
 
+#include "cpps_newptr.h"
 #include "cpps_api.h"
 
 #endif // CPPS_CPPS_HEAD_

@@ -22,7 +22,7 @@ namespace cpps
 	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
 	object					doclassfunction(C* c, object leftdomain, object func);
 	//可以增加到GC的PTR
-	struct string;
+	
 	
 
 	template<class T>
@@ -38,7 +38,7 @@ namespace cpps
 		cpps_gc_add_gen0(c, var);
 		 if (typeid(std::string) == typeid(T)) {
 			cpps::string* _cppstr = (cpps::string * )var->getclsptr();
-			*ret = (T*)&_cppstr->__str;
+			*ret = (T*)&(_cppstr->real());
 		}
 		else {
 			*ret = (T*)var->getclsptr();
