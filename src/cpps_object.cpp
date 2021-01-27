@@ -39,19 +39,19 @@ namespace cpps
 	{
 		cpps_integer ret = 0;
 
-		if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			ret = m->size();
 		}
-		else if (cpps_base_isvector(SAFE_VALUE)) {
+		else if (cpps_isvector(SAFE_VALUE)) {
 			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 			ret = vct->size();
 		}
-		else if (cpps_base_isset(SAFE_VALUE)) {
+		else if (cpps_isset(SAFE_VALUE)) {
 			cpps_set* vct = cpps_to_cpps_set(SAFE_VALUE);
 			ret = vct->size();
 		}
-		else if (cpps_base_isstring(SAFE_VALUE)) {
+		else if (cpps_isstring(SAFE_VALUE)) {
 			std::string* str = cpps_get_string(SAFE_VALUE);
 			ret = (cpps_integer)str->size();
 		}
@@ -60,66 +60,71 @@ namespace cpps
 
 	bool object::ispair()
 	{
-		return cpps_base_ispair(SAFE_VALUE);
+		return cpps_ispair(SAFE_VALUE);
 	}
 
 	bool object::ismap()
 	{
-		return cpps_base_ismap(SAFE_VALUE);
+		return cpps_ismap(SAFE_VALUE);
+	}
+
+	bool object::isset()
+	{
+		return cpps_isset(SAFE_VALUE);
 	}
 
 	bool object::isstring()
 	{
-		return cpps_base_isstring(SAFE_VALUE);
+		return cpps_isstring(SAFE_VALUE);
 	}
 
 	bool object::isvector()
 	{
-		return cpps_base_isvector(SAFE_VALUE);
+		return cpps_isvector(SAFE_VALUE);
 	}
 
 	bool object::isrange()
 	{
-		return cpps_base_isrange(SAFE_VALUE);
+		return cpps_isrange(SAFE_VALUE);
 	}
 
 	bool object::istuple()
 	{
-		return cpps_base_istuple(SAFE_VALUE);
+		return cpps_istuple(SAFE_VALUE);
 	}
 	bool object::isellipsis()
 	{
-		return cpps_base_isellipsis(SAFE_VALUE);
+		return cpps_isellipsis(SAFE_VALUE);
 	}
 
 	bool object::isint()
 	{
-		return cpps_base_isint(SAFE_VALUE);
+		return cpps_isint(SAFE_VALUE);
 	}
 
 	bool object::isnumber()
 	{
-		return cpps_base_isnumber(SAFE_VALUE);
+		return cpps_isnumber(SAFE_VALUE);
 	}
 
 	bool object::isnull()
 	{
-		return cpps_base_isnull(SAFE_VALUE);
+		return cpps_isnull(SAFE_VALUE);
 	}
 
 	bool object::isfunction()
 	{
-		return cpps_base_isfunction(SAFE_VALUE);
+		return cpps_isfunction(SAFE_VALUE);
 	}
 
 	bool object::isclass()
 	{
-		return cpps_base_isclass(SAFE_VALUE);
+		return cpps_isclass(SAFE_VALUE);
 	}
 
 	bool object::isclassvar()
 	{
-		return cpps_base_isclassvar(SAFE_VALUE);
+		return cpps_isclassvar(SAFE_VALUE);
 	}
 
 	bool object::isref()
@@ -159,15 +164,15 @@ namespace cpps
 	void object::clear()
 	{
 
-		if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			m->clear();
 		}
-		else if (cpps_base_isvector(SAFE_VALUE)) {
+		else if (cpps_isvector(SAFE_VALUE)) {
 			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 			vct->clear();
 		}
-		else if (cpps_base_isstring(SAFE_VALUE)) {
+		else if (cpps_isstring(SAFE_VALUE)) {
 			std::string* str = cpps_get_string(SAFE_VALUE);
 			str->clear();
 		}
@@ -176,15 +181,15 @@ namespace cpps
 	bool object::empty()
 	{
 
-		if (cpps_base_ismap(SAFE_VALUE)) {
+		if (cpps_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			return m->empty();
 		}
-		else if (cpps_base_isvector(SAFE_VALUE)) {
+		else if (cpps_isvector(SAFE_VALUE)) {
 			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 			return vct->empty();
 		}
-		else if (cpps_base_isstring(SAFE_VALUE)) {
+		else if (cpps_isstring(SAFE_VALUE)) {
 			std::string* str = cpps_get_string(SAFE_VALUE);
 			return str->empty();
 		}
@@ -193,7 +198,7 @@ namespace cpps
 
 	void object::insert(object key, object val)
 	{
-	if (cpps_base_ismap(SAFE_VALUE)) {
+	if (cpps_ismap(SAFE_VALUE)) {
 			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 			m->insert(key.value, val.value);
 		}
@@ -203,7 +208,7 @@ namespace cpps
 	
 	void object::push_back(object& val)
 	{
-		if (cpps_base_isvector(SAFE_VALUE)) {
+		if (cpps_isvector(SAFE_VALUE)) {
 			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 			vct->push_back(val.value);
 		}
@@ -275,7 +280,7 @@ namespace cpps
 		cpps_value ret;
 		if (SAFE_VALUE.isdomain()) {
 
-			if (cpps_base_ismap(SAFE_VALUE)) {
+			if (cpps_ismap(SAFE_VALUE)) {
 				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 				cpps_value key = cpps_new_tmp_string(k);
 				ret = m->find(key);
@@ -297,11 +302,11 @@ namespace cpps
 		cpps_value ret;
 		if (SAFE_VALUE.isdomain()) {
 
-			if (cpps_base_isvector(SAFE_VALUE)) {
+			if (cpps_isvector(SAFE_VALUE)) {
 				cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
 				ret = vct->at(k);
 			}
-			else if (cpps_base_ismap(SAFE_VALUE)) {
+			else if (cpps_ismap(SAFE_VALUE)) {
 				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
 				ret = m->find(cpps_value(k));
 			}

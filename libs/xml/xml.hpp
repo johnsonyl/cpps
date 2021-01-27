@@ -79,7 +79,7 @@ namespace cpps
             return xml_node::children_to_cpps_value(c, node_);
         }
 
-        cpps_value children_by_name(C* c, const std::string& name)
+        cpps_value children_by_name(C* c, std::string name)
         {
             return xml_node::children_to_cpps_value(c, node_, name);
         }
@@ -89,7 +89,7 @@ namespace cpps
             return xml_node::attributes_to_cpps_value(c, node_);
         }
 
-        cpps_value attributes_by_name(C* c, const std::string& name)
+        cpps_value attributes_by_name(C* c, std::string name)
         {
             return xml_node::attributes_to_cpps_value(c, node_, name);
         }
@@ -108,7 +108,7 @@ namespace cpps
             return ret;
         }
 
-        static cpps_value attributes_to_cpps_value(C* c, std::shared_ptr<rapidxml_adapter::xml_node<char>> node, const std::string& name = std::string())
+        static cpps_value attributes_to_cpps_value(C* c, std::shared_ptr<rapidxml_adapter::xml_node<char>> node,const std::string &name = std::string())
         {
             cpps_vector* ret_vec;
             cpps_value ret = newclass<cpps_vector>(c, &ret_vec);
@@ -133,9 +133,9 @@ namespace cpps
             doc_ = std::make_shared<rapidxml_adapter::xml_document<char>>();
         }
 
-        void parse(const std::string& str)
+        void parse( std::string str)
         {
-            doc_->parse<0>(str);
+            doc_->parse(str);
         }
 
         void clear()
@@ -148,7 +148,7 @@ namespace cpps
             return xml_node::children_to_cpps_value(c, doc_);
         }
 
-        cpps_value children_by_name(C* c, const std::string& name)
+        cpps_value children_by_name(C* c, std::string name)
         {
             return xml_node::children_to_cpps_value(c, doc_, name);
         }

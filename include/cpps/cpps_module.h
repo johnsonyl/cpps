@@ -122,6 +122,14 @@ namespace cpps
 			_cls->regfunc(r);
 			return *this;
 		}
+		template<class F>
+		_class<C>& def_operator_inside(std::string func, F _f)
+		{
+			cpps_reg* r = make_regfunction(func, _f, false, true);
+			r->isneedC = true;
+			_cls->regfunc(r);
+			return *this;
+		}
 
 		regxmodule 	operator ,(regxmodule c)
 		{

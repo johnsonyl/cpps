@@ -14,9 +14,8 @@
 
 namespace cpps
 {
-	struct string : public std::string
+	struct string
 	{
-	
 		cpps_integer	cpps_size();
 		cpps_integer	cpps_string_find(std::string v2,object off);
 		cpps_integer	cpps_string_rfind(std::string v2,object off);
@@ -41,6 +40,8 @@ namespace cpps
 		void			cpps_string_pop_back(object len);
 		void			cpps_string_push_back(cpps_integer charcode);
 		void			cpps_string_append(std::string v);
+
+		std::string		__str;
 	};
 
 	template<>

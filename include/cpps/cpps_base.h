@@ -19,20 +19,10 @@ namespace cpps
 	//public function
 	void cpps_base_printf(C*c,object b);
 	void cpps_base_printfln(C*c,object b);
-	bool cpps_base_ispair(cpps_value v);
-	bool cpps_base_isset(cpps_value v);
-	bool cpps_base_ismap(cpps_value v);
-	bool cpps_base_isstring(cpps_value v);
-	bool cpps_base_isvector(cpps_value v);
-	bool cpps_base_isrange(cpps_value v);
-	bool cpps_base_isint(cpps_value v);
-	bool cpps_base_isnumber(cpps_value v);
-	bool cpps_base_isnull(cpps_value v);
-	bool cpps_base_isfunction(cpps_value v);
-	bool cpps_base_isclassvar(cpps_value v);
-	bool cpps_base_isclass(cpps_value v);
-	bool cpps_base_isellipsis(cpps_value v);
-	bool cpps_base_istuple(cpps_value v);
+
+	
+
+
 }
 
 #endif // CPPS_BASE_CPPS_HEAD_

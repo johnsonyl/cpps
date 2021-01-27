@@ -54,7 +54,7 @@ namespace cpps
 		cpps_value&			operator=(const cpps_value& v);
 		void				decruse();
 		void				incruse();
-		bool				isdomain();
+		bool				isdomain() const;
 		cpps_value			ref();
 
 		struct hash
@@ -77,23 +77,35 @@ namespace cpps
 		Value					value;		//÷µ°£
 		int8					tt;			//¿‡–Õ
 
-		bool isref();
-		cpps_value real();
+		bool isref() const;
+		const cpps_value& real() const ;
 	};
 
 #define cpps_integer2number(i) (cpps_number)(i)
 #define cpps_number2integer(n) (cpps_integer)(n)
 
-	cpps_number	cpps_to_number(cpps_value obj);
-	cpps_integer cpps_to_integer(cpps_value obj);
-	std::string cpps_to_string(cpps_value obj);
-	std::string* cpps_get_string(cpps_value obj);
-	cpps_vector* cpps_to_cpps_vector(cpps_value obj);
-	cpps_map* cpps_to_cpps_map(cpps_value obj);
-	cpps_set* cpps_to_cpps_set(cpps_value obj);
-	cpps_pair* cpps_to_cpps_pair(cpps_value obj);
-	cpps_cppsclass* cpps_to_cpps_cppsclass(cpps_value obj);
-	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(cpps_value obj);
+	cpps_number	cpps_to_number(const cpps_value&& src);
+	cpps_integer cpps_to_integer(const cpps_value&& src);
+	std::string cpps_to_string(const cpps_value&& src);
+	std::string* cpps_get_string(const cpps_value&& src);
+	cpps_vector* cpps_to_cpps_vector(const cpps_value&& src);
+	cpps_map* cpps_to_cpps_map(const cpps_value&& src);
+	cpps_set* cpps_to_cpps_set(const cpps_value&& src);
+	cpps_pair* cpps_to_cpps_pair(const cpps_value&& src);
+	cpps_cppsclass* cpps_to_cpps_cppsclass(const cpps_value&& src);
+	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(const cpps_value&& src);
+
+
+	cpps_number	cpps_to_number(const cpps_value& src);
+	cpps_integer cpps_to_integer(const cpps_value& src);
+	std::string cpps_to_string(const cpps_value& src);
+	std::string* cpps_get_string(const cpps_value& src);
+	cpps_vector* cpps_to_cpps_vector(const cpps_value& src);
+	cpps_map* cpps_to_cpps_map(const cpps_value& src);
+	cpps_set* cpps_to_cpps_set(const cpps_value& src);
+	cpps_pair* cpps_to_cpps_pair(const cpps_value& src);
+	cpps_cppsclass* cpps_to_cpps_cppsclass(const cpps_value& src);
+	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(const cpps_value& src);
 
 	static cpps_value		nil;
 }

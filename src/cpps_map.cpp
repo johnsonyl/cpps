@@ -162,7 +162,7 @@ namespace cpps
 
 	void cpps_map::merge(cpps_value right)
 	{
-		if (!cpps_base_ismap(right)) return;
+		if (!cpps_ismap(right)) return;
 
 		cpps_map* rightmap = cpps_to_cpps_map(right);
 		for (auto it : rightmap->realmap()) {
@@ -285,7 +285,7 @@ namespace cpps
 
 	void cpps_set::merge(cpps_value right)
 	{
-		if (!cpps_base_isset(right)) return;
+		if (!cpps_isset(right)) return;
 
 		cpps_set* rightset = cpps_to_cpps_set(right);
 		for (auto it : rightset->realset()) {

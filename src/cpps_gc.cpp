@@ -292,14 +292,14 @@ namespace cpps
 			}
 			cc++;
 		}
-#ifdef _DEBUG
 		if (!c->getgen0()->empty()) {
+#ifdef _DEBUG
 			if(cleanall)printf("gen0 no cleanup:%d\r\n", (int)c->getgen0()->size());
+#endif
 			for (auto item : *c->getgen0()) {
 				c->getgen1()->insert(item);
 			}
 		}
-#endif
 
 		c->getgen0()->clear();
 		c->setgen0size(0);
@@ -325,27 +325,25 @@ namespace cpps
 			}
 			cc++;
 		}
-#ifdef _DEBUG
 		if (!c->getgen1()->empty()) {
+#ifdef _DEBUG
 			if(cleanall)printf("no cleanup:%d\r\n", (int)c->getgen1()->size());
-			std::vector< cpps_cppsclassvar* > tmp;
-			for (auto item : *c->getgen1()) {
-				if (cleanall)
-				{
+#endif
+			if (cleanall)
+			{
+				std::vector< cpps_cppsclassvar* > tmp;
+				for (auto item : *c->getgen1()) {
 					item->destory(c);
 					item->release();
 				}
 			}
 		}
-#endif
-
-		c->getgen1()->clear();
-		c->setgen1size(0);
-		c->setlastgensize(0);
-		c->getbarrierlist()->clear();
-
-
-
+		if (cleanall) {
+			c->getgen1()->clear();
+			c->setgen1size(0);
+			c->setlastgensize(0);
+			c->getbarrierlist()->clear();
+		}
 	}
 	std::string gcinfo(C *c)
 	{
@@ -372,8 +370,8 @@ namespace cpps
 			auto v = *it;
 			if (v->domainname == "String")
 			{
-				std::string *tmpStr = (std::string *)v->getclsptr();
-				printf("%s\r\n", tmpStr->c_str());
+				cpps::string *tmpStr = (cpps::string *)v->getclsptr();
+				printf("%s\r\n", tmpStr->__str.c_str());
 			}
 		}
 #endif

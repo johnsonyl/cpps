@@ -36,7 +36,14 @@ namespace cpps
 			var = cpps_class_singleton<T*>::instance()->getcls()->create(c, true);
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, var);
-		*ret = (T *)var->getclsptr();
+		 if (typeid(std::string) == typeid(T)) {
+			cpps::string* _cppstr = (cpps::string * )var->getclsptr();
+			*ret = (T*)&_cppstr->__str;
+		}
+		else {
+			*ret = (T*)var->getclsptr();
+		}
+		
 		cpps_value retv( var);
 		if (isstr) retv.tt = CPPS_TSTRING;
 		return retv;

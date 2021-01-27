@@ -46,8 +46,8 @@ namespace cpps
 		{
 
 			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)o->at(0).value.domain;
-			std::string * tmpStr= (std::string *)cppsclassvar->getclsptr();
-			std::string fmt = *(tmpStr);
+			cpps::string * tmpStr= (cpps::string *)cppsclassvar->getclsptr();
+			std::string fmt = tmpStr->__str;
 			size_t idx = 1;
 
 

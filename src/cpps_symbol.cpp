@@ -779,11 +779,8 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
-				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				std::string* tmpStr = cpps_get_string(a);
+				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) > *(tmpStr2);
 			}
 			else
@@ -833,11 +830,8 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
-				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				std::string* tmpStr = cpps_get_string(a);
+				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) < *(tmpStr2);
 			}
 			else
@@ -887,11 +881,8 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
-				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				std::string* tmpStr = cpps_get_string(a);
+				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) >= *(tmpStr2);
 			}
 			else
@@ -941,11 +932,8 @@ namespace cpps
 		case CPPS_TSTRING:
 			if (b.tt == CPPS_TSTRING)
 			{
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
-				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				std::string* tmpStr = cpps_get_string(a);
+				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) <= *(tmpStr2);
 			}
 			else
@@ -1005,27 +993,22 @@ namespace cpps
 			if (b.tt == CPPS_TSTRING)
 			{
 
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
-
-				cpps_cppsclassvar *cppsclassvar2 = (cpps_cppsclassvar *)b.value.domain;
-				std::string *tmpStr2 = (std::string *)cppsclassvar2->getclsptr();
+				std::string* tmpStr = cpps_get_string(a);
+				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) == *(tmpStr2);
 			}
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				std::string *t = cpps_get_string(b);
 
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+				std::string* tmpStr = cpps_get_string(a);
 				ret.value.b = *(tmpStr) == *t;
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
 				std::string *t = cpps_get_string(b);
 
-				cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)a.value.domain;
-				std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+				std::string* tmpStr = cpps_get_string(a);
 				ret.value.b = *(tmpStr) == *t;
 			}
 			break; 
@@ -1185,7 +1168,7 @@ namespace cpps
 		cpps_value a = cpps_calculate_expression(c, domain,root, d->l[0], leftdomain);
 		leftdomain = NULL;
 
-		if ((cpps_base_isclassvar(a) || (a.tt == CPPS_TREF  && cpps_base_isclassvar(*a.value.value)))) {
+		if ((cpps_isclassvar(a) || (a.tt == CPPS_TREF  && cpps_isclassvar(*a.value.value)))) {
 
 			object left = object(a);
 			cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(a);
@@ -1193,7 +1176,12 @@ namespace cpps
 			cpps_function* func = cppsclass->getoperator(d->symbol->symboltype);
 			if (func) {
 				object symbolfunc = cpps_value(func);
-				ret = doclassfunction(c, left, symbolfunc, cpps_calculate_expression(c, domain, root, d->l[1], leftdomain)).getval();
+				if (func->getIsNeedC()) {
+					ret = doclassfunction(c, left, symbolfunc, cpps::object::create(c,c), cpps_calculate_expression(c, domain, root, d->l[1], leftdomain)).getval();
+				}
+				else {
+					ret = doclassfunction(c, left, symbolfunc, cpps_calculate_expression(c, domain, root, d->l[1], leftdomain)).getval();
+				}
 				return;
 			}
 		}

@@ -74,10 +74,8 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TSTRING)
 		{
-			cout << "'";
 			std::string s = object_cast<std::string>(b);
 			cout << s.c_str();
-			cout << "'";
 		}
 		else if (type(b) == CPPS_TBOOLEAN)
 		{
@@ -101,7 +99,10 @@ namespace cpps
 					{
 						if (!first) cout << ",";
 						first = false;
+						bool bb = cpps_isstring(v->it());
+						if(bb) cout << "'";
 						cpps_base_printf(c,v->it());
+						if (bb) cout << "'";
 					}
 				}
 				cout << "]";
@@ -117,7 +118,10 @@ namespace cpps
 					{
 						if(!first) cout << ",";
 						first = false;
+						bool bb = cpps_isstring(v->it());
+						if (bb) cout << "'";
 						cpps_base_printf(c, v->it());
+						if (bb) cout << "'";
 					}
 				}
 				cout << "]";
@@ -136,7 +140,10 @@ namespace cpps
 						first = false;
 						cpps_base_printf(c,v->key());
 						cout << ":";
+						bool bb = cpps_isstring(v->it());
+						if (bb) cout << "'";
 						cpps_base_printf(c,v->it());
+						if (bb) cout << "'";
 					}
 				}
 				cout << "}";
@@ -213,58 +220,58 @@ namespace cpps
 	}
 	bool cpps_base_isstring(cpps_value v)
 	{
-		return v.tt == CPPS_TSTRING;
+		return cpps_isstring(v);
 	}
 	bool cpps_base_isvector(cpps_value v)
 	{
-		return (v.isdomain() && v.value.domain->domainname == "vector");
+		return cpps_isvector(v);
 	}
 
 	bool cpps_base_isrange(cpps_value v)
 	{
-		return (v.isdomain() && v.value.domain->domainname == "RANGE");
+		return cpps_isrange(v);
 	}
 
 	bool cpps_base_ismap(cpps_value v)
 	{
-		return (v.isdomain() && (v.value.domain->domainname == "map"));
+		return cpps_ismap(v);
 	}
 	bool cpps_base_ispair(cpps_value v)
 	{
-		return (v.isdomain() && (v.value.domain->domainname == "pair"));
+		return cpps_ispair(v);
 	}
 	bool cpps_base_isset(cpps_value v)
 	{
-		return (v.isdomain() && (v.value.domain->domainname == "set"));
+		return cpps_isset(v);
 	}
 	bool cpps_base_isint(cpps_value v)
 	{
-		return v.tt == CPPS_TINTEGER;
+		return cpps_isint(v);
 	}
 	bool cpps_base_isbool(cpps_value v)
 	{
-		return v.tt == CPPS_TBOOLEAN;
+		return cpps_isbool(v);
 	}
 	bool cpps_base_isnumber(cpps_value v)
 	{
-		return v.tt == CPPS_TNUMBER;
+		return cpps_isnumber(v);
 	}
 	bool cpps_base_isnull(cpps_value v)
 	{
-		return v.tt == CPPS_TNIL;
+		return cpps_isnull(v);
 	}
 	bool cpps_base_isclassvar(cpps_value v)
 	{
-		return v.tt == CPPS_TCLASSVAR;
+		return cpps_isclassvar(v);
 	}
 	bool cpps_base_isclass(cpps_value v)
 	{
-		return v.tt == CPPS_TCLASS;
+		return cpps_isclass(v);
 	}
 
 	bool cpps_base_isellipsis(cpps_value v)
 	{
-		return v.tt == CPPS_TELLIPSIS;
+		return cpps_isellipsis(v);
 	}
 
 	bool cpps_base_istuple(cpps_value v)
@@ -282,7 +289,7 @@ namespace cpps
 
 	bool cpps_base_isfunction(cpps_value v)
 	{
-		return v.tt == CPPS_TFUNCTION || v.tt == CPPS_TLAMBDAFUNCTION;
+		return cpps_isfunction(v);
 	}
 	cpps_integer cpps_base_objtype(cpps_value v)
 	{

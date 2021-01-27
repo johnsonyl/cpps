@@ -306,8 +306,8 @@ std::string utf8_unescape(std::string text) {
 			const UTF16* Src = reinterpret_cast<const UTF16*>(&wc);
 			const UTF16* SrcEnd = Src + 1;
 			
-			UTF8* Dst = reinterpret_cast<UTF8*>(&code);
-			UTF8* DstEnd = reinterpret_cast<UTF8*>((&code) + 5);
+			UTF8* Dst = reinterpret_cast<UTF8*>(code);
+			UTF8* DstEnd = reinterpret_cast<UTF8*>(code + 5);
 
 			ConversionResult result = ConvertUTF16toUTF8(&Src, SrcEnd, &Dst, DstEnd, ConversionFlags::strictConversion);
 			if (result != conversionOK) {

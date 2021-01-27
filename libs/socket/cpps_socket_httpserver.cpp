@@ -225,7 +225,7 @@ namespace cpps {
 					std::string method = "index";
 					if (!controller.method.empty()) method = controller.method;
 					cpps_domain* leftdomain = NULL;
-					cpps_regvar *var = cppsclass->getvar(method, leftdomain, true);
+					cpps_regvar *var = cppsclass->getvar(method, leftdomain, true,true);
 					if (var) //找到method了.
 					{
 						//创建变量.

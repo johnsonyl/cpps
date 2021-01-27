@@ -239,7 +239,7 @@ namespace cpps
 		std::string strdir = szdir;
 		cpps_integer iret = 0;
 		size_t index = strdir.find_last_of('/');
-		if (0 < index) //存在多级目录
+		if ( index != std::string::npos) //存在多级目录
 		{
 			strdir.erase(index, strdir.length() - index);
 
@@ -305,6 +305,36 @@ namespace cpps
 #endif
 		
 		return (cpps_integer)statinfo.st_mtime;
+	}
+	cpps_integer cpps_io_getctime( std::string path) {
+		/*auto ftime = std::filesystem::last_write_time(path);
+		auto elapse = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::file_time_type::clock::now().time_since_epoch() - std::chrono::system_clock::now().time_since_epoch()).count();
+		auto systemTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count() - elapse;*/
+
+#ifdef _WIN32
+		struct _stat64 statinfo;
+		_stati64(path.c_str(), &statinfo);
+#else 
+		struct stat statinfo;
+		lstat(path.c_str(), &statinfo);
+#endif
+		
+		return (cpps_integer)statinfo.st_ctime;
+	}
+	cpps_integer cpps_io_getatime( std::string path) {
+		/*auto ftime = std::filesystem::last_write_time(path);
+		auto elapse = std::chrono::duration_cast<std::chrono::seconds>(std::filesystem::file_time_type::clock::now().time_since_epoch() - std::chrono::system_clock::now().time_since_epoch()).count();
+		auto systemTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count() - elapse;*/
+
+#ifdef _WIN32
+		struct _stat64 statinfo;
+		_stati64(path.c_str(), &statinfo);
+#else 
+		struct stat statinfo;
+		lstat(path.c_str(), &statinfo);
+#endif
+		
+		return (cpps_integer)statinfo.st_atime;
 	}
 	cpps_value cpps_io_get_stat(C* c, std::string path) {
 
@@ -643,7 +673,7 @@ namespace cpps
 		
 		bool bfindchildren = findchildren.tt == CPPS_TBOOLEAN ? findchildren.value.b : true;
 		std::string sfilter = "";
-		if (cpps_base_isstring(filter)) sfilter = cpps_to_string(filter);
+		if (cpps_isstring(filter)) sfilter = cpps_to_string(filter);
 		cpps_real_walk(c, vct, path, bfindchildren,false, sfilter);
 		return ret;
 	}
@@ -679,6 +709,7 @@ namespace cpps
 		{
 			return "";
 		}
+		
 		//最后一个'/' 后面是可执行程序名，去掉devel/lib/m100/exe，只保留前面部分路径
 
 		for (size_t i = cnt; i >= 0; --i)
@@ -815,12 +846,41 @@ namespace cpps
 		}
 		return ret;
 	}
+#ifndef _WIN32
+#include <fcntl.h>
+	int _kbhit(void)
+	{
+		struct termios oldt, newt;
+		int ch;
+		int oldf;
+		tcgetattr(STDIN_FILENO, &oldt);
+		newt = oldt;
+		newt.c_lflag &= ~(ICANON | ECHO);
+		tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+		oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+		fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+		ch = getchar();
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+		fcntl(STDIN_FILENO, F_SETFL, oldf);
+		if (ch != EOF)
+		{
+			ungetc(ch, stdin);
+			return 1;
+		}
+		return 0;
+	}
+#endif
+	cpps_integer cpps_io_kbhit()
+	{
+		return _kbhit();
+	}
 	void cpps_regio(C *c)
 	{
 		cpps::_module(c,"io")[
 			def_inside("getc",cpps_io_getc),
 			def_inside("getch",cpps_io_getch),
 			def_inside("getline",cpps_io_getline),
+			def("kbhit", cpps_io_kbhit),
 			def("fopen",cpps_io_open),
 			def("writefile",cpps_io_writefile),
 			def("readfile",cpps_io_readfile),
@@ -859,6 +919,9 @@ namespace cpps
 			def_inside("listdir",cpps_io_listdir),
 			def_inside("stat",cpps_io_get_stat),
 			def("last_write_time",cpps_io_last_write_time),
+			def("getmtime",cpps_io_last_write_time),
+			def("getctime",cpps_io_getctime),
+			def("getatime",cpps_io_getatime),
 			defvar(c,"SEEK_END", SEEK_END),
 			defvar(c,"SEEK_CUR", SEEK_CUR),
 			defvar(c,"SEEK_SET", SEEK_SET),

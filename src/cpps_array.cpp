@@ -11,6 +11,7 @@ namespace cpps
 	{
 		cpps::_module(c)[
 			_class<cpps_vector>("vector")
+				.def("constructor",&cpps_vector::constructor)
 				.def("push_back", &cpps_vector::push_back)
 				.def("add", &cpps_vector::push_back)
 				.def("append", &cpps_vector::push_back)
@@ -32,13 +33,40 @@ namespace cpps
 				.def("clear", &cpps_vector::clear)
 				.def("size", &cpps_vector::size)
 				.def("has", &cpps_vector::has)
+				.def_operator_inside("*",&cpps_vector::multiplication)
+				.def_operator_inside("&",&cpps_vector::andfunc)
+				.def_operator_inside("+",&cpps_vector::andfunc)
 				.def_inside("reverse", &cpps_vector::reverse)
 				.def_inside("where", &cpps_vector::where)
 				.def_inside("remove", &cpps_vector::remove)
 				.def_inside("select", &cpps_vector::select)
 		];
 	}
-
+	void	cpps_vector::constructor(object v) {
+		if (v.isrange()) {
+			cpps_range* range = object_cast<cpps_range*>(v);
+			for (cpps_integer i = range->begin;i < range->end; i += range->inc)
+			{
+				realvector().push_back(cpps_value(i));
+			}
+		}
+		else if (v.isvector())
+		{
+			auto vec = object::vector(v);
+			realvector().reserve(vec.realvector().size());
+			for (auto&& vv : vec) {
+				realvector().emplace_back(vv);
+			}
+		}
+		else if (v.isset())
+		{
+			auto vec = object::set(NULL,v);
+			realvector().reserve(vec.realset().size());
+			for (auto&& vv : vec) {
+				realvector().emplace_back(vv);
+			}
+		}
+	}
 	cpps_vector::cpps_vector()
 	{
 		_begin = _vec.begin();
@@ -47,6 +75,11 @@ namespace cpps
 	cpps_vector::~cpps_vector()
 	{
 		_vec.clear();
+	}
+
+	void cpps_vector::emplace_back(cpps_value v)
+	{
+		_vec.emplace_back(v);
 	}
 
 	void cpps_vector::push_back(cpps_value v)
@@ -210,6 +243,45 @@ namespace cpps
 			for (auto& v : realvector()) {
 				cpps_value b = object_cast<cpps_value>(dofunction(c, o, v));
 				vec->push_back(b);
+			}
+		}
+		return ret;
+	}
+
+	cpps_value cpps_vector:: andfunc(C* c, object o) {
+
+		cpps_value ret;
+		if (o.isvector())
+		{
+			cpps_vector* copyvct;
+			ret = newclass(c, &copyvct);
+
+			cpps_vector* right = cpps_to_cpps_vector(o.getval());
+			size_t newsize = right->realvector().size() + realvector().size();
+
+			copyvct->realvector().reserve(newsize);
+			for (auto&& v : realvector()) {
+				copyvct->realvector().emplace_back(v);
+			}
+			for (auto&& v : right->realvector()) {
+				copyvct->realvector().emplace_back(v);
+			}
+		}
+		return ret;
+	}
+	cpps_value cpps_vector::multiplication(C* c, object o)
+	{
+		cpps_value ret;
+		if (o.isint()) {
+			cpps_vector* copyvct;
+			ret = newclass(c, &copyvct);
+			size_t on = (size_t)o.toint();
+			copyvct->realvector().reserve(realvector().size() * on);
+
+			for (size_t i = 0; i < on; i++) {
+				for (auto&& v : realvector()) {
+					copyvct->realvector().emplace_back(v);
+				}
 			}
 		}
 		return ret;

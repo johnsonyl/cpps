@@ -14,7 +14,21 @@
 
 namespace cpps
 {
-	
+	bool cpps_ispair(const cpps_value& v);
+	bool cpps_isset(const cpps_value& v);
+	bool cpps_ismap(const cpps_value& v);
+	bool cpps_isstring(const cpps_value& v);
+	bool cpps_isvector(const cpps_value& v);
+	bool cpps_isrange(const cpps_value& v);
+	bool cpps_isint(const cpps_value& v);
+	bool cpps_isbool(const cpps_value& v);
+	bool cpps_isnumber(const cpps_value& v);
+	bool cpps_isnull(const cpps_value& v);
+	bool cpps_isfunction(const cpps_value& v);
+	bool cpps_isclassvar(const cpps_value& v);
+	bool cpps_isclass(const cpps_value& v);
+	bool cpps_isellipsis(const cpps_value& v);
+	bool cpps_istuple(const cpps_value& v);
 }
 
 #endif // CPPS_BASE_CPPS_HEAD_

@@ -129,6 +129,22 @@ namespace cpps
 		ret = ret > 1.0 ? ret / 10.0 : ret;
 		return ret;
 	}
+
+	void byte2str_trans(cpps_number& bytes, cpps_integer& type) {
+		if (bytes < 1024.0) {
+			return;
+		}
+		byte2str_trans(bytes /= 1024, ++type);
+	}
+	static const char* bytetypestr[] = {
+		"b", "kb", "mb", "gb", "tb", "pb", "eb", "zb", "yb", "nb", "db"
+	};
+	cpps::tuple byte2str(C*c,cpps_number bytes) {
+
+		cpps_integer type = 0;
+		byte2str_trans(bytes, type);
+		return cpps::tuple(object::create(c, bytes), object::create(c, bytetypestr[type]));
+	}
 	void cpps_regmath(C *c)
 	{
 		cpps::_module(c,"math")[
@@ -159,7 +175,9 @@ namespace cpps
 		];
 		cpps::_module(c)[
 			def("max", cpps_math_max),
-			def("min", cpps_math_min)
+			def("min", cpps_math_min),
+			def_inside("byte2str", byte2str)
 		];
+
 	}
 }

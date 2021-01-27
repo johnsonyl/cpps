@@ -188,12 +188,11 @@ namespace rapidxml_adapter
 			: xml_node<Ch>(rapidxml::node_document)
 		{ }
 
-		template < int Flags >
 		void parse(const string<Ch>& _str)
 		{
 			clear();
 			rapidxml::xml_document<Ch> doc;
-			doc.parse<Flags>((Ch *)_str.c_str());
+			doc.parse((Ch *)_str.c_str());
 			xml_node<Ch>::convert_from_rapidxml_node(&doc);
 		}
 

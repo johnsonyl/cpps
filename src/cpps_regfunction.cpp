@@ -11,8 +11,7 @@ namespace cpps
 		if (v.tt == CPPS_TSTRING)
 		{
 
-			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)v.value.domain;
-			std::string *tmpStr = (std::string *)cppsclassvar->getclsptr();
+			std::string *tmpStr = cpps_get_string(v);
 
 			sprintf(buffer, fmt.c_str(), tmpStr->c_str());
 		}

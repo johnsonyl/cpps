@@ -184,6 +184,7 @@
 #define CPPS_MULTIVAR			61 //模块
 #define CPPS_OTHISPARAM			63 //字符串参数
 #define CPPS_ODEFVAR_HOTUPDATE  65 //子函数.
+#define CPPS_OVECTORSIZE		66 //设置vector大小
 
 #define CPPS_NOERROR			0	//函数返回没有错误
 
@@ -230,6 +231,7 @@ enum
 
 
 #define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREF){ left = *left.value.value;}
+#define CPPS_REF_REAL_VALUE(left) ((left.tt == CPPS_TREF) ? *left.value.value : left)
 
 #ifndef CPPS_DECLARE_DEPRECATED
 # define CPPS_DECLARE_DEPRECATED(f)   f;

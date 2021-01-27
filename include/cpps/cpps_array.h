@@ -19,6 +19,8 @@ namespace cpps
 	{
 		cpps_vector();
 		virtual ~cpps_vector();
+		void								constructor(object v);
+		void								emplace_back(cpps_value v);
 		void								push_back(cpps_value v);
 		void								assign(cpps_vector* v);
 		void								extend(cpps_vector* v);
@@ -43,7 +45,9 @@ namespace cpps
 		void								remove(C* c, object o);
 		cpps_value							reverse(C* c);
 		cpps_value							select(C* c, object o);
-		cpps_std_vector&							realvector();
+		cpps_value							andfunc (C* c, object o);
+		cpps_value							multiplication(C* c, object o);
+		cpps_std_vector&					realvector();
 	private:
 		cpps_std_vector							_vec;
 		cpps_std_vector::iterator				_begin;

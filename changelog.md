@@ -1,6 +1,65 @@
 *更新日志*：
 -
 
+2021-01-28 更新
+-
+
+1.增加byte2str函数,将字节有效转换成,kb mb的字符串.返回一个tuple. 
+
+```
+var [num,s] = byte2str(1025);
+println(num);
+println(s);
+
+1.0009765625
+kb
+```
+
+2.encoding模块增加unescape函数
+
+3.io模块增加一个kbhit函数.
+
+4.增加了一个贪吃蛇,五子棋示例.详情见[bin/example/snake.cpp](bin/example/snake.cpp),[bin/example/gobang.cpp](bin/example/gobang.cpp)
+
+5.增加itertools模块, 暂时只有islice函数.
+
+6.vector 更新
+	6.1增加 operator* 函数
+	6.2增加 operaotr+ 函数
+	6.3vector增加构造函数支持,可以传入range,set,vector.
+	
+```
+var a = new vector(range(10));
+println(a); // [0,1,2,3,4,5,6,7,8,9]
+
+var b = new vector(a); //copy a to b
+println(b); // [0,1,2,3,4,5,6,7,8,9]
+
+var c = a + b;
+println(c); // [0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9]
+
+var d = [0] * 10; //创建一个长度为10内容填充0的数组
+println(d); // [0,0,0,0,0,0,0,0,0,0] 
+```
+
+7.for 增加stmt1与stmt3支持逗号分割可以支持多语句执行了
+
+```
+ for(i=10,ii=20;;i++,ii++) ;
+```
+
+8.if for while foreach支持在尾部直接添加;结束语句不执行内容了
+
+```
+if(a==3);
+for(var i = 0; i < 10; i++);
+```
+
+9.解决继承std::string,导致内存没有真正释放导致的内存泄露问题.
+
+10.优化一些函数变成引用式减少value创建删除从而提高运行速度.
+  
+
 2021-01-26 更新
 -
 
