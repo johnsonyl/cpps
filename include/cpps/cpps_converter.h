@@ -304,7 +304,7 @@ namespace cpps
 		{
 			cpps_value ret;
 			cpps_vector* vct = NULL;
-			ret = newclass(c, &vct);
+			newclass(c, &vct,&ret);
 			for (auto obj : value.tuple_list) {
 				vct->push_back(obj.value);
 			}

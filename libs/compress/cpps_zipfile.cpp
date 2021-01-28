@@ -128,7 +128,8 @@ namespace cpps
 	{
 		if (smode != "r") return nil;
 		cpps_vector* vec = NULL;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 		vec->realvector().reserve(file_list.size());
 		for (auto it : file_list) {
 			vec->realvector().push_back(cpps_cpp_to_cpps_converter<cpps_zipfile_info*>::apply(c, it.second));
@@ -140,7 +141,8 @@ namespace cpps
 	{
 		if (smode != "r") return nil;
 		cpps_vector* vec = NULL;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 		vec->realvector().reserve(file_list.size());
 		for (auto it : file_list) {
 			vec->realvector().push_back(cpps_value(c, it.second->file_name));
@@ -308,7 +310,8 @@ namespace cpps
 		if (info == NULL) return false;
 
 		Buffer* buffer = NULL;
-		cpps_value ret = newclass<Buffer>(c, &buffer);
+		cpps_value ret;
+		newclass<Buffer>(c, &buffer,&ret);
 		buffer->realloc(info->file_info.uncompressed_size);
 		real_read(info, buffer->getbuffer());
 		buffer->seek(info->file_info.uncompressed_size);

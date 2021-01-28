@@ -222,6 +222,16 @@ namespace cpps {
 			}
 		}
 		buffer.pop();
+
+		/*const string*/
+		if (str->l.size() == 1) {
+			std::string* tmpstr;
+			str->value.val = CPPSNEW(cpps_value)();
+			newclass(c, &tmpstr, str->value.val);
+			str->needdelete = true;
+			tmpstr->append(str->l[0]->s);
+		}
+
 		return(str);
 	}
 	node* cpps_parse_regx(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, int8 endch) {
@@ -240,6 +250,16 @@ namespace cpps {
 			laststr->s.push_back(lastch);
 		}
 		buffer.pop();
+
+		/*const string*/
+		if (str->l.size() == 1) {
+			std::string* tmpstr;
+			str->value.val = CPPSNEW(cpps_value)();
+			newclass(c, &tmpstr, str->value.val);
+			str->needdelete = true;
+			tmpstr->append(str->l[0]->s);
+		}
+
 		return(str);
 	}
 	
@@ -2408,7 +2428,8 @@ namespace cpps {
 		cpps_regvar* v = CPPSNEW( cpps_regvar)();
 		/* _G 为根节点 */
 		v->setvarname("_G");
-		v->setval(cpps_value(c->_G));
+		auto tmp = cpps_value(c->_G);
+		v->setval(tmp);
 		/* 域列表会copy进去 */
 		c->_G->regvar(NULL, v);
 		/* 将自己注册成_G.. */
@@ -2577,9 +2598,11 @@ namespace cpps {
 		}
 
 		if (value.tt == CPPS_TSTRING) {
-			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)value.value.domain;
-			std::string* tmpStr = (std::string*) cppsclassvar->getclsptr();
-			v->setval(cpps_value(c, *tmpStr));
+			
+			std::string* tmpStr = cpps_get_string(value);
+			std::string *newstr;
+			newclass(c, &newstr, &v->getval());
+			newstr->append(tmpStr->begin(), tmpStr->end());
 		}
 		else {
 			v->setval(value);
@@ -2694,8 +2717,8 @@ namespace cpps {
 					if (isasync == node_var_type::node_var_type_asyncvar)
 						func->setasync(true);
 					func->setquatoreturn(varName->quote);
-
-					v->setval(cpps_value(func));
+					auto tmp = cpps_value(func);
+					v->setval(tmp);
 				}
 				else if(var && var->type == CPPS_ODEFVAR_HOTUPDATE) {
 					cpps_domain* leftdomain = NULL;
@@ -2793,7 +2816,7 @@ namespace cpps {
 			ret_value = cpps_calculate_expression(c, domain, root, d->l[0], leftdomain);
 		else if(d->l.size() > 1){
 			cpps_vector* vec;
-			ret_value = newclass(c, &vec);
+			newclass(c, &vec,&ret_value);
 			ret_value.tt = CPPS_TTUPLE;
 			for (auto nn : d->l) {
 				cpps_value vv = cpps_calculate_expression(c, domain, root, nn, leftdomain);
@@ -2997,7 +3020,8 @@ namespace cpps {
 		}
 		else if (v.isdomain() && v.value.domain->domainname == "map") {
 			cpps_pair* mapnode;
-			cpps_value	ret = newclass<cpps_pair>(c, &mapnode);
+			cpps_value	ret;
+			newclass<cpps_pair>(c, &mapnode,&ret);
 			if (for1_v)
 				for1_v->setval(ret);
 			cpps_map* vmap = cpps_converter<cpps_map*>::apply(v);
@@ -3102,7 +3126,8 @@ namespace cpps {
 		ns = CPPSNEW (cpps_domain)(domain, cpps_domain_type_namespace, d->s);
 		v = CPPSNEW (cpps_regvar)();
 		v->setvarname(d->s);
-		v->setval(cpps_value(ns));
+		auto tmp = cpps_value(ns);
+		v->setval(tmp);
 		v->setsource(true);
 
 		domain->regvar(c, v);
@@ -3124,7 +3149,8 @@ namespace cpps {
 				ns = CPPSNEW (cpps_domain)(domain, cpps_domain_type_enum, d->s);
 				v = CPPSNEW (cpps_regvar)();
 				v->setvarname(d->s);
-				v->setval(cpps_value(ns));
+				auto tmp = cpps_value(ns);
+				v->setval(tmp);
 				v->setsource(true);
 				domain->regvar(c, v);
 			}
@@ -3145,7 +3171,8 @@ namespace cpps {
 				v2->setsource(true);
 				ns->regvar(c, v2);
 			}
-			v2->setval(cpps_value(n->value.integer));
+			auto tmp = cpps_value(n->value.integer);
+			v2->setval(tmp);
 		}
 	}
 	void cpps_step_module(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
@@ -3171,7 +3198,8 @@ namespace cpps {
 		ns = CPPSNEW (cpps_domain)(_Gdomain, cpps_domain_type_module, d->s);
 		v = CPPSNEW (cpps_regvar)();
 		v->setvarname(d->s);
-		v->setval(cpps_value(ns));
+		auto tmp = cpps_value(ns);
+		v->setval(tmp);
 		v->setsource(true);
 		_Gdomain->regvar(c, v);
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
@@ -3327,7 +3355,8 @@ namespace cpps {
 		cpps_regvar* v = CPPSNEW (cpps_regvar)();
 		v->setvarname(d->s);
 		v->setconst(true);
-		v->setval(cpps_value(cppsclass));
+		auto tmp = cpps_value(cppsclass);
+		v->setval(tmp);
 		v->setsource(true);
 		domain->regvar(NULL, v);
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
@@ -3404,7 +3433,8 @@ namespace cpps {
 								cppsclass->operatorreg(varName->symbol->symboltype, func);
 							}
 
-							v2->setval(cpps_value(func));
+							auto tmp = cpps_value(func);
+							v2->setval(tmp);
 						}
 						cpps_destory_node(o);
 						CPPSDELETE(o);
@@ -3885,29 +3915,33 @@ namespace cpps {
 		c->domain_free(execdomain);
 	}
 	void cpps_calculate_expression_ostr(cpps_value& ret, node* d, cpps_domain*& leftdomain, C* c, cpps_domain* domain, cpps_domain* root) {
-		std::string str;
-		for (size_t i = 0; i < d->l.size(); i++) {
-			node* s = d->l[i];
-			if (s->type == CPPS_OSTR) {
-				str.append(s->s);
+		if (d->l.size() > 1) {
+			std::string str;
+			for (size_t i = 0; i < d->l.size(); i++) {
+				node* s = d->l[i];
+				if (s->type == CPPS_OSTR) {
+					str.append(s->s);
+				}
+				else {
+					cpps_domain* takedomian = leftdomain;
+					leftdomain = NULL;
+					cpps_value v = cpps_calculate_expression(c, domain, root, s->l[0], leftdomain);
+					CPPS_TO_REAL_VALUE(v);
+					leftdomain = takedomian;
+					str.append(v.tt == CPPS_TSTRING ? *cpps_get_string(v) : cpps_to_string(v));
+				}
 			}
-			else {
-				cpps_domain* takedomian = leftdomain;
-				leftdomain = NULL;
-				cpps_value v = cpps_calculate_expression(c, domain, root, s->l[0], leftdomain);
-				CPPS_TO_REAL_VALUE(v);
-				leftdomain = takedomian;
-				str.append(v.tt == CPPS_TSTRING ? *cpps_get_string(v) : cpps_to_string(v));
-			}
+			std::string* retstr = NULL;
+			newclass<std::string>(c, &retstr,&ret);
+			retstr->append(str);
 		}
-		std::string* retstr = NULL;
-		ret = newclass<std::string>(c, &retstr);
-		retstr->append(str);
-
+		else if(d->l.size() == 1) {
+			ret = cpps_value(d->value.val); //临时变量
+		}
 	}
 	void cpps_calculate_expression_array(cpps_value& ret, C* c, node* d, cpps_domain*& leftdomain, cpps_domain* domain, cpps_domain* root) {
 		cpps_vector* vec = NULL;
-		ret = newclass<cpps_vector>(c, &vec);
+		newclass<cpps_vector>(c, &vec,&ret);
 		vec->realvector().reserve(d->l.size());
 		for (size_t i = 0; i < d->l.size(); i++) {
 			cpps_domain* takedomain = leftdomain;
@@ -3920,7 +3954,7 @@ namespace cpps {
 	}
 	void cpps_calculate_expression_object(cpps_value& ret, C* c, node* d, cpps_domain*& leftdomain, cpps_domain* domain, cpps_domain* root) {
 		cpps_map* m = NULL;
-		ret = newclass<cpps_map>(c, &m);
+		newclass<cpps_map>(c, &m, &ret);
 		
 		for (size_t i = 0; i < d->l.size(); i++) {
 			node* k = d->l[i]->getleft();
@@ -3944,7 +3978,7 @@ namespace cpps {
 		if (v) {
 			/* printf(domain->domainName.c_str()); */
 			cpps_lambda_function* func;
-			ret = newclass< cpps_lambda_function >(c, &func);
+			newclass< cpps_lambda_function >(c, &func,&ret);
 			func->c = c;
 			func->setrealfunc((cpps_cppsfunction*)v->getval().value.func);
 			if (root->parent[0] && root->parent[0]->domainType == cpps_domain_type_func && root->stacklist) {
@@ -3984,7 +4018,8 @@ namespace cpps {
 					
 					/*tuple*/
 					cpps_vector* vct = NULL;
-					cpps_value tuple_value = newclass(c, &vct);
+					cpps_value tuple_value;
+					newclass(c, &vct,&tuple_value);
 					tuple_value.tt = CPPS_TTUPLE; /*设置成元组.*/
 
 					for (auto nn : d->getright()->l) {
@@ -4660,7 +4695,7 @@ namespace cpps {
 				if (f->isasync()) {
 					/*要记录的有 leftdomain 函数, 参数列表..cpps_function本体 其他开发过程在补.*/
 					cpps_async_object* obj ; 
-					ret = newclass< cpps_async_object>(c, &obj);
+					newclass< cpps_async_object>(c, &obj,&ret);
 					obj->f = f;
 					obj->leftdomain = leftdomain ? leftdomain : c->_G;
 					obj->params = params;

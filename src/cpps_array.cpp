@@ -204,7 +204,8 @@ namespace cpps
 	cpps_value cpps_vector::where(C*c,object o)
 	{
 		cpps_vector* vec;
-		cpps_value ret = newclass(c, &vec);
+		cpps_value ret;
+		newclass(c, &vec,&ret);
 		if (o.isfunction()) {
 			for (auto& v : realvector()) {
 				bool b = object_cast<bool>(dofunction(c, o, v));
@@ -230,7 +231,8 @@ namespace cpps
 	cpps_value cpps_vector::reverse(C* c)
 	{
 		cpps_vector* vec;
-		cpps_value ret = newclass(c, &vec);
+		cpps_value ret;
+		newclass(c, &vec,&ret);
 		vec->realvector() = realvector();
 		std::reverse(vec->realvector().begin(), vec->realvector().end());
 		return ret;
@@ -238,7 +240,8 @@ namespace cpps
 	cpps_value cpps_vector::select(C* c, object o)
 	{
 		cpps_vector* vec;
-		cpps_value ret = newclass(c, &vec);
+		cpps_value ret;
+		newclass(c, &vec,&ret);
 		if (o.isfunction()) {
 			for (auto& v : realvector()) {
 				cpps_value b = object_cast<cpps_value>(dofunction(c, o, v));
@@ -254,7 +257,7 @@ namespace cpps
 		if (o.isvector())
 		{
 			cpps_vector* copyvct;
-			ret = newclass(c, &copyvct);
+			newclass(c, &copyvct,&ret);
 
 			cpps_vector* right = cpps_to_cpps_vector(o.getval());
 			size_t newsize = right->realvector().size() + realvector().size();
@@ -274,7 +277,7 @@ namespace cpps
 		cpps_value ret;
 		if (o.isint()) {
 			cpps_vector* copyvct;
-			ret = newclass(c, &copyvct);
+			newclass(c, &copyvct,&ret);
 			size_t on = (size_t)o.toint();
 			copyvct->realvector().reserve(realvector().size() * on);
 

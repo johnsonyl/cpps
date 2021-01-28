@@ -44,6 +44,7 @@ namespace cpps
 		cpps_value(cpps_value* v);
 		cpps_value(C*c, const char* s);
 		cpps_value(C*c,const std::string& s);
+		cpps_value(C* c, const std::string&& s);
 		~cpps_value();
 		//为了可以当map的key 需要实现 < > == 3个函数
 		bool				operator < (const cpps_value &right) const;
@@ -84,16 +85,6 @@ namespace cpps
 #define cpps_integer2number(i) (cpps_number)(i)
 #define cpps_number2integer(n) (cpps_integer)(n)
 
-	cpps_number	cpps_to_number(const cpps_value&& src);
-	cpps_integer cpps_to_integer(const cpps_value&& src);
-	std::string cpps_to_string(const cpps_value&& src);
-	std::string* cpps_get_string(const cpps_value&& src);
-	cpps_vector* cpps_to_cpps_vector(const cpps_value&& src);
-	cpps_map* cpps_to_cpps_map(const cpps_value&& src);
-	cpps_set* cpps_to_cpps_set(const cpps_value&& src);
-	cpps_pair* cpps_to_cpps_pair(const cpps_value&& src);
-	cpps_cppsclass* cpps_to_cpps_cppsclass(const cpps_value&& src);
-	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(const cpps_value&& src);
 
 
 	cpps_number	cpps_to_number(const cpps_value& src);

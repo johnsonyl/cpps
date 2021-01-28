@@ -349,8 +349,12 @@ namespace cpps
 	object object::create_with_cppsclassvar(C* c, object __classobject)
 	{
 		cpps::cpps_cppsclass* cppsclass = cpps_to_cpps_cppsclass(__classobject.value);
-		if(cppsclass->iscppsclass())
-			return newcppsclasvar(c, cppsclass);
+		if (cppsclass->iscppsclass())
+		{
+			object ret;
+			newcppsclasvar(c, cppsclass,&ret.value);
+			return ret;
+		}
 		return nil;
 	}
 

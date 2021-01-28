@@ -186,7 +186,8 @@ namespace cpps
 	cpps_value cpps_map::where(C* c, object o)
 	{
 		cpps_map* vec;
-		cpps_value ret = newclass(c, &vec);
+		cpps_value ret;
+		newclass(c, &vec,&ret);
 		if (o.isfunction()) {
 			for (auto v : realmap()) {
 				bool b = object_cast<bool>(dofunction(c, o, v.first,v.second));
@@ -198,7 +199,8 @@ namespace cpps
 	cpps_value cpps_map::select(C* c, object o)
 	{
 		cpps_map* vec;
-		cpps_value ret = newclass(c, &vec);
+		cpps_value ret;
+		newclass(c, &vec,&ret);
 		if (o.isfunction()) {
 			for (auto v : realmap()) {
 				cpps_value b = object_cast<cpps_value>(dofunction(c, o, v.first,v.second));
@@ -297,7 +299,8 @@ namespace cpps
 	cpps::cpps_value cpps_set::where(C* c, object o)
 	{
 		cpps_set* vec;
-		cpps_value ret = newclass(c, &vec);
+		cpps_value ret;
+		newclass(c, &vec,&ret);
 		if (o.isfunction()) {
 			for (auto v : realset()) {
 				bool b = object_cast<bool>(dofunction(c, o, v));
@@ -309,7 +312,8 @@ namespace cpps
 	cpps::cpps_value cpps_set::select(C* c, object o)
 	{
 		cpps_set* vec;
-		cpps_value ret = newclass(c, &vec);
+		cpps_value ret;
+		newclass(c, &vec,&ret);
 		if (o.isfunction()) {
 			for (auto v : realset()) {
 				cpps_value b = object_cast<cpps_value>(dofunction(c, o, v));

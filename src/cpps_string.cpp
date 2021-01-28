@@ -72,7 +72,8 @@ namespace cpps
 	cpps_value cpps_string_cut(C* c, cpps_value v, cpps_integer count) {
 		if (v.tt != CPPS_TSTRING) return nil;
 		cpps_vector* vec;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 
 
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)v.value.domain;
@@ -87,7 +88,8 @@ namespace cpps
 			if (res != 0)
 			{
 				std::string *s;
-				cpps_value sv = newclass<std::string>(c, &s);
+				cpps_value sv;
+				newclass<std::string>(c, &s,&sv);
 				s->append(tmpStr->c_str() + pos1, res);
 				vec->push_back(sv);
 				pos1 += res;
@@ -128,7 +130,8 @@ namespace cpps
 		cpps_integer ncount = -1;
 		if (count.tt == CPPS_TINTEGER) ncount = count.value.integer;
 		cpps_vector *vec;
-		cpps_value ret = newclass<cpps_vector>(c,&vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 
 		std::string* tmpStr = cpps_get_string(v);
 
@@ -194,7 +197,8 @@ namespace cpps
 
 		if (old.tt != CPPS_TSTRING) return nil;
 		cpps_vector *vec;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 
 		std::string* tmpStr = cpps_get_string(old);
 
@@ -523,7 +527,8 @@ namespace cpps
 		if (len.isint()) nlen = len.toint();
 
 		cpps_vector* vec;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 
 
 		if (__str.empty()) return ret;
@@ -554,7 +559,8 @@ namespace cpps
 	cpps::cpps_value string::cpps_string_cut(C* c, cpps_integer len)
 	{
 		cpps_vector* vec;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec, &ret);
 
 		size_t ncount = (size_t)len;
 		size_t FileSize = __str.size();
@@ -565,7 +571,8 @@ namespace cpps
 			if (res != 0)
 			{
 				std::string* s;
-				cpps_value sv = newclass<std::string>(c, &s);
+				cpps_value sv;
+				newclass<std::string>(c, &s,&sv);
 				s->append(__str.c_str() + pos1, res);
 				vec->push_back(sv);
 				pos1 += res;
@@ -593,7 +600,8 @@ namespace cpps
 	cpps::cpps_value string::cpps_string_strcuts(C* c, std::string start, std::string end)
 	{
 		cpps_vector* vec;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 
 
 		const char* begin = __str.c_str();

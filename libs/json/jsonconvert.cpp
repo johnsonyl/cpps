@@ -91,7 +91,8 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 	if (v.isArray())
 	{
 		cpps::cpps_vector *vct = NULL;
-		cpps::cpps_value ret = cpps::newclass<cpps::cpps_vector>(c, &vct);
+		cpps::cpps_value ret;
+		cpps::newclass<cpps::cpps_vector>(c, &vct,&ret);
 		for (int i = 0; i < static_cast<int>(v.size());i++)
 		{
 			vct->push_back(jsonvaluetocpps(c, v[i]).value);
@@ -126,7 +127,8 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 	{
 
 		cpps::cpps_map *vct = NULL;
-		cpps::cpps_value ret = cpps::newclass<cpps::cpps_map>(c, &vct);
+		cpps::cpps_value ret;
+		cpps::newclass<cpps::cpps_map>(c, &vct,&ret);
 
 		Json::Value::Members members = v.getMemberNames();
 		for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it)

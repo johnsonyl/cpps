@@ -43,7 +43,7 @@ namespace cpps {
 		}
 		else if (task.isdomain() && task.value.domain->domainname == "vector"){
 			cpps_vector* retvec;
-			ret = newclass<cpps_vector>(c, &retvec);
+			newclass<cpps_vector>(c, &retvec,&ret);
 			cpps_vector* vec = cpps_converter<cpps_vector*>::apply(task);
 			for (auto v : vec->realvector()) {
 				if (v.isdomain() && v.value.domain->domainname == "ASYNC_OBJECT") {
@@ -188,7 +188,8 @@ namespace cpps {
 	cpps_value cpps_async_loop::create_task(C*c,cpps_async_object* obj, cpps_async_task**outtask)
 	{
 		cpps_async_task* task;
-		cpps_value ret = newclass< cpps_async_task>(c, &task);
+		cpps_value ret;
+		newclass< cpps_async_task>(c, &task, &ret);
 		task->async_object = obj;
 		*outtask = task;
 		return ret;

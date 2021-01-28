@@ -2,135 +2,7 @@
 
 namespace cpps
 {
-	cpps_number cpps_to_number(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		cpps_number ret = 0;
-		if (obj.tt == CPPS_TNUMBER)
-		{
-			ret = obj.value.number;
-		}
-		else if (obj.tt == CPPS_TINTEGER)
-		{
-			ret = cpps_integer2number(obj.value.integer);
-		}
-		else if (obj.tt == CPPS_TSTRING)
-		{
-
-			std::string* tmpStr = cpps_get_string(obj);
-
-			cpps_str2d(tmpStr->c_str(), &ret);
-		}
-		return ret;
-	}
-
-	cpps_integer cpps_to_integer(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		cpps_integer ret = 0;
-		if (obj.tt == CPPS_TNUMBER)
-		{
-			ret = cpps_number2integer(obj.value.number);
-		}
-		else if (obj.tt == CPPS_TINTEGER)
-		{
-			ret = obj.value.integer;
-		}
-		else if (obj.tt == CPPS_TSTRING)
-		{
-			std::string* tmpStr = cpps_get_string(obj);
-			cpps_str2i64(tmpStr->c_str(), &ret);
-		}
-		return ret;
-	}
-	std::string* cpps_get_string(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		if (obj.tt == CPPS_TSTRING)
-		{
-			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
-			cpps::string* tmpStr = (cpps::string*)cppsclassvar->getclsptr();
-			return &tmpStr->__str;
-		}
-		
-		return NULL;
-	}
-	std::string cpps_to_string(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		std::stringstream strStream;
-		if (obj.tt == CPPS_TNUMBER)
-		{
-			strStream << obj.value.number;
-		}
-		else if (obj.tt == CPPS_TINTEGER)
-		{
-			strStream << obj.value.integer;
-		}
-		else if (obj.tt == CPPS_TSTRING)
-		{
-			cpps_cppsclassvar *cppsclassvar = (cpps_cppsclassvar *)obj.value.domain;
-			cpps::string *tmpStr = (cpps::string *)cppsclassvar->getclsptr();
-			return tmpStr->__str;
-		}
-		else if (obj.tt == CPPS_TBOOLEAN)
-		{
-			strStream << (obj.value.b == 0 ? "false" : "true");
-		}
-
-		return strStream.str();
-	}
-
-
-	cpps_vector* cpps_to_cpps_vector(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		if (!obj.isdomain()) return NULL;
-		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
-		cpps_vector* ret = (cpps_vector*)cppsclassvar->getclsptr();
-		return ret;
-	}
-	cpps_map* cpps_to_cpps_map(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		if (!obj.isdomain()) return NULL;
-		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
-		cpps_map* ret = (cpps_map*)cppsclassvar->getclsptr();
-		return ret;
-	}
-	cpps_set* cpps_to_cpps_set(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		if (!obj.isdomain()) return NULL;
-		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
-		cpps_set* ret = (cpps_set*)cppsclassvar->getclsptr();
-		return ret;
-	}
-
-	cpps::cpps_pair* cpps_to_cpps_pair(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		if (!obj.isdomain()) return NULL;
-		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
-		cpps_pair* ret = (cpps_pair*)cppsclassvar->getclsptr();
-		return ret;
-	}
-
-	cpps_cppsclass* cpps_to_cpps_cppsclass(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		if (!obj.isdomain()) return NULL;
-		cpps_cppsclass* cppsclassvar = (cpps_cppsclass*)obj.value.domain;
-		return cppsclassvar;
-	}
-
-	cpps::cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(const cpps_value&& src)
-	{
-		const cpps_value& obj = src.real();
-		if (!obj.isdomain()) return NULL;
-		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
-		return cppsclassvar;
-	}
+	
 
 	cpps_number cpps_to_number(const cpps_value& src)
 	{
@@ -324,22 +196,19 @@ namespace cpps
 
 	cpps_value::cpps_value(C* c, const char* s)
 	{
-		tt = CPPS_TSTRING;
 		std::string* str = NULL;
-		cpps_value ret = newclass<std::string>(c, &str);
+		newclass<std::string>(c, &str, this);
 		str->append(s);
-		value.domain = ret.value.domain;
-		incruse();
 	}
 
 	cpps_value::cpps_value(C* c, const std::string& s)
 	{
-		tt = CPPS_TSTRING;
-		std::string* str;
-		cpps_value ret = newclass<std::string>(c, &str);
-		str->append(s.begin(), s.end());
-		value.domain = ret.value.domain;
-		incruse();
+		cpps_value(c, s.c_str());
+	}
+
+	cpps_value::cpps_value(C* c, const std::string&& s)
+	{
+		cpps_value(c, s.c_str());
 	}
 
 	cpps_value::cpps_value(cpps_value* v)

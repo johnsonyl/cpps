@@ -100,7 +100,8 @@ namespace cpps
 					cpps_cppsclass* cppsclass = (cpps_cppsclass*)this;
 					cppsclass->operatorreg(symbol->symboltype, func->func);
 				}
-				var->setval(cpps_value(func->func));
+				auto tmp = cpps_value(func->func);
+				var->setval(tmp);
 				var->setconst(true);
 				var->setsource(true);
 				func->func->setIsNeedC(f->isneedC);
@@ -108,9 +109,8 @@ namespace cpps
 			else if (f->type == cpps_def_regclass)
 			{
 				cpps_regclass* cls = (cpps_regclass*)f;
-				//cpps_domain *domain = (cpps_domain *)cls->cls;
-				//domain->parent[0] = this;
-				var->setval(cpps_value(cls->cls));
+				auto tmp = cpps_value(cls->cls);
+				var->setval(tmp);
 				var->setsource(true);
 				var->setconst(true);
 			}
@@ -151,7 +151,8 @@ namespace cpps
 			else if (f->type == cpps_def_regenum)
 			{
 				cpps_regenum* _regenum = (cpps_regenum*)f;
-				var->setval(cpps_value(_regenum->_enum_domain));
+				auto tmp = cpps_value(_regenum->_enum_domain);
+				var->setval(tmp);
 				var->setsource(true);
 				var->setconst(true);
 			}

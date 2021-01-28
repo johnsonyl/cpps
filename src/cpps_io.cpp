@@ -339,7 +339,8 @@ namespace cpps
 	cpps_value cpps_io_get_stat(C* c, std::string path) {
 
 		cpps_io_stat* st = NULL;
-		cpps_value ret = newclass<cpps_io_stat>(c, &st);
+		cpps_value ret;
+		newclass<cpps_io_stat>(c, &st,&ret);
 
 #ifdef _WIN32
 		_stati64(path.c_str(), &st->statinfo);
@@ -410,7 +411,8 @@ namespace cpps
 		cpps_io_real_splitdrive(realvct, path);
 
 		cpps_vector* vct = NULL;
-		cpps_value ret = newclass<cpps_vector>(c, &vct);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vct,&ret);
 		vct->push_back(cpps_value(c, realvct[0]));
 		vct->push_back(cpps_value(c, realvct[1]));
 		return ret;
@@ -669,7 +671,8 @@ namespace cpps
 	cpps_value cpps_io_walk( C *c,std::string path,cpps_value findchildren,cpps_value filter) {
 		
 		cpps_vector* vct = NULL;
-		cpps_value ret = newclass<cpps_vector>(c, &vct);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vct,&ret);
 		
 		bool bfindchildren = findchildren.tt == CPPS_TBOOLEAN ? findchildren.value.b : true;
 		std::string sfilter = "";
@@ -680,7 +683,8 @@ namespace cpps
 	cpps_value cpps_io_listdir(C* c, std::string path, cpps_value findchildren) {
 
 		cpps_vector* vct = NULL;
-		cpps_value ret = newclass<cpps_vector>(c, &vct);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vct,&ret);
 
 		bool bfindchildren = findchildren.tt == CPPS_TBOOLEAN ? findchildren.value.b : true;
 		cpps_real_walk(c, vct, path, bfindchildren,true);

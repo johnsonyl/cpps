@@ -22,7 +22,7 @@ namespace cpps
 		~cpps_regvar();
 		void					setvarname(std::string n);
 		std::string				getvarname();
-		void					setval(cpps_value v);
+		void					setval(const cpps_value& v);
 		cpps_value&				getval();
 		int8					isconst();
 		void					setconst(int8 c);

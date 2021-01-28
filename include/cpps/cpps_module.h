@@ -182,7 +182,8 @@ namespace cpps
 
 						v = CPPSNEW(cpps_regvar)();//_G 为根节点
 						v->setvarname(_domain);
-						v->setval(cpps_value(temp_domain)); //域列表会copy进去
+						auto temp = cpps_value(temp_domain);
+						v->setval(temp); //域列表会copy进去
 						domain->regvar(NULL, v); //将自己注册成_G..
 						v->setsource(true);
 					}

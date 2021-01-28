@@ -97,11 +97,13 @@ namespace cpps
         static cpps_value children_to_cpps_value(C* c, std::shared_ptr<rapidxml_adapter::xml_node<char>> node, const std::string& name = std::string())
         {
             cpps_vector* ret_vec;
-            cpps_value ret = newclass<cpps_vector>(c, &ret_vec);
+            cpps_value ret;
+            newclass<cpps_vector>(c, &ret_vec,&ret);
             for(auto child : node->children(name))
             {
                 xml_node* ret_node;
-                cpps_value node_value = newclass<xml_node>(c, &ret_node);
+                cpps_value node_value;
+                newclass<xml_node>(c, &ret_node,&node_value);
                 ret_node->node_ = child;
                 ret_vec->push_back(node_value);
             }
@@ -111,11 +113,13 @@ namespace cpps
         static cpps_value attributes_to_cpps_value(C* c, std::shared_ptr<rapidxml_adapter::xml_node<char>> node,const std::string &name = std::string())
         {
             cpps_vector* ret_vec;
-            cpps_value ret = newclass<cpps_vector>(c, &ret_vec);
+            cpps_value ret;
+            newclass<cpps_vector>(c, &ret_vec,&ret);
             for(auto attr : node->attributes(name))
             {
                 xml_attribute* ret_attr;
-                cpps_value attr_value = newclass<xml_attribute>(c, &ret_attr);
+                cpps_value attr_value;
+                newclass<xml_attribute>(c, &ret_attr,&attr_value);
                 ret_attr->attribute_ = attr;
                 ret_vec->push_back(attr_value);
             }

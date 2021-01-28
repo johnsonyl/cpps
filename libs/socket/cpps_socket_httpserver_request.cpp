@@ -74,7 +74,8 @@ namespace cpps {
 	cpps::cpps_value cpps_socket_httpserver_request::paramslistfunc(C*c)
 	{
 		cpps_map* m;
-		cpps_value ret = newclass< cpps_map >(c, &m);
+		cpps_value ret;
+		newclass< cpps_map >(c, &m,&ret);
 		for (auto p : paramslist) {
 			m->insert(cpps_value(c, p.first), cpps_value(c, p.second));
 		}
@@ -84,7 +85,8 @@ namespace cpps {
 	cpps::cpps_value cpps_socket_httpserver_request::getlistfunc(C* c)
 	{
 		cpps_map* m;
-		cpps_value ret = newclass< cpps_map >(c, &m);
+		cpps_value ret;
+		newclass< cpps_map >(c, &m,&ret);
 		for (auto p : getlist) {
 			m->insert(cpps_value(c, p.first), cpps_value(c, p.second));
 		}
@@ -94,7 +96,8 @@ namespace cpps {
 	cpps::cpps_value cpps_socket_httpserver_request::postlistfunc(C* c)
 	{
 		cpps_map* m;
-		cpps_value ret = newclass< cpps_map >(c, &m);
+		cpps_value ret;
+		newclass< cpps_map >(c, &m,&ret);
 		for (auto p : postlist) {
 			m->insert(cpps_value(c, p.first), cpps_value(c, p.second));
 		}

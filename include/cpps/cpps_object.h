@@ -22,7 +22,7 @@ namespace cpps
 	struct cpps_map;
 	
 	template<class T>
-	inline cpps_value		newclass(C* c, T** ret);
+	inline void		newclass(C* c, T** ret,cpps_value *ret_value);
 	struct object
 	{
 
@@ -134,7 +134,9 @@ namespace cpps
 		static object	create_with_cppsclassvar(C* c,object __classobject);
 		template<class T>
 		static object	create_with_classvar(C* c, T** ptr) {
-			return newclass<T>(c, ptr);
+			object ret;
+			newclass<T>(c, ptr,&ret.value);
+			return ret;
 		}
 		template<class Type>
 		static object	create(C*c, Type v) {

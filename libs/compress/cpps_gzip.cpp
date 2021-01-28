@@ -110,7 +110,8 @@ namespace cpps {
 		}
 
 		std::string* rets;
-		cpps_value ret = newclass<std::string>(c, &rets);
+		cpps_value ret;
+		newclass<std::string>(c, &rets ,&ret);
 		ret.tt = CPPS_TSTRING;
 		rets->append((const char*)dest, destlen);
 		delete[] dest;
@@ -151,7 +152,8 @@ namespace cpps {
 		}
 
 		std::string* rets;
-		cpps_value ret = newclass<std::string>(c, &rets);
+		cpps_value ret;
+		newclass<std::string>(c, &rets,&ret);
 		ret.tt = CPPS_TSTRING;
 		rets->append((const char*)dest, destlen);
 		delete[] dest;

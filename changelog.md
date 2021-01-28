@@ -1,6 +1,13 @@
 *更新日志*：
 -
 
+2021-01-28 更新2
+-
+
+1.优化cpps尽可能多用引用少创建cpps_value减少计数器操作.
+
+2.优化字符串拼接(operator ..) ,不会再生成那么多无用的字符串了..
+
 2021-01-28 更新
 -
 
@@ -25,11 +32,11 @@ kb
 
 6.vector 更新
 
-	6.1增加 operator* 函数
+6.1增加 operator* 函数
+
+6.2增加 operaotr+ 函数
 	
-	6.2增加 operaotr+ 函数
-	
-	6.3vector增加构造函数支持,可以传入range,set,vector.
+6.3vector增加构造函数支持,可以传入range,set,vector.
 	
 ```
 var a = new vector(range(10));

@@ -512,7 +512,8 @@ namespace cpps
 	cpps_value cpps_getargs(C* c)
 	{
 		cpps_vector* vct;
-		cpps_value ret = newclass<cpps_vector>(c, &vct);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vct, &ret);
 		for (int i = 0; i < c->application_argc; i++)
 		{
 			vct->push_back(cpps_value(c, c->application_argv[i]));
@@ -613,13 +614,13 @@ namespace cpps
 		cpps_value ret;
 		if (serializer_type == 1 && classvar->stacklist) {
 			cpps_vector* vct;
-			ret = newclass<cpps_vector>(c, &vct);
+			newclass<cpps_vector>(c, &vct,&ret);
 			for (auto var : *classvar->stacklist) 
 				vct->push_back(var->getval());
 		}
 		else if(serializer_type == 2){
 			cpps_map* m;
-			ret = newclass<cpps_map>(c, &m);
+			newclass<cpps_map>(c, &m,&ret);
 			for (auto var : classvar->varList)
 					m->insert(cpps_value(c,var.first),var.second->getval());
 		}
@@ -635,7 +636,8 @@ namespace cpps
 
 		if (cpps_base_isvector(v)) {
 			cpps_vector* vct = cpps_to_cpps_vector(v);
-			cpps_value v2 = newcppsclasvar(c, cppsclass);
+			cpps_value v2;
+			newcppsclasvar(c, cppsclass,&v2);
 			if (vct->realvector().size() == v2.value.domain->stacklist->size())
 			{
 				size_t size = (size_t)vct->size();
@@ -649,7 +651,8 @@ namespace cpps
 		}
 		else if(cpps_base_ismap(v)){
 			cpps_map* m = cpps_to_cpps_map(v);
-			cpps_value v2 = newcppsclasvar(c, cppsclass);
+			cpps_value v2;
+			newcppsclasvar(c, cppsclass,&v2);
 			if (m->realmap().size() == v2.value.domain->stacklist->size())
 			{
 				for (auto it : m->realmap()) {

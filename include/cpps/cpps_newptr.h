@@ -26,7 +26,7 @@ namespace cpps
 	
 
 	template<class T>
-	inline cpps_value		newclass(C *c, T ** ret)
+	inline void		newclass(C *c, T ** ret,cpps_value *ret_value)
 	{
 		bool isstr = cpps_is_string<T>().b;
 		cpps_cppsclassvar* var;
@@ -44,9 +44,10 @@ namespace cpps
 			*ret = (T*)var->getclsptr();
 		}
 		
-		cpps_value retv( var);
-		if (isstr) retv.tt = CPPS_TSTRING;
-		return retv;
+		ret_value->tt = CPPS_TCLASSVAR;
+		ret_value->value.domain = (cpps_domain *)var;
+		if (isstr) ret_value->tt = CPPS_TSTRING;
+		ret_value->incruse();
 	}
 
 	inline cpps_value cpps_new_tmp_string(const std::string& tmp) {
@@ -63,7 +64,7 @@ namespace cpps
 		var = NULL;
 	}
 	
-	inline cpps_value newcppsclasvar(C* c, cpps::cpps_cppsclass* cppsclass)
+	inline void newcppsclasvar(C* c, cpps::cpps_cppsclass* cppsclass, cpps_value* ret_value)
 	{
 		cpps_cppsclassvar* cppsclassvar = cppsclass->create(c);
 		/* 将类对象里面的变量创建出来 */
@@ -76,7 +77,11 @@ namespace cpps
 		//执行0参数构造函数
 		cpps_domain* leftdomain = NULL;
 		cpps_regvar* var = cppsclassvar->getvar("constructor", leftdomain);
-		cpps_value cppsclassvar_val(cppsclassvar);
+
+		ret_value->tt = CPPS_TCLASSVAR;
+		ret_value->value.domain = (cpps_domain*)cppsclassvar;
+		ret_value->incruse();
+
 		if (var && var->getval().tt == CPPS_TFUNCTION){
 			node n("",0);
 			leftdomain = cppsclassvar;
@@ -85,13 +90,12 @@ namespace cpps
 			}
 			cpps_function* f = var->getval().value.func;
 			if (f->getparamcount() == 0){
-				doclassfunction(c, cppsclassvar_val, var->getval());
+				doclassfunction(c, *ret_value, var->getval());
 			}
 		}
-		return cppsclassvar_val;
 	}
 }
 
-#define cpps_create_class_var(t,c,v,p) t *p = NULL; cpps_value v = newclass<t>(c, &p);
+#define cpps_create_class_var(t,c,v,p) t *p = NULL; cpps_value v; newclass<t>(c, &p,&v);
 
 #endif // CPPS_NEWPTR_HEAD_

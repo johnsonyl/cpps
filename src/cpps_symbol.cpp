@@ -263,11 +263,17 @@ namespace cpps
 
 	void cpps_strcat(C*c,cpps_value &a, cpps_value &b, cpps_value &ret)
 	{
-		std::string *str;
-		ret = newclass<std::string>(c, &str);
-		str->append(a.tt == CPPS_TSTRING ? *cpps_get_string(a) : cpps_to_string(a));
-		str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
-
+		if (a.isref()) {
+			std::string* str;
+			 newclass<std::string>(c, &str,&ret);
+			str->append(a.real().tt == CPPS_TSTRING ? *cpps_get_string(a.real()) : cpps_to_string(a.real()));
+			str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
+		}
+		else {
+			ret = a;
+			std::string* str = cpps_get_string(a);
+			str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
+		}
 	}
 
 	void cpps_strcatassignment(C*c,cpps_value &a, cpps_value &b,cpps_value &ret)
@@ -293,7 +299,7 @@ namespace cpps
 			}
 			else {
 				std::string* tmpStr = NULL;
-				*(a.value.value) = newclass<std::string>(c, &tmpStr);
+				newclass<std::string>(c, &tmpStr, a.value.value);
 				if (b.tt == CPPS_TREF)
 				{
 					tmpStr->append(*cpps_get_string(*(b.value.value)));
@@ -482,7 +488,8 @@ namespace cpps
 					else
 					{
 						std::string* str;
-						cpps_value ret2 = newclass<std::string>(c, &str);
+						cpps_value ret2;
+						newclass<std::string>(c, &str,&ret2);
 
 
 						cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.value->value.domain;
@@ -513,7 +520,8 @@ namespace cpps
 					else
 					{
 						std::string* str;
-						cpps_value ret2 = newclass<std::string>(c, &str);
+						cpps_value ret2;
+						newclass<std::string>(c, &str,&ret2);
 
 						cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)b.value.domain;
 						std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
@@ -1331,7 +1339,7 @@ namespace cpps
 		case CPPS_SYMBOL_TYPE_STRCAT:
 		{
 			cpps_value b = cpps_calculate_expression(c, domain, root, d->l[1], leftdomain);
-			CPPS_TO_REAL_VALUE(a);
+			//CPPS_TO_REAL_VALUE(a);
 			CPPS_TO_REAL_VALUE(b);
 			cpps_strcat(c, a, b, ret);
 			break;

@@ -154,7 +154,8 @@ namespace cpps {
 	cpps_value cpps_tarfile::getmembers(C* c)
 	{
 		cpps_vector* vec = NULL;
-		cpps_value ret = newclass<cpps_vector>(c, &vec);
+		cpps_value ret;
+		newclass<cpps_vector>(c, &vec,&ret);
 		vec->realvector().reserve(file_list.size());
 		for (auto it : file_list) {
 			vec->realvector().push_back(cpps_cpp_to_cpps_converter<cpps_tarfile_info*>::apply(c,it));
@@ -348,7 +349,8 @@ namespace cpps {
 		std::string sarcname = arcname.tt == CPPS_TSTRING ? cpps_to_string(arcname) : "";
 
 		cpps_tarfile_info* info = NULL;
-		cpps_value ret = newclass< cpps_tarfile_info>(c, &info);
+		cpps_value ret;
+		newclass< cpps_tarfile_info>(c, &info,&ret);
 #ifdef WIN32
 		struct _stat64 statinfo;
 		_stati64(name.c_str(),&statinfo);

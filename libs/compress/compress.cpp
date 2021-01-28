@@ -12,7 +12,8 @@ using namespace std;
 cpps_value cpps_compress_tarfile_open(C*c,std::string filepath, cpps_value mode, cpps_value bufsize)
 {
     cpps_tarfile* tarfile = NULL;
-    cpps_value ret = newclass< cpps_tarfile>(c, &tarfile);
+    cpps_value ret;
+    newclass< cpps_tarfile>(c, &tarfile,&ret);
     bool b = tarfile->open(filepath, mode, bufsize);
     if (!b)return nil;
     return ret;
@@ -20,7 +21,8 @@ cpps_value cpps_compress_tarfile_open(C*c,std::string filepath, cpps_value mode,
 cpps_value cpps_compress_zipfile_open(C*c,std::string filepath, cpps_value pwd,cpps_value mode,cpps_value level)
 {
     cpps_zipfile* zipfile = NULL;
-    cpps_value ret = newclass< cpps_zipfile>(c, &zipfile);
+    cpps_value ret;
+    newclass< cpps_zipfile>(c, &zipfile,&ret);
     bool b = zipfile->open(filepath,pwd, mode, level);
 	if (!b)return nil;
 	return ret;

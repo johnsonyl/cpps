@@ -50,7 +50,8 @@ public:
 
 cpps_value cpps_uuid_create(C*c) {
 	cpps_uuid* ret_uuid;
-	cpps_value ret = newclass<cpps_uuid>(c, &ret_uuid);
+	cpps_value ret;
+	newclass<cpps_uuid>(c, &ret_uuid,&ret);
 	ret_uuid->init();
 	return ret;
 }

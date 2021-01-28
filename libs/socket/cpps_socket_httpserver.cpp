@@ -230,7 +230,8 @@ namespace cpps {
 					{
 						//创建变量.
 						cpps_socket_httpserver_bindsession(httpserver, cpps_request_ptr);
-						cpps::object cppsclassvar = newcppsclasvar(httpserver->c, cppsclass);
+						cpps::object cppsclassvar;
+						newcppsclasvar(httpserver->c, cppsclass, &cppsclassvar.getval());
 						doclassfunction(httpserver->c, cppsclassvar, var->getval(), cpps_request_var);
 						return;
 					}

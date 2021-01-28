@@ -26,7 +26,8 @@ namespace cpps
 		if (!ele) return nil;
 
 		cpps_htmlparser_element* ret_ele;
-		cpps_value ret = newclass<cpps_htmlparser_element>(c, &ret_ele);
+		cpps_value ret;
+		newclass<cpps_htmlparser_element>(c, &ret_ele,&ret);
 		ret_ele->element = ele;
 		return ret;
 	}
@@ -37,10 +38,12 @@ namespace cpps
 		element->GetElementByClassName(k,eles);
 
 		cpps_vector* ret_vct;
-		cpps_value ret = newclass< cpps_vector>(c, &ret_vct);
+		cpps_value ret;
+		newclass< cpps_vector>(c, &ret_vct,&ret);
 		for (auto& ele : eles) {
 			cpps_htmlparser_element* ret_ele;
-			cpps_value ele_val = newclass<cpps_htmlparser_element>(c, &ret_ele);
+			cpps_value ele_val;
+			newclass<cpps_htmlparser_element>(c, &ret_ele,&ele_val);
 			ret_ele->element = ele;
 			ret_vct->push_back(ele_val);
 		}
@@ -54,10 +57,12 @@ namespace cpps
 		element->GetElementByTagName(k, eles);
 
 		cpps_vector* ret_vct;
-		cpps_value ret = newclass< cpps_vector>(c, &ret_vct);
+		cpps_value ret;
+		newclass< cpps_vector>(c, &ret_vct,&ret);
 		for (auto& ele : eles) {
 			cpps_htmlparser_element* ret_ele;
-			cpps_value ele_val = newclass<cpps_htmlparser_element>(c, &ret_ele);
+			cpps_value ele_val;
+			newclass<cpps_htmlparser_element>(c, &ret_ele,&ele_val);
 			ret_ele->element = ele;
 			ret_vct->push_back(ele_val);
 		}
@@ -70,10 +75,12 @@ namespace cpps
 		std::vector<std::shared_ptr<HtmlElement>> eles;
 		element->GetAllElement(eles);
 		cpps_vector* ret_vct;
-		cpps_value ret = newclass< cpps_vector>(c, &ret_vct);
+		cpps_value ret; 
+		newclass< cpps_vector>(c, &ret_vct,&ret);
 		for (auto& ele : eles) {
 			cpps_htmlparser_element* ret_ele;
-			cpps_value ele_val = newclass<cpps_htmlparser_element>(c, &ret_ele);
+			cpps_value ele_val;
+			newclass<cpps_htmlparser_element>(c, &ret_ele,&ele_val);
 			ret_ele->element = ele;
 			ret_vct->push_back(ele_val);
 		}
@@ -86,10 +93,12 @@ namespace cpps
 		std::vector<std::shared_ptr<HtmlElement>> eles;
 		element->SelectElement(rule,eles);
 		cpps_vector* ret_vct;
-		cpps_value ret = newclass< cpps_vector>(c, &ret_vct);
+		cpps_value ret;
+		newclass< cpps_vector>(c, &ret_vct,&ret);
 		for (auto& ele : eles) {
 			cpps_htmlparser_element* ret_ele;
-			cpps_value ele_val = newclass<cpps_htmlparser_element>(c, &ret_ele);
+			cpps_value ele_val;
+			newclass<cpps_htmlparser_element>(c, &ret_ele,&ele_val);
 			ret_ele->element = ele;
 			ret_vct->push_back(ele_val);
 		}
@@ -103,7 +112,8 @@ namespace cpps
 		if (!ele) return nil;
 
 		cpps_htmlparser_element* ret_ele;
-		cpps_value ret = newclass<cpps_htmlparser_element>(c, &ret_ele);
+		cpps_value ret;
+		newclass<cpps_htmlparser_element>(c, &ret_ele,&ret);
 		ret_ele->element = ele;
 		return ret;
 	}

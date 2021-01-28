@@ -18,7 +18,8 @@ namespace cpps
 	{
 		doc = parser.Parse(html.c_str(), html.size());
 		cpps_htmlparser_element* ret_ele;
-		cpps_value ret = newclass<cpps_htmlparser_element>(c, &ret_ele);
+		cpps_value ret;
+		newclass<cpps_htmlparser_element>(c, &ret_ele,&ret);
 		ret_ele->element = doc->GetRoot();
 		return ret;
 	}

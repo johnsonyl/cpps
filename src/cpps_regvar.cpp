@@ -4,7 +4,7 @@
 namespace cpps
 {
 
-	void cpps_regvar::setval(cpps_value v)
+	void cpps_regvar::setval(const cpps_value& v)
 	{
 		value = v;
 	}
