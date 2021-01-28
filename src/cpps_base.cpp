@@ -358,7 +358,6 @@ namespace cpps
 		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
 		if (!fpath.empty())
 		{
-			bexits = true;
 			HMODULE module = ::LoadLibraryA(fpath.c_str());
 			std::string libfuncname = "cpps_attach";
 			if (module == NULL)
@@ -380,6 +379,7 @@ namespace cpps
 			sv = true;
 
 			cpps_attach(c);
+			bexits = true;
 
 		}
 #else
@@ -409,6 +409,7 @@ namespace cpps
 			sv = true;
 
 			api->cpps_attach(c);
+			bexits = true;
 
 
 		}

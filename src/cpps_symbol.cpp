@@ -13,9 +13,11 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0",0,0,"This operation cannot be performed on Boolean values."));
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = a.value.b + b.value.b;
+			return;
 		}
-		;
+		
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -50,9 +52,11 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = a.value.b & b.value.b;
+			return;
 		}
-		;
+		
 		_result.tt = CPPS_TNIL;
 		switch (a.tt)
 		{
@@ -88,7 +92,9 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = a.value.b | b.value.b;
+			return;
 		}
 		
 		_result.tt = CPPS_TNIL;
@@ -126,7 +132,9 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = a.value.b - b.value.b;
+			return;
 		}
 		
 		_result.tt = CPPS_TNIL;
@@ -164,7 +172,9 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = a.value.b * b.value.b;
+			return;
 		}
 		
 		_result.tt = CPPS_TNIL;
@@ -202,7 +212,9 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = a.value.b % b.value.b;
+			return;
 		}
 		
 		_result.tt = CPPS_TNIL;
@@ -226,7 +238,9 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
-			throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = a.value.b / b.value.b;
+			return;
 		}
 		
 		_result.tt = CPPS_TNIL;
@@ -309,7 +323,7 @@ namespace cpps
 				v.value.integer++;
 				break;
 			default:
-				throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
+				
 				break;
 			}
 		}
@@ -336,7 +350,7 @@ namespace cpps
 				v.value.integer++;
 				break;
 			default:
-				throw(cpps_error("0", 0, 0, "Cannot do ++ operation on non number."));
+				
 				break;
 			}
 			ret = v;
@@ -364,7 +378,7 @@ namespace cpps
 				v.value.integer--;
 				break;
 			default:
-				throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
+				
 				break;
 			}
 		}
@@ -390,7 +404,7 @@ namespace cpps
 				v.value.integer--;
 				break;
 			default:
-				throw(cpps_error("0", 0, 0, "Cannot do -- operation on non number."));
+				
 				break;
 			}
 			ret = v;
@@ -420,7 +434,7 @@ namespace cpps
 			_result.tt = CPPS_TINTEGER;
 			_result.value.number = cpps_to_number(a);
 		default:
-			throw(cpps_error("0", 0, 0, "Cannot do +a operation on non number."));
+			
 			break;
 		}
 	}
@@ -441,7 +455,7 @@ namespace cpps
 			_result.tt = CPPS_TINTEGER;
 			_result.value.number = -cpps_to_number(a);
 		default:
-			throw(cpps_error("0", 0, 0, "Cannot do -a operation on non number."));
+			
 			break;
 		}
 	}
@@ -527,7 +541,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "The variable is nil."));
+			return;
 		}
 
 		if (a.tt == CPPS_TREF) {
@@ -536,7 +550,7 @@ namespace cpps
 
 			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+				return;
 			}
 			;
 			_result.tt = CPPS_TNIL;
@@ -584,7 +598,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "The variable is nil."));
+			return;
 		}
 
 		if (a.tt == CPPS_TREF) {
@@ -594,7 +608,7 @@ namespace cpps
 
 			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+				return;
 			}
 			;
 			_result.tt = CPPS_TNIL;
@@ -639,7 +653,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "The variable is nil."));
+			return;
 		}
 
 		if (a.tt == CPPS_TREF) {
@@ -649,7 +663,7 @@ namespace cpps
 
 			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+				return;
 			}
 
 			_result.tt = CPPS_TNIL;
@@ -693,7 +707,7 @@ namespace cpps
 	{
 		if (a.tt == CPPS_TNIL)
 		{
-			throw(cpps_error("0", 0, 0, "The variable is nil."));
+			return;
 		}
 
 		if (a.tt == CPPS_TREF) {
@@ -703,7 +717,7 @@ namespace cpps
 
 			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 			{
-				throw(cpps_error("0", 0, 0, "This operation cannot be performed on Boolean values."));
+				return;
 			}
 			;
 			_result.tt = CPPS_TNIL;
@@ -757,9 +771,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.number > b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number > cpps_to_number(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -771,9 +789,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.integer > b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number > cpps_to_integer(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -783,13 +805,21 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) > *(tmpStr2);
 			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = cpps_to_number(a) > b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = cpps_to_integer(a) > b.value.integer;
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
+				throw(cpps_error("", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "These two can't be compared."));
+			throw(cpps_error("", 0, 0, "These two can't be compared."));
 			break;
 		}
 	}
@@ -808,9 +838,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.number < b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number < cpps_to_number(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -822,9 +856,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.integer < b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number < cpps_to_integer(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -834,13 +872,21 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) < *(tmpStr2);
 			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = cpps_to_number(a) < b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = cpps_to_integer(a) < b.value.integer;
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
+				throw(cpps_error("", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "These two can't be compared."));
+			throw(cpps_error("", 0, 0, "These two can't be compared."));
 			break;
 		}
 	}
@@ -859,9 +905,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.number >= b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number >= cpps_to_number(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -873,9 +923,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.integer >= b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number >= cpps_to_integer(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -885,13 +939,21 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) >= *(tmpStr2);
 			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = cpps_to_number(a) >= b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = cpps_to_integer(a) >= b.value.integer;
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
+				throw(cpps_error("", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "These two can't be compared."));
+			throw(cpps_error("", 0, 0, "These two can't be compared."));
 			break;
 		}
 	}
@@ -910,9 +972,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.number <= b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number <= cpps_to_number(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TINTEGER:
@@ -924,9 +990,13 @@ namespace cpps
 			{
 				ret.value.b = a.value.integer <= b.value.integer;
 			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number <= cpps_to_integer(b);
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Can't compare non number with number."));
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
 			}
 			break;
 		case CPPS_TSTRING:
@@ -936,13 +1006,21 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(b);
 				ret.value.b = *(tmpStr) <= *(tmpStr2);
 			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = cpps_to_number(a) <= b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = cpps_to_integer(a) <= b.value.integer;
+			}
 			else
 			{
-				throw(cpps_error("0", 0, 0, "Cannot compare non string with string."));
+				throw(cpps_error("", 0, 0, "Cannot compare non string with string."));
 			}
 			break;
 		default:
-			throw(cpps_error("0", 0, 0, "These two can't be compared."));
+			throw(cpps_error("", 0, 0, "These two can't be compared."));
 			break;
 		}
 	}
@@ -1048,39 +1126,7 @@ namespace cpps
 		bool b = converter::apply(a);
 		ret.value.b = !b;
 	}
-	/*cpps_value cpps_and(cpps_value a, cpps_value b)
-	{
-		cpps_value ret;
-		ret.tt = CPPS_TBOOLEAN;
-
-
-		typedef cpps_converter<bool> converter;
-
-		ret.value.b = converter::apply(a) && converter::apply(b);
-
-		return ret;
-
-	}*/
-	/*cpps_value cpps_or(cpps_value a, cpps_value b)
-	{
-		cpps_value ret;
-		ret.tt = CPPS_TBOOLEAN;
-
-
-		typedef cpps_converter<bool> converter;
-
-		ret.value.b = converter::apply(a) || converter::apply(b);
-
-		return ret;
-	}*/
-	/*cpps_value cpps_ternaryoperator(cpps_value a, cpps_value b,cpps_value c)
-	{
-		typedef cpps_converter<bool> converter;
-
-		bool b0 = converter::apply(a);
-
-		return b0 ? b : c;
-	}*/
+	
 	void cpps_regsymbols(C * c)
 	{
 		
@@ -1413,6 +1459,7 @@ namespace cpps
 			ret = convert::apply(a) ? cpps_calculate_expression(c, domain, root, d->l[1], leftdomain) : cpps_calculate_expression(c, domain, root, d->l[2], leftdomain);
 			break;
 		}
+
 		default:
 			break;
 		}

@@ -69,7 +69,7 @@
 #define  CPPS_BUILDER_VERSION ""
 #endif
 
-#define CPPS_VER		"1.0.0 Build 20201209 [" CPPS_BUILDER_VERSION "]"
+#define CPPS_VER		"1.0.0 Build 20210128 [" CPPS_BUILDER_VERSION "]"
 #define CPPS_VERN		10000
 #define CPPS_NAME		"CPPS"
 #ifndef M_PI
@@ -261,20 +261,23 @@ typedef long long __int64;
 
 #define cpps_catch } catch (cpps_error& e)\
 {\
-	printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
+	printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(),e.file().empty() ? (c->curnode ? c->curnode->filename.c_str() : "") : e.file().c_str(), e.line() == 0 ? (c->curnode ? c->curnode->line : 0) :e.line()); \
 	\
 }\
 catch(cpps_trycatch_error& e)\
 {\
-	printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
+	printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(),e.file().empty() ? (c->curnode ? c->curnode->filename.c_str() : "") : e.file().c_str(), e.line() == 0 ? (c->curnode ? c->curnode->line : 0) :e.line()); \
 }\
 	catch (const char* s)\
 {\
 	printf("error: %s \n", s); \
+}\
+catch(...){\
+	printf("error: unknow \n"); \
 }
 #define _CPPS_CATCH } catch (cpps_error& e)\
 {\
-	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
+	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(),e.file().empty() ? (c->curnode ? c->curnode->filename.c_str() : "") : e.file().c_str(), e.line() == 0 ? (c->curnode ? c->curnode->line : 0) :e.line()); \
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\
 {\
@@ -285,7 +288,7 @@ for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != 
 }\
 catch(cpps_trycatch_error& e)\
 {\
-	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().c_str(), e.line()); \
+	printf("error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().empty() ? (c->curnode ? c->curnode->filename.c_str() : "") : e.file().c_str(), e.line() == 0 ? (c->curnode ? c->curnode->line : 0) :e.line()); \
 	printf("%s\n",e.callstack().c_str());\
 	std::vector<cpps_stack*> *stacklist = c->getcallstack(); \
 for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)\

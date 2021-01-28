@@ -72,7 +72,7 @@ int32 main(int argc,char **argv)
 
 	C* c = cpps::create(argc,argv);
 
-	printf("[%s Copyright (C) 2015-2020 By Johnson, Pub-test]\n", CPPS_VER);
+	printf("[CPPS %s (%s, %s) on %s %s]\n", CPPS_VER,__DATE__,__TIME__, CPPS_CURRENT_EASYPLANTFORM, CPPS_CURRENT_ARCH);
 
 
 	cpps_try

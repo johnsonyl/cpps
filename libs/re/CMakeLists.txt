@@ -39,7 +39,7 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WINDOWS)
-	target_link_libraries(${PROJECT_NAME} libcpps re2 ole32 )
+	target_link_libraries(${PROJECT_NAME} libcpps debug re2_d optimized re2 ole32  )
 ELSEIF(MACOS)
 	target_link_libraries(${PROJECT_NAME} libcpps -lre2 -ldl -lm -lpthread)
 ELSEIF(LINUX)
