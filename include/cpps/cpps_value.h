@@ -24,6 +24,7 @@ namespace cpps
 	struct cpps_map;
 	struct cpps_set;
 	struct cpps_pair;
+#pragma pack(1)
 	struct cpps_value
 	{
 		cpps_value();
@@ -56,6 +57,8 @@ namespace cpps
 		void				decruse();
 		void				incruse();
 		bool				isdomain() const;
+		bool				isref() const;
+		const				cpps_value& real() const;
 		cpps_value			ref();
 
 		struct hash
@@ -78,10 +81,12 @@ namespace cpps
 		Value					value;		//÷µ°£
 		int8					tt;			//¿‡–Õ
 
-		bool isref() const;
-		const cpps_value& real() const ;
-	};
 
+	private:
+		void _initstring(C* c, const char* s);
+
+	};
+#pragma pack()
 #define cpps_integer2number(i) (cpps_number)(i)
 #define cpps_number2integer(n) (cpps_integer)(n)
 

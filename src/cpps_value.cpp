@@ -193,22 +193,24 @@ namespace cpps
 		}
 		return false;
 	}
-
-	cpps_value::cpps_value(C* c, const char* s)
-	{
+	void cpps_value::_initstring(C* c, const char* s) {
 		std::string* str = NULL;
 		newclass<std::string>(c, &str, this);
 		str->append(s);
 	}
+	cpps_value::cpps_value(C* c, const char* s)
+	{
+		_initstring(c, s);
+	}
 
 	cpps_value::cpps_value(C* c, const std::string& s)
 	{
-		cpps_value(c, s.c_str());
+		_initstring(c, s.c_str());
 	}
 
 	cpps_value::cpps_value(C* c, const std::string&& s)
 	{
-		cpps_value(c, s.c_str());
+		_initstring(c, s.c_str());
 	}
 
 	cpps_value::cpps_value(cpps_value* v)

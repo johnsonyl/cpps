@@ -141,7 +141,7 @@ namespace cpps {
 		offset = v->offset;
 		offsettype = v->offsettype;
 		size = v->size;
-		needdelete = needdelete;
+		needdelete = v->needdelete;
 		if (needdelete)
 		{
 			value.val = CPPSNEW(cpps_value)();

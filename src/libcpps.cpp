@@ -224,12 +224,12 @@ namespace cpps {
 		buffer.pop();
 
 		/*const string*/
-		if (str->l.size() == 1) {
+		if (str->l.size() == 1 || str->l.size() == 0 ) {
 			std::string* tmpstr;
 			str->value.val = CPPSNEW(cpps_value)();
 			newclass(c, &tmpstr, str->value.val);
 			str->needdelete = true;
-			tmpstr->append(str->l[0]->s);
+			if(str->l.size() == 1) tmpstr->append(str->l[0]->s);
 		}
 
 		return(str);
@@ -252,12 +252,12 @@ namespace cpps {
 		buffer.pop();
 
 		/*const string*/
-		if (str->l.size() == 1) {
+		if (str->l.size() == 1 || str->l.size() == 0) {
 			std::string* tmpstr;
 			str->value.val = CPPSNEW(cpps_value)();
 			newclass(c, &tmpstr, str->value.val);
 			str->needdelete = true;
-			tmpstr->append(str->l[0]->s);
+			if (str->l.size() == 1)tmpstr->append(str->l[0]->s);
 		}
 
 		return(str);
@@ -3935,7 +3935,7 @@ namespace cpps {
 			newclass<std::string>(c, &retstr,&ret);
 			retstr->append(str);
 		}
-		else if(d->l.size() == 1) {
+		else {
 			ret = cpps_value(d->value.val); //¡Ÿ ±±‰¡ø
 		}
 	}
