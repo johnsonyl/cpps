@@ -9,7 +9,7 @@ var upload(var option,var apikey){
     var uploader = new http::uploader();
     uploader.addfile("config","dist/{filename}.json");
     uploader.addfile("filezip","dist/{filename}.tar.gz");
-    var ret = uploader.upload("http://c.cppscript.org:88/project/loadupdate?apikey={apikey}",[](var now,var total,var speed){
+    var ret = uploader.upload("http://192.168.31.124:8080/project/loadupdate?apikey={apikey}",[](var now,var total,var speed){
 	        var x = total / progress_max;
 		    var cur = toint(now / x);
             var n = toint(now / total * 100 );
@@ -52,7 +52,7 @@ var upload_check()
         println_color("Password is empty.",COLOR_RED);
         exit(0);
     }
-    var ret = http::post("http://c.cppscript.org:88/user/token","name={username}&pwd={pwd}");
+    var ret = http::post("http://192.168.31.124:8080/user/token","name={username}&pwd={pwd}");
     ret = json.decode(ret);
     if(!ismap(ret) || !ismap(ret["msg"])){
         println_color("Ops,Cpps server is crash.",COLOR_RED);
@@ -67,6 +67,10 @@ var upload_check()
             println_color("The username not exist or wrong password",COLOR_RED);
         }else if(ret["msg"]["code"] == -4){
             println_color("The username not exist or wrong password",COLOR_RED);
+        }else if(ret["msg"]["code"] == -5){
+            println_color("The projectname is empty",COLOR_RED);
+        }else if(ret["msg"]["code"] == -6){
+            println_color("This version already exists in release history",COLOR_RED);
         }
         exit(0);
     }

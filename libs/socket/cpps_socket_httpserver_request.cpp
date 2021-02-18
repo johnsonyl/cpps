@@ -49,8 +49,8 @@ namespace cpps {
 
 		//2.gzip
 		if (support_gzip) {
-			/*if(gzip_compress(output_buffer))
-				build_buffer.append("Content-Encoding: gzip\r\n");*/
+			if(gzip_compress(output_buffer))
+				build_buffer.append("Content-Encoding: gzip\r\n");
 		}
 		//3.keepalive
 		if (!keepalive){
@@ -63,9 +63,9 @@ namespace cpps {
 		//5. headers
 		build_buffer.append(output_headerslist);
 		build_buffer.append("\r\n");
+		
 		//6. body
 		build_buffer.append(output_buffer);
-
 
 
 		server->sends(socket_index, build_buffer);

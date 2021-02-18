@@ -23,7 +23,7 @@ namespace cpps
 		void									decruse();
 		int32									count();
 		char									gclevel;//0 新手，1 元老 2.永恒（不知道有没有用）
-		int32									gc_usecount; //usecount;
+		std::atomic<int32>						gc_usecount; //usecount;
 	};
 }
 #endif // CPPS_GCOBJECT_CPPS_HEAD_

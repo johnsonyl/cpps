@@ -64,8 +64,9 @@ namespace setuptools{
 					real_build_type = option["debug"];
 				}
 			}
-			
 			if(option["ext_modules"] != null){
+			
+
 				var curos = "";
 				if(sys.platform == "win64" || sys.platform == "win32")
 					curos = "windows";

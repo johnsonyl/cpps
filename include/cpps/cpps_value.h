@@ -56,9 +56,12 @@ namespace cpps
 		cpps_value&			operator=(const cpps_value& v);
 		void				decruse();
 		void				incruse();
+		void				decruse() const;
+		void				incruse() const;
 		bool				isdomain() const;
 		bool				isref() const;
-		const				cpps_value& real() const;
+		const cpps_value&			real() const;
+		cpps_value&			real();
 		cpps_value			ref();
 
 		struct hash
@@ -84,7 +87,7 @@ namespace cpps
 
 	private:
 		void _initstring(C* c, const char* s);
-
+		void _initstring(C* c, const std::string& s);
 	};
 #pragma pack()
 #define cpps_integer2number(i) (cpps_number)(i)
@@ -100,6 +103,7 @@ namespace cpps
 	cpps_map* cpps_to_cpps_map(const cpps_value& src);
 	cpps_set* cpps_to_cpps_set(const cpps_value& src);
 	cpps_pair* cpps_to_cpps_pair(const cpps_value& src);
+	cpps_domain* cpps_to_domain(const cpps_value& src);
 	cpps_cppsclass* cpps_to_cpps_cppsclass(const cpps_value& src);
 	cpps_cppsclassvar* cpps_to_cpps_cppsclassvar(const cpps_value& src);
 

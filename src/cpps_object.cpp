@@ -219,7 +219,7 @@ namespace cpps
 		return o.toreal();
 	}
 
-	object::object(cpps_value v) :value(v)
+	object::object(const cpps_value& v) :value(v)
 	{
 		
 	}

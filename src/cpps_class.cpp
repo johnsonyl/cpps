@@ -60,4 +60,9 @@ namespace cpps
 		return operatorlist[type];
 	}
 
+	cpps::node* cpps_cppsclass::getvars_node()
+	{
+		return o;
+	}
+
 }

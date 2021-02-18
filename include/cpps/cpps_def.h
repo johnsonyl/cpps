@@ -69,7 +69,7 @@
 #define  CPPS_BUILDER_VERSION ""
 #endif
 
-#define CPPS_VER		"1.0.0 Build 20210128 [" CPPS_BUILDER_VERSION "]"
+#define CPPS_VER		"1.0.1 Build 20210128 [" CPPS_BUILDER_VERSION "]"
 #define CPPS_VERN		10000
 #define CPPS_NAME		"CPPS"
 #ifndef M_PI
@@ -132,6 +132,7 @@
 #define	CPPS_OINCLUDE			121	//include
 #define	CPPS_OIMPORT			122	//import导入库
 #define	CPPS_ODOSTRING			123	//dostring
+#define	CPPS_ODONODE			124	//parse
 
 //expression
 #define	CPPS_OOFFSET			200	//offset相对定位免查找更快速执行

@@ -29,6 +29,7 @@ namespace cpps
 	int32					cpps_str2d(const char *s, cpps_number *result);
 	int32					cpps_str2i64(const char *s, cpps_integer *result);
 	void					cpps_pop_stack_to_here(C* c, cpps_stack* here, bool cleanup = true);
+	void					cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain, cpps_value& ret);
 }
 
 

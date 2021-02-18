@@ -28,7 +28,7 @@ namespace cpps
 
 		object();
 		object(const object& k);
-		object(cpps_value v);
+		object(const cpps_value& v);
 
 		static object real(object o);
 		struct vector

@@ -34,7 +34,8 @@ namespace cpps
 		void												regvar(C *c,cpps_regvar * v);
 		void												unregvar(C *c, cpps_regvar * v);
 		void												setexecdomain(cpps_domain *exec);
-		virtual void										destory(C *c,bool isclose = false);
+		void												cleanup();
+		virtual void										destory(C* c, bool isclose = false);
 		void												regidxvar(int32 offset, cpps_regvar* v);
 		void												removeidxvar(int32 offset);
 		cpps_regvar* 										getregidxvar(int32 offset);
@@ -55,6 +56,7 @@ namespace cpps
 		int32												offset;
 		int32												offsettype;
 		phmap::flat_hash_map<cpps_domain*, int32>*						parentclassoffset; //»ùÀàÆ«ÒÆ
+		void clone(cpps_domain* clone_domain);
 	};
 
 }

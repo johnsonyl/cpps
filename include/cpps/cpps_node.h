@@ -46,6 +46,7 @@ namespace cpps
 		void regnode(std::string& s, node* n);
 		void unregnode(std::string& s);
 		node* getnode(std::string& s, bool b = false);
+		void cpps_release();
 
 		std::string s;
 		std::vector<node*> l;
@@ -77,14 +78,5 @@ namespace cpps
 
 		var_list_type *varlist; //为了运行提速,牺牲解释速度.
 	};
-
-
-
-
-
-
-
-
-
 }
 #endif // CPPS_OBJ_CPPS_HEAD_

@@ -37,7 +37,7 @@ namespace cpps
 
 	void cpps_regvar::clone(cpps_regvar *right)
 	{
-		value = right->value;
+		if (!cpps_isnull(right->value)) value = right->value;
 		varName = right->varName;
 		nconst = right->nconst;
 		offset = right->offset;
@@ -46,6 +46,19 @@ namespace cpps
 		closeureusecount = right->closeureusecount;
 		stackdomain = right->stackdomain;
 		sourcestate= false;
+	}
+
+	void cpps_regvar::ref(cpps_regvar* right)
+	{
+		if (!cpps_isnull(right->value)) value = right->value.ref();
+		varName = right->varName;
+		nconst = right->nconst;
+		offset = right->offset;
+		offsettype = right->offsettype;
+		closeure = right->closeure;
+		closeureusecount = right->closeureusecount;
+		stackdomain = right->stackdomain;
+		sourcestate = false;
 	}
 
 	cpps_regvar::cpps_regvar()

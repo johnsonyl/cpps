@@ -34,7 +34,7 @@ std::string cpps_socket_prasehtml2str2(cpps::C* c, int32 & __htmltextblockidx, c
 			if (!take.empty()) {
 				vec.push_back(cpps::object::create(c, take));
 				char fmtstr[1024];
-				sprintf(fmtstr, "request.append(__htmltextblock[%d]);\n", __htmltextblockidx);
+				sprintf(fmtstr, "echo __htmltextblock[%d];\n", __htmltextblockidx);
 				__s += fmtstr;
 				++__htmltextblockidx;
 				take.clear();
@@ -90,9 +90,9 @@ std::string  cpps_socket_prasehtml2str(cpps::C* c,cpps_socket_httpserver_request
 			{
 				std::string r = cpps_socket_prasehtml2str2(c, __htmltextblockidx, vct, __s, take, __html, pos, '{', '{', "}}");
 				if (!r.empty()) {
-					__s += "request.append(";
+					__s += "echo ";
 					__s += r;
-					__s += ");\n";
+					__s += ";\n";
 					continue;
 				}
 			}

@@ -60,14 +60,13 @@ namespace cpps
 	std::string cpps_to_string(const cpps_value& src)
 	{
 		const cpps_value& obj = src.real();
-		std::stringstream strStream;
 		if (obj.tt == CPPS_TNUMBER)
 		{
-			strStream << obj.value.number;
+			return std::to_string( obj.value.number);
 		}
 		else if (obj.tt == CPPS_TINTEGER)
 		{
-			strStream << obj.value.integer;
+			return std::to_string(obj.value.integer);
 		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
@@ -77,10 +76,10 @@ namespace cpps
 		}
 		else if (obj.tt == CPPS_TBOOLEAN)
 		{
-			strStream << (obj.value.b == 0 ? "false" : "true");
+			return (obj.value.b == 0 ? "false" : "true");
 		}
 
-		return strStream.str();
+		return "";
 	}
 
 
@@ -116,6 +115,13 @@ namespace cpps
 		cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)obj.value.domain;
 		cpps_pair* ret = (cpps_pair*)cppsclassvar->getclsptr();
 		return ret;
+	}
+
+	cpps::cpps_domain* cpps_to_domain(const cpps_value& src)
+	{
+		const cpps_value& obj = src.real();
+		if (!obj.isdomain()) return NULL;
+		return obj.value.domain;
 	}
 
 	cpps_cppsclass* cpps_to_cpps_cppsclass(const cpps_value& src)
@@ -198,6 +204,11 @@ namespace cpps
 		newclass<std::string>(c, &str, this);
 		str->append(s);
 	}
+	void cpps_value::_initstring(C* c, const std::string& s) {
+		std::string* str = NULL;
+		newclass<std::string>(c, &str, this);
+		str->append(s);
+	}
 	cpps_value::cpps_value(C* c, const char* s)
 	{
 		_initstring(c, s);
@@ -205,12 +216,12 @@ namespace cpps
 
 	cpps_value::cpps_value(C* c, const std::string& s)
 	{
-		_initstring(c, s.c_str());
+		_initstring(c, s);
 	}
 
 	cpps_value::cpps_value(C* c, const std::string&& s)
 	{
-		_initstring(c, s.c_str());
+		_initstring(c, s);
 	}
 
 	cpps_value::cpps_value(cpps_value* v)
@@ -331,8 +342,7 @@ namespace cpps
 	{
 		// 避免自赋值
 		assert(this != &v);
-		if (v.tt == CPPS_TCLASSVAR || v.tt == CPPS_TSTRING || v.tt == CPPS_TLAMBDAFUNCTION || v.tt == CPPS_TTUPLE)
-			v.value.domain->incruse(); //先增后减
+		v.incruse();
 		decruse();
 		tt = v.tt;
 		value = v.value;
@@ -367,20 +377,37 @@ namespace cpps
 
 	void cpps_value::decruse()
 	{
-		if (tt == CPPS_TNIL) return ;
+		if (tt == CPPS_TINTEGER) return;
+		if (tt == CPPS_TNIL) return;
+		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
+			value.domain->decruse();
+	}
+	void cpps_value::decruse() const
+	{
+		if (tt == CPPS_TINTEGER) return;
+		if (tt == CPPS_TNIL) return;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->decruse();
 	}
 
 	 void cpps_value::incruse()
 	{
-		 if (tt == CPPS_TNIL) return ;
+		 if (tt == CPPS_TINTEGER) return;
+		 if (tt == CPPS_TNIL) return;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->incruse();
-	}
+	 }
+	 void cpps_value::incruse()const
+	 {
+		 if (tt == CPPS_TINTEGER) return;
+		 if (tt == CPPS_TNIL) return;
+		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
+			 value.domain->incruse();
+	 }
 
 	bool cpps_value::isdomain() const
 	{
+		if (tt == CPPS_TINTEGER) return false;
 		if (tt == CPPS_TNIL) return false;
 		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE;
 	}
@@ -396,6 +423,10 @@ namespace cpps
 
 
 	const cpps::cpps_value& cpps_value::real() const
+	{
+		return isref() ? *value.value : *this;
+	}
+	cpps::cpps_value& cpps_value::real()
 	{
 		return isref() ? *value.value : *this;
 	}

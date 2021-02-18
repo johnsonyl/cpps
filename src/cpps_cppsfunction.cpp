@@ -4,7 +4,6 @@ namespace cpps
 {
 
 	//内部
-	cpps_value				cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain);
 	void					cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
 	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
 	void					make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_std_vector& params);
@@ -96,9 +95,9 @@ namespace cpps
 					{
 						node* var = varname->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
 						cpps_domain* leftdomain = NULL;
-						cpps_value value = cpps_calculate_expression(c, prevdomain, prevdomain, var, leftdomain);
-						if (value.tt == CPPS_TREF) value = *value.value.value;
-						v->setval(value);
+						cpps_value value;
+						cpps_calculate_expression(c, prevdomain, prevdomain, var, leftdomain,value);
+						v->setval(value.real());
 					}
 				}
 				else

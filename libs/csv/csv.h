@@ -58,7 +58,7 @@ namespace cpps{
         //                                 LineReader                             //
         ////////////////////////////////////////////////////////////////////////////
 
-        namespace error{
+        namespace csv_error{
                 struct base : std::exception{
                         virtual void format_error_message()const = 0;
 
@@ -333,7 +333,7 @@ namespace cpps{
                 int data_begin;
                 int data_end;
 
-                char file_name[error::max_file_name_length+1];
+                char file_name[csv_error::max_file_name_length+1];
                 unsigned file_line;
 
                 static std::unique_ptr<ByteSourceBase> open_file(const char*file_name){
@@ -342,7 +342,7 @@ namespace cpps{
                         FILE*file = std::fopen(file_name, "rb");
                         if(file == 0){
                                 int x = errno; // store errno as soon as possible, doing it after constructor call can fail.
-                                error::can_not_open_file err;
+                                csv_error::can_not_open_file err;
                                 err.set_errno(x);
                                 err.set_file_name(file_name);
                                 throw err;
@@ -474,7 +474,7 @@ namespace cpps{
                         }
 
                         if(line_end - data_begin + 1 > block_len){
-                                error::line_length_limit_exceeded err;
+                                csv_error::line_length_limit_exceeded err;
                                 err.set_file_name(file_name);
                                 err.set_file_line(file_line);
                                 throw err;
@@ -504,7 +504,7 @@ namespace cpps{
         //                                 CSV                                    //
         ////////////////////////////////////////////////////////////////////////////
 
-        namespace error{
+        namespace csv_error{
                 const int max_column_name_length = 63;
                 struct with_column_name{
                         with_column_name(){
@@ -783,7 +783,7 @@ namespace cpps{
                                                 ++col_begin;
                                                 while(*col_begin != quote){
                                                         if(*col_begin == '\0')
-                                                                throw error::escaped_string_not_closed();
+                                                                throw csv_error::escaped_string_not_closed();
                                                         ++col_begin;
                                                 }
                                                 ++col_begin;
@@ -816,12 +816,12 @@ namespace cpps{
         struct throw_on_overflow{
                 template<class T>
                 static void on_overflow(T&){
-                        throw error::integer_overflow();
+                        throw csv_error::integer_overflow();
                 }
 
                 template<class T>
                 static void on_underflow(T&){
-                        throw error::integer_underflow();
+                        throw csv_error::integer_underflow();
                 }
         };
 
@@ -875,7 +875,7 @@ namespace cpps{
                 ){
                         for (int i : col_order) {
                                 if(line == nullptr)
-                                        throw ::cpps::error::too_few_columns();
+                                        throw ::cpps::csv_error::too_few_columns();
                                 char*col_begin, *col_end;
                                 chop_next_column<quote_policy>(line, col_begin, col_end);
 
@@ -887,7 +887,7 @@ namespace cpps{
                                 }
                         }
                         if(line != nullptr)
-                                throw ::cpps::error::too_many_columns();
+                                throw ::cpps::csv_error::too_many_columns();
                 }
 
                 template< class trim_policy, class quote_policy>
@@ -913,7 +913,7 @@ namespace cpps{
                                 for(unsigned i=0; i<column_count; ++i)
                                         if(col_begin == col_name[i]){
                                                 if(found[i]){
-                                                        error::duplicated_column_in_header err;
+                                                        csv_error::duplicated_column_in_header err;
                                                         err.set_column_name(col_begin);
                                                         throw err;
                                                 }
@@ -926,7 +926,7 @@ namespace cpps{
                                         if(ignore_policy & ::cpps::ignore_extra_column)
                                                 col_order.push_back(-1);
                                         else{
-                                                error::extra_column_in_header err;
+                                                csv_error::extra_column_in_header err;
                                                 err.set_column_name(col_begin);
                                                 throw err;
                                         }
@@ -935,7 +935,7 @@ namespace cpps{
                         if(!(ignore_policy & ::cpps::ignore_missing_column)){
                                 for(unsigned i=0; i<column_count; ++i){
                                         if(!found[i]){
-                                                error::missing_column_in_header err;
+                                                csv_error::missing_column_in_header err;
                                                 err.set_column_name(col_name[i].c_str());
                                                 throw err;
                                         }
@@ -946,11 +946,11 @@ namespace cpps{
                 template<class overflow_policy>
                 void parse(char*col, char &x){
                         if(!*col)
-                                throw error::invalid_single_character();
+                                throw csv_error::invalid_single_character();
                         x = *col;
                         ++col;
                         if(*col)
-                                throw error::invalid_single_character();
+                                throw csv_error::invalid_single_character();
                 }
 
                 template<class overflow_policy>
@@ -980,7 +980,7 @@ namespace cpps{
                                         }
                                         x = 10*x+y;
                                 }else
-                                        throw error::no_digit();
+                                        throw csv_error::no_digit();
                                 ++col;
                         }
                 }
@@ -1011,7 +1011,7 @@ namespace cpps{
                                                 }
                                                 x = 10*x-y;
                                         }else
-                                                throw error::no_digit();
+                                                throw csv_error::no_digit();
                                         ++col;
                                 }
                                 return;
@@ -1087,7 +1087,7 @@ namespace cpps{
                                 }
                         }else{
                                 if(*col != '\0')
-                                        throw error::no_digit();
+                                        throw csv_error::no_digit();
                         }
 
                         if(is_neg)
@@ -1187,13 +1187,13 @@ namespace cpps{
                                 do{
                                         line = in.next_line();
                                         if(!line)
-                                                throw error::header_missing();
+                                                throw csv_error::header_missing();
                                 }while(comment_policy::is_comment(line));
 
                                 detail::parse_header_line
                                         < trim_policy, quote_policy>
                                         (column_count,line, col_order, column_names, ignore_policy);
-                        }catch(error::with_file_name&err){
+                        }catch(csv_error::with_file_name&err){
                                 err.set_file_name(in.get_truncated_file_name());
                                 throw;
                         }
@@ -1209,13 +1209,13 @@ namespace cpps{
                                 do{
                                         line = in.next_line();
                                         if(!line)
-                                                throw error::header_missing();
+                                                throw csv_error::header_missing();
                                 }while(comment_policy::is_comment(line));
 
                                 detail::parse_header_line
                                         < trim_policy, quote_policy>
                                         (column_count,line, col_order, column_names, ignore_policy);
-                        }catch(error::with_file_name&err){
+                        }catch(csv_error::with_file_name&err){
                                 err.set_file_name(in.get_truncated_file_name());
                                 throw;
                         }
@@ -1283,11 +1283,11 @@ namespace cpps{
                                 try{
                                         try{
                                                 ::cpps::detail::parse<overflow_policy>(row[r], t);
-                                        }catch(error::with_column_content&err){
+                                        }catch(csv_error::with_column_content&err){
                                                 err.set_column_content(row[r]);
                                                 throw;
                                         }
-                                }catch(error::with_column_name&err){
+                                }catch(csv_error::with_column_name&err){
                                         err.set_column_name(column_names[r].c_str());
                                         throw;
                                 }
@@ -1300,12 +1300,12 @@ namespace cpps{
 							try {
 								::cpps::detail::parse<overflow_policy>(row[r], list[r]);
 							}
-							catch (error::with_column_content& err) {
+							catch (csv_error::with_column_content& err) {
 								err.set_column_content(row[r]);
 								throw;
 							}
 						}
-						catch (error::with_column_name& err) {
+						catch (csv_error::with_column_name& err) {
 							err.set_column_name(column_names[r].c_str());
 							throw;
 						}
@@ -1333,12 +1333,12 @@ namespace cpps{
                         list.resize(column_count);
 						parse_helper(0, list);
 					}
-					catch (error::with_file_name& err) {
+					catch (csv_error::with_file_name& err) {
 						err.set_file_name(in.get_truncated_file_name());
 						throw;
 					}
 				}
-				catch (error::with_file_line& err) {
+				catch (csv_error::with_file_line& err) {
 					err.set_file_line(in.get_file_line());
 					throw;
 				}
@@ -1367,12 +1367,12 @@ namespace cpps{
 
 						parse_helper(0, cols...);
 					}
-					catch (error::with_file_name& err) {
+					catch (csv_error::with_file_name& err) {
 						err.set_file_name(in.get_truncated_file_name());
 						throw;
 					}
 				}
-				catch (error::with_file_line& err) {
+				catch (csv_error::with_file_line& err) {
 					err.set_file_line(in.get_file_line());
 					throw;
 				}
@@ -1392,7 +1392,7 @@ namespace cpps {
          
             reader = new CSVReader<>(csvpath.c_str());
 		}
-        void  read_header(cpps::object headers,object _ignore_column)
+        void  read_header(C*c,cpps::object headers,object _ignore_column)
         {
             ignore_column v = ignore_extra_column;
             if (_ignore_column.isint()) v = (ignore_column) _ignore_column.toint();
@@ -1406,13 +1406,13 @@ namespace cpps {
 			    reader->read_header(v, headers_vct);
             }
             catch (...){
-                throw cpps_error(__FILE__, __LINE__, cpps_error_normalerror, "csverror");
+                cpps::error(c, "csverror");
             }
         }
         bool has_column(std::string columnname) {
             return reader->has_column(columnname);
         }
-        void write_header(cpps::object headers)
+        void write_header(C* c, cpps::object headers)
         {
 			std::vector<std::string> headers_vct;
 			for (cpps::object cv : cpps::object::vector(headers)) {
@@ -1422,7 +1422,7 @@ namespace cpps {
 				reader->set_header(headers_vct);
 			}
 			catch (...) {
-				throw cpps_error(__FILE__, __LINE__, cpps_error_normalerror, "csverror");
+				cpps::error(c, "csverror");
 			}
         }
         cpps_integer get_file_line() {

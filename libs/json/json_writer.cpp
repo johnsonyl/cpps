@@ -272,7 +272,7 @@ JSONCPP_STRING UTF82WCS(const char* szU8)
 
 
 	ConversionResult result = ConvertUTF8toUTF16(&Src, SrcEnd, &Dst, DstEnd, ConversionFlags::strictConversion);
-	if (result != conversionOK) {
+	if (result != conversionOK && result != sourceExhausted) {
 		ret.clear();
 		return ret;
 	}

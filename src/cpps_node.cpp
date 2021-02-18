@@ -83,15 +83,6 @@ namespace cpps {
 
 	node::~node()
 	{
-#ifdef _DEBUG
-		static bool b = false;
-		if (b) {
-			FILE* file = fopen("node.txt", "ab+");
-			char buff[4096];
-			sprintf(buff, "file:%s line:%d", filename.c_str(), line);
-			fclose(file);
-		}
-#endif
 		if (varlist) {
 			CPPSDELETE(varlist);
 			varlist = NULL;
@@ -290,6 +281,11 @@ namespace cpps {
 			return parent->getnode(s, b);
 		}
 		return NULL;
+	}
+
+	void node::cpps_release()
+	{
+		cpps_destory_node(this);
 	}
 
 }

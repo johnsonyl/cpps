@@ -238,7 +238,7 @@ namespace cpps {
 				}
 			}
 			//3.找本地文件(cache么?)
-			std::string filepath = cpps_getcwd() + cpps_request_ptr->path;
+			std::string filepath = cpps_getcwd() + httpserver->getwwwroot() + cpps_request_ptr->path;
 			std::string ext = cpps_io_getfileext(cpps_request_ptr->path);
 			if (ext.empty()) {
 				filepath += "/index.html";
@@ -252,8 +252,12 @@ namespace cpps {
 					std::string content_type = "Content-Type";
 					std::string Server = "Server";
 					std::string ServerName = "Cpps Server";
+					std::string cache_control = "Cache-Control";
+					std::string cache_control_maxage = "max-age=2592000, public";
 					std::string Connection = "Connection";
 					std::string ConnectionType = "close";
+
+					cpps_request_ptr->real_addheader(cache_control, cache_control_maxage);
 					cpps_request_ptr->real_addheader(content_type, mime_type);
 					cpps_request_ptr->real_addheader(Server, ServerName);
 					cpps_request_ptr->real_addheader(Connection, ConnectionType);
@@ -295,7 +299,7 @@ namespace cpps {
 
 			//5.脚本异常的话...
 			std::string errmsg;
-			char errbuffer[4096];
+			char errbuffer[8192];
 			sprintf(errbuffer, "error: %d : %s file:%s line:%d \nError stack information:\n", e.error(), e.what().c_str(), e.file().c_str(), e.line());
 			errmsg.append(errbuffer);
 			std::vector<cpps_stack*>* stacklist = httpserver->c->getcallstack();
@@ -592,6 +596,15 @@ namespace cpps {
 			}
 			cpps_request_ptr->setsession(session);
 		}
+	}
+
+	std::string cpps_socket_httpserver::getwwwroot()
+	{
+		return _wwwroot ;
+	}
+	void cpps_socket_httpserver::setwwwroot(std::string wwwroot)
+	{
+		_wwwroot = wwwroot + "/";
 	}
 
 }

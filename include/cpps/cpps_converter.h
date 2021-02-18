@@ -19,11 +19,11 @@ namespace cpps
 	template<class R>
 	struct cpps_converter
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
 			return obj.tt == CPPS_TCLASSVAR || obj.tt == CPPS_TNIL || obj.tt == CPPS_TUSERDATA;
 		}
-		static R		apply(cpps_value obj)
+		static R		apply(const cpps_value& obj)
 		{
 			if(!match(obj))
 				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to %s, cppsvalue type is %s , conversion failed.", typeid(R).name() ,type_s(obj).c_str()));
@@ -38,11 +38,11 @@ namespace cpps
 #define def_cpps_number_cast(t,v) template<>\
 	struct cpps_converter<t>\
 	{\
-	static bool	match(cpps_value obj)\
+	static bool	match(const cpps_value& obj)\
 	{\
 	return obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TNUMBER; \
 	}\
-	static t		apply(cpps_value obj)\
+	static t		apply(const cpps_value& obj)\
 	{\
 	return static_cast<t>(CPPS_PP_CAT(cpps_to_, v)(obj)); \
 	}\
@@ -78,11 +78,11 @@ namespace cpps
 	template<>
 	struct cpps_converter<std::string>
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
 			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
 		}
-		static std::string		apply(cpps_value obj)
+		static std::string		apply(const cpps_value& obj)
 		{
 			return cpps_to_string(obj);
 		}
@@ -91,11 +91,11 @@ namespace cpps
 	template<>
 	struct cpps_converter < const char * >
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING ;
 		}
-		static const char *	apply(cpps_value obj)
+		static const char *	apply(const cpps_value& obj)
 		{
 			return (const char *)cpps_get_string(obj)->c_str();
 		}
@@ -103,11 +103,11 @@ namespace cpps
 	template<>
 	struct cpps_converter < const unsigned char * >
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING;
 		}
-		static const unsigned char *		apply(cpps_value obj)
+		static const unsigned char *		apply(const cpps_value& obj)
 		{
 			return (const unsigned char *)cpps_get_string(obj)->c_str();
 		}
@@ -115,11 +115,11 @@ namespace cpps
 	template<>
 	struct cpps_converter < char * >
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING ;
 		}
-		static char *		apply(cpps_value obj)
+		static char *		apply(const cpps_value& obj)
 		{
 			return (char *)cpps_get_string(obj)->c_str();
 		}
@@ -127,11 +127,11 @@ namespace cpps
 	template<>
 	struct cpps_converter < unsigned char * >
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING;
 		}
-		static unsigned char *		apply(cpps_value obj)
+		static unsigned char *		apply(const cpps_value& obj)
 		{
 			return (unsigned char *)cpps_get_string(obj)->c_str();
 		}
@@ -139,11 +139,11 @@ namespace cpps
 	template<>
 	struct cpps_converter<cpps_value>
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
 			return true;
 		}
-		static cpps_value		apply(cpps_value obj)
+		static cpps_value		apply(const cpps_value& obj)
 		{
 			return obj;
 		}
@@ -152,11 +152,11 @@ namespace cpps
 	template<>
 	struct cpps_converter<bool>
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
 			return true;
 		}
-		static bool		apply(cpps_value obj)
+		static bool		apply(const cpps_value& obj)
 		{
 
 			switch (obj.tt)
@@ -217,11 +217,11 @@ namespace cpps
 	template<>
 	struct cpps_converter<object>
 	{
-		static bool	match(cpps_value obj)
+		static bool	match(const cpps_value& obj)
 		{
 			return true;
 		}
-		static object		apply(cpps_value obj)
+		static object		apply(const cpps_value& obj)
 		{
 			return object(obj);
 		}

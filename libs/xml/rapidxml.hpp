@@ -1377,7 +1377,7 @@ namespace rapidxml
         //! Document can be parsed into multiple times. 
         //! Each new call to parse removes previous nodes and attributes (if any), but does not clear memory pool.
         //! \param text XML data to parse; pointer is non-const to denote fact that this data may be modified by the parser.
-        template<int Flags = 0>
+        template<int Flags>
         void parse(Ch *text)
         {
             assert(text);

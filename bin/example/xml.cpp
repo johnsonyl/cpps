@@ -1,14 +1,85 @@
 #import "xml"
 
-var xml_doc = xml.load("<root><a/><b/></root>");
-var nodes = xml_doc.children();
-foreach(var node : nodes)
-{
-    println(node.name());
-}
-var nodes = xml_doc.children()[0].children();
-foreach(var node : nodes)
-{
-    println(node.name());
-}
+var xml_doc = new xml::document()
+var root = new xml::node("root")
+xml_doc.append_node(root)
+var attr1 = new xml::attribute("attr1", "1")
+root.append_attribute(attr1)
+root.append_attribute(new xml::attribute("attr2", "2"))
+root.prepend_attribute(new xml::attribute("attr3", "3"))
+root.insert_attribute(attr1, new xml::attribute("attr4", "4"))
 
+var roles = new xml::node("roles")
+root.append_node(roles)
+var role1 = new xml::node("role", "wanger")
+roles.append_node(role1)
+roles.append_node(new xml::node("role", "mazi"))
+roles.prepend_node(new xml::node("role", "zhangsan"))
+roles.insert_node(role1, new xml::node("role", "mazi"))
+
+var items = new xml::node("items")
+root.append_node(items)
+items.append_node(new xml::node("weapon", "qinggang"))
+items.append_node(new xml::node("cloth", "fengyi"))
+
+println(xml_doc.to_string())
+
+var xml_doc2 = new xml::document()
+xml_doc2.parse(xml_doc.to_string())
+xml.xml_check(xml_doc2.first_node().name() == "root")
+xml.xml_check(xml_doc2.first_node().attributes().size() == 4)
+xml.xml_check(xml_doc2.first_node().attributes("attr1").size() == 1)
+xml.xml_check(xml_doc2.first_node().first_attribute().name() == "attr3")
+xml.xml_check(xml_doc2.first_node().first_attribute().value() == "3")
+xml.xml_check(xml_doc2.first_node().next_attribute(xml_doc2.first_node().first_attribute()).name() == "attr4")
+xml.xml_check(xml_doc2.first_node().next_attribute(xml_doc2.first_node().first_attribute(), "attr1").name() == "attr1")
+xml.xml_check(!xml_doc2.first_node().next_attribute(xml_doc2.first_node().first_attribute(), "attr3"))
+xml.xml_check(xml_doc2.first_node().last_attribute().name() == "attr2")
+xml.xml_check(xml_doc2.first_node().last_attribute().value() == "2")
+xml.xml_check(xml_doc2.first_node().previous_attribute(xml_doc2.first_node().last_attribute()).name() == "attr1")
+xml.xml_check(xml_doc2.first_node().previous_attribute(xml_doc2.first_node().last_attribute(), "attr4").name() == "attr4")
+xml.xml_check(!xml_doc2.first_node().previous_attribute(xml_doc2.first_node().last_attribute(), "attr2"))
+xml.xml_check(xml_doc2.first_node().first_attribute("attr1").value() == "1")
+xml.xml_check(!xml_doc2.first_node().first_attribute("attr"))
+xml.xml_check(xml_doc2.first_node().last_attribute("attr1").value() == "1")
+xml.xml_check(!xml_doc2.first_node().last_attribute("attr"))
+xml.xml_check(xml_doc2.first_node().children().size() == 2)
+xml.xml_check(xml_doc2.first_node().first_node().name() == "roles")
+xml.xml_check(xml_doc2.first_node().next_node(xml_doc2.first_node().first_node()).name() == "items")
+xml.xml_check(!xml_doc2.first_node().next_node(xml_doc2.first_node().first_node(), "roles"))
+xml.xml_check(!xml_doc2.first_node().first_node("none"))
+xml.xml_check(xml_doc2.first_node().last_node().name() == "items")
+xml.xml_check(xml_doc2.first_node().previous_node(xml_doc2.first_node().last_node()).name() == "roles")
+xml.xml_check(!xml_doc2.first_node().previous_node(xml_doc2.first_node().last_node(), "items"))
+xml.xml_check(!xml_doc2.first_node().last_node("none"))
+xml.xml_check(xml_doc2.first_node().first_node("roles").name() == "roles")
+xml.xml_check(xml_doc2.first_node().first_node("items").name() == "items")
+xml.xml_check(xml_doc2.first_node().first_node().children().size() == 4)
+xml.xml_check(xml_doc2.first_node().first_node().children("role").size() == 4)
+
+xml.xml_check(xml_doc.to_string() == xml_doc2.to_string())
+
+xml_doc2.first_node().remove_attribute(xml_doc2.first_node().first_attribute("attr1"))
+xml.xml_check(xml_doc2.first_node().attributes().size() == 3)
+xml_doc2.first_node().remove_first_attribute()
+xml.xml_check(xml_doc2.first_node().attributes().size() == 2)
+xml_doc2.first_node().remove_last_attribute()
+xml.xml_check(xml_doc2.first_node().attributes().size() == 1)
+
+var roles2 = xml_doc2.first_node().first_node()
+xml.xml_check(roles2.children().size() == 4)
+roles2.remove_node(roles2.first_node())
+xml.xml_check(roles2.children().size() == 3)
+roles2.remove_first_node()
+xml.xml_check(roles2.children().size() == 2)
+roles2.remove_last_node()
+xml.xml_check(roles2.children().size() == 1)
+
+xml_doc2.clear()
+xml.xml_check(xml_doc2.to_string() == "\n")
+
+// 会崩溃
+// var xml_node = new xml::node("name", 0, "element");
+// println(xml_node.type());
+// println(xml_node.name());
+// println(xml_node.value());

@@ -30,6 +30,7 @@ class HttpTemplateCache
 	var __s = "";
 	var __headers = "";
 	var lastchangetime;
+	var __node;
 }
 var 	__socket_httpserver_createuuid()
 {
@@ -59,6 +60,7 @@ var render(var request,var __html,var __data)
 		__cache.htmlpath = "{io.getcwd()}/{__html}";
 		__cache.__s = socket.prasehtml2str(request,__cache.htmlpath,__cache.__htmltextblock);
 		__cache.lastchangetime = io.last_write_time(__cache.htmlpath);
+		__cache.__node = parse(__cache.__headers..__cache.__s);
 		__http__template__cache__.insert(__html,__cache);
 	}
 	else {
@@ -66,14 +68,15 @@ var render(var request,var __html,var __data)
 		if(__cache.lastchangetime != lasttime){
 			__cache.__htmltextblock.clear();
 			__cache.__s = socket.prasehtml2str(request,__cache.htmlpath,__cache.__htmltextblock);
+			__cache.__node.release();
+			__cache.__node = parse(__cache.__headers..__cache.__s);
 			__cache.lastchangetime = lasttime;
 		}
 	}
 
 	__htmltextblock = __cache.__htmltextblock;
 	setechofunc(request.append,request);
-	dostring(__cache.__headers);
-	dostring(__cache.__s);
+	donode(__cache.__node);
 	setechofunc(nil);
 	request.send(200,"OK");
 }

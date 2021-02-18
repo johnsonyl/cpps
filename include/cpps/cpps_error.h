@@ -65,5 +65,8 @@ struct cpps_error
 
 namespace cpps {
 	void fail(std::string msg, int32 n = cpps_error_normalerror,const char* f = __FILE__, usint32 l = __LINE__);
+	void error(C* c, const char* format, ...);
 }
+
+
 #endif // CPPS_ERROR_CPPS_HEAD_

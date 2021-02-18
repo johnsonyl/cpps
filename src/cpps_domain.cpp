@@ -144,7 +144,7 @@ namespace cpps
 				//注册父类的operator.
 				for (size_t i = 0; i < _parent->operatorlist.size(); i++) {
 					if (_parent->operatorlist[i]) {
-						cppsclass[i] = _parent[i];
+						cppsclass->operatorlist[i] = _parent->operatorlist[i];
 					}
 				}
 			}
@@ -219,14 +219,28 @@ namespace cpps
 	{
 		parent[1] = exec;
 	}
-
+	void cpps_domain::cleanup()
+	{
+		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
+		{
+			cpps_regvar* v = it->second;
+			v->release();
+		}
+		varList.clear();
+		hasVar = false;
+		if (stacklist != NULL)
+		{
+			stacklist->clear();
+			CPPSDELETE(stacklist);
+			stacklist = NULL;
+		}
+	}
 	void cpps_domain::destory(C* c,bool isclose)
 	{
 		if (hasVar || isclose) {
 			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
 			{
 				cpps_regvar* v = it->second;
-				std::string name = it->first;
 				if ((!v->closeure || v->closeureusecount <= 0) || isclose) { /*闭包不删除,但是必须有人使用*/
 					cpps_gc_remove_barrier(c, v);
 					if (!isclose && v->stackdomain && v->offset != -1) {
@@ -340,4 +354,22 @@ namespace cpps
 		stacklist->resize(size);
 	}
 
+	void cpps_domain::clone(cpps_domain* clone_domain)
+	{
+		if (!clone_domain->stacklist->empty()) {
+			resize((usint16)clone_domain->stacklist->size());
+		}
+		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = clone_domain->varList.begin(); it != clone_domain->varList.end(); ++it)
+		{
+			cpps_regvar* v = it->second;
+			const std::string &name = it->first;
+			if (name != "_G") {
+				cpps_regvar* v2 = CPPSNEW(cpps_regvar)();
+				v2->ref(v);
+				if (v2->offset != -1) regidxvar(v2->offset, v2);
+				varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(name, v2));
+				hasVar = true;
+			}
+		}
+	}
 }

@@ -343,7 +343,7 @@ namespace cpps
 
 	
 	
-	bool	cpps_loadlibrary(C *c,std::string libname)
+	bool	cpps_loadlibrary(C *c,std::string libname, cppsbuffer& buffer)
 	{
 		std::string path = "lib/"+ libname + "/";
 		std::string fpath;
@@ -422,7 +422,8 @@ namespace cpps
 				c->modulelist.insert(phmap::flat_hash_map<std::string, HMODULE>::value_type(libname, NULL));
 			std::string fileSrc;
 			cpps_load_filebuffer(fpath.c_str(), fileSrc);
-			node* o = loadbuffer(c,c->_G,  fileSrc, fpath);
+			buffer.append(fpath, fileSrc.c_str(), (int32)fileSrc.size());
+			/*node* o = loadbuffer(c,c->_G,  fileSrc, fpath);
 			cpps_stack* stack = c->stack_alloc();
 			stack->init("main.cpp", 0, "import");
 			c->push_stack(stack);
@@ -430,7 +431,7 @@ namespace cpps
 			c->pop_stack();
 			cpps_gc_check_step(c);
 			c->stack_free(stack);
-			if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
+			if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }*/
 		}
 
 		if (!bexits)
@@ -449,7 +450,7 @@ namespace cpps
 		cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
 		if (cpps_detach == NULL)
 		{
-			printf("Free Module��%s�� faild.\r\n", libname.c_str());
+			printf("Free Module %s  faild.\r\n", libname.c_str());
 		}
 		else
 		{
@@ -461,7 +462,7 @@ namespace cpps
 		CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
 		if (api == NULL)
 		{
-			printf("dlsym [LIBAPI] faild\r\n");
+			printf("dlsym [LIBAPI] %s faild\r\n", libname.c_str());
 		}
 		else
 		{
@@ -638,7 +639,7 @@ namespace cpps
 			cpps_vector* vct = cpps_to_cpps_vector(v);
 			cpps_value v2;
 			newcppsclasvar(c, cppsclass,&v2);
-			if (vct->realvector().size() == v2.value.domain->stacklist->size())
+			if (v2.value.domain->stacklist && vct->realvector().size() == v2.value.domain->stacklist->size())
 			{
 				size_t size = (size_t)vct->size();
 				
@@ -741,11 +742,33 @@ namespace cpps
 		cpps::object::define(c, "__echofunc", echofunc);
 		cpps::object::define(c, "__echoleft", echoleft);
 	}
+	cpps_value cpps_base_parse(C* c, cpps_value buffer) {
+		
+		if (!cpps_isstring(buffer)) return nil;
+
+		std::string* str = cpps_get_string(buffer);
+
+		c->buildoffset = false;
+		node* o = loadbuffer(c, c->_G, *str, c->curnode->filename);
+		c->buildoffset = true;
+	
+
+		node *copynode = NULL;
+		cpps_value ret;
+		newclass(c, &copynode, &ret);
+		copynode->clone(o);
+		cpps_destory_node(o); o->release(); o = NULL;
+
+		return ret;
+	}
 	void cpps_regbase(C *c)
 	{
 		
 		cpps::_module(c)[
 			_class<C>("C_STATE"),
+			_class<node>("cpps_node")
+				.def("release",&node::cpps_release),
+			def_inside("parse", cpps_base_parse),
 			def_inside("printf", cpps_base_printf),
 			def_inside("print", cpps_base_printf),
 			def_inside("printfln", cpps_base_printfln),
@@ -789,8 +812,8 @@ namespace cpps
 			def_inside("setechofunc", cpps_setechofunc),
 			defvar(c,"_VERSION", CPPS_VER),
 			defvar(c,"_VERSIONNO", CPPS_VERN),
-			def_inside("loadlibrary", cpps_loadlibrary),
-			def_inside("freelibrary", cpps_freelibrary),
+			//def_inside("loadlibrary", cpps_loadlibrary),
+			//def_inside("freelibrary", cpps_freelibrary),
 			def_inside("getargs", cpps_getargs),
 			def_inside("execmd",cpps_base_execmd)
 		];

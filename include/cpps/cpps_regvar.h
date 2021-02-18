@@ -29,6 +29,7 @@ namespace cpps
 		bool					issource();
 		void					setsource(bool src);
 		void					clone(cpps_regvar* right);
+		void					ref(cpps_regvar* right);
 		void					release();
 	public:
 		cpps_value				value;

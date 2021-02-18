@@ -27,8 +27,8 @@ namespace cpps
 		void						init(const char* pf, int32 pl, const char *pfunc);
 		cpps_std_vector *			createparams();
 		cpps_value *				create_cpps_value();
-		char		 f[255];
-		char		 func[64];
+		char		 f[4096];
+		char		 func[128];
 		int32			l;
 	};
 	namespace coroutine {struct Ordinator;}
@@ -88,7 +88,9 @@ namespace cpps
 		phmap::flat_hash_map<std::string, cpps_module_data*>						savemoduledatas;
 		coroutine::Ordinator*														ordinator;
 		bool																		isterminate;
+		bool																		isloadbase;
 		memory_allocal_handler*														memory_handler;
+		void clone(C* clone_c);
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

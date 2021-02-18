@@ -106,7 +106,7 @@ class unixcompiler : ccompiler
         println_color("-- Building Path:{work_path}",6);
 
         var c = newsources.size();
-        foreach(var i : xrange(0,c-1)){
+        foreach(var i : xrange(0,c)){
         	var src = newsources[i];
         	var obj = objs[i];
         	var opt = string.join(" ",cpp_flags);

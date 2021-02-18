@@ -11,13 +11,6 @@
 //@website		:	http://cppscript.org
 //==================================
 
-#ifndef _WIN32
-
-#include <netinet/in.h>
-#include <pthread.h>
-
-#endif
-
 namespace cpps
 {
 	class cpps_thread
@@ -25,7 +18,19 @@ namespace cpps
 	public:
 		cpps_thread();
 		~cpps_thread();
+
+		void			constructor(C* __parent_thread, object func, object v);
+		void			join();
+		bool			joinable();
+		void			detach();
+		void			swap(cpps_thread* _swap_thread);
+		static	void	_cx_thread_func(cpps_thread* pthis, object func, object v);
+
+		C*				_cx_parent_thread_c;
+		std::thread		*_cx_thread;
 	};
+
+	void		cpps_regthread(C* c);
 }
 
 #endif // CPPS_THREAD_CPPS_HEAD_

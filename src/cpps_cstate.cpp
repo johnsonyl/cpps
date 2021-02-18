@@ -116,6 +116,7 @@ namespace cpps
 		application_argv = argv;
 		ordinator = NULL;
 		isterminate = false;
+		isloadbase = false;
 		_callstack = CPPSNEW( std::vector<cpps_stack*>)();
 	}
 
@@ -144,6 +145,11 @@ namespace cpps
 		_callstack->clear();
 	}
 
+	void C::clone(C* clone_c)
+	{
+		_G->clone(clone_c->_G);
+		isloadbase = true;
+	}
 
 	cpps_value * cpps_stack::create_cpps_value()
 	{

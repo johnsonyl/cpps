@@ -71,8 +71,8 @@ namespace cpps {
 		cpps_socket_httpserver_cachefile*		create_cachefile(std::string &filepath,std::string &content, cpps_integer last_write_time);
 		cpps_socket_httpserver_cachefile*		get_cachefile(std::string filepath);
 		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
-
-
+		std::string								getwwwroot();
+		void									setwwwroot(std::string wwwroot);
 	public:
 		static void								cb_listener(uv_stream_t* server, int status);
 		static void								generic_handler(struct http_request& req, void* handler);
@@ -88,6 +88,7 @@ namespace cpps {
 		http_mime_type							mime_types;
 		http_session_list						session_list;
 		http_cachefile_list						cachefile_list;
+		std::string								_wwwroot;
 	private:
 		object									createuuidfunc;
 

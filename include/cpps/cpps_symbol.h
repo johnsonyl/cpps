@@ -71,7 +71,7 @@ namespace cpps
 		usint8 getparamnum(){ return (symbollimit >> 4) & 0x03; }
 		usint8 getparamleftlimit(){ return symbollimit & 0x80; }
 		usint8 getparamrightlimit(){ return symbollimit & 0x40; }
-
+		int8   getsymboltype() { return symboltype; }
 		//cpps_symbol(byte prio, byte paramnum,byte paramlimit,std::string funcname)
 		//{
 		//	symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;

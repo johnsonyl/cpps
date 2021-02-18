@@ -189,7 +189,7 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("./config");
+system("./config -fPIC shared zlib");
 system("make");
 system("sudo make install");
 
@@ -200,7 +200,7 @@ if(sys.os != "macos"){
 	println("-- Entered the directory: {buildpath}");
 	println("-- Building for : {buildname}");
 	io.chdir(buildpath);
-	system("./configure --disable-static --enable-shared --with-ssl --with-zlib --enable-ipv6 –disable-ldap --disable-ldaps");
+	system("./configure --enable-static --with-ssl --with-zlib --enable-ipv6");
 	system("make");
 	system("sudo make install");
 }

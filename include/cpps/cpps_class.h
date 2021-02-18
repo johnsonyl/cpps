@@ -30,6 +30,7 @@ namespace cpps
 		virtual void						release();
 		virtual void						operatorreg(int8 type, cpps_function* func);
 		virtual cpps_function*				getoperator(int8 type);
+		node*								getvars_node();
 		node* o; //定义的变量
 		std::string classname;
 		std::vector<cpps_cppsclass*>		_parentclasslist;

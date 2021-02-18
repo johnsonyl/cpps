@@ -16,7 +16,6 @@
 #include "cpps_lock.h"
 #include "cpps_new.h"
 #include "cpps_object_pool.h"
-#include "cpps_thread.h"
 #include "cpps_cat.h"
 #include "cpps_enum_param.h"
 #include "cpps_error.h"
@@ -55,6 +54,7 @@
 #include "cpps_async_task.h"
 #include "cpps_async_loop.h"
 #include "cpps_asyncio.h"
+#include "cpps_thread.h"
 
 #include "cpps_base.h"
 #include "cpps_math.h"
