@@ -41,6 +41,7 @@ namespace cpps
 		cpps::cpps_reg_cpps_class<cpps_async_loop>(c, "ASYNC_LOOP", "asyncio");
 		cpps::cpps_reg_cpps_class<cpps_async_task>(c, "ASYNC_TASK", "asyncio");
 		cpps::cpps_reg_cpps_class<cpps_thread>(c, "thread", "_G");
+		cpps::cpps_reg_cpps_class<cpps_lock>(c, "mutex", "_G");
 		
 	}
 }

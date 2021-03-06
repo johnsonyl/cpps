@@ -409,6 +409,15 @@ namespace cpps
 		}
 		return cpps_value(c,ret);
 	}
+	cpps_integer cpps_string_isalnum(cpps_integer i) {
+		return (cpps_integer)isalnum((int32)i);
+	}
+	cpps_integer cpps_string_isalpha(cpps_integer i) {
+		return (cpps_integer)isalpha((int32)i);
+	}
+	cpps_integer cpps_string_isspace(cpps_integer i) {
+		return (cpps_integer)isspace((int32)i);
+	}
 
 	void cpps_regstring(C *c)
 	{
@@ -438,6 +447,11 @@ namespace cpps
  				.def("pop_back", &cpps::string::cpps_string_pop_back)
  				.def("push_back", &cpps::string::cpps_string_push_back)
  				.def("append", &cpps::string::cpps_string_append)
+ 				.def("title", &cpps::string::cpps_string_title)
+ 				.def("center", &cpps::string::cpps_string_center)
+ 				.def("isalnum", &cpps::string::cpps_string_isalnum)
+ 				.def("isalpha", &cpps::string::cpps_string_isalpha)
+ 				.def("isdecimal", &cpps::string::cpps_string_isdecimal)
 		];
 
 		cpps::_module(c,"string")[
@@ -470,7 +484,10 @@ namespace cpps
 			def_inside("chr",cpps_string_chr),
 			def("push_back", cpps_string_push_back),
 			def("unicode_charCodeAt",cpps_string_unicode_charCodeAt),
-			def_inside("unicode_fromCodeAt",cpps_string_unicode_fromCodeAt)
+			def_inside("unicode_fromCodeAt",cpps_string_unicode_fromCodeAt),
+			def("isalnum",cpps_string_isalnum),
+			def("isalpha", cpps_string_isalpha),
+			def("isspace",cpps_string_isspace)
 		];
 
 	}
@@ -721,6 +738,81 @@ namespace cpps
 	{
 		__str.append(v);
 	}
+	std::string string::cpps_string_title()
+	{
+		std::string ret;
+		ret.resize(__str.size());
+
+		for (size_t i = 0; i < __str.size(); ) {
+			if (i == 0 && __str[i] >= 'a' && __str[i] <= 'z') {
+				ret[i] = __str[i] - 32;
+				++i;
+			} 
+			else if((__str[i] == '\t' || __str[i] == ' ' ) && __str[i+1] >= 'a' && __str[i+1] <= 'z') {
+				ret[i] = __str[i];
+				ret[i+1] = __str[i+1] - 32;
+				i+=2;
+			}
+			else {
+				ret[i] = __str[i];
+				++i;
+			}
+		}
+		return ret;
+	}
+	std::string string::cpps_string_center(cpps_integer width)
+	{
+		if (width <= (cpps_integer)__str.size()) return __str;
+
+		std::string ret;
+		ret.resize(width);
+		cpps_integer srcwidth = (cpps_integer)__str.size();
+		cpps_integer leftwidth = (cpps_integer)((width - srcwidth) / 2);
+		cpps_integer rightwidth = width - leftwidth - srcwidth;
+		cpps_integer i = 0;
+		for (;i < leftwidth; ++i){
+			ret[i] = ' ';
+		}
+		for (i = 0; i < srcwidth; ++i) {
+			ret[i] = __str[i];
+		}
+		for (i = 0; i < rightwidth; ++i) {
+			ret[i] = ' ';
+		}
+		return ret;
+	}
+
+	bool string::cpps_string_isalnum()
+	{
+		for (size_t i = 0; i < __str.size(); ++i) {
+			if (!isalnum(__str[i])) return false;
+		}
+		return true;
+	}
+	bool string::cpps_string_isalpha()
+	{
+		for (size_t i = 0; i < __str.size(); ++i) {
+			if (!isalpha(__str[i])) return false;
+		}
+		return true;
+	}
+	bool string::cpps_string_isspace()
+	{
+		for (size_t i = 0; i < __str.size(); ++i) {
+			if (!isspace(__str[i])) return false;
+		}
+		return true;
+	}
+	bool string::cpps_string_isdecimal() {
+		for (int i = 0; i < __str.size(); i++) {
+			if (__str.at(i) == '-' && __str.size() > 1)  // 有可能出现负数
+				continue;
+			if (__str.at(i) > '9' || __str.at(i) < '0')
+				return false;
+		}
+		return true;
+	}
+	
 
 	std::string& string::real()
 	{

@@ -15,7 +15,7 @@
 namespace cpps
 {
 	void					cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p);
-	std::string				type_s(object o);
+	std::string cpps_base_type(cpps_value v);
 	template<class R>
 	struct cpps_converter
 	{
@@ -26,7 +26,7 @@ namespace cpps
 		static R		apply(const cpps_value& obj)
 		{
 			if(!match(obj))
-				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to %s, cppsvalue type is %s , conversion failed.", typeid(R).name() ,type_s(obj).c_str()));
+				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to %s, cppsvalue type is %s , conversion failed.", typeid(R).name() , cpps_base_type(obj).c_str()));
 
 			if (obj.tt == CPPS_TNIL) return NULL;
 			if (obj.tt == CPPS_TUSERDATA) return static_cast<R>(obj.value.p);

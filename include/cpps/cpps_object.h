@@ -30,13 +30,13 @@ namespace cpps
 		object(const object& k);
 		object(const cpps_value& v);
 
-		static object real(object o);
+		static object real(object& o);
 		struct vector
 		{
 		public:
 			static		vector							create(C* c);
 		public:
-			vector(object obj);
+			vector(object& obj);
 			cpps_std_vector::iterator					begin();
 			cpps_std_vector::iterator					end();
 			void										push_back(object v);
@@ -55,10 +55,10 @@ namespace cpps
 			static map																create(C* c);
 		public:
 
-			map(C* cstate, object obj);
+			map(C* cstate, object& obj);
 			cpps_hash_map::iterator													begin();
 			cpps_hash_map::iterator													end();
-			void																	insert(object key, object value);
+			void																	insert(const object& key, const object& value);
 			object																	toobject();
 			template<class T>
 			bool																	has(const T k) {
@@ -88,10 +88,10 @@ namespace cpps
 			static set																create(C* c);
 		public:
 
-			set(C* cstate, object obj);
+			set(C* cstate, object& obj);
 			cpps_hash_set::iterator													begin();
 			cpps_hash_set::iterator													end();
-			void																	insert(object key);
+			void																	insert(object& key);
 			object																	toobject();
 			template<class T>
 			bool																	has(const T k) {
@@ -107,7 +107,8 @@ namespace cpps
 		struct pair
 		{
 		public:
-			static pair																create(C* c,object first,object second);
+			static pair																create(C* c,object &first,object &second);
+			static pair																create(C* c,object &&first,object &&second);
 		public:
 			pair(C* cstate, object obj);
 
@@ -173,6 +174,8 @@ namespace cpps
 		bool					tobool();
 		object					toreal();
 		cpps_value				ref();
+		cpps_value				&realval();
+		const cpps_value		&realval() const;
 
 
 		//vector ,map ,string .
@@ -205,8 +208,10 @@ namespace cpps
 		cpps_value	value;
 	};
 
-	int32		type(object o);
-	std::string type_s(object o);
+	int32		type(const object& o);
+	std::string type_s(const object& o);
+	int32		type(object&& o);
+	std::string type_s(object&& o);
 }
 
 #endif // CPPS_OBJECT_CPPS_HEAD_

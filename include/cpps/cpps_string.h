@@ -14,8 +14,10 @@
 
 namespace cpps
 {
+	std::string cpps_base_type(cpps_value v);
 	struct string
 	{
+	public:
 		cpps_integer	cpps_size();
 		cpps_integer	cpps_string_find(std::string v2,object off);
 		cpps_integer	cpps_string_rfind(std::string v2,object off);
@@ -40,8 +42,14 @@ namespace cpps
 		void			cpps_string_pop_back(object len);
 		void			cpps_string_push_back(cpps_integer charcode);
 		void			cpps_string_append(std::string v);
+		std::string		cpps_string_title();
+		std::string		cpps_string_center(cpps_integer width);
+		bool			cpps_string_isalnum();
+		bool			cpps_string_isalpha();
+		bool			cpps_string_isspace();
+		bool			cpps_string_isdecimal();
+	public:
 		std::string&	real();
-
 		std::string		__str;
 	};
 
@@ -68,7 +76,7 @@ namespace cpps
 		static cpps::string* apply(cpps_value obj)
 		{
 			if (!match(obj))
-				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to cpps_string, cppsvalue type is %s , conversion failed.", type_s(obj).c_str()));
+				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to cpps_string, cppsvalue type is %s , conversion failed.", cpps_base_type(obj).c_str()));
 
 
 			cpps_cppsclassvar* clsvar = (cpps_cppsclassvar*)obj.value.domain;

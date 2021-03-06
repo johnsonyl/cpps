@@ -115,27 +115,39 @@ namespace cpps
 	}
 	
 	object cpps_chrono_nanoseconds(C* c, cpps_integer i) {
-		object::pair ret = object::pair::create(c, object::create(c, i), object::create(c, (cpps_integer)cpps_chrono_type::nanoseconds));
+		auto first = object::create(c, i);
+		auto second = object::create(c, (cpps_integer)cpps_chrono_type::nanoseconds);
+		object::pair ret = object::pair::create(c, first, second);
 		return ret.toobject();
 	}
 	object cpps_chrono_microseconds(C* c, cpps_integer i) {
-		object::pair ret = object::pair::create(c, object::create(c, i), object::create(c, (cpps_integer)cpps_chrono_type::microseconds));
+		auto first = object::create(c, i);
+		auto second = object::create(c, (cpps_integer)cpps_chrono_type::microseconds);
+		object::pair ret = object::pair::create(c, first, second);
 		return ret.toobject();
 	}
 	object cpps_chrono_milliseconds(C* c, cpps_integer i) {
-		object::pair ret = object::pair::create(c, object::create(c, i), object::create(c, (cpps_integer)cpps_chrono_type::milliseconds));
+		auto first = object::create(c, i);
+		auto second = object::create(c, (cpps_integer)cpps_chrono_type::milliseconds);
+		object::pair ret = object::pair::create(c, first, second);
 		return ret.toobject();
 	}
 	object cpps_chrono_seconds(C* c, cpps_integer i) {
-		object::pair ret = object::pair::create(c, object::create(c, i), object::create(c, (cpps_integer)cpps_chrono_type::seconds));
+		auto first = object::create(c, i);
+		auto second = object::create(c, (cpps_integer)cpps_chrono_type::seconds);
+		object::pair ret = object::pair::create(c, first, second);
 		return ret.toobject();
 	}
 	object cpps_chrono_minutes(C* c, cpps_integer i) {
-		object::pair ret = object::pair::create(c, object::create(c, i), object::create(c, (cpps_integer)cpps_chrono_type::minutes));
+		auto first = object::create(c, i);
+		auto second = object::create(c, (cpps_integer)cpps_chrono_type::minutes);
+		object::pair ret = object::pair::create(c, first, second);
 		return ret.toobject();
 	}
 	object cpps_chrono_hours(C* c, cpps_integer i) {
-		object::pair ret = object::pair::create(c, object::create(c, i), object::create(c, (cpps_integer)cpps_chrono_type::hours));
+		auto first = object::create(c, i);
+		auto second = object::create(c, (cpps_integer)cpps_chrono_type::hours);
+		object::pair ret = object::pair::create(c, first, second);
 		return ret.toobject();
 	}
 	void cpps_regthread(C* c)

@@ -4,13 +4,16 @@ namespace cpps
 {
 
 
-	cpps::int32 type(object o)
+	cpps::int32 type(object&& o) {
+		return type(o);
+	}
+	cpps::int32 type(const object& o)
 	{
-		if (object::real(o).value.tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
-		return object::real(o).value.tt;
+		if (o.realval().tt == CPPS_TLAMBDAFUNCTION) return CPPS_TFUNCTION;
+		return o.realval().tt;
 	}
 
-	std::string type_s(object o)
+	std::string type_s(const object& o)
 	{
 		switch (type(o))
 		{
@@ -26,33 +29,37 @@ namespace cpps
 			return "string";
 		case CPPS_TCLASSVAR: 
 		{
-			return object::real(o).value.value.domain->domainname; 
+			return o.realval().value.domain->getdomainname();
 		}
 		case CPPS_TFUNCTION:
 			return "function";
 		}
 		return "unknow";
 	}
-#define SAFE_VALUE (value.tt == CPPS_TREF ? *(value.value.value) : value)
+	std::string type_s(object&& o)
+	{
+		return type_s(o);
+	}
+//#define value.real() (value.tt == CPPS_TREF ? *(value.value.value) : value)
 
 	cpps_integer object::size()
 	{
 		cpps_integer ret = 0;
 
-		if (cpps_ismap(SAFE_VALUE)) {
-			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
+		if (cpps_ismap(value.real())) {
+			cpps_map* m = cpps_to_cpps_map(value.real());
 			ret = m->size();
 		}
-		else if (cpps_isvector(SAFE_VALUE)) {
-			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
+		else if (cpps_isvector(value.real())) {
+			cpps_vector* vct = cpps_to_cpps_vector(value.real());
 			ret = vct->size();
 		}
-		else if (cpps_isset(SAFE_VALUE)) {
-			cpps_set* vct = cpps_to_cpps_set(SAFE_VALUE);
+		else if (cpps_isset(value.real())) {
+			cpps_set* vct = cpps_to_cpps_set(value.real());
 			ret = vct->size();
 		}
-		else if (cpps_isstring(SAFE_VALUE)) {
-			std::string* str = cpps_get_string(SAFE_VALUE);
+		else if (cpps_isstring(value.real())) {
+			std::string* str = cpps_get_string(value.real());
 			ret = (cpps_integer)str->size();
 		}
 		return ret;
@@ -60,71 +67,71 @@ namespace cpps
 
 	bool object::ispair()
 	{
-		return cpps_ispair(SAFE_VALUE);
+		return cpps_ispair(value.real());
 	}
 
 	bool object::ismap()
 	{
-		return cpps_ismap(SAFE_VALUE);
+		return cpps_ismap(value.real());
 	}
 
 	bool object::isset()
 	{
-		return cpps_isset(SAFE_VALUE);
+		return cpps_isset(value.real());
 	}
 
 	bool object::isstring()
 	{
-		return cpps_isstring(SAFE_VALUE);
+		return cpps_isstring(value.real());
 	}
 
 	bool object::isvector()
 	{
-		return cpps_isvector(SAFE_VALUE);
+		return cpps_isvector(value.real());
 	}
 
 	bool object::isrange()
 	{
-		return cpps_isrange(SAFE_VALUE);
+		return cpps_isrange(value.real());
 	}
 
 	bool object::istuple()
 	{
-		return cpps_istuple(SAFE_VALUE);
+		return cpps_istuple(value.real());
 	}
 	bool object::isellipsis()
 	{
-		return cpps_isellipsis(SAFE_VALUE);
+		return cpps_isellipsis(value.real());
 	}
 
 	bool object::isint()
 	{
-		return cpps_isint(SAFE_VALUE);
+		return cpps_isint(value.real());
 	}
 
 	bool object::isnumber()
 	{
-		return cpps_isnumber(SAFE_VALUE);
+		return cpps_isnumber(value.real());
 	}
 
 	bool object::isnull()
 	{
-		return cpps_isnull(SAFE_VALUE);
+		return cpps_isnull(value.real());
 	}
 
 	bool object::isfunction()
 	{
-		return cpps_isfunction(SAFE_VALUE);
+		return cpps_isfunction(value.real());
 	}
 
 	bool object::isclass()
 	{
-		return cpps_isclass(SAFE_VALUE);
+		return cpps_isclass(value.real());
 	}
 
 	bool object::isclassvar()
 	{
-		return cpps_isclassvar(SAFE_VALUE);
+		return cpps_isclassvar(value.real());
 	}
 
 	bool object::isref()
@@ -155,25 +162,36 @@ namespace cpps
 
 	object object::toreal()
 	{
-		return SAFE_VALUE;
+		return value.real();
 	}
 	cpps_value object::ref()
 	{
-		return SAFE_VALUE.ref();
+		return value.real().ref();
 	}
+
+	cpps::cpps_value& object::realval()
+	{
+		return value.real();
+	}
+
+	const cpps::cpps_value& object::realval() const
+	{
+		return value.real();
+	}
+
 	void object::clear()
 	{
 
-		if (cpps_ismap(SAFE_VALUE)) {
-			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
+		if (cpps_ismap(value.real())) {
+			cpps_map* m = cpps_to_cpps_map(value.real());
 			m->clear();
 		}
-		else if (cpps_isvector(SAFE_VALUE)) {
-			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
+		else if (cpps_isvector(value.real())) {
+			cpps_vector* vct = cpps_to_cpps_vector(value.real());
 			vct->clear();
 		}
-		else if (cpps_isstring(SAFE_VALUE)) {
-			std::string* str = cpps_get_string(SAFE_VALUE);
+		else if (cpps_isstring(value.real())) {
+			std::string* str = cpps_get_string(value.real());
 			str->clear();
 		}
 	}
@@ -181,16 +199,16 @@ namespace cpps
 	bool object::empty()
 	{
 
-		if (cpps_ismap(SAFE_VALUE)) {
-			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
+		if (cpps_ismap(value.real())) {
+			cpps_map* m = cpps_to_cpps_map(value.real());
 			return m->empty();
 		}
-		else if (cpps_isvector(SAFE_VALUE)) {
-			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
+		else if (cpps_isvector(value.real())) {
+			cpps_vector* vct = cpps_to_cpps_vector(value.real());
 			return vct->empty();
 		}
-		else if (cpps_isstring(SAFE_VALUE)) {
-			std::string* str = cpps_get_string(SAFE_VALUE);
+		else if (cpps_isstring(value.real())) {
+			std::string* str = cpps_get_string(value.real());
 			return str->empty();
 		}
 		return true;
@@ -198,8 +216,8 @@ namespace cpps
 
 	void object::insert(object key, object val)
 	{
-	if (cpps_ismap(SAFE_VALUE)) {
-			cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
+	if (cpps_ismap(value.real())) {
+			cpps_map* m = cpps_to_cpps_map(value.real());
 			m->insert(key.value, val.value);
 		}
 	}
@@ -208,13 +226,13 @@ namespace cpps
 	
 	void object::push_back(object& val)
 	{
-		if (cpps_isvector(SAFE_VALUE)) {
-			cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
+		if (cpps_isvector(value.real())) {
+			cpps_vector* vct = cpps_to_cpps_vector(value.real());
 			vct->push_back(val.value);
 		}
 	}
 
-	cpps::object object::real(object o)
+	cpps::object object::real(object& o)
 	{
 		return o.toreal();
 	}
@@ -278,17 +296,17 @@ namespace cpps
 	{
 
 		cpps_value ret;
-		if (SAFE_VALUE.isdomain()) {
+		if (value.real().isdomain()) {
 
-			if (cpps_ismap(SAFE_VALUE)) {
-				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
+			if (cpps_ismap(value.real())) {
+				cpps_map* m = cpps_to_cpps_map(value.real());
 				cpps_value key = cpps_new_tmp_string(k);
 				ret = m->find(key);
 				cpps_delete_tmp_string(key);
 			}
 			else {
 				cpps_domain* leftdomain = NULL;
-				cpps_regvar* var = SAFE_VALUE.value.domain->getvar(k, leftdomain, true,true);
+				cpps_regvar* var = value.real().value.domain->getvar(k, leftdomain, true,true);
 				if (var) {
 					ret = cpps_value(&var->getval());
 				}
@@ -300,14 +318,14 @@ namespace cpps
 	{
 
 		cpps_value ret;
-		if (SAFE_VALUE.isdomain()) {
+		if (value.real().isdomain()) {
 
-			if (cpps_isvector(SAFE_VALUE)) {
-				cpps_vector* vct = cpps_to_cpps_vector(SAFE_VALUE);
+			if (cpps_isvector(value.real())) {
+				cpps_vector* vct = cpps_to_cpps_vector(value.real());
 				ret = vct->at(k);
 			}
-			else if (cpps_ismap(SAFE_VALUE)) {
-				cpps_map* m = cpps_to_cpps_map(SAFE_VALUE);
+			else if (cpps_ismap(value.real())) {
+				cpps_map* m = cpps_to_cpps_map(value.real());
 				ret = m->find(cpps_value(k));
 			}
 		}
@@ -358,9 +376,9 @@ namespace cpps
 		return nil;
 	}
 
-	object::vector::vector(object obj)
+	object::vector::vector(object& obj)
 	{
-		_vec = cpps_to_cpps_vector(obj.value);
+		_vec = cpps_to_cpps_vector(obj.realval());
 		_src_value = obj.value;
 	}
 
@@ -402,12 +420,13 @@ namespace cpps
 
 	object::vector object::vector::create(C* c)
 	{
-		return object::vector(object::create_with_vector(c));
+		auto obj = object::create_with_vector(c);
+		return object::vector(obj);
 	}
 
-	object::map::map(C* cstate, object obj)
+	object::map::map(C* cstate, object& obj)
 	{
-		_map = cpps_to_cpps_map(obj.value);
+		_map = cpps_to_cpps_map(obj.realval());
 		c = cstate;
 		_src_value = obj.value;
 	}
@@ -425,9 +444,9 @@ namespace cpps
 	
 
 
-	void object::map::insert(object key, object value)
+	void object::map::insert(const object& key, const object& value)
 	{
-		_map->insert(object::real(key).value, object::real(value).value);
+		_map->realmap().insert(cpps_hash_map::value_type(key.realval(), value.realval()));
 	}
 
 	cpps::object object::map::toobject()
@@ -442,18 +461,20 @@ namespace cpps
 
 	cpps::object::map object::map::create(C* c)
 	{
-		return cpps::object::map(c,cpps::object::create_with_map(c));
+		auto obj = cpps::object::create_with_map(c);
+		return cpps::object::map(c,obj);
 	}
 
 	object::set object::set::create(C* c)
 	{
-		return cpps::object::set(c, cpps::object::create_with_set(c));
+		auto obj = cpps::object::create_with_set(c);
+		return cpps::object::set(c, obj);
 
 	}
 
-	object::set::set(C* cstate, object obj)
+	object::set::set(C* cstate, object& obj)
 	{
-		_set = cpps_to_cpps_set(obj.value);
+		_set = cpps_to_cpps_set(obj.realval());
 		c = cstate;
 		_src_value = obj.value;
 	}
@@ -468,9 +489,9 @@ namespace cpps
 		return _set->realset().end();
 	}
 
-	void object::set::insert(object key)
+	void object::set::insert(object& key)
 	{
-		_set->insert(key.getval());
+		_set->insert(key.realval());
 	}
 
 	cpps::object object::set::toobject()
@@ -483,12 +504,16 @@ namespace cpps
 		return _set->realset();
 	}
 
-	object::pair object::pair::create(C* c, object first, object second)
+	object::pair object::pair::create(C* c, object& first, object &second)
 	{
 		auto ret = cpps::object::pair(c, cpps::object::create_with_pair(c));
 		ret._pair->_first = first.getval();
 		ret._pair->_second = second.getval();
 		return ret;
+	}
+	object::pair object::pair::create(C* c, object&& first, object&& second)
+	{
+		return object::pair::create(c, first, second);
 	}
 
 	object::pair::pair(C* cstate, object obj)

@@ -21,6 +21,19 @@ public:
 	unsigned short Data2;
 	unsigned short Data3;
 	unsigned char  Data4[8];
+	void	constructor(object _p) {
+		if (_p.isstring()) {
+			sscanf(_p.tostring().c_str(),
+				"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+				(unsigned int*)&Data1, (unsigned int*)&Data2, (unsigned int*)&Data3,
+				(unsigned int*)&Data4[0], (unsigned int*)&Data4[1], (unsigned int*)&Data4[2],
+				(unsigned int*)&Data4[3], (unsigned int*)&Data4[4], (unsigned int*)&Data4[5],
+				(unsigned int*)&Data4[6], (unsigned int*)&Data4[7]);
+		}
+		else {
+			init();
+		}
+	}
 	void	init() {
 #ifdef _WIN32
 		GUID guid;
@@ -39,7 +52,7 @@ public:
 	std::string tostring() {
 		char buffer[GUID_LEN] = { 0 };
 		sprintf(buffer,
-			"%08X-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X",
+			"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
 			Data1, Data2, Data3,
 			Data4[0], Data4[1], Data4[2],
 			Data4[3], Data4[4], Data4[5],
@@ -68,6 +81,7 @@ cpps_export_void cpps_attach(cpps::C* c)
 
 	cpps::_module(c, "uuid")[
 		_class<cpps_uuid>("UUID")
+			.def("constructor", &cpps_uuid::constructor)
 			.def("tostring", &cpps_uuid::tostring),
 		def_inside("create", cpps_uuid_create),
 		def("uuid4", cpps_uuid_uuid4)

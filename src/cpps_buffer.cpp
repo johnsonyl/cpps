@@ -68,13 +68,15 @@ namespace cpps
 		}
 		int32 ret = bufferoffset++;
 
-		if (buffer[(size_t)ret] == '\n')
-			getcurfile().line++;
 
 		//退出最后一个
-		if (bufferoffset > getcurfile().end) {
+		if (ret > (getcurfile().end+1)) {
 			if (files.size() > 1) files.pop_back();
 		}
+
+
+		if (buffer[(size_t)ret] == '\n')
+			getcurfile().line++;
 
 		return buffer[(size_t)ret];
 	}

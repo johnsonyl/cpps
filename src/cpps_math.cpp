@@ -3,7 +3,8 @@
 namespace cpps
 {
 	cpps_integer	cpps_time_gettickcount();
-	static cpps_integer _holdrand = cpps_time_gettickcount();
+	cpps_integer	cpps_time_gettime();
+	static cpps_integer _holdrand = cpps_time_gettime() * cpps_time_gettickcount();
 
 	cpps_integer  rand_ex()
 	{

@@ -336,10 +336,6 @@ namespace cpps
 #endif
 	}
 	
-	void cpps_assert(bool b)
-	{
-		assert(b);
-	}
 
 	
 	
@@ -778,6 +774,7 @@ namespace cpps
 			def("exit", cpps_base_exit),
 			def("sleep", cpps_base_sleep),
 			def("Sleep", cpps_base_sleep),
+			def("usleep", cpps_base_sleep),
 			def("tonumber", cpps_base_tonumber),
 			def("double", cpps_base_tonumber),
 			def("toint", cpps_base_tointeger),
@@ -808,7 +805,7 @@ namespace cpps
 			def("isvalid", cpps_base_isvalid),
 			def("isdebug", cpps_base_isdebug),
 			def("SetConsoleTitle", cpps_base_setconsoletitle),
-			def("assert", cpps_assert),
+			def("abort", abort),
 			def_inside("setechofunc", cpps_setechofunc),
 			defvar(c,"_VERSION", CPPS_VER),
 			defvar(c,"_VERSIONNO", CPPS_VERN),

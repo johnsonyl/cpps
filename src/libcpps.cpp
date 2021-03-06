@@ -129,11 +129,14 @@ namespace cpps {
 		std::string ret = "";
 		while (buffer.cur() != endc) {
 			ret.push_back(buffer.pop());
+			if (buffer.isend())
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_varerror, "Unexpected end"));
+
 		}
 		return(ret);
 	}
 	bool cpps_parse_isbuiltinname(std::string s) {
-		return(s == "if" || s == "echo" || s == "const" || s == "async" || s == "yield" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "module" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring"|| s == "parse"|| s == "donode");
+		return(s == "if" || s == "echo" || s == "const" || s == "async" || s == "yield" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "module" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring"|| s == "parse"|| s == "assert"|| s == "donode" );
 	}
 	bool cpps_is_not_use_var_name(std::string s) {
 		return(cpps_parse_isbuiltinname(s) || s == "true" || s == "catch" || s == "null" || s == "nil" || s == "NULL" || s == "false" || s == "map" || s == "vector" || s == "math" || s == "string" || s == "time" || s == "io" || s == "GC");
@@ -833,6 +836,45 @@ namespace cpps {
 
 		cpps_parse_rmspaceandenter(buffer);
 	}
+
+	void cpps_parse___file__(C* c, cpps_node_domain* domain, node* child, cppsbuffer& buffer) {
+		child->type = CPPS_OSTR;
+		child->s = buffer.getcurfile().filename;
+
+		auto laststr = CPPSNEW(node)(child->filename, buffer.line());
+		laststr->type = CPPS_OSTR;
+		child->add(laststr);
+
+		std::string* tmpstr;
+		child->value.val = CPPSNEW(cpps_value)();
+		newclass(c, &tmpstr, child->value.val);
+		child->needdelete = true;
+		if (child->l.size() == 1)tmpstr->append(buffer.getcurfile().filename);
+	}
+	void cpps_parse___line__(C* c, cpps_node_domain* domain, node* child, cppsbuffer& buffer) {
+		child->type = CPPS_OINTEGER;
+		child->value.integer = buffer.line();
+	}
+	void cpps_parse___func__(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
+		child->type = CPPS_OSTR;
+		//child->s = root;
+		if (root && root->type == CPPS_ODEFVAR_FUNC && root->parent && root->parent->type == CPPS_VARNAME) {
+			child->s = root->parent->s;
+		}
+		else {
+			child->s = "__func__";
+		}
+
+		auto laststr = CPPSNEW(node)(child->filename, buffer.line());
+		laststr->type = CPPS_OSTR;
+		child->add(laststr);
+
+		std::string* tmpstr;
+		child->value.val = CPPSNEW(cpps_value)();
+		newclass(c, &tmpstr, child->value.val);
+		child->needdelete = true;
+		if (child->l.size() == 1)tmpstr->append(child->s);
+	}
 	node* cpps_parse_var_param(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, bool findparent) {
 		node* param = CPPSNEW( node)(o->filename, buffer.line());
 		param->type = CPPS_VARNAME;
@@ -905,6 +947,15 @@ namespace cpps {
 				o->type = CPPS_OTHISPARAM;
 
 			param->type = CPPS_OTHIS;
+		}
+		else if (param->s == "__FILE__") {
+			cpps_parse___file__(c, domain, param, buffer);
+		}
+		else if (param->s == "__LINE__") {
+			cpps_parse___line__(c, domain, param, buffer);
+		}
+		else if (param->s == "__func__") {
+			cpps_parse___func__(c, domain, param, root, buffer);
 		}
 		else if (param->s == "true" || param->s == "false") {
 			/* 这说明什么？ 说明他是个bool.. */
@@ -1825,6 +1876,10 @@ namespace cpps {
 		child->type = CPPS_OTHROW;
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() == ';') {
+			buffer.pop();
+			return;
+		}
 		/* 查找后续参数 */
 		cpps_parse_expression(c, domain, child, root, buffer);
 	}
@@ -2321,6 +2376,31 @@ namespace cpps {
 		buffer.pop();
 		/* pop ) */
 	}
+	void cpps_parse_assert(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
+		child->type = CPPS_OASSERT;
+		
+		/* 剔除空格 */
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != '(') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing '(' after assert"));
+		}
+		buffer.pop();
+
+		auto take = buffer.offset();
+		child->s = cpps_parse_other_varname(buffer,')');
+		buffer.seek(take);
+		/* pop ( */
+		/* 剔除空格 */
+		cpps_parse_rmspaceandenter(buffer);
+		cpps_parse_expression(c, domain, child, root, buffer);
+		/* 剔除空格 */
+		cpps_parse_rmspaceandenter(buffer);
+		if (buffer.cur() != ')') {
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing ')' after assert"));
+		}
+		buffer.pop();
+		/* pop ) */
+	}
 	void cpps_parse_break(C* c, cpps_node_domain* domain, node* child, cppsbuffer& buffer) {
 		if (!cpps_parse_canbreak(domain)) {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_deffuncrror, "Unknown break must be defined in while or for."));
@@ -2367,6 +2447,9 @@ namespace cpps {
 		}
 		else if (child->s == "donode") {
 			cpps_parse_donode(c, domain, child, root, buffer);
+		}
+		else if (child->s == "assert") {
+			cpps_parse_assert(c, domain, child, root, buffer);
 		}
 		else if (child->s == "break") {
 			cpps_parse_break(c, domain, child, buffer);
@@ -2632,14 +2715,14 @@ namespace cpps {
 
 		gc_cleanup(c);
 		/* 清理内存 */
-		cpps_free_all_library(c);
 
 		
 		c->_G->destory(c, true);
 		c->domain_pool.freeall();
 		c->stack_pool.freeall();
 		cpps_unregasyncio(c);
-		gc_cleanup(c,true);
+		gc_cleanup(c, true);
+		cpps_free_all_library(c);
 		c->_class_map_classvar.clear();
 
 		c->_G->release();
@@ -2897,7 +2980,10 @@ namespace cpps {
 		}
 	}
 	void cpps_step_throw(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
-		if (d->l.size() == 1) {
+		if (d->l.size() == 0) {
+			throw;
+		}
+		else if (d->l.size() == 1) {
 			cpps_domain* leftdomain = NULL;
 			cpps_value	ret_value;
 			cpps_calculate_expression(c, domain, root, d->l[0], leftdomain,ret_value);
@@ -3590,7 +3676,7 @@ namespace cpps {
 							v2->setval(tmp);
 						}
 						cpps_destory_node(o);
-						CPPSDELETE(o);
+						o->release();
 						o = NULL;
 						it = vars->l.erase(it);
 					}
@@ -3604,7 +3690,7 @@ namespace cpps {
 			}
 			else {
 				cpps_destory_node(o);
-				CPPSDELETE(o);
+				o->release();
 				o = NULL;
 				it = vars->l.erase(it);
 			}
@@ -3679,6 +3765,18 @@ namespace cpps {
 		cpps_gc_check_step(c);
 
 		if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
+	}
+	void cpps_step_assert(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
+
+		cpps_domain* leftdomain = NULL;
+		object	path;
+		cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain, path.getval());
+		bool n = object_cast<bool>(path);
+		if (!n) {
+			printf("CPPS ASSERT: %s , file:%s line:%d\r\n", d->s.c_str(), d->filename.c_str(), d->line);
+			if(c->debug)
+				abort();
+		}
 	}
 	void cpps_step_donode(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		cpps_domain* leftdomain = NULL;
@@ -3886,6 +3984,9 @@ namespace cpps {
 		}
 		else if (d->type == CPPS_ODONODE) {
 			cpps_step_donode(c, domain, root, d);
+		}
+		else if (d->type == CPPS_OASSERT) {
+			cpps_step_assert(c, domain, root, d);
 		}
 	}
 	int32 cpps_str2d(const char* s, cpps_number* result) {

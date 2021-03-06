@@ -1,6 +1,21 @@
 *更新日志*：
 -
 
+2021-03-06 更新
+-
+
+1.增加__FILE__, __LINE__, __func__ 关键字.用法c++一致
+
+2.增加mutex线程锁.
+
+3.优化一些参数变成引用.
+
+4.字符串增加title,center,isalnum,isalpha,isdecimal,isspace 方法.
+
+5.增加cpps::error接口.在c++中抛出的错误为cpps代码中的文件与行数.
+
+6.完善assert, 可以获取到括号内的表达式了.
+
 2021-02-18 更新
 
 1.修复一些已知BUG

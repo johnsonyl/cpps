@@ -1181,6 +1181,7 @@ namespace cpps
 		symbolleftasso[6] = true;
 		symbolleftasso[7] = true;
 		symbolleftasso[8] = false;
+		symbolleftasso[9] = true;
 	}
 
 	bool cpps_parse_isleftasso(usint8 prio)

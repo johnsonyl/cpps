@@ -10,7 +10,7 @@
 //@website		:	http://cppscript.org
 //==================================
 
-#define MAXSYMBOLPRIO 9 // 不得超过16
+#define MAXSYMBOLPRIO 10 // 不得超过16
 
 #define NOLIMIT		((usint8)0x00)
 #define LEFTMUSTVAR ((usint8)0x80)

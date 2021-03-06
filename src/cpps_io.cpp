@@ -336,6 +336,37 @@ namespace cpps
 		
 		return (cpps_integer)statinfo.st_atime;
 	}
+#ifdef _WIN32
+#include <Shlobj.h>
+
+	std::string cpps_io_getappdata(cpps_value v) {
+		char m_lpszDefaultDir[MAX_PATH];
+		char szDocument[MAX_PATH] = { 0 };
+		memset(m_lpszDefaultDir, 0, _MAX_PATH);
+
+		LPITEMIDLIST pidl = NULL;
+		SHGetSpecialFolderLocation(NULL, CSIDL_LOCAL_APPDATA, &pidl);
+		if (pidl && SHGetPathFromIDList(pidl, szDocument))
+		{
+			GetShortPathName(szDocument, m_lpszDefaultDir, _MAX_PATH);
+		}
+		if (cpps_isnull(v)) {
+			return m_lpszDefaultDir;
+		}
+		else if (cpps_isstring(v)){
+			std::string path = m_lpszDefaultDir;
+			path.append("\\");
+			path.append(*cpps_get_string(v));
+
+			if (_access(path.c_str(), 0) == -1)
+			{
+				_mkdir(path.c_str());
+			}
+			return path;
+		}
+		return m_lpszDefaultDir;
+	}
+#endif
 	cpps_value cpps_io_get_stat(C* c, std::string path) {
 
 		cpps_io_stat* st = NULL;
@@ -926,6 +957,9 @@ namespace cpps
 			def("getmtime",cpps_io_last_write_time),
 			def("getctime",cpps_io_getctime),
 			def("getatime",cpps_io_getatime),
+#ifdef _WIN32
+			def("getappdata",cpps_io_getappdata),
+#endif
 			defvar(c,"SEEK_END", SEEK_END),
 			defvar(c,"SEEK_CUR", SEEK_CUR),
 			defvar(c,"SEEK_SET", SEEK_SET),

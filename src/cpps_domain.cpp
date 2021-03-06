@@ -313,11 +313,11 @@ namespace cpps
 
 	cpps::cpps_regvar* cpps_domain::getregidxvar(int32 offset)
 	{
-		if (stacklist == NULL)
-		{
+		if (stacklist == NULL){
 			return NULL;
 		}
-		return (*stacklist)[offset];
+		auto it = stacklist->at(offset);
+		return it;
 	}
 
 	cpps::int32 cpps_domain::getidxoffset(cpps_domain* parentclass)
@@ -327,7 +327,12 @@ namespace cpps
 		{
 			return 0;
 		}
-		return (*parentclassoffset)[parentclass];
+		auto it = parentclassoffset->find(parentclass);
+		if (it == parentclassoffset->end())
+		{
+			return 0;
+		}
+		return it->second;
 	}
 
 	void cpps_domain::setidxoffset(cpps_domain* parentclass, int32 off)
