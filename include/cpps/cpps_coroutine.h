@@ -13,11 +13,6 @@
 #include <string>
 #include <vector>
 #include <list>
-#include <thread>
-#include <future>
-
-#include <chrono>
-#include <functional>
 
 using ::std::string;
 using ::std::wstring;
@@ -182,14 +177,14 @@ namespace cpps {
 			wait_for(Ordinator* ordinator,Function&& func, _ArgTypes&&... _Args)
 		{
 			auto future = std::async(std::launch::async, func,_Args...);
-			std::future_status status = future.wait_for(std::chrono::milliseconds(0));
+			std::future_status status = future.wait_for(std::chrono::milliseconds(1));
 
 			while (status == std::future_status::timeout && !ordinator->isterminate)
 			{
 				if (ordinator->current != 0)
 					yield(*ordinator);
 
-				status = future.wait_for(std::chrono::milliseconds(0));
+				status = future.wait_for(std::chrono::milliseconds(1));
 			}
 			return future.get();
 		}
@@ -348,14 +343,14 @@ namespace cpps {
 			wait_for(Ordinator* ordinator, Function&& func, _ArgTypes&&... _Args)
 		{
 			auto future = std::async(std::launch::async, func,_Args...);
-			std::future_status status = future.wait_for(std::chrono::milliseconds(0));
+			std::future_status status = future.wait_for(std::chrono::milliseconds(1));
 
 			while (status == std::future_status::timeout && !ordinator->isterminate)
 			{
 				if (ordinator->current != 0)
 					yield(*ordinator);
 
-				status = future.wait_for(std::chrono::milliseconds(0));
+				status = future.wait_for(std::chrono::milliseconds(1));
 			}
 			return future.get();
 		}

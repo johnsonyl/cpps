@@ -8,7 +8,7 @@ std::string json_itos_func(cpps_integer n)
 	return result.str();
 }
 
-Json::Value cppstojsonvalue(cpps::object obj)
+Json::Value cppstojsonvalue(cpps::C* c, cpps::object obj)
 {
 	Json::Value ret;
 	switch (cpps::type(obj))
@@ -23,7 +23,7 @@ Json::Value cppstojsonvalue(cpps::object obj)
 		ret = cpps::object_cast<cpps_number>(obj);
 		break;
 	case CPPS_TINTEGER:
-		ret = cpps::object_cast<int>(obj);
+		ret = (Json::Int64)(cpps::object_cast<cpps_integer>(obj));
 		break;
 	case CPPS_TFUNCTION:
 		ret = std::string("func@") + obj.value.value.func->getfuncname();
@@ -44,7 +44,7 @@ Json::Value cppstojsonvalue(cpps::object obj)
 				cpps::cpps_value k = m->key();
 				cpps::cpps_value v = m->it();
 
-				Json::Value v2 = cppstojsonvalue(v);
+				Json::Value v2 = cppstojsonvalue(c,v);
 
 				if (k.tt == CPPS_TSTRING)
 				{
@@ -63,7 +63,14 @@ Json::Value cppstojsonvalue(cpps::object obj)
 			for (m->begin(); m->end(); m->next())
 			{
 				cpps::cpps_value v = m->it();
-				ret.append(cppstojsonvalue(v));
+				ret.append(cppstojsonvalue(c,v));
+			}
+		}
+		else
+		{
+			cpps::object tostring = obj["tostring"];
+			if (tostring.isfunction()) {
+				ret = doclassfunction(c, obj, tostring).tostring();
 			}
 		}
 
@@ -77,11 +84,11 @@ Json::Value cppstojsonvalue(cpps::object obj)
 	return ret;
 }
 
-std::string cppstojson(cpps::object obj, cpps::object encodeType)
+std::string cppstojson(cpps::C*c,cpps::object obj, cpps::object encodeType)
 {
 	cpps::int32 nencodeType = Json::encode_utf8;
 	if (encodeType.isint()) nencodeType = (cpps::int32) encodeType.toint();
-	Json::Value ret = cppstojsonvalue(obj);
+	Json::Value ret = cppstojsonvalue(c,obj);
 	ret.encodetyle(nencodeType);
 	return ret.toStyledString(nencodeType);
 }
@@ -115,7 +122,7 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 		}
 		return cpps::object(c, v.asString());
 	}
-	else if (v.isInt())
+	else if (v.isInt64())
 	{
 		return cpps::object(c,v.asInt());
 	}

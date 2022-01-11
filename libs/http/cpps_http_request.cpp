@@ -4,7 +4,7 @@ namespace cpps
 
 	cpps_http_request::cpps_http_request()
 	{
-		proxytype = 0; //不代理
+		proxytype = -1; //不代理
 		timeoutsec = 0; //不超时
 		isfollowlocation = true;
 	}
@@ -74,7 +74,7 @@ namespace cpps
 		{
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-			if (proxytype != 0)
+			if (proxytype != -1)
 			{
 				curl_easy_setopt(curl, CURLOPT_HTTPPROXYTUNNEL, 1L);
 			}
@@ -89,7 +89,7 @@ namespace cpps
 		}
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 0);//关闭调试信息
 
-		if (proxytype != 0) {
+		if (proxytype != -1) {
 			curl_easy_setopt(curl, CURLOPT_PROXY, proxyvalue.c_str());// 代理
 			curl_easy_setopt(curl, CURLOPT_PROXYTYPE, proxytype);
 			if (!proxyusername.empty())
@@ -119,7 +119,8 @@ namespace cpps
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data); //将返回的http头输出到fp指向的文件
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, isfollowlocation);
-		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeoutsec);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, timeoutsec*1000);
+		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &retheaders);

@@ -27,6 +27,9 @@ namespace cpps {
 			p->throwerr = e;
 			p->throwerr._callstackstr += errmsg;
 			p->runstate = cpps_async_task_thorw;
+
+			if (p->async_object->catch_cb(c, object(c, &p->throwerr)))
+				p->runstate = cpps_async_task_done;
 		}
 		catch (cpps_error& e)
 		{
@@ -36,6 +39,9 @@ namespace cpps {
 			p->throwerr.attach(e);
 			p->throwerr._callstackstr = errmsg;
 			p->runstate = cpps_async_task_thorw;
+
+			if (p->async_object->catch_cb(c, object(c, &p->throwerr)))
+				p->runstate = cpps_async_task_done;
 		}
 	}
 
@@ -104,6 +110,8 @@ namespace cpps {
 
 	void cpps_async_task::call_done_callback(C* c)
 	{
+		async_object->done_cb(c,ret);
+
 		if(callback_func.tt == CPPS_TFUNCTION || callback_func.tt == CPPS_TLAMBDAFUNCTION)
 			dofunction(c, callback_func, this,callback_context);
 	}

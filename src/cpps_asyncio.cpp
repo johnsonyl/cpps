@@ -11,25 +11,32 @@ namespace cpps {
 		return cpps_async_get_event_loop(c)->run_until_complete(c,obj);
 	}
 	cpps_value cpps_async_await(C* c, cpps_value var) {
-		cpps_async_task* task = NULL;
+		cpps_async_task* vtask = NULL;
 		cpps_value ret;
 		cpps_async_loop* loop = cpps_async_get_event_loop(c);
 		if (var.isdomain() && var.value.domain->domainname == "ASYNC_OBJECT") {
-			ret = loop->create_task(c,cpps_converter<cpps_async_object*>::apply(var),&task);
-			loop->push_task(c, ret);
-
+			cpps_async_object* obj = cpps_converter<cpps_async_object*>::apply(var);
+			if (obj->get_task() == NULL) {
+				ret = loop->create_task(c, obj, &vtask);
+				loop->push_task(c, ret);
+			}
+			else {
+				vtask = obj->get_task();
+				object task(c, vtask);
+				ret = task.getval();
+			}
 		}
 		else if (var.isdomain() && var.value.domain->domainname == "ASYNC_TASK") {
-			task = cpps_converter<cpps_async_task*>::apply(var);
+			vtask = cpps_converter<cpps_async_task*>::apply(var);
 			ret = var;
 		}
 		else {
 			throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "await just support ASYNC_OBJECT or ASYNC_TASK.")); 
 		}
-		int8 status = task->state();
+		int8 status = vtask->state();
 		while (status == cpps_async_task_running) {
 			coroutine::yield(loop->ordinator);
-			status = task->state();
+			status = vtask->state();
 		}
 		return ret;
 	}
@@ -38,8 +45,16 @@ namespace cpps {
 		cpps_value ret;
 		cpps_async_loop* loop = cpps_async_get_event_loop(c);
 		if (var.isdomain() && var.value.domain->domainname == "ASYNC_OBJECT") {
-			ret = loop->create_task(c,cpps_converter<cpps_async_object*>::apply(var),&task);
-			loop->push_task(c, ret);
+			cpps_async_object* obj = cpps_converter<cpps_async_object*>::apply(var);
+			if (obj->get_task() == NULL) {
+				ret = loop->create_task(c, cpps_converter<cpps_async_object*>::apply(var), &task);
+				loop->push_task(c, ret);
+			}
+			else {
+				task = obj->get_task();
+				object task(c, task);
+				ret = task.getval();
+			}
 		}
 		else if (var.isdomain() && var.value.domain->domainname == "ASYNC_TASK") {
 			task = cpps_converter<cpps_async_task*>::apply(var);
@@ -64,9 +79,15 @@ namespace cpps {
 	cpps_value cpps_async_create_task(C* c,cpps_async_object *obj) {
 		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
 		cpps_value ret;
-		cpps_async_task* task;
-		ret = loop->create_task(c, obj,&task);
-		loop->push_task(c,ret); /*加入默认执行队列*/
+		if (obj->get_task() == NULL) {
+			cpps_async_task* task;
+			ret = loop->create_task(c, obj, &task);
+			loop->push_task(c, ret); /*加入默认执行队列*/
+		}
+		else {
+			object task(c, obj->get_task());
+			ret = task.getval();
+		}
 		return ret;
 	}
 	void	cpps_async_sleep(C*c,cpps_integer ms) {
@@ -80,7 +101,10 @@ namespace cpps {
 		c->setmoduledata("asyncio", (cpps_module_data*)loop);
 
 		cpps::_module(c, "asyncio")[
-			_class<cpps_async_object>("ASYNC_OBJECT"),
+			_class<cpps_async_object>("ASYNC_OBJECT")
+				.def_inside("done", &cpps_async_object::done)
+				.def_inside("catch", &cpps_async_object::_catch)
+				.def_inside("then", &cpps_async_object::done),
 			_class<cpps_async_loop>("ASYNC_LOOP")
 				.def_inside("run_until_complete", &cpps_async_loop::run_until_complete),
 			_class<cpps_async_task>("ASYNC_TASK")

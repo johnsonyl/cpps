@@ -20,12 +20,12 @@ var &a = p1[0];
 a = 100;
 println(p1[0]);
 
-var set(var &v)
+var testset(var &v)
 {
 	v = 200;
 }
-set(a);
-set(p1[0]);
+testset(a);
+testset(p1[0]);
 
 println(a);
 println(p1[0]);

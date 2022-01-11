@@ -234,7 +234,11 @@ enum
 
 #define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREF){ left = *left.value.value;}
 #define CPPS_REF_REAL_VALUE(left) ((left.tt == CPPS_TREF) ? *left.value.value : left)
-
+#ifdef _WIN32
+#define CPPS_WAITFOR_HEADER template<typename Function, class... _ArgTypes> static inline std::_Invoke_result_t<std::decay_t<Function>, std::decay_t<_ArgTypes>...>
+#else
+#define CPPS_WAITFOR_HEADER template<typename Function, class... _ArgTypes> static inline typename std::result_of<Function(_ArgTypes...)>::type
+#endif
 #ifndef CPPS_DECLARE_DEPRECATED
 # define CPPS_DECLARE_DEPRECATED(f)   f;
 # ifdef __GNUC__
@@ -477,6 +481,10 @@ typedef struct {
 #include<math.h>
 #include <regex>
 #include "phmap.h"
+#include <thread>
+#include <future>
+#include <chrono>
+#include <functional>
 //lib
 namespace cpps
 {

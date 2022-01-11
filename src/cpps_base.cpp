@@ -650,7 +650,7 @@ namespace cpps
 			cpps_map* m = cpps_to_cpps_map(v);
 			cpps_value v2;
 			newcppsclasvar(c, cppsclass,&v2);
-			if (m->realmap().size() == v2.value.domain->stacklist->size())
+			//if (m->realmap().size() == v2.value.domain->stacklist->size())
 			{
 				for (auto it : m->realmap()) {
 					cpps_domain* leftdomain = NULL;
@@ -757,6 +757,69 @@ namespace cpps
 
 		return ret;
 	}
+	std::string base_BinToHex(std::string strBin)
+	{
+		std::string strHex;
+		size_t len = strBin.size();
+		strHex.resize(strBin.size() * 2);
+		for (size_t i = 0; i < len; i++)
+		{
+			uint8_t cTemp = strBin[i];
+			for (size_t j = 0; j < 2; j++)
+			{
+				uint8_t cCur = (cTemp & 0x0f);
+				if (cCur < 10)
+				{
+					cCur += '0';
+				}
+				else
+				{
+					cCur += (('a') - 10);
+				}
+				strHex[2 * i + 1 - j] = cCur;
+				cTemp >>= 4;
+			}
+		}
+
+		return strHex;
+	}
+	std::string base_HexToBin(std::string strHex)
+	{
+		if (strHex.size() % 2 != 0)
+		{
+			return "";
+		}
+
+		std::string strBin;
+		strBin.resize(strHex.size() / 2);
+		for (size_t i = 0; i < strBin.size(); i++)
+		{
+			uint8_t cTemp = 0;
+			for (size_t j = 0; j < 2; j++)
+			{
+				char cCur = strHex[2 * i + j];
+				if (cCur >= '0' && cCur <= '9')
+				{
+					cTemp = (cTemp << 4) + (cCur - '0');
+				}
+				else if (cCur >= 'a' && cCur <= 'f')
+				{
+					cTemp = (cTemp << 4) + (cCur - 'a' + 10);
+				}
+				else if (cCur >= 'A' && cCur <= 'F')
+				{
+					cTemp = (cTemp << 4) + (cCur - 'A' + 10);
+				}
+				else
+				{
+					return "";
+				}
+			}
+			strBin[i] = cTemp;
+		}
+
+		return strBin;
+	}
 	void cpps_regbase(C *c)
 	{
 		
@@ -775,6 +838,8 @@ namespace cpps
 			def("sleep", cpps_base_sleep),
 			def("Sleep", cpps_base_sleep),
 			def("usleep", cpps_base_sleep),
+			def("hex2bin", base_HexToBin),
+			def("bin2hex", base_BinToHex),
 			def("tonumber", cpps_base_tonumber),
 			def("double", cpps_base_tonumber),
 			def("toint", cpps_base_tointeger),

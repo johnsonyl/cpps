@@ -124,6 +124,14 @@ namespace cpps
 	{
 		return tan(cpps_to_number(x));
 	}
+	std::string cpps_math_hex(cpps_value x)
+	{
+		std::string ret;
+		std::stringstream s;
+		s << std::hex << cpps_to_integer(x);
+		s >> ret;
+		return ret;
+	}
 	cpps_number cpps_math_randf()
 	{
 		cpps_number ret = abs(rand_ex() % 10000000000 / 1000000001.0 - 1.0);
@@ -171,7 +179,8 @@ namespace cpps
 			defvar(c, "pi", M_PI),
 			def("sin", cpps_math_sin),
 			def("sqrt", cpps_math_sqrt),
-			def("tan", cpps_math_tan)
+			def("tan", cpps_math_tan),
+			def("hex", cpps_math_hex)
 
 		];
 		cpps::_module(c)[

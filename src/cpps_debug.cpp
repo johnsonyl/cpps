@@ -40,6 +40,7 @@ namespace cpps
 			.def("line", &cpps_trycatch_error::line)
 			.def("value", &cpps_trycatch_error::value)
 			.def("callstack", &cpps_trycatch_error::callstack)
+			.def("tostring",&cpps_trycatch_error::tostring)
 		];
 	}
 }

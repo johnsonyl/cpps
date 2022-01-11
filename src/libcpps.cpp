@@ -115,17 +115,13 @@ namespace cpps {
 		std::string ret = "";
 		while (!cpps_parse_isnotvarname(buffer.cur())) {
 			ret.push_back(buffer.pop());
+			if (buffer.isend())
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_varerror, "Unexpected end"));
 		}
 		return(ret);
 	}
-	std::string cpps_parse_object_varname(cppsbuffer& buffer) {
-		std::string ret = "";
-		while (buffer.cur() != ':' && !cpps_parse_isspace(buffer.cur()) && !cpps_parse_isenter(buffer.cur())) {
-			ret.push_back(buffer.pop());
-		}
-		return(ret);
-	}
-	std::string cpps_parse_other_varname(cppsbuffer& buffer,char endc) {
+
+	std::string cpps_parse_other_varname(cppsbuffer& buffer, char endc) {
 		std::string ret = "";
 		while (buffer.cur() != endc) {
 			ret.push_back(buffer.pop());
@@ -133,6 +129,33 @@ namespace cpps {
 				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_varerror, "Unexpected end"));
 
 		}
+		return(ret);
+	}
+	std::string cpps_parse_object_varname(cppsbuffer& buffer) {
+		std::string ret = "";
+		char hold = 0;
+		if (buffer.cur() == '\'') {
+			hold = '\'';
+			buffer.pop();
+		}
+		else if (buffer.cur() == '\"') {
+			hold = '\"';
+			buffer.pop();
+		}
+		if (hold != 0) {
+			ret = cpps_parse_other_varname(buffer, hold);
+		}
+		else {
+			ret = cpps_parse_varname(buffer);
+			if (ret.empty())
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_varerror, "error object name"));
+		}
+		if (hold != 0) {
+			if(buffer.cur() != hold)
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_varerror, "Unexpected end"));
+			buffer.pop();
+		}
+
 		return(ret);
 	}
 	bool cpps_parse_isbuiltinname(std::string s) {
@@ -3424,9 +3447,9 @@ namespace cpps {
 		{
 			ns = v->getval().value.domain;
 
-			if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
+		/*	if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 				c->_G->regidxvar(d->offset, v);
-			}
+			}*/
 
 			cpps_step_all(c, CPPS_MUNITRET, ns, root, d);
 			return;
@@ -3441,9 +3464,9 @@ namespace cpps {
 		v->setval(tmp);
 		v->setsource(true);
 		_Gdomain->regvar(c, v);
-		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
+	/*	if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			c->_G->regidxvar(d->offset, v);
-		}
+		}*/
 		cpps_step_all(c, CPPS_MUNITRET, ns, root, d);
 	}
 	void cpps_pop_stack_to_here(C* c, cpps_stack* here,bool cleanup) {
@@ -3482,7 +3505,7 @@ namespace cpps {
 		for (std::vector<cpps_stack*>::reverse_iterator it = stacklist->rbegin(); it != stacklist->rend(); ++it)
 		{
 			cpps::cpps_stack* stack = *it;
-			sprintf(errbuffer, "file:%s [%d] %s\n", stack->f, stack->l, stack->func);
+			sprintf(errbuffer, "file:%s line:%d func:%s\n", stack->f, stack->l, stack->func);
 			errmsg.append(errbuffer);
 		}
 	}

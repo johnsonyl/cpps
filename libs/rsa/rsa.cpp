@@ -30,12 +30,10 @@ std::string rsa_pub_decrypt(std::string cipherText, std::string pubKey)
 	rsa = PEM_read_bio_RSAPublicKey(keybio, &rsa, NULL, NULL);
 	if (!rsa)
 	{
-#ifdef _DEBUG
 		ERR_load_crypto_strings();
 		char errBuf[512];
 		ERR_error_string_n(ERR_get_error(), errBuf, sizeof(errBuf));
 		std::cout << "load key failed[" << errBuf << "]" << std::endl;
-#endif
 		BIO_free_all(keybio);
 		return std::string("");
 	}
@@ -47,8 +45,16 @@ std::string rsa_pub_decrypt(std::string cipherText, std::string pubKey)
 	// 解密函数  
 	int ret = RSA_public_decrypt((int32)cipherText.length(), (const unsigned char*)cipherText.c_str(), (unsigned char*)decryptedText, rsa,(size_t) RSA_PKCS1_PADDING);
 	if (ret >= 0)
-		strRet = std::string(decryptedText, ret);
+		strRet.assign(decryptedText, ret);
+	else {
+		ERR_load_crypto_strings();
+		char err[512];
 
+		ERR_error_string(ERR_get_error(), err);
+		fprintf(stderr, "%d,Error decrypting message: %s\n", (int32)cipherText.size(),err);
+
+		printf("err : %d, %s", ret, decryptedText);
+	}
 	// 释放内存  
 	free(decryptedText);
 	BIO_free_all(keybio);
@@ -83,8 +89,51 @@ std::string rsa_pub_encrypt(std::string clearText, std::string pubKey)
 	// 加密函数  
 	int ret = RSA_public_encrypt((int32)clearText.length(), (const unsigned char*)clearText.c_str(), (unsigned char*)encryptedText, rsa, RSA_PKCS1_PADDING);
 	if (ret >= 0)
-		strRet = std::string(encryptedText, ret);
+		strRet.assign(encryptedText, ret);
+	else
+		printf("err : %d, %s", ret, encryptedText);
+	// 释放内存  
+	free(encryptedText);
+	BIO_free_all(keybio);
+	RSA_free(rsa);
 
+	return strRet;
+}
+std::string rsa_pub_encrypt_no_padding(std::string clearText, std::string pubKey)
+{
+	std::string strRet;
+ 	BIO* keybio = BIO_new_mem_buf((unsigned char *)pubKey.c_str(), -1);
+	RSA* rsa = RSA_new();
+	rsa = PEM_read_bio_RSAPublicKey(keybio, &rsa, NULL, NULL);
+	if (!rsa)
+	{
+#ifdef _DEBUG
+		ERR_load_crypto_strings();
+		char errBuf[512];
+		ERR_error_string_n(ERR_get_error(), errBuf, sizeof(errBuf));
+		std::cout << "load key failed[" << errBuf << "]" << std::endl;
+#endif
+		BIO_free_all(keybio);
+		return std::string("");
+	}
+
+	size_t len = (size_t)RSA_size(rsa);
+	//int len = 1028;
+	char* encryptedText = (char*)malloc(len + 1);
+	memset(encryptedText, 0, len + 1);
+
+
+	char* clearText_2 = (char*)malloc(len * 2);
+	memset(clearText_2, 0, len * 2);
+	memcpy(clearText_2, clearText.c_str(), clearText.size());
+
+
+	// 加密函数  
+	int ret = RSA_public_encrypt((int32)len, (const unsigned char*)clearText_2, (unsigned char*)encryptedText, rsa, RSA_NO_PADDING);
+	if (ret >= 0)
+		strRet.assign(encryptedText, ret);
+	else
+		printf("err : %d, %s", ret, encryptedText);
 	// 释放内存  
 	free(encryptedText);
 	BIO_free_all(keybio);
@@ -124,7 +173,7 @@ std::string rsa_pri_encrypt(std::string clearText, std::string priKey)
 	// 解密函数  
 	int ret = RSA_private_encrypt((int32)clearText.length(), (const unsigned char*)clearText.c_str(), (unsigned char*)encryptedText, rsa, RSA_PKCS1_PADDING);
 	if (ret >= 0)
-		strRet = std::string(encryptedText, ret);
+		strRet.assign(encryptedText, ret);
 
 	// 释放内存  
 	free(encryptedText);
@@ -166,7 +215,7 @@ std::string rsa_pri_decrypt(std::string cipherText, std::string priKey)
 	// 解密函数  
 	int ret = RSA_private_decrypt((int32)cipherText.length(), (const unsigned char*)cipherText.c_str(), (unsigned char*)decryptedText, rsa, RSA_PKCS1_PADDING);
 	if (ret >= 0)
-		strRet = std::string(decryptedText, ret);
+		strRet.assign(decryptedText, ret);
 
 	// 释放内存  
 	free(decryptedText);
@@ -400,6 +449,47 @@ cpps::tuple generateRSAKey(C*c,object oKEY_LENGTH)
 
 	return ret;
 }
+
+std::string rsa_make_pub(std::string module, std::string exp)
+{
+	std::string strRet;
+
+	BIGNUM* n = BN_bin2bn((const unsigned char* )module.c_str(),(int) module.size(), NULL);
+	BIGNUM* e = BN_bin2bn((const unsigned char* )exp.c_str(),(int)exp.size(), NULL);
+	if (n && e)
+	{
+		EVP_PKEY* pRsaKey = EVP_PKEY_new();
+		RSA* rsa = RSA_new();
+		RSA_set0_key(rsa, n, e, NULL);
+		EVP_PKEY_assign_RSA(pRsaKey, rsa);
+
+		BIO* out;
+
+		if (!(out = BIO_new(BIO_s_mem())))
+		{
+			return "";
+		}
+
+		PEM_write_bio_PUBKEY(out, pRsaKey);
+		size_t pub_len = BIO_pending(out);
+		char* pub_key = (char*)malloc(pub_len + 1);
+		BIO_read(out, pub_key, (int32)pub_len);
+
+		strRet.append(pub_key, pub_len);
+
+		BIO_free_all(out);
+		free(pub_key);
+		EVP_PKEY_free(pRsaKey);
+	}
+	else {
+
+		if (n) BN_free(n);
+		if (e) BN_free(e);
+	}
+
+	return strRet;
+}
+
 cpps_export_void  cpps_attach(cpps::C* c)
 {
 
@@ -409,11 +499,13 @@ cpps_export_void  cpps_attach(cpps::C* c)
       def("pri_decrypt", rsa_pri_decrypt),
       def("pri_encrypt", rsa_pri_encrypt),
       def("pub_encrypt", rsa_pub_encrypt),
+      def("pub_encrypt_no_padding", rsa_pub_encrypt_no_padding),
       def("pub_decrypt", rsa_pub_decrypt),
       def("pub_to_pkcs8", rsa_pub_to_pkcs8),
       def("pri_to_pkcs8", rsa_pri_to_pkcs8),
       def("pri_to_pkcs1", rsa_pri_to_pkcs1),
       def("pub_to_pkcs1", rsa_pub_to_pkcs1),
+      def("rsa_make_pub", rsa_make_pub),
       def_inside("generate_rsakey", generateRSAKey)
 	];
 

@@ -32,8 +32,15 @@ namespace cpps {
 		cpps_async_task* roottask = NULL;
 		if (task.isdomain() && task.value.domain->domainname == "ASYNC_OBJECT") {
 			cpps_async_object* vobj = cpps_converter<cpps_async_object*>::apply(task);
-			ret = create_task(c,vobj, &roottask);
-			push_task(c, ret);
+			if (vobj->get_task() == NULL) {
+				ret = create_task(c, vobj, &roottask);
+				push_task(c, ret);
+			}
+			else {
+				roottask = vobj->get_task();
+				object task(c, roottask);
+				ret = task.getval();
+			}
 		}
 		else if (task.isdomain() && task.value.domain->domainname == "ASYNC_TASK") {
 			roottask = cpps_converter<cpps_async_task*>::apply(task);
@@ -48,9 +55,17 @@ namespace cpps {
 			for (auto v : vec->realvector()) {
 				if (v.isdomain() && v.value.domain->domainname == "ASYNC_OBJECT") {
 					cpps_async_object* vobj = cpps_converter<cpps_async_object*>::apply(v);
+					cpps_value vtask_value;
 					cpps_async_task* vtask;
-					cpps_value vtask_value = create_task(c, vobj,&vtask);
-					push_task(c, vtask_value);
+					if (vobj->get_task() == NULL) {
+						vtask_value = create_task(c, vobj, &vtask);
+						push_task(c, vtask_value);
+					}
+					else {
+						vtask = vobj->get_task();
+						object task(c, vtask);
+						vtask_value = task.getval();
+					}
 					retvec->push_back(vtask_value);
 				}
 				else if (v.isdomain() && task.value.domain->domainname == "ASYNC_TASK") {
@@ -191,6 +206,7 @@ namespace cpps {
 		cpps_value ret;
 		newclass< cpps_async_task>(c, &task, &ret);
 		task->async_object = obj;
+		obj->set_task(task);
 		*outtask = task;
 		return ret;
 	}

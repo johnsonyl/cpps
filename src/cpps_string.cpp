@@ -804,7 +804,7 @@ namespace cpps
 		return true;
 	}
 	bool string::cpps_string_isdecimal() {
-		for (int i = 0; i < __str.size(); i++) {
+		for (size_t i = 0; i < __str.size(); i++) {
 			if (__str.at(i) == '-' && __str.size() > 1)  // 有可能出现负数
 				continue;
 			if (__str.at(i) > '9' || __str.at(i) < '0')

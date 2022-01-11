@@ -14,7 +14,7 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		defvar(c, "encode_ascii", Json::encode_ascii),
 		defvar(c, "encode_unicode", Json::encode_unicode),
 		defvar(c, "encode_utf8", Json::encode_utf8),
-		def("encode", &cppstojson),
+		def_inside("encode", &cppstojson),
 		def_inside("decode", &jsontocpps)
 	];
 }
