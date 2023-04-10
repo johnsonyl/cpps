@@ -390,8 +390,14 @@ namespace cpps
 			str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
 		}
 		else {
-			ret = a;
 			std::string* str = cpps_get_string(a);
+			if (str != NULL) {
+				ret = a;
+			}
+			else {
+				newclass<std::string>(c, &str, &ret);
+				str->append( cpps_to_string(b) );
+			}
 			str->append(b.tt == CPPS_TSTRING ? *cpps_get_string(b) : cpps_to_string(b));
 		}
 	}

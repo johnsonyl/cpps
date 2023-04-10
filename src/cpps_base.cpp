@@ -4,6 +4,8 @@ using namespace std;
 
 namespace cpps
 {
+	void cpps_console_clearcolor();
+	void cpps_console_color(cpps_integer color);
 	bool cpps_io_file_exists(std::string path);
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc);
 	std::string getfilenamenotext(std::string str);
@@ -128,7 +130,7 @@ namespace cpps
 			}
 			else if (b.value.value.domain->domainname == "map")
 			{
-				cout << "{";
+				cout << "{ ";
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
 				if (v)
 				{
@@ -139,14 +141,16 @@ namespace cpps
 						if (!first) cout << ",";
 						first = false;
 						cpps_base_printf(c,v->key());
-						cout << ":";
+						cout << ": ";
 						bool bb = cpps_isstring(v->it());
-						if (bb) cout << "'";
+						if (bb) {  cpps::cpps_console_color(2); cout << "'"; }
+						else if(cpps_isbasevar(v->it())) { cpps::cpps_console_color(3); }
 						cpps_base_printf(c,v->it());
-						if (bb) cout << "'";
+						if (bb) { cout << "'";  }
+						cpps::cpps_console_clearcolor();
 					}
 				}
-				cout << "}";
+				cout << " }";
 			}
 			else if (b.value.value.domain->domainname == "pair") {
 

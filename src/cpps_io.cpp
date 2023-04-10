@@ -105,6 +105,16 @@ namespace cpps
 		}
 		return false;
 	}
+	bool cpps_io_appendfile(std::string filepath, std::string content) {
+		FILE* file = cpps_io_open(filepath, "ab+");
+		if (file)
+		{
+			fwrite(content.c_str(), content.size(), 1, file);
+			fclose(file);
+			return true;
+		}
+		return false;
+	}
 	cpps_integer cpps_io_filesize(std::string filepath) {
 		FILE* file = cpps_io_open(filepath, "rb");
 		if (file)
@@ -526,7 +536,7 @@ namespace cpps
 		return S_ISREG(statinfo.st_mode);
 	}
 	void cpps_cpp_real_walk(std::vector<std::string>& vct,std::string path, bool bfindchildren) {
-		char dirNew[200];
+		char dirNew[4096];
 
 
 		path = cpps_io_string_replace(path, "\\", "/");
@@ -723,10 +733,10 @@ namespace cpps
 	}
 	std::string cpps_real_path()
 	{
-		char abs_path[1024];
-		memset(abs_path, 0, 1024);
+		char abs_path[4096];
+		memset(abs_path, 0, 4096);
 #if defined _WIN32
-		GetModuleFileNameA(NULL, abs_path, 1024);
+		GetModuleFileNameA(NULL, abs_path, 4096);
 		size_t cnt = strlen(abs_path);
 		if (cnt != 0) {
 			for (int64 i = (int64)cnt; i >= 0; --i){
@@ -739,8 +749,8 @@ namespace cpps
 		}
 		
 #elif defined LINUX
-		size_t cnt = readlink("/proc/self/exe", abs_path, 1024);//获取可执行程序的绝对路径
-		if (cnt < 0 || cnt >= 1024)
+		size_t cnt = readlink("/proc/self/exe", abs_path, 4096);//获取可执行程序的绝对路径
+		if (cnt < 0 || cnt >= 4096)
 		{
 			return "";
 		}
@@ -756,7 +766,7 @@ namespace cpps
 			}
 		}
 #elif defined __APPLE__
-		usint32 size = 1024;
+		usint32 size = 4096;
 		_NSGetExecutablePath(abs_path, &size);
 
 		//mac os 下返回的不是真实地址而是软连接地址.
@@ -765,8 +775,8 @@ namespace cpps
 		lstat(abs_path, &statinfo);
 		if (S_ISLNK(statinfo.st_mode))
 		{
-			size = readlink(abs_path, abs_path, 1024);
-			if (size < 0 || size >= 1024)
+			size = readlink(abs_path, abs_path, 4096);
+			if (size < 0 || size >= 4096)
 			{
 				return "";
 			}
@@ -918,6 +928,7 @@ namespace cpps
 			def("kbhit", cpps_io_kbhit),
 			def("fopen",cpps_io_open),
 			def("writefile",cpps_io_writefile),
+			def("appendfile",cpps_io_appendfile),
 			def("readfile",cpps_io_readfile),
 			def("filesize",cpps_io_filesize),
 			def("fsize", cpps_io_size),

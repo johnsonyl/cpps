@@ -261,6 +261,13 @@ namespace cpps
 	}
 	cpps_value cpps_string_lower(cpps_value v)
 	{
+		if (v.tt == CPPS_TSTRINGV) {
+			char& strv = *(v.value.strv);
+			return (cpps_integer)tolower(strv);
+		}
+		if (v.tt == CPPS_TINTEGER) {
+			return (cpps_integer)tolower((int)cpps_to_integer(v));
+		}
 		if (v.tt != CPPS_TSTRING) return nil;
 		std::string* tmpStr = cpps_get_string(v);
 		cpps_string_real_tolower(*tmpStr);
@@ -274,6 +281,13 @@ namespace cpps
 	}
 	cpps_value cpps_string_upper(cpps_value v)
 	{
+		if (v.tt == CPPS_TSTRINGV) {
+			char& strv = *(v.value.strv);
+			return (cpps_integer)toupper(strv);
+		}
+		if (v.tt == CPPS_TINTEGER) {
+			return (cpps_integer)toupper((int)cpps_to_integer(v));
+		}
 		if (v.tt != CPPS_TSTRING) return nil;
 		std::string* tmpStr = cpps_get_string(v);
 		cpps_string_real_toupper(*tmpStr);
@@ -424,6 +438,7 @@ namespace cpps
 		cpps::_module(c)[
 			_class<cpps::string>("String")
 				.def("size", &cpps::string::cpps_size)
+				.def("length", &cpps::string::cpps_size)
 				.def("find", &cpps::string::cpps_string_find)
 				.def("rfind", &cpps::string::cpps_string_rfind)
  				.def("replace", &cpps::string::cpps_string_replace)
@@ -436,6 +451,7 @@ namespace cpps
  				.def("empty", &cpps::string::cpps_string_empty)
  				.def("substr", &cpps::string::cpps_string_sub)
  				.def("at", &cpps::string::cpps_string_at)
+ 				.def("erase", &cpps::string::cpps_string_erase)
  				.def("tolower", &cpps::string::cpps_string_tolower)
  				.def("toupper", &cpps::string::cpps_string_toupper)
  				.def("trim", &cpps::string::cpps_string_trim)
@@ -669,6 +685,14 @@ namespace cpps
 	cpps_integer string::cpps_string_at(cpps_integer off)
 	{
 		return (cpps_integer)__str.at(size_t(off));
+	}
+	cpps::string* string::cpps_string_erase(cpps_integer off,object _count)
+	{
+		if(_count.isint())
+			 __str.erase((size_t)off, (size_t) _count.toint());
+		else
+			__str.erase((size_t)off);
+		return this;
 	}
 
 	std::string string::cpps_string_tolower()

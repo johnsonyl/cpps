@@ -52,14 +52,19 @@ void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, uns
 	void* ret = nedalloc::nedmalloc(__size);
 #else
 #ifdef _WIN32
-	auto hMem = GlobalAlloc(GMEM_MOVEABLE | GMEM_SHARE, __size);
-	void* ret = GlobalLock(hMem);
-	GlobalUnlock(hMem);
+	//__size = (size_t)ceil(__size / 1024.0) * 1024;
+	void* ret = (PBYTE)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE);
 #else
 	void* ret = malloc(__size);
 #endif
 #endif
 #ifdef _DEBUG
+#ifdef _WIN32
+	if (ret == NULL) {
+		system("pause");
+	}
+#endif
+
 	_lock.lock();
 	_size += __size;
 	memorylist.insert(memory_info_list::value_type(ret, new memory_info(__size, file, _line)));
@@ -88,10 +93,11 @@ void cpps::memory_allocal_handler::mfree(void* m)
 	nedalloc::nedfree(m);
 #else
 #ifdef _WIN32
-	auto pMem = GlobalHandle(m);
-	GlobalFree(pMem);
+	if (m) {
+		VirtualFree(m, 0, MEM_RELEASE);
+	}
 #else
-	free(m);
+	if(m) free(m);
 #endif
 #endif
 }

@@ -70,7 +70,7 @@ namespace cpps
 		return ret;
 	}
 
-	object function_caller(C* c, object func, cpps_std_vector paramlist)
+	object function_caller(C* c, object func, cpps_std_vector& paramlist)
 	{
 		cpps_value ret;
 
@@ -100,7 +100,7 @@ namespace cpps
 		}
 		return ret;
 	}
-	object function_caller(C* c, object domain, object func, cpps_std_vector paramlist)
+	object function_caller(C* c, object domain, object func, cpps_std_vector& paramlist)
 	{
 		cpps_value ret;
 

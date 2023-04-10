@@ -173,7 +173,7 @@ namespace cpps
 		
 
 		c->getgen0()->clear();
-		*(c->getgen0()) = tempoldgen;
+		c->getgen0()->swap( tempoldgen);
 		c->setgen0size(tempoldgensize);
 
 	}
@@ -232,7 +232,7 @@ namespace cpps
 		}
 
 		c->getgen0()->clear();
-		*(c->getgen0()) = tempoldgen;
+		c->getgen0()->swap(tempoldgen);
 		c->setgen0size(tempoldgensize);
 
 
@@ -262,7 +262,7 @@ namespace cpps
 			newgensize += pClsVar->size();
 		}
 		c->getgen1()->clear();
-		*(c->getgen1()) = newgen;
+		c->getgen1()->swap(newgen);
 		c->setgen1size(newgensize);
 		c->setlastgensize(c->getgen1size());
 

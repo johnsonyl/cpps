@@ -13,15 +13,17 @@ namespace cpps
 	cpps_thread::~cpps_thread()
 	{
 		if (_cx_thread) {
-			delete _cx_thread;
+			CPPSFREE( _cx_thread );
+			_cx_thread = NULL;
 		}
+		_cx_parent_thread_c = NULL;
 	}
 
 	void cpps_thread::constructor(C* _cx_parent_thread,object func, object v)
 	{
 		_cx_parent_thread_c = _cx_parent_thread;
 		
-		_cx_thread = new std::thread(cpps_thread::_cx_thread_func, this, func,v);
+		_cx_thread = CPPSNEW( std::thread)(cpps_thread::_cx_thread_func, this, func,v);
 	}
 
 	void cpps_thread::join()

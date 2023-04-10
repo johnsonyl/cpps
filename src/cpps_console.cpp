@@ -2,6 +2,7 @@
 
 namespace cpps
 {
+	void cpps_base_printfln(C* c, object b);
 	void cpps_console_clearcolor()
 	{
 #ifdef _WIN32
@@ -81,7 +82,8 @@ namespace cpps
 			def("color", cpps_console_color),
 			def("cursor", cpps_console_cursor),
 			def("clearcolor", cpps_console_clearcolor),
-			def("clear", cpps_console_clear)
+			def("clear", cpps_console_clear),
+			def_inside("log",cpps_base_printfln)
 		];
 	}
 }

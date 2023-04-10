@@ -3,6 +3,10 @@
 
 namespace cpps {
 
+	bool cpps_isbasevar(const cpps_value &v)
+	{
+		return cpps_isnumber(v) || cpps_isint(v) || cpps_isbool(v);
+	}
 	bool cpps_isstring(const cpps_value &v)
 	{
 		return v.tt == CPPS_TSTRING;

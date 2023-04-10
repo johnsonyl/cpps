@@ -96,16 +96,17 @@ namespace cpps {
 			|| ch == '/' || ch == '|' || ch == '&'
 			|| ch == '%' || ch == '!' || ch == '['
 			|| ch == ']' || ch == '.' || ch == '='
-			|| ch == '<' || ch == '>' || ch == '?');
+			|| ch == '<' || ch == '>' || ch == '?'
+			|| ch == '^' );
 	}
 	bool cpps_parse_isnotvarname(char ch) {
 		return(ch == '~' || ch == '!' || ch == '@' || ch == '#' || ch == '$'
 			|| ch == '%' || ch == '^' || ch == '&' || ch == '*' || ch == '('
-			|| ch == ')' || ch == '+' || ch == '`' || ch == '{' || ch == '}'
-			|| ch == ';' || ch == '"' || ch == ':' || ch == '\'' || ch == '\\'
-			|| ch == '|' || ch == ',' || ch == '<' || ch == '.' || ch == '>'
-			|| ch == '/' || ch == '?' || ch == '\0' || cpps_parse_isspace(ch)
-			|| cpps_parse_issymbol(ch) || cpps_parse_isenter(ch) || ch == '\n');
+			|| ch == ')' || ch == '+' || ch == '-' || ch == '`' || ch == '{'
+			|| ch == '}' || ch == ';' || ch == '"' || ch == ':' || ch == '\'' 
+			|| ch == '\\'|| ch == '|' || ch == ',' || ch == '<' || ch == '.' 
+			|| ch == '>' || ch == '/' || ch == '?' || ch == '\0'|| cpps_parse_isspace(ch)
+			|| cpps_parse_issymbol(ch)|| cpps_parse_isenter(ch) || ch == '\n');
 	}
 	bool cpps_parse_isint16(char ch) {
 		ch = (char)tolower((int)ch);
@@ -350,8 +351,24 @@ namespace cpps {
 			}
 			cpps_parse_def_function_param(c, funcdomain, params, root, buffer);
 		}
-		/* 解析{ } */
+
 		cpps_parse_rmspaceandenter(buffer);
+		/*尝试看看有没有async?*/
+		if (buffer.cur() != '{' && buffer.cur() != '=') {
+			std::string tag = cpps_parse_varname(buffer);
+			if (tag == "async") {
+				/*..怎么告诉外部呢?*/
+				if(right && right->parent && right->parent->parent && right->parent->parent->type == CPPS_ODEFVAR)
+					right->parent->parent->type = CPPS_ODEFASYNCVAR;//修改成异步函数
+				else
+					throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "async lambda parse error.."));
+			}
+			else {
+				throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "async lambda parse error.."));
+			}
+			cpps_parse_rmspaceandenter(buffer);
+		}
+		/* 解析{ } */
 		ch = buffer.pop();
 		if (ch == '{') {
 			while (!buffer.isend()) {
@@ -364,6 +381,12 @@ namespace cpps {
 				}
 				cpps_parse_line(c, funcdomain, context, root, buffer);
 			}
+		}
+		else if (ch == '=' && buffer.at(buffer.offset()) == '>') {
+			buffer.pop();
+			cpps_parse_rmspaceandenter(buffer);
+			cpps_parse_line(c, funcdomain, context, root, buffer);
+			return;
 		}
 		else if (ch == ';')
 		{
@@ -4755,23 +4778,32 @@ namespace cpps {
 					object leftobject = object(left);
 					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
 					cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
-					cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETSUBOBJECT);
-					object symbolfunc = func ? cpps_value(func) : nil;
-					if (symbolfunc.isfunction())
-					{
-						cpps_value src = doclassfunction(c, leftobject, symbolfunc).value;
-						if (src.isref())
-							left = src.real();
-						else
-							left = src;
-						
-						if (!cpps_isclassvar(left))
-							throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "-> returnd not a classvar."));
+					if (cppsclass->classname == "map") {
+						cpps_map* vmap = cpps_converter<cpps_map*>::apply(left);
+
+						cpps_calculate_expression_quote_real(vmap->cpps_find(cpps_value(c, d->getright()->s)), ret, false);
+						//ret = vmap->cpps_find(cpps_value(c,d->getright()->s));
+						return;
 					}
 					else {
-						/*没找到这个函数?*/
-						throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "-> not found the operator function."));
+						cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETSUBOBJECT);
+						object symbolfunc = func ? cpps_value(func) : nil;
+						if (symbolfunc.isfunction())
+						{
+							cpps_value src = doclassfunction(c, leftobject, symbolfunc).value;
+							if (src.isref())
+								left = src.real();
+							else
+								left = src;
 
+							if (!cpps_isclassvar(left))
+								throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "-> returnd not a classvar."));
+						}
+						else {
+							/*没找到这个函数?*/
+							throw(cpps_error(d->filename, d->getleft()->line, cpps_error_classerror, "-> not found the operator function."));
+
+						}
 					}
 				}
 				cpps_domain* execdomain = c->domain_alloc();
