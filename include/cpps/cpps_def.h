@@ -277,9 +277,6 @@ catch(cpps_trycatch_error& e)\
 	catch (const char* s)\
 {\
 	printf("error: %s \n", s); \
-}\
-catch(...){\
-	printf("error: unknow \n"); \
 }
 #define _CPPS_CATCH } catch (cpps_error& e)\
 {\

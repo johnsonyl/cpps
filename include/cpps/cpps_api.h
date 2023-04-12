@@ -17,6 +17,7 @@ namespace cpps
 	bool cpps_ispair(const cpps_value& v);
 	bool cpps_isset(const cpps_value& v);
 	bool cpps_ismap(const cpps_value& v);
+	bool cpps_isbasevar(const cpps_value& v);
 	bool cpps_isstring(const cpps_value& v);
 	bool cpps_isvector(const cpps_value& v);
 	bool cpps_isrange(const cpps_value& v);

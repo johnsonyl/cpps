@@ -33,6 +33,7 @@ namespace cpps
 		bool			cpps_string_endswith(std::string v);
 		std::string		cpps_string_sub(cpps_integer off,object len);
 		cpps_integer	cpps_string_at(cpps_integer off);
+		cpps::string*	cpps_string_erase(cpps_integer off, object _count);
 		std::string		cpps_string_tolower();
 		std::string		cpps_string_toupper();
 		std::string		cpps_string_join(cpps_vector *vec);

@@ -17,8 +17,8 @@ namespace cpps
 	void					cpps_gc_check_step(C * c);
 	object					dofunction(C *c, object func);
 	object					doclassfunction(C *c, object leftdomain, object func);
-	object					function_caller(C *c, object func, cpps_std_vector paramlist);
-	object					function_caller(C *c, object leftdomain, object func, cpps_std_vector paramlist);
+	object					function_caller(C *c, object func,  cpps_std_vector& paramlist);
+	object					function_caller(C *c, object leftdomain, object func,   cpps_std_vector& paramlist);
 }
 
 #define CPPS_DOFUNCTION_ITER_C 1

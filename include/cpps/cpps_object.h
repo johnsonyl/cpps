@@ -20,6 +20,10 @@ namespace cpps
 	struct cpps_vector;
 	struct cpps_map;
 	struct cpps_map;
+
+
+	object					function_caller(C* c, object func,  cpps_std_vector& paramlist);
+	object					function_caller(C* c, object leftdomain, object func,   cpps_std_vector& paramlist);
 	
 	template<class T>
 	inline void		newclass(C* c, T** ret,cpps_value *ret_value);
@@ -150,7 +154,6 @@ namespace cpps
 
 
 		//check
-		bool					isunorderd_map();
 		bool					ispair();
 		bool					ismap();
 		bool					isset();
@@ -177,6 +180,18 @@ namespace cpps
 		cpps_value				&realval();
 		const cpps_value		&realval() const;
 
+		//class func
+		template<class... _ArgTypes>
+		object					call(C* c, std::string funcname, _ArgTypes&&... _Args) {
+			object func = (*this)[funcname];
+			if (!func.isfunction()) return cpps::nil;
+			return doclassfunction(c, *this, func, _Args...);
+		}
+		object					call(C* c, std::string funcname,   cpps_std_vector& vec) {
+			object func = (*this)[funcname];
+			if (!func.isfunction()) return cpps::nil;
+			return function_caller(c, *this, func, vec);
+		}
 
 		//vector ,map ,string .
 		cpps_integer	size();
