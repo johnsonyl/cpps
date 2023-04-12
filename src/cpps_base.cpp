@@ -11,6 +11,7 @@ namespace cpps
 	std::string getfilenamenotext(std::string str);
 	std::string cpps_rebuild_filepath(std::string path);
 	cpps_integer cpps_math_rand();
+	bool cpps_isbasevar(const cpps_value& v);
 	bool cpps_io_isdir(std::string p);
 	bool cpps_base_isdebug() {
 #ifdef _DEBUG
