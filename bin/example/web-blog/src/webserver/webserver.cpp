@@ -9,7 +9,7 @@ var initwebserver()
 			println(errmsg);
 			request.addheader({
 				Server:"John Server",
-				Content-Type:"text/plain; charset=UTF-8",
+				"Content-Type":"text/plain; charset=UTF-8",
 				Connection:"close"
 			});
 			request.append(errmsg);
@@ -19,7 +19,7 @@ var initwebserver()
 		{
 			request.addheader({
 				Server:"John Server",
-				Content-Type:"text/plain; charset=UTF-8",
+				"Content-Type":"text/plain; charset=UTF-8",
 				Connection:"close"
 			});
 			request.append("there's nothing here.");

@@ -9,7 +9,7 @@ class Admin : Controller
 		
 		var key = request.get("key");
 		if(key != globalconfig.admin_key){
-			var loginstate = request.session().get("loginstate","");
+			var loginstate = request.session()? request.session().get("loginstate","") :"";
 			if(loginstate != globalconfig.admin_key){
 				forbidden(request,"forbidden! you are not administrator.");
 				return;

@@ -10,7 +10,7 @@ class Controller
 	{
 		request.addheader({
 			Server:"cpps Server",
-			Content-Type:"application/json; charset=UTF-8",
+			"Content-Type":"application/json; charset=UTF-8",
 			Connection:"close"
 		});
 		request.append(json.encode(msg));
@@ -20,7 +20,7 @@ class Controller
 	{
 		request.addheader({
 			Server:"cpps Server",
-			Content-Type:"application/html; charset=UTF-8",
+			"Content-Type":"application/html; charset=UTF-8",
 			Connection:"close"
 		});
 		request.append(msg);
@@ -30,7 +30,7 @@ class Controller
 	{
 		request.addheader({
 			Server:"cpps Server",
-			Content-Type:"text/html; charset=UTF-8",
+			"Content-Type":"text/html; charset=UTF-8",
 			Connection:"close"
 		});
 		request.append(msg);
@@ -40,10 +40,10 @@ class Controller
 	{
 		request.addheader({
 			Server:"cpps Server",
-			Content-Type:"text/html; charset=UTF-8",
+			"Content-Type":"text/html; charset=UTF-8",
 			Location:url,
 			Connection:"close",
-			Access-Control-Allow-Origin:"*"
+			"Access-Control-Allow-Origin":"*"
 		});
 		request.send(302,"redirect");
 	}
