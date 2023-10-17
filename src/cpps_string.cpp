@@ -468,6 +468,7 @@ namespace cpps
  				.def("isalnum", &cpps::string::cpps_string_isalnum)
  				.def("isalpha", &cpps::string::cpps_string_isalpha)
  				.def("isdecimal", &cpps::string::cpps_string_isdecimal)
+ 				.def("resize", &cpps::string::cpps_string_resize)
 		];
 
 		cpps::_module(c,"string")[
@@ -835,6 +836,9 @@ namespace cpps
 				return false;
 		}
 		return true;
+	}
+	void string::cpps_string_resize(cpps_integer s) {
+		__str.resize((size_t)s);
 	}
 	
 

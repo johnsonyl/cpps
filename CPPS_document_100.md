@@ -1118,10 +1118,10 @@ println(vec2)
 [7,6,5,4,3,2,1,]
 ```
 *****
-### ***4.1.24 isset(var v)***
+### ***4.1.24 isvalid(var v)***
 判断一个变量是否存在或者不为null
 ```
-if(isset(a))
+if(isvalid(a))
     println(a); // a不存在所以什么都不会输出.
 ```
 *****

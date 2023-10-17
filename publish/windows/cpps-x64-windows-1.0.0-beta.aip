@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DOCUMENT Type="Advanced Installer" CreateVersion="16.6" version="20.7.1" Modules="enterprise" RootPath="." Language="en" Id="{D0E6ECB8-757D-4B7A-AA3C-DD80239A285F}">
+  <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
+    <ROW Name="HiddenItems" Value="ActSyncAppComponent;CPLAppletComponent;AutorunComponent;GameUxComponent;SilverlightSlnComponent;SharePointSlnComponent;AppXAppDetailsComponent;FixupComponent;AppXCapabilitiesComponent;AppXDependenciesComponent;AppXProductDetailsComponent;AppXVisualAssetsComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent;MsiXDiffComponent;MsixManifestEditorComponent"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
+    <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
+    <ROW Property="AI_EXTERNALUIUNINSTALLERNAME" MultiBuildValue="DefaultBuild:aiui"/>
+    <ROW Property="AI_FINDEXE_TITLE" Value="Select the installation package for [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
+    <ROW Property="AI_IA_APPLICATION_ID" Value="5fdb9ac0d137d235c43c4f9e"/>
+    <ROW Property="AI_IA_ENABLE" Value="1"/>
+    <ROW Property="AI_PREDEF_LCONDS_PROPS" Value="AI_DETECTED_ALL"/>
+    <ROW Property="AI_PRODUCTNAME_ARP" Value="cpps"/>
+    <ROW Property="AI_RUN_AS_ADMIN" Value="0"/>
+    <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
+    <ROW Property="ALLUSERS" Value="1"/>
+    <ROW Property="ARPCOMMENTS" Value="CPPS - Syntax like CPP programming language" ValueLocId="*"/>
+    <ROW Property="ARPHELPLINK" Value="http://cppscript.org"/>
+    <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
+    <ROW Property="ARPNOREPAIR" Value="1" MultiBuildValue="DefaultBuild:1"/>
+    <ROW Property="ARPPRODUCTICON" Value="logo_1.exe" Type="8"/>
+    <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
+    <ROW Property="ARPURLINFOABOUT" Value="http://cppscript.org"/>
+    <ROW Property="MSIFASTINSTALL" MultiBuildValue="DefaultBuild:4"/>
+    <ROW Property="Manufacturer" Value="cppscript.org"/>
+    <ROW Property="ProductCode" Value="1028:{01C34D2D-8385-45F8-9474-350666EDB580} 1033:{01C34D2D-8385-45F8-9474-350666EDB580} 2052:{01C34D2D-8385-45F8-9474-350666EDB580} " Type="16"/>
+    <ROW Property="ProductLanguage" Value="1033"/>
+    <ROW Property="ProductName" Value="cpps"/>
+    <ROW Property="ProductVersion" Value="1.0.0" Options="32"/>
+    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
+    <ROW Property="UpgradeCode" Value="{BFC7B8F9-DE3C-4E7F-BD95-3535D3833C77}"/>
+    <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50Display" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5X" MultiBuildValue="DefaultBuild:Windows XP/2003" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="DefaultBuild:Windows XP/2003" ValueLocId="-"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
+    <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="CommonAppDataFolder" Directory_Parent="TARGETDIR" DefaultDir="COMMON~1|CommonAppDataFolder" IsPseudoRoot="1"/>
+    <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+    <ROW Directory="base64_Dir" Directory_Parent="lib_Dir" DefaultDir="base64"/>
+    <ROW Directory="base_Dir" Directory_Parent="lib_Dir" DefaultDir="base"/>
+    <ROW Directory="bin_1_Dir" Directory_Parent="deps_1_Dir" DefaultDir="bin"/>
+    <ROW Directory="bin_Dir" Directory_Parent="APPDIR" DefaultDir="bin"/>
+    <ROW Directory="compress_Dir" Directory_Parent="lib_Dir" DefaultDir="compress"/>
+    <ROW Directory="cpps_Dir" Directory_Parent="include_Dir" DefaultDir="cpps"/>
+    <ROW Directory="cppscript.org.example_Dir" Directory_Parent="CommonAppDataFolder" DefaultDir="CPPSCR~1.EXA|cppscript.org.example"/>
+    <ROW Directory="csv_Dir" Directory_Parent="lib_Dir" DefaultDir="csv"/>
+    <ROW Directory="curl_Dir" Directory_Parent="lib_Dir" DefaultDir="curl"/>
+    <ROW Directory="demo_Dir" Directory_Parent="lib_Dir" DefaultDir="demo"/>
+    <ROW Directory="deps_1_Dir" Directory_Parent="deps_Dir" DefaultDir="deps"/>
+    <ROW Directory="deps_Dir" Directory_Parent="APPDIR" DefaultDir="deps"/>
+    <ROW Directory="encoding_Dir" Directory_Parent="lib_Dir" DefaultDir="encoding"/>
+    <ROW Directory="hashlib_Dir" Directory_Parent="lib_Dir" DefaultDir="hashlib"/>
+    <ROW Directory="htmlparser_Dir" Directory_Parent="lib_Dir" DefaultDir="HTMLPA~1|htmlparser"/>
+    <ROW Directory="http_Dir" Directory_Parent="lib_Dir" DefaultDir="http"/>
+    <ROW Directory="include_1_Dir" Directory_Parent="deps_1_Dir" DefaultDir="include"/>
+    <ROW Directory="include_Dir" Directory_Parent="APPDIR" DefaultDir="include"/>
+    <ROW Directory="install_Dir" Directory_Parent="lib_Dir" DefaultDir="install"/>
+    <ROW Directory="itertools_Dir" Directory_Parent="lib_Dir" DefaultDir="ITERTO~1|itertools"/>
+    <ROW Directory="json_Dir" Directory_Parent="lib_Dir" DefaultDir="json"/>
+    <ROW Directory="lib_1_Dir" Directory_Parent="deps_1_Dir" DefaultDir="lib"/>
+    <ROW Directory="lib_3_Dir" Directory_Parent="APPDIR" DefaultDir="lib"/>
+    <ROW Directory="lib_Dir" Directory_Parent="bin_Dir" DefaultDir="lib"/>
+    <ROW Directory="logging_Dir" Directory_Parent="lib_Dir" DefaultDir="logging"/>
+    <ROW Directory="mariadb_Dir" Directory_Parent="lib_Dir" DefaultDir="mariadb"/>
+    <ROW Directory="mysql_Dir" Directory_Parent="lib_Dir" DefaultDir="mysql"/>
+    <ROW Directory="quotedprintable_Dir" Directory_Parent="lib_Dir" DefaultDir="QUOTED~1|quotedprintable"/>
+    <ROW Directory="random_Dir" Directory_Parent="lib_Dir" DefaultDir="random"/>
+    <ROW Directory="re_Dir" Directory_Parent="lib_Dir" DefaultDir="re"/>
+    <ROW Directory="rsa_Dir" Directory_Parent="lib_Dir" DefaultDir="rsa"/>
+    <ROW Directory="setuptools_Dir" Directory_Parent="lib_Dir" DefaultDir="SETUPT~1|setuptools"/>
+    <ROW Directory="smtp_Dir" Directory_Parent="lib_Dir" DefaultDir="smtp"/>
+    <ROW Directory="socket_Dir" Directory_Parent="lib_Dir" DefaultDir="socket"/>
+    <ROW Directory="uuid_Dir" Directory_Parent="lib_Dir" DefaultDir="uuid"/>
+    <ROW Directory="winreg_Dir" Directory_Parent="lib_Dir" DefaultDir="winreg"/>
+    <ROW Directory="xml_Dir" Directory_Parent="lib_Dir" DefaultDir="xml"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
+    <ROW Component="AI_CustomARPName" ComponentId="{E62D14D2-DBC7-4742-9CD5-C19958A70CF1}" Directory_="APPDIR" Attributes="260" KeyPath="DisplayName" Options="1"/>
+    <ROW Component="AI_DisableModify" ComponentId="{9608A4ED-4242-497C-9398-D74FFB75C207}" Directory_="APPDIR" Attributes="260" KeyPath="NoModify" Options="1"/>
+    <ROW Component="AI_ExePath" ComponentId="{1222F20E-4D6E-4FB6-B08C-496D2D679097}" Directory_="APPDIR" Attributes="260" KeyPath="AI_ExePath"/>
+    <ROW Component="AI_IA_ENABLE" ComponentId="{64F4DB5F-7988-4365-8E47-4AA4A3406426}" Directory_="APPDIR" Attributes="260" KeyPath="AI_IA_ENABLE" Options="1"/>
+    <ROW Component="APPDIR" ComponentId="{9E36333B-D280-4517-B974-CBB914FF40CB}" Directory_="APPDIR" Attributes="0"/>
+    <ROW Component="ProductInformation" ComponentId="{4D77C551-41F4-47D9-AE4B-5E15B0906BFB}" Directory_="APPDIR" Attributes="260" KeyPath="Version" Options="1"/>
+    <ROW Component="base64.dll" ComponentId="{F5426A16-4621-480B-BB17-8B222FB4853F}" Directory_="base64_Dir" Attributes="256" KeyPath="base64.dll"/>
+    <ROW Component="bin" ComponentId="{8D1BABCB-375E-4F96-85C9-1B6D3BF831BD}" Directory_="bin_1_Dir" Attributes="0"/>
+    <ROW Component="btree.h" ComponentId="{AB937EBC-97E5-498C-A515-F83AB7F4EB25}" Directory_="cpps_Dir" Attributes="0" KeyPath="btree.h" Type="0"/>
+    <ROW Component="ccompiler.cpp" ComponentId="{EB99AD82-0674-41AF-919B-54CE7DC19823}" Directory_="setuptools_Dir" Attributes="0" KeyPath="ccompiler.cpp" Type="0"/>
+    <ROW Component="colorprint.cpp" ComponentId="{60259385-A57E-40A6-813C-EF28734D1137}" Directory_="base_Dir" Attributes="0" KeyPath="colorprint.cpp" Type="0"/>
+    <ROW Component="compress.dll" ComponentId="{FE995179-06B6-4E11-A6D7-AFFED4EBC77D}" Directory_="compress_Dir" Attributes="256" KeyPath="compress.dll"/>
+    <ROW Component="cpps.exe" ComponentId="{DDEAB5CD-E478-46A2-BB07-2CA6A67C580B}" Directory_="bin_Dir" Attributes="256" KeyPath="cpps.exe"/>
+    <ROW Component="cppscript.org.example" ComponentId="{9E343153-5757-4817-8124-3A4BFE9DA82E}" Directory_="cppscript.org.example_Dir" Attributes="0"/>
+    <ROW Component="csv.dll" ComponentId="{417B5026-31D6-44C7-BF29-1D9D11598D45}" Directory_="csv_Dir" Attributes="256" KeyPath="csv.dll"/>
+    <ROW Component="curl" ComponentId="{276FC262-EFC5-4071-AC10-F1D19715CF7B}" Directory_="curl_Dir" Attributes="0"/>
+    <ROW Component="demo.dll" ComponentId="{2EFB5D35-F628-4A26-8B54-88451B5EE350}" Directory_="demo_Dir" Attributes="256" KeyPath="demo.dll"/>
+    <ROW Component="encoding.dll" ComponentId="{DEC975C6-9E77-48DE-A19B-39068B6C7D8B}" Directory_="encoding_Dir" Attributes="256" KeyPath="encoding.dll"/>
+    <ROW Component="hashlib.dll" ComponentId="{61132D04-DE2A-40E7-95C8-9A96B6D11C85}" Directory_="hashlib_Dir" Attributes="256" KeyPath="hashlib.dll"/>
+    <ROW Component="htmlparser.dll" ComponentId="{A731E7A3-C741-466C-88DB-233902244114}" Directory_="htmlparser_Dir" Attributes="256" KeyPath="htmlparser.dll"/>
+    <ROW Component="http.dll" ComponentId="{93197CEB-262E-4ED3-ADFD-B8AFAA6F848E}" Directory_="http_Dir" Attributes="256" KeyPath="http.dll"/>
+    <ROW Component="include" ComponentId="{DFB2E6F2-7478-4ACB-AABD-12646B838973}" Directory_="include_1_Dir" Attributes="0"/>
+    <ROW Component="json.dll" ComponentId="{E1913412-37CD-4EDE-9500-EE91FA270732}" Directory_="json_Dir" Attributes="256" KeyPath="json.dll"/>
+    <ROW Component="lib" ComponentId="{70FEFD07-C144-4D21-B21B-6D1FD6A2A62C}" Directory_="lib_1_Dir" Attributes="0"/>
+    <ROW Component="libcpps.lib" ComponentId="{D1689AC4-A8BB-4F4D-8C7A-74A26AAE8CD5}" Directory_="lib_3_Dir" Attributes="0" KeyPath="libcpps.lib" Type="0"/>
+    <ROW Component="libcrypto1_1x64.dll" ComponentId="{4417A3E2-9DEF-4724-A15C-873DF4DD9DA9}" Directory_="bin_Dir" Attributes="256" KeyPath="libcrypto1_1x64.dll"/>
+    <ROW Component="libcurl.dll" ComponentId="{8E823E64-DDD6-4C73-AA1C-BA7A0DE522E5}" Directory_="bin_Dir" Attributes="256" KeyPath="libcurl.dll"/>
+    <ROW Component="libmariadb.dll" ComponentId="{D45700D1-67EF-4AFF-8FF3-83005F878443}" Directory_="bin_Dir" Attributes="256" KeyPath="libmariadb.dll"/>
+    <ROW Component="libmysql.dll" ComponentId="{A156CFFE-CB0D-4F5B-8C5D-9677407FBFBA}" Directory_="bin_Dir" Attributes="256" KeyPath="libmysql.dll"/>
+    <ROW Component="libssl1_1x64.dll" ComponentId="{99A65C35-79C7-4C84-9377-711A74ED291F}" Directory_="bin_Dir" Attributes="256" KeyPath="libssl1_1x64.dll"/>
+    <ROW Component="logging.dll" ComponentId="{92EBED2B-B1A8-4E13-907F-7AE9B75012A7}" Directory_="logging_Dir" Attributes="256" KeyPath="logging.dll"/>
+    <ROW Component="main.cpp" ComponentId="{1CB2C226-7690-440A-AA02-1C5BB0CC249D}" Directory_="hashlib_Dir" Attributes="0" KeyPath="main.cpp" Type="0"/>
+    <ROW Component="main.cpp_1" ComponentId="{236793C1-FAF3-415B-B6EA-78BEDCCA8D81}" Directory_="http_Dir" Attributes="0" KeyPath="main.cpp_1" Type="0"/>
+    <ROW Component="main.cpp_10" ComponentId="{D9D28E9F-74E3-4AA6-9A5F-DDCFF1E0499D}" Directory_="re_Dir" Attributes="0" KeyPath="main.cpp_12" Type="0"/>
+    <ROW Component="main.cpp_2" ComponentId="{59C75A7D-64FB-430B-AA04-F1DED5BE9011}" Directory_="install_Dir" Attributes="0" KeyPath="main.cpp_2" Type="0"/>
+    <ROW Component="main.cpp_3" ComponentId="{5ECA778D-B663-4473-A649-77DE3C11EE6E}" Directory_="json_Dir" Attributes="0" KeyPath="main.cpp_3" Type="0"/>
+    <ROW Component="main.cpp_5" ComponentId="{67D9BE63-CAE1-4D43-AF15-A2E76E6D5F00}" Directory_="mysql_Dir" Attributes="0" KeyPath="main.cpp_5" Type="0"/>
+    <ROW Component="main.cpp_6" ComponentId="{8A25D71F-3AD3-49F2-A3ED-56AABE89D620}" Directory_="random_Dir" Attributes="0" KeyPath="main.cpp_6" Type="0"/>
+    <ROW Component="main.cpp_7" ComponentId="{20538D8C-F775-4D72-83B7-54B49B547C69}" Directory_="smtp_Dir" Attributes="0" KeyPath="main.cpp_8" Type="0"/>
+    <ROW Component="main.cpp_8" ComponentId="{97569248-E5BA-458C-8979-90743A733EE0}" Directory_="socket_Dir" Attributes="0" KeyPath="main.cpp_9" Type="0"/>
+    <ROW Component="main.cpp_9" ComponentId="{6B0A5618-D96D-467F-A4DA-5638D689A890}" Directory_="itertools_Dir" Attributes="0" KeyPath="main.cpp_11" Type="0"/>
+    <ROW Component="mariadb.dll" ComponentId="{294D3A8C-E449-44F3-9E3A-04246F95E9D4}" Directory_="mariadb_Dir" Attributes="256" KeyPath="mariadb.dll"/>
+    <ROW Component="msvcp140.dll" ComponentId="{757EDA52-62C6-47A7-A934-C7D4C4B153E0}" Directory_="bin_Dir" Attributes="256" KeyPath="msvcp140.dll"/>
+    <ROW Component="mysql.dll" ComponentId="{33437422-26C8-48A5-8F38-6D98B481FCB7}" Directory_="mysql_Dir" Attributes="256" KeyPath="mysql.dll"/>
+    <ROW Component="quotedprintable.dll" ComponentId="{1038FB65-8249-4241-A14F-DE864FA22872}" Directory_="quotedprintable_Dir" Attributes="256" KeyPath="quotedprintable.dll"/>
+    <ROW Component="re.dll" ComponentId="{876E8286-D8E0-493F-96F0-19486E20A69B}" Directory_="re_Dir" Attributes="256" KeyPath="re.dll"/>
+    <ROW Component="rsa.dll" ComponentId="{2BA8179B-DE20-4F80-A38C-69F7F7ACC230}" Directory_="rsa_Dir" Attributes="256" KeyPath="rsa.dll"/>
+    <ROW Component="smtp.dll" ComponentId="{C26DF417-E8E3-473E-88E1-776D061A45E9}" Directory_="smtp_Dir" Attributes="256" KeyPath="smtp.dll"/>
+    <ROW Component="socket.dll" ComponentId="{006835ED-8120-4B5E-97F0-5EB00451E079}" Directory_="socket_Dir" Attributes="256" KeyPath="socket.dll"/>
+    <ROW Component="uuid.dll" ComponentId="{026BFCB6-B9AA-4753-90C0-32FB6E1B69C5}" Directory_="uuid_Dir" Attributes="256" KeyPath="uuid.dll"/>
+    <ROW Component="uv.dll_1" ComponentId="{4CFD103C-5CB7-4059-A46B-B0F15AA0CC38}" Directory_="bin_Dir" Attributes="256" KeyPath="uv.dll_1"/>
+    <ROW Component="vcruntime140.dll" ComponentId="{60922627-DA1A-4247-8E0C-FB890B9FCE0B}" Directory_="bin_Dir" Attributes="256" KeyPath="vcruntime140.dll"/>
+    <ROW Component="vcruntime140_1.dll" ComponentId="{DDB68D48-5E45-42B1-AC45-D6510D4464B8}" Directory_="bin_Dir" Attributes="256" KeyPath="vcruntime140_1.dll"/>
+    <ROW Component="winreg.dll" ComponentId="{959585B8-75D8-402E-9500-D553144077F2}" Directory_="winreg_Dir" Attributes="256" KeyPath="winreg.dll"/>
+    <ROW Component="xml.dll" ComponentId="{7D53988F-7916-49C7-8A73-D5A364C6C13C}" Directory_="xml_Dir" Attributes="256" KeyPath="xml.dll"/>
+    <ROW Component="zlib1.dll" ComponentId="{0AC3D557-0BFB-43B6-A9B5-6957365E8962}" Directory_="bin_Dir" Attributes="256" KeyPath="zlib1.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
+    <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
+    <ROW File="cpps.exe" Component_="cpps.exe" FileName="cpps.exe" Attributes="0" SourcePath="x64\bin\cpps.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="libcrypto1_1x64.dll" Component_="libcrypto1_1x64.dll" FileName="LIBCRY~1.DLL|libcrypto-1_1-x64.dll" Attributes="0" SourcePath="x64\bin\libcrypto-1_1-x64.dll" SelfReg="false"/>
+    <ROW File="libcurl.dll" Component_="libcurl.dll" FileName="libcurl.dll" Attributes="0" SourcePath="x64\bin\libcurl.dll" SelfReg="false"/>
+    <ROW File="libmysql.dll" Component_="libmysql.dll" FileName="libmysql.dll" Attributes="0" SourcePath="x64\bin\libmysql.dll" SelfReg="false"/>
+    <ROW File="libssl1_1x64.dll" Component_="libssl1_1x64.dll" FileName="LIBSSL~1.DLL|libssl-1_1-x64.dll" Attributes="0" SourcePath="x64\bin\libssl-1_1-x64.dll" SelfReg="false"/>
+    <ROW File="msvcp140.dll" Component_="msvcp140.dll" FileName="msvcp140.dll" Attributes="0" SourcePath="x64\bin\msvcp140.dll" SelfReg="false"/>
+    <ROW File="vcruntime140.dll" Component_="vcruntime140.dll" FileName="VCRUNT~1.DLL|vcruntime140.dll" Attributes="0" SourcePath="x64\bin\vcruntime140.dll" SelfReg="false"/>
+    <ROW File="vcruntime140_1.dll" Component_="vcruntime140_1.dll" FileName="VCRUNT~2.DLL|vcruntime140_1.dll" Attributes="0" SourcePath="x64\bin\vcruntime140_1.dll" SelfReg="false"/>
+    <ROW File="zlib1.dll" Component_="zlib1.dll" FileName="zlib1.dll" Attributes="0" SourcePath="x64\bin\zlib1.dll" SelfReg="false"/>
+    <ROW File="libcpps.lib" Component_="libcpps.lib" FileName="libcpps.lib" Attributes="0" SourcePath="x64\lib\libcpps.lib" SelfReg="false"/>
+    <ROW File="colorprint.cpp" Component_="colorprint.cpp" FileName="COLORP~1.CPP|colorprint.cpp" Attributes="0" SourcePath="x64\bin\lib\base\colorprint.cpp" SelfReg="false"/>
+    <ROW File="base64.dll" Component_="base64.dll" FileName="base64.dll" Attributes="0" SourcePath="x64\bin\lib\base64\base64.dll" SelfReg="false"/>
+    <ROW File="compress.dll" Component_="compress.dll" FileName="compress.dll" Attributes="0" SourcePath="x64\bin\lib\compress\compress.dll" SelfReg="false"/>
+    <ROW File="demo.dll" Component_="demo.dll" FileName="demo.dll" Attributes="0" SourcePath="x64\bin\lib\demo\demo.dll" SelfReg="false"/>
+    <ROW File="encoding.dll" Component_="encoding.dll" FileName="encoding.dll" Attributes="0" SourcePath="x64\bin\lib\encoding\encoding.dll" SelfReg="false"/>
+    <ROW File="hashlib.dll" Component_="hashlib.dll" FileName="hashlib.dll" Attributes="0" SourcePath="x64\bin\lib\hashlib\hashlib.dll" SelfReg="false"/>
+    <ROW File="main.cpp" Component_="main.cpp" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\hashlib\main.cpp" SelfReg="false"/>
+    <ROW File="htmlparser.dll" Component_="htmlparser.dll" FileName="HTMLPA~1.DLL|htmlparser.dll" Attributes="0" SourcePath="x64\bin\lib\htmlparser\htmlparser.dll" SelfReg="false"/>
+    <ROW File="http.dll" Component_="http.dll" FileName="http.dll" Attributes="0" SourcePath="x64\bin\lib\http\http.dll" SelfReg="false"/>
+    <ROW File="main.cpp_1" Component_="main.cpp_1" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\http\main.cpp" SelfReg="false"/>
+    <ROW File="main.cpp_2" Component_="main.cpp_2" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\install\main.cpp" SelfReg="false"/>
+    <ROW File="json.dll" Component_="json.dll" FileName="json.dll" Attributes="0" SourcePath="x64\bin\lib\json\json.dll" SelfReg="false"/>
+    <ROW File="main.cpp_3" Component_="main.cpp_3" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\json\main.cpp" SelfReg="false"/>
+    <ROW File="logging.dll" Component_="logging.dll" FileName="logging.dll" Attributes="0" SourcePath="x64\bin\lib\logging\logging.dll" SelfReg="false"/>
+    <ROW File="mariadb.dll" Component_="mariadb.dll" FileName="mariadb.dll" Attributes="0" SourcePath="x64\bin\lib\mariadb\mariadb.dll" SelfReg="false"/>
+    <ROW File="main.cpp_5" Component_="main.cpp_5" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\mysql\main.cpp" SelfReg="false"/>
+    <ROW File="mysql.dll" Component_="mysql.dll" FileName="mysql.dll" Attributes="0" SourcePath="x64\bin\lib\mysql\mysql.dll" SelfReg="false"/>
+    <ROW File="quotedprintable.dll" Component_="quotedprintable.dll" FileName="QUOTED~1.DLL|quotedprintable.dll" Attributes="0" SourcePath="x64\bin\lib\quotedprintable\quotedprintable.dll" SelfReg="false"/>
+    <ROW File="main.cpp_6" Component_="main.cpp_6" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\random\main.cpp" SelfReg="false"/>
+    <ROW File="ccompiler.cpp" Component_="ccompiler.cpp" FileName="CCOMPI~1.CPP|ccompiler.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\ccompiler.cpp" SelfReg="false"/>
+    <ROW File="compiler.cpp" Component_="ccompiler.cpp" FileName="compiler.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\compiler.cpp" SelfReg="false"/>
+    <ROW File="dist.cpp" Component_="ccompiler.cpp" FileName="dist.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\dist.cpp" SelfReg="false"/>
+    <ROW File="logging.cpp" Component_="ccompiler.cpp" FileName="logging.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\logging.cpp" SelfReg="false"/>
+    <ROW File="macoscompiler.cpp" Component_="ccompiler.cpp" FileName="MACOSC~1.CPP|macoscompiler.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\macoscompiler.cpp" SelfReg="false"/>
+    <ROW File="main.cpp_7" Component_="ccompiler.cpp" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\main.cpp" SelfReg="false"/>
+    <ROW File="msccompiler.cpp" Component_="ccompiler.cpp" FileName="MSCCOM~1.CPP|msccompiler.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\msccompiler.cpp" SelfReg="false"/>
+    <ROW File="unixcompiler.cpp" Component_="ccompiler.cpp" FileName="UNIXCO~1.CPP|unixcompiler.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\unixcompiler.cpp" SelfReg="false"/>
+    <ROW File="upload.cpp" Component_="ccompiler.cpp" FileName="upload.cpp" Attributes="0" SourcePath="x64\bin\lib\setuptools\upload.cpp" SelfReg="false"/>
+    <ROW File="main.cpp_8" Component_="main.cpp_7" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\smtp\main.cpp" SelfReg="false"/>
+    <ROW File="smtp.dll" Component_="smtp.dll" FileName="smtp.dll" Attributes="0" SourcePath="x64\bin\lib\smtp\smtp.dll" SelfReg="false"/>
+    <ROW File="main.cpp_9" Component_="main.cpp_8" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\socket\main.cpp" SelfReg="false"/>
+    <ROW File="socket.dll" Component_="socket.dll" FileName="socket.dll" Attributes="0" SourcePath="x64\bin\lib\socket\socket.dll" SelfReg="false"/>
+    <ROW File="uuid.dll" Component_="uuid.dll" FileName="uuid.dll" Attributes="0" SourcePath="x64\bin\lib\uuid\uuid.dll" SelfReg="false"/>
+    <ROW File="winreg.dll" Component_="winreg.dll" FileName="winreg.dll" Attributes="0" SourcePath="x64\bin\lib\winreg\winreg.dll" SelfReg="false"/>
+    <ROW File="btree.h" Component_="btree.h" FileName="btree.h" Attributes="0" SourcePath="x64\include\cpps\btree.h" SelfReg="false"/>
+    <ROW File="cpps.h" Component_="btree.h" FileName="cpps.h" Attributes="0" SourcePath="x64\include\cpps\cpps.h" SelfReg="false"/>
+    <ROW File="cpps_api.h" Component_="btree.h" FileName="cpps_api.h" Attributes="0" SourcePath="x64\include\cpps\cpps_api.h" SelfReg="false"/>
+    <ROW File="cpps_array.h" Component_="btree.h" FileName="CPPS_A~1.H|cpps_array.h" Attributes="0" SourcePath="x64\include\cpps\cpps_array.h" SelfReg="false"/>
+    <ROW File="cpps_asyncio.h" Component_="btree.h" FileName="CPPS_A~2.H|cpps_asyncio.h" Attributes="0" SourcePath="x64\include\cpps\cpps_asyncio.h" SelfReg="false"/>
+    <ROW File="cpps_async_loop.h" Component_="btree.h" FileName="CPPS_A~3.H|cpps_async_loop.h" Attributes="0" SourcePath="x64\include\cpps\cpps_async_loop.h" SelfReg="false"/>
+    <ROW File="cpps_async_object.h" Component_="btree.h" FileName="CPPS_A~4.H|cpps_async_object.h" Attributes="0" SourcePath="x64\include\cpps\cpps_async_object.h" SelfReg="false"/>
+    <ROW File="cpps_async_task.h" Component_="btree.h" FileName="CPPS_A~5.H|cpps_async_task.h" Attributes="0" SourcePath="x64\include\cpps\cpps_async_task.h" SelfReg="false"/>
+    <ROW File="cpps_base.h" Component_="btree.h" FileName="CPPS_B~1.H|cpps_base.h" Attributes="0" SourcePath="x64\include\cpps\cpps_base.h" SelfReg="false"/>
+    <ROW File="cpps_buffer.h" Component_="btree.h" FileName="CPPS_B~2.H|cpps_buffer.h" Attributes="0" SourcePath="x64\include\cpps\cpps_buffer.h" SelfReg="false"/>
+    <ROW File="cpps_call_function.h" Component_="btree.h" FileName="CPPS_C~1.H|cpps_call_function.h" Attributes="0" SourcePath="x64\include\cpps\cpps_call_function.h" SelfReg="false"/>
+    <ROW File="cpps_cast.h" Component_="btree.h" FileName="CPPS_C~2.H|cpps_cast.h" Attributes="0" SourcePath="x64\include\cpps\cpps_cast.h" SelfReg="false"/>
+    <ROW File="cpps_cat.h" Component_="btree.h" FileName="cpps_cat.h" Attributes="0" SourcePath="x64\include\cpps\cpps_cat.h" SelfReg="false"/>
+    <ROW File="cpps_class.h" Component_="btree.h" FileName="CPPS_C~3.H|cpps_class.h" Attributes="0" SourcePath="x64\include\cpps\cpps_class.h" SelfReg="false"/>
+    <ROW File="cpps_classvar.h" Component_="btree.h" FileName="CPPS_C~4.H|cpps_classvar.h" Attributes="0" SourcePath="x64\include\cpps\cpps_classvar.h" SelfReg="false"/>
+    <ROW File="cpps_console.h" Component_="btree.h" FileName="CPPS_C~5.H|cpps_console.h" Attributes="0" SourcePath="x64\include\cpps\cpps_console.h" SelfReg="false"/>
+    <ROW File="cpps_converter.h" Component_="btree.h" FileName="CPPS_C~6.H|cpps_converter.h" Attributes="0" SourcePath="x64\include\cpps\cpps_converter.h" SelfReg="false"/>
+    <ROW File="cpps_coroutine.h" Component_="btree.h" FileName="CPPS_C~7.H|cpps_coroutine.h" Attributes="0" SourcePath="x64\include\cpps\cpps_coroutine.h" SelfReg="false"/>
+    <ROW File="cpps_cppsfunction.h" Component_="btree.h" FileName="CPPS_C~8.H|cpps_cppsfunction.h" Attributes="0" SourcePath="x64\include\cpps\cpps_cppsfunction.h" SelfReg="false"/>
+    <ROW File="cpps_cstate.h" Component_="btree.h" FileName="CPPS_C~9.H|cpps_cstate.h" Attributes="0" SourcePath="x64\include\cpps\cpps_cstate.h" SelfReg="false"/>
+    <ROW File="cpps_debug.h" Component_="btree.h" FileName="CPPS_D~1.H|cpps_debug.h" Attributes="0" SourcePath="x64\include\cpps\cpps_debug.h" SelfReg="false"/>
+    <ROW File="cpps_def.h" Component_="btree.h" FileName="cpps_def.h" Attributes="0" SourcePath="x64\include\cpps\cpps_def.h" SelfReg="false"/>
+    <ROW File="cpps_dofunction.h" Component_="btree.h" FileName="CPPS_D~2.H|cpps_dofunction.h" Attributes="0" SourcePath="x64\include\cpps\cpps_dofunction.h" SelfReg="false"/>
+    <ROW File="cpps_domain.h" Component_="btree.h" FileName="CPPS_D~3.H|cpps_domain.h" Attributes="0" SourcePath="x64\include\cpps\cpps_domain.h" SelfReg="false"/>
+    <ROW File="cpps_enum_param.h" Component_="btree.h" FileName="CPPS_E~1.H|cpps_enum_param.h" Attributes="0" SourcePath="x64\include\cpps\cpps_enum_param.h" SelfReg="false"/>
+    <ROW File="cpps_error.h" Component_="btree.h" FileName="CPPS_E~2.H|cpps_error.h" Attributes="0" SourcePath="x64\include\cpps\cpps_error.h" SelfReg="false"/>
+    <ROW File="cpps_function.h" Component_="btree.h" FileName="CPPS_F~1.H|cpps_function.h" Attributes="0" SourcePath="x64\include\cpps\cpps_function.h" SelfReg="false"/>
+    <ROW File="cpps_gc.h" Component_="btree.h" FileName="cpps_gc.h" Attributes="0" SourcePath="x64\include\cpps\cpps_gc.h" SelfReg="false"/>
+    <ROW File="cpps_gcobject.h" Component_="btree.h" FileName="CPPS_G~1.H|cpps_gcobject.h" Attributes="0" SourcePath="x64\include\cpps\cpps_gcobject.h" SelfReg="false"/>
+    <ROW File="cpps_io.h" Component_="btree.h" FileName="cpps_io.h" Attributes="0" SourcePath="x64\include\cpps\cpps_io.h" SelfReg="false"/>
+    <ROW File="cpps_is_void.h" Component_="btree.h" FileName="CPPS_I~1.H|cpps_is_void.h" Attributes="0" SourcePath="x64\include\cpps\cpps_is_void.h" SelfReg="false"/>
+    <ROW File="cpps_lambda_function.h" Component_="btree.h" FileName="CPPS_L~1.H|cpps_lambda_function.h" Attributes="0" SourcePath="x64\include\cpps\cpps_lambda_function.h" SelfReg="false"/>
+    <ROW File="cpps_lock.h" Component_="btree.h" FileName="CPPS_L~2.H|cpps_lock.h" Attributes="0" SourcePath="x64\include\cpps\cpps_lock.h" SelfReg="false"/>
+    <ROW File="cpps_make_function.h" Component_="btree.h" FileName="CPPS_M~1.H|cpps_make_function.h" Attributes="0" SourcePath="x64\include\cpps\cpps_make_function.h" SelfReg="false"/>
+    <ROW File="cpps_make_vector.h" Component_="btree.h" FileName="CPPS_M~2.H|cpps_make_vector.h" Attributes="0" SourcePath="x64\include\cpps\cpps_make_vector.h" SelfReg="false"/>
+    <ROW File="cpps_map.h" Component_="btree.h" FileName="cpps_map.h" Attributes="0" SourcePath="x64\include\cpps\cpps_map.h" SelfReg="false"/>
+    <ROW File="cpps_math.h" Component_="btree.h" FileName="CPPS_M~3.H|cpps_math.h" Attributes="0" SourcePath="x64\include\cpps\cpps_math.h" SelfReg="false"/>
+    <ROW File="cpps_module.h" Component_="btree.h" FileName="CPPS_M~4.H|cpps_module.h" Attributes="0" SourcePath="x64\include\cpps\cpps_module.h" SelfReg="false"/>
+    <ROW File="cpps_mulitreturn.h" Component_="btree.h" FileName="CPPS_M~5.H|cpps_mulitreturn.h" Attributes="0" SourcePath="x64\include\cpps\cpps_mulitreturn.h" SelfReg="false"/>
+    <ROW File="cpps_newptr.h" Component_="btree.h" FileName="CPPS_N~1.H|cpps_newptr.h" Attributes="0" SourcePath="x64\include\cpps\cpps_newptr.h" SelfReg="false"/>
+    <ROW File="cpps_node.h" Component_="btree.h" FileName="CPPS_N~2.H|cpps_node.h" Attributes="0" SourcePath="x64\include\cpps\cpps_node.h" SelfReg="false"/>
+    <ROW File="cpps_node_domain.h" Component_="btree.h" FileName="CPPS_N~3.H|cpps_node_domain.h" Attributes="0" SourcePath="x64\include\cpps\cpps_node_domain.h" SelfReg="false"/>
+    <ROW File="cpps_object.h" Component_="btree.h" FileName="CPPS_O~1.H|cpps_object.h" Attributes="0" SourcePath="x64\include\cpps\cpps_object.h" SelfReg="false"/>
+    <ROW File="cpps_object_pool.h" Component_="btree.h" FileName="CPPS_O~2.H|cpps_object_pool.h" Attributes="0" SourcePath="x64\include\cpps\cpps_object_pool.h" SelfReg="false"/>
+    <ROW File="cpps_reg.h" Component_="btree.h" FileName="cpps_reg.h" Attributes="0" SourcePath="x64\include\cpps\cpps_reg.h" SelfReg="false"/>
+    <ROW File="cpps_regfunction.h" Component_="btree.h" FileName="CPPS_R~1.H|cpps_regfunction.h" Attributes="0" SourcePath="x64\include\cpps\cpps_regfunction.h" SelfReg="false"/>
+    <ROW File="cpps_regfunctionfmt.h" Component_="btree.h" FileName="CPPS_R~2.H|cpps_regfunctionfmt.h" Attributes="0" SourcePath="x64\include\cpps\cpps_regfunctionfmt.h" SelfReg="false"/>
+    <ROW File="cpps_regvar.h" Component_="btree.h" FileName="CPPS_R~3.H|cpps_regvar.h" Attributes="0" SourcePath="x64\include\cpps\cpps_regvar.h" SelfReg="false"/>
+    <ROW File="cpps_reg_cpps_class.h" Component_="btree.h" FileName="CPPS_R~4.H|cpps_reg_cpps_class.h" Attributes="0" SourcePath="x64\include\cpps\cpps_reg_cpps_class.h" SelfReg="false"/>
+    <ROW File="cpps_string.h" Component_="btree.h" FileName="CPPS_S~1.H|cpps_string.h" Attributes="0" SourcePath="x64\include\cpps\cpps_string.h" SelfReg="false"/>
+    <ROW File="cpps_symbol.h" Component_="btree.h" FileName="CPPS_S~2.H|cpps_symbol.h" Attributes="0" SourcePath="x64\include\cpps\cpps_symbol.h" SelfReg="false"/>
+    <ROW File="cpps_thread.h" Component_="btree.h" FileName="CPPS_T~1.H|cpps_thread.h" Attributes="0" SourcePath="x64\include\cpps\cpps_thread.h" SelfReg="false"/>
+    <ROW File="cpps_time.h" Component_="btree.h" FileName="CPPS_T~2.H|cpps_time.h" Attributes="0" SourcePath="x64\include\cpps\cpps_time.h" SelfReg="false"/>
+    <ROW File="cpps_trycatch_error.h" Component_="btree.h" FileName="CPPS_T~3.H|cpps_trycatch_error.h" Attributes="0" SourcePath="x64\include\cpps\cpps_trycatch_error.h" SelfReg="false"/>
+    <ROW File="cpps_value.h" Component_="btree.h" FileName="CPPS_V~1.H|cpps_value.h" Attributes="0" SourcePath="x64\include\cpps\cpps_value.h" SelfReg="false"/>
+    <ROW File="cpps_vector.h" Component_="btree.h" FileName="CPPS_V~2.H|cpps_vector.h" Attributes="0" SourcePath="x64\include\cpps\cpps_vector.h" SelfReg="false"/>
+    <ROW File="cpps_xrange.h" Component_="btree.h" FileName="CPPS_X~1.H|cpps_xrange.h" Attributes="0" SourcePath="x64\include\cpps\cpps_xrange.h" SelfReg="false"/>
+    <ROW File="libcpps.h" Component_="btree.h" FileName="libcpps.h" Attributes="0" SourcePath="x64\include\cpps\libcpps.h" SelfReg="false"/>
+    <ROW File="meminfo.h" Component_="btree.h" FileName="meminfo.h" Attributes="0" SourcePath="x64\include\cpps\meminfo.h" SelfReg="false"/>
+    <ROW File="phmap.h" Component_="btree.h" FileName="phmap.h" Attributes="0" SourcePath="x64\include\cpps\phmap.h" SelfReg="false"/>
+    <ROW File="phmap_base.h" Component_="btree.h" FileName="PHMAP_~1.H|phmap_base.h" Attributes="0" SourcePath="x64\include\cpps\phmap_base.h" SelfReg="false"/>
+    <ROW File="phmap_bits.h" Component_="btree.h" FileName="PHMAP_~2.H|phmap_bits.h" Attributes="0" SourcePath="x64\include\cpps\phmap_bits.h" SelfReg="false"/>
+    <ROW File="phmap_config.h" Component_="btree.h" FileName="PHMAP_~3.H|phmap_config.h" Attributes="0" SourcePath="x64\include\cpps\phmap_config.h" SelfReg="false"/>
+    <ROW File="phmap_dump.h" Component_="btree.h" FileName="PHMAP_~4.H|phmap_dump.h" Attributes="0" SourcePath="x64\include\cpps\phmap_dump.h" SelfReg="false"/>
+    <ROW File="phmap_fwd_decl.h" Component_="btree.h" FileName="PHMAP_~5.H|phmap_fwd_decl.h" Attributes="0" SourcePath="x64\include\cpps\phmap_fwd_decl.h" SelfReg="false"/>
+    <ROW File="phmap_utils.h" Component_="btree.h" FileName="PHMAP_~6.H|phmap_utils.h" Attributes="0" SourcePath="x64\include\cpps\phmap_utils.h" SelfReg="false"/>
+    <ROW File="libmariadb.dll" Component_="libmariadb.dll" FileName="LIBMAR~1.DLL|libmariadb.dll" Attributes="0" SourcePath="x64\bin\libmariadb.dll" SelfReg="false"/>
+    <ROW File="rsa.dll" Component_="rsa.dll" FileName="rsa.dll" Attributes="0" SourcePath="x64\bin\lib\rsa\rsa.dll" SelfReg="false"/>
+    <ROW File="uv.dll_1" Component_="uv.dll_1" FileName="uv.dll" Attributes="0" SourcePath="x64\bin\uv.dll" SelfReg="false"/>
+    <ROW File="io.cpp" Component_="colorprint.cpp" FileName="io.cpp" Attributes="0" SourcePath="x64\bin\lib\base\io.cpp" SelfReg="false"/>
+    <ROW File="main.cpp_10" Component_="colorprint.cpp" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\base\main.cpp" SelfReg="false"/>
+    <ROW File="thread.cpp" Component_="colorprint.cpp" FileName="thread.cpp" Attributes="0" SourcePath="x64\bin\lib\base\thread.cpp" SelfReg="false"/>
+    <ROW File="csv.dll" Component_="csv.dll" FileName="csv.dll" Attributes="0" SourcePath="x64\bin\lib\csv\csv.dll" SelfReg="false"/>
+    <ROW File="main.cpp_11" Component_="main.cpp_9" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\itertools\main.cpp" SelfReg="false"/>
+    <ROW File="main.cpp_12" Component_="main.cpp_10" FileName="main.cpp" Attributes="0" SourcePath="x64\bin\lib\re\main.cpp" SelfReg="false"/>
+    <ROW File="re.dll" Component_="re.dll" FileName="re.dll" Attributes="0" SourcePath="x64\bin\lib\re\re.dll" SelfReg="false"/>
+    <ROW File="xml.dll" Component_="xml.dll" FileName="xml.dll" Attributes="0" SourcePath="x64\bin\lib\xml\xml.dll" SelfReg="false"/>
+    <ROW File="cpps_new.h" Component_="btree.h" FileName="cpps_new.h" Attributes="0" SourcePath="x64\include\cpps\cpps_new.h" SelfReg="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.custcomp.MsiEmbeddedUIComponent">
+    <ROW MsiEmbeddedUI="embeddeduiproxy" FileName="embeddeduiproxy.dll" Attributes="3" MessageFilter="201359327" Data="&lt;AI_HOME&gt;bin\x86\embeddeduiproxy.dll"/>
+    <ROW MsiEmbeddedUI="InstallerAnalytics" FileName="InstallerAnalytics.dll" Attributes="0" Data="&lt;AI_TEMPLATES&gt;PlaceHolder.dat"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.AiPersistentPropComponent">
+    <ROW Property="AI_IA_ENABLE" Registry="AI_IA_ENABLE" HklmSearch="AI_IA_ENABLE" HkcuSearch="AI_IA_ENABLE_1" Hklm64Search="AI_IA_ENABLE_2" Hkcu64Search="AI_IA_ENABLE_3"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
+    <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BootstrapperUISequenceComponent">
+    <ROW Action="AI_DetectSoftware" Sequence="100"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." Languages="en;zh;zh_TW" LangOpt="1" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName] [|ProductVersion]\install" ExtUI="true" UseLargeSchema="true" Unicode="true" MsiPackageType="x64"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
+    <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_zh.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_zh_TW.ail"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
+    <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
+    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\FolderDlg.aip"/>
+    <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceTypeDlg.aip"/>
+    <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceWelcomeDlg.aip"/>
+    <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;classic\fragments\SequenceDialogs.aip"/>
+    <ROW Fragment="Sequences.aip" Path="&lt;AI_FRAGS&gt;Sequences.aip"/>
+    <ROW Fragment="StaticUIStrings.aip" Path="&lt;AI_FRAGS&gt;StaticUIStrings.aip"/>
+    <ROW Fragment="Themes.aip" Path="&lt;AI_FRAGS&gt;Themes.aip"/>
+    <ROW Fragment="UI.aip" Path="&lt;AI_THEMES&gt;classic\fragments\UI.aip"/>
+    <ROW Fragment="Validation.aip" Path="&lt;AI_FRAGS&gt;Validation.aip"/>
+    <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
+    <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
+    <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\WelcomeDlg.aip"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_DeleteLzma" Description="Deleting files extracted from archive" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
+    <ROW Action="AI_DeleteRLzma" Description="Deleting files extracted from archive" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
+    <ROW Action="AI_ExtractFiles" Description="Extracting files from archive" DescriptionLocId="ActionText.Description.AI_ExtractLzma" TemplateLocId="-"/>
+    <ROW Action="AI_ExtractLzma" Description="Extracting files from archive" DescriptionLocId="ActionText.Description.AI_ExtractLzma" TemplateLocId="-"/>
+    <ROW Action="AI_XmlCommit" Description="Committing XML file configurations." DescriptionLocId="ActionText.Description.AI_XmlCommit" Template="Committing XML file configurations." TemplateLocId="ActionText.Template.AI_XmlCommit"/>
+    <ROW Action="AI_XmlConfig" Description="Executing XML file configurations" DescriptionLocId="ActionText.Description.AI_XmlConfig" Template="Configuring XML file: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_XmlConfig"/>
+    <ROW Action="AI_XmlInstall" Description="Generating actions to configure XML files" DescriptionLocId="ActionText.Description.AI_XmlInstall"/>
+    <ROW Action="AI_XmlRemove" Description="Executing XML file configurations" DescriptionLocId="ActionText.Description.AI_XmlRemove" Template="Configuring XML file: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_XmlRemove"/>
+    <ROW Action="AI_XmlRollback" Description="Rolling back XML file configurations." DescriptionLocId="ActionText.Description.AI_XmlRollback" Template="Rolling back XML file configurations." TemplateLocId="ActionText.Template.AI_XmlRollback"/>
+    <ROW Action="AI_XmlUninstall" Description="Generating actions to configure XML files" DescriptionLocId="ActionText.Description.AI_XmlUninstall"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiAppSearchComponent">
+    <ROW Property="AI_IA_ENABLE" Signature_="AI_IA_ENABLE"/>
+    <ROW Property="AI_IA_ENABLE" Signature_="AI_IA_ENABLE_1"/>
+    <ROW Property="AI_IA_ENABLE" Signature_="AI_IA_ENABLE_2"/>
+    <ROW Property="AI_IA_ENABLE" Signature_="AI_IA_ENABLE_3"/>
+    <ROW Property="AI_SETUPEXEPATH" Signature_="AI_EXE_PATH_LM" Builds="DefaultBuild"/>
+    <ROW Property="AI_SETUPEXEPATH" Signature_="AI_EXE_PATH_CU" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
+    <ROW Name="ExternalUICleaner.dll" SourcePath="&lt;AI_CUSTACTS&gt;ExternalUICleaner.dll"/>
+    <ROW Name="InstallerAnalytics.dll" SourcePath="&lt;AI_CUSTACTS&gt;InstallerAnalytics.dll"/>
+    <ROW Name="Prereq.dll" SourcePath="&lt;AI_CUSTACTS&gt;Prereq.dll"/>
+    <ROW Name="SoftwareDetector.dll" SourcePath="&lt;AI_CUSTACTS&gt;SoftwareDetector.dll"/>
+    <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
+    <ROW Name="lzmaextractor.dll" SourcePath="&lt;AI_CUSTACTS&gt;lzmaextractor.dll"/>
+    <ROW Name="xmlCfg.dll" SourcePath="&lt;AI_CUSTACTS&gt;xmlCfg.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
+    <ROW Dialog_="AdminWelcomeDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="AdminWelcomeDlg#Bitmap"/>
+    <ROW Dialog_="ExitDialog" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="ExitDialog#Bitmap"/>
+    <ROW Dialog_="FatalError" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="FatalError#Bitmap"/>
+    <ROW Dialog_="FolderDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="600" TextLocId="-" MsiKey="FolderDlg#Logo"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="MaintenanceWelcomeDlg#Bitmap"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="PatchWelcomeDlg#Bitmap"/>
+    <ROW Dialog_="PrepareDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="200" MsiKey="PrepareDlg#Bitmap"/>
+    <ROW Dialog_="ProgressDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="400" TextLocId="-" MsiKey="ProgressDlg#Logo"/>
+    <ROW Dialog_="ResumeDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="ResumeDlg#Bitmap"/>
+    <ROW Dialog_="UserExit" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="UserExit#Bitmap"/>
+    <ROW Dialog_="VerifyReadyDlg" Control="Logo" Type="Text" X="4" Y="228" Width="70" Height="12" Attributes="1" Text="Advanced Installer" Order="500" TextLocId="-" MsiKey="VerifyReadyDlg#Logo"/>
+    <ROW Dialog_="WelcomeDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" Attributes="1048577" Text="[DialogBitmap]" Order="300" MsiKey="WelcomeDlg#Bitmap"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="202"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="501"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RepairButton" Event="NewDialog" Argument="VerifyRepairDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="1"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="399" Options="1"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="299" Options="1"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
+    <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
+    <ROW Dialog_="CancelDlg" Control_="Yes" Event="DoAction" Argument="AI_IaLogPkgExitUserAbort" Condition="VersionMsi &lt; &quot;4.05&quot; OR UILevel = 2 OR LIMITUI = 1 OR UPGRADINGPRODUCTCODE" Ordering="101"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
+    <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
+    <ROW Directory_="cppscript.org.example_Dir" Component_="cppscript.org.example" ManualDelete="false"/>
+    <ROW Directory_="bin_1_Dir" Component_="bin" ManualDelete="false"/>
+    <ROW Directory_="include_1_Dir" Component_="include" ManualDelete="false"/>
+    <ROW Directory_="lib_1_Dir" Component_="lib" ManualDelete="false"/>
+    <ROW Directory_="curl_Dir" Component_="curl" ManualDelete="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
+    <ROW Action="AI_DeleteCadLzma" Type="51" Source="AI_DeleteLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
+    <ROW Action="AI_DeleteRCadLzma" Type="51" Source="AI_DeleteRLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DeleteRLzma" Type="1281" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
+    <ROW Action="AI_DetectSoftware" Type="257" Source="SoftwareDetector.dll" Target="OnDetectSoftware"/>
+    <ROW Action="AI_DoRemoveExternalUIStub" Type="3585" Source="ExternalUICleaner.dll" Target="DoRemoveExternalUIStub" WithoutSeq="true"/>
+    <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
+    <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
+    <ROW Action="AI_ExtractCadLzma" Type="51" Source="AI_ExtractLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_ExtractFiles" Type="1" Source="Prereq.dll" Target="ExtractSourceFiles" AdditionalSeq="AI_DATA_SETTER_2"/>
+    <ROW Action="AI_ExtractLzma" Type="1025" Source="lzmaextractor.dll" Target="ExtractLZMAFiles"/>
+    <ROW Action="AI_FindExeLzma" Type="1" Source="lzmaextractor.dll" Target="FindEXE"/>
+    <ROW Action="AI_GetArpIconPath" Type="1" Source="aicustact.dll" Target="GetArpIconPath"/>
+    <ROW Action="AI_IaLogCustomInfo" Type="65" Source="InstallerAnalytics.dll" Target="OnAnalyticsLogCustomInfo"/>
+    <ROW Action="AI_IaLogInstallData" Type="65" Source="InstallerAnalytics.dll" Target="OnAnalyticsLogInstallData"/>
+    <ROW Action="AI_IaLogMachineInfo" Type="321" Source="InstallerAnalytics.dll" Target="OnAnalyticsLogMachineInfo"/>
+    <ROW Action="AI_IaLogPkgExitFatalError" Type="65" Source="InstallerAnalytics.dll" Target="OnAnalyticsLogFatalError"/>
+    <ROW Action="AI_IaLogPkgExitFinish" Type="65" Source="InstallerAnalytics.dll" Target="OnAnalyticsLogFinish"/>
+    <ROW Action="AI_IaLogPkgExitUserAbort" Type="65" Source="InstallerAnalytics.dll" Target="OnAnalyticsLogUserAbort" WithoutSeq="true"/>
+    <ROW Action="AI_IaLogPkgStarted" Type="321" Source="InstallerAnalytics.dll" Target="OnAnalyticsLogStart"/>
+    <ROW Action="AI_IaToggle" Type="65" Source="InstallerAnalytics.dll" Target="OnAnalyticsToggle"/>
+    <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
+    <ROW Action="AI_PRESERVE_INSTALL_TYPE" Type="65" Source="aicustact.dll" Target="PreserveInstallType"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH" Target="[AI_SETUPEXEPATH_ORIGINAL]"/>
+    <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
+    <ROW Action="AI_RemoveExternalUIStub" Type="1" Source="ExternalUICleaner.dll" Target="RemoveExternalUIStub"/>
+    <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
+    <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
+    <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="AI_XmlCommit" Type="11777" Source="xmlCfg.dll" Target="OnXmlCommit" WithoutSeq="true"/>
+    <ROW Action="AI_XmlConfig" Type="11265" Source="xmlCfg.dll" Target="OnXmlConfig" WithoutSeq="true"/>
+    <ROW Action="AI_XmlInstall" Type="1" Source="xmlCfg.dll" Target="OnXmlInstall" AdditionalSeq="AI_DATA_SETTER"/>
+    <ROW Action="AI_XmlRemove" Type="11265" Source="xmlCfg.dll" Target="OnXmlRemove" WithoutSeq="true"/>
+    <ROW Action="AI_XmlRollback" Type="11521" Source="xmlCfg.dll" Target="OnXmlRollback" WithoutSeq="true"/>
+    <ROW Action="AI_XmlUninstall" Type="1" Source="xmlCfg.dll" Target="OnXmlUninstall" AdditionalSeq="AI_DATA_SETTER_1"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:c:\[ProductName]"/>
+    <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
+    <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiEnvComponent">
+    <ROW Environment="Path" Name="=-Path" Value="[~];[APPDIR]/bin" Component_="APPDIR"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatCompsComponent">
+    <ROW Feature_="MainFeature" Component_="APPDIR"/>
+    <ROW Feature_="MainFeature" Component_="ProductInformation"/>
+    <ROW Feature_="MainFeature" Component_="AI_IA_ENABLE"/>
+    <ROW Feature_="MainFeature" Component_="cpps.exe"/>
+    <ROW Feature_="MainFeature" Component_="colorprint.cpp"/>
+    <ROW Feature_="MainFeature" Component_="base64.dll"/>
+    <ROW Feature_="MainFeature" Component_="compress.dll"/>
+    <ROW Feature_="MainFeature" Component_="demo.dll"/>
+    <ROW Feature_="MainFeature" Component_="encoding.dll"/>
+    <ROW Feature_="MainFeature" Component_="hashlib.dll"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp"/>
+    <ROW Feature_="MainFeature" Component_="htmlparser.dll"/>
+    <ROW Feature_="MainFeature" Component_="libcrypto1_1x64.dll"/>
+    <ROW Feature_="MainFeature" Component_="libcurl.dll"/>
+    <ROW Feature_="MainFeature" Component_="libmysql.dll"/>
+    <ROW Feature_="MainFeature" Component_="libssl1_1x64.dll"/>
+    <ROW Feature_="MainFeature" Component_="msvcp140.dll"/>
+    <ROW Feature_="MainFeature" Component_="vcruntime140.dll"/>
+    <ROW Feature_="MainFeature" Component_="cppscript.org.example"/>
+    <ROW Feature_="MainFeature" Component_="AI_CustomARPName"/>
+    <ROW Feature_="MainFeature" Component_="AI_DisableModify"/>
+    <ROW Feature_="MainFeature" Component_="vcruntime140_1.dll"/>
+    <ROW Feature_="MainFeature" Component_="zlib1.dll"/>
+    <ROW Feature_="MainFeature" Component_="libcpps.lib"/>
+    <ROW Feature_="MainFeature" Component_="http.dll"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_1"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_2"/>
+    <ROW Feature_="MainFeature" Component_="json.dll"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_3"/>
+    <ROW Feature_="MainFeature" Component_="logging.dll"/>
+    <ROW Feature_="MainFeature" Component_="mariadb.dll"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_5"/>
+    <ROW Feature_="MainFeature" Component_="mysql.dll"/>
+    <ROW Feature_="MainFeature" Component_="quotedprintable.dll"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_6"/>
+    <ROW Feature_="MainFeature" Component_="ccompiler.cpp"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_7"/>
+    <ROW Feature_="MainFeature" Component_="smtp.dll"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_8"/>
+    <ROW Feature_="MainFeature" Component_="socket.dll"/>
+    <ROW Feature_="MainFeature" Component_="uuid.dll"/>
+    <ROW Feature_="MainFeature" Component_="winreg.dll"/>
+    <ROW Feature_="MainFeature" Component_="libmariadb.dll"/>
+    <ROW Feature_="MainFeature" Component_="btree.h"/>
+    <ROW Feature_="MainFeature" Component_="bin"/>
+    <ROW Feature_="MainFeature" Component_="include"/>
+    <ROW Feature_="MainFeature" Component_="lib"/>
+    <ROW Feature_="MainFeature" Component_="rsa.dll"/>
+    <ROW Feature_="MainFeature" Component_="uv.dll_1"/>
+    <ROW Feature_="MainFeature" Component_="csv.dll"/>
+    <ROW Feature_="MainFeature" Component_="curl"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_9"/>
+    <ROW Feature_="MainFeature" Component_="main.cpp_10"/>
+    <ROW Feature_="MainFeature" Component_="re.dll"/>
+    <ROW Feature_="MainFeature" Component_="xml.dll"/>
+    <ROW Feature_="MainFeature" Component_="AI_ExePath"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
+    <ROW Name="logo_1.exe" SourcePath="..\..\cpps\logo.ico" Index="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
+    <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
+    <ROW Action="AI_DETECT_MODERNWIN" Condition="(VersionNT &gt;= 603)" Sequence="58" MsiKey="AI_DETECT_MODERNWIN"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1502"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1397"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="57"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="56"/>
+    <ROW Action="AI_IaToggle" Sequence="103"/>
+    <ROW Action="AI_IaLogPkgStarted" Condition="VersionMsi &lt; &quot;4.05&quot; OR UILevel = 2 OR LIMITUI = 1 OR UPGRADINGPRODUCTCODE" Sequence="54"/>
+    <ROW Action="AI_IaLogPkgExitFinish" Condition="VersionMsi &lt; &quot;4.05&quot; OR UILevel = 2 OR LIMITUI = 1 OR UPGRADINGPRODUCTCODE" Sequence="-1"/>
+    <ROW Action="AI_IaLogPkgExitFatalError" Condition="VersionMsi &lt; &quot;4.05&quot; OR UILevel = 2 OR LIMITUI = 1 OR UPGRADINGPRODUCTCODE" Sequence="-3"/>
+    <ROW Action="AI_IaLogPkgExitUserAbort" Condition="VersionMsi &lt; &quot;4.05&quot; OR UILevel = 2 OR LIMITUI = 1 OR UPGRADINGPRODUCTCODE" Sequence="-2"/>
+    <ROW Action="AI_IaLogInstallData" Sequence="1403"/>
+    <ROW Action="AI_DetectSoftware" Sequence="102"/>
+    <ROW Action="AI_XmlInstall" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5102"/>
+    <ROW Action="AI_DATA_SETTER" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5101"/>
+    <ROW Action="AI_XmlUninstall" Condition="(REMOVE)" Sequence="3102"/>
+    <ROW Action="AI_DATA_SETTER_1" Condition="(REMOVE)" Sequence="3101"/>
+    <ROW Action="AI_GetArpIconPath" Sequence="1402"/>
+    <ROW Action="AI_RemoveExternalUIStub" Condition="(REMOVE=&quot;ALL&quot;) AND ((VersionNT &gt; 500) OR((VersionNT = 500) AND (ServicePackLevel &gt;= 4)))" Sequence="1501"/>
+    <ROW Action="AI_DETECT_WINTHEME" Condition="(VersionNT &gt;= 603)" Sequence="55" MsiKey="AI_DETECT_WINTHEME"/>
+    <ROW Action="AI_IaLogMachineInfo" Sequence="399"/>
+    <ROW Action="AI_IaLogCustomInfo" Sequence="1401"/>
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99" Builds="DefaultBuild"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="101" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="199" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteRCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="198" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="197" Builds="DefaultBuild"/>
+    <ROW Action="AI_FindExeLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="196" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1549" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteRLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1548" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="6599" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractFiles" Sequence="1399" Builds="DefaultBuild"/>
+    <ROW Action="AI_DATA_SETTER_2" Sequence="1398"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="54"/>
+    <ROW Action="AI_DpiContentScale" Sequence="53"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="52"/>
+    <ROW Action="AI_IaToggle" Sequence="98"/>
+    <ROW Action="AI_IaLogPkgStarted" Condition="VersionMsi &lt; &quot;4.05&quot; OR UILevel = 2 OR LIMITUI = 1 OR UPGRADINGPRODUCTCODE" Sequence="51"/>
+    <ROW Action="AI_DetectSoftware" Sequence="102"/>
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="101"/>
+    <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
+    <ROW Action="AI_IaLogMachineInfo" Sequence="399"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
+    <ROW Condition="((VersionNT &lt;&gt; 501) AND (VersionNT &lt;&gt; 502))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="SETUPEXEDIR OR (REMOVE=&quot;ALL&quot;)" Description="This package can only be run from a bootstrapper." DescriptionLocId="AI.LaunchCondition.RequireBootstrapper" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegLocatorComponent">
+    <ROW Signature_="AI_EXE_PATH_CU" Root="1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Type="2"/>
+    <ROW Signature_="AI_EXE_PATH_LM" Root="2" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Type="2"/>
+    <ROW Signature_="AI_IA_ENABLE" Root="2" Key="Software\[Manufacturer]\[ProductCode]" Name="AI_IA_ENABLE" Type="2"/>
+    <ROW Signature_="AI_IA_ENABLE_1" Root="1" Key="Software\[Manufacturer]\[ProductCode]" Name="AI_IA_ENABLE" Type="2"/>
+    <ROW Signature_="AI_IA_ENABLE_2" Root="2" Key="Software\[Manufacturer]\[ProductCode]" Name="AI_IA_ENABLE" Type="18"/>
+    <ROW Signature_="AI_IA_ENABLE_3" Root="1" Key="Software\[Manufacturer]\[ProductCode]" Name="AI_IA_ENABLE" Type="18"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
+    <ROW Registry="AI_ExePath" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Value="[AI_SETUPEXEPATH]" Component_="AI_ExePath"/>
+    <ROW Registry="AI_IA_ENABLE" Root="-1" Key="Software\[Manufacturer]\[ProductCode]" Name="AI_IA_ENABLE" Value="[AI_IA_ENABLE]" Component_="AI_IA_ENABLE"/>
+    <ROW Registry="AdvancedInstaller" Root="-1" Key="Software\Caphyon\Advanced Installer" Name="\"/>
+    <ROW Registry="Caphyon" Root="-1" Key="Software\Caphyon" Name="\"/>
+    <ROW Registry="Comments" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Comments" Value="[ARPCOMMENTS]" Component_="AI_CustomARPName"/>
+    <ROW Registry="Contact" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Contact" Value="[ARPCONTACT]" Component_="AI_CustomARPName"/>
+    <ROW Registry="CurrentVersion" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion" Name="\"/>
+    <ROW Registry="DisplayIcon" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="DisplayIcon" Value="[ARP_ICON_PATH]" Component_="AI_CustomARPName"/>
+    <ROW Registry="DisplayName" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="DisplayName" Value="[AI_PRODUCTNAME_ARP]" Component_="AI_CustomARPName"/>
+    <ROW Registry="DisplayVersion" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="DisplayVersion" Value="[ProductVersion]" Component_="AI_CustomARPName"/>
+    <ROW Registry="EstimatedSize" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="EstimatedSize" Value="#[AI_ARP_SIZE]" Component_="AI_CustomARPName" VirtualValue="#"/>
+    <ROW Registry="HelpLink" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="HelpLink" Value="[ARPHELPLINK]" Component_="AI_CustomARPName"/>
+    <ROW Registry="HelpTelephone" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="HelpTelephone" Value="[ARPHELPTELEPHONE]" Component_="AI_CustomARPName"/>
+    <ROW Registry="InstallLocation" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="InstallLocation" Value="[APPDIR]" Component_="AI_CustomARPName"/>
+    <ROW Registry="LZMA" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA" Name="\"/>
+    <ROW Registry="Manufacturer" Root="-1" Key="Software\[Manufacturer]" Name="\"/>
+    <ROW Registry="Microsoft" Root="-1" Key="Software\Microsoft" Name="\"/>
+    <ROW Registry="ModifyPath" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="ModifyPath" Value="[AI_UNINSTALLER] /i [ProductCode] AI_UNINSTALLER_CTP=1" Component_="AI_CustomARPName"/>
+    <ROW Registry="NoModify" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="NoModify" Value="#1" Component_="AI_DisableModify" VirtualValue="#"/>
+    <ROW Registry="NoRepair" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="NoRepair" Value="#1" Component_="AI_CustomARPName" VirtualValue="#"/>
+    <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
+    <ROW Registry="ProductCode" Root="-1" Key="Software\[Manufacturer]\[ProductCode]" Name="\"/>
+    <ROW Registry="ProductCode_2" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]" Name="\"/>
+    <ROW Registry="ProductName" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="\"/>
+    <ROW Registry="ProductNameProductVersion" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="\"/>
+    <ROW Registry="ProductVersion" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="\"/>
+    <ROW Registry="Publisher" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Publisher" Value="[Manufacturer]" Component_="AI_CustomARPName"/>
+    <ROW Registry="Readme" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Readme" Value="[ARPREADME]" Component_="AI_CustomARPName"/>
+    <ROW Registry="Software" Root="-1" Key="Software" Name="\"/>
+    <ROW Registry="URLInfoAbout" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="URLInfoAbout" Value="[ARPURLINFOABOUT]" Component_="AI_CustomARPName"/>
+    <ROW Registry="URLUpdateInfo" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="URLUpdateInfo" Value="[ARPURLUPDATEINFO]" Component_="AI_CustomARPName"/>
+    <ROW Registry="Uninstall" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall" Name="\"/>
+    <ROW Registry="UninstallPath" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallPath" Value="[AI_UNINSTALLER] /x [ProductCode] AI_UNINSTALLER_CTP=1" Component_="AI_CustomARPName"/>
+    <ROW Registry="UninstallString" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallString" Value="[AI_UNINSTALLER] /x [ProductCode] AI_UNINSTALLER_CTP=1" Component_="AI_CustomARPName"/>
+    <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
+    <ROW Registry="VersionMajor" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="VersionMajor" Value="#1" Component_="AI_CustomARPName" VirtualValue="#"/>
+    <ROW Registry="VersionMinor" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="VersionMinor" Value="#0" Component_="AI_CustomARPName" VirtualValue="#"/>
+    <ROW Registry="Windows" Root="-1" Key="Software\Microsoft\Windows" Name="\"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
+    <ATTRIBUTE name="UsedTheme" value="classic"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.SoftwareIdentificationComponent">
+    <ATTRIBUTE name="LocalFile" value="regid.199509.com.example_ProductNam"/>
+    <ATTRIBUTE name="SystemFile" value="regid.199509.com.example_ProductN_1"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.SynchronizedFolderComponent">
+    <ROW Directory_="bin_Dir" SourcePath="x64\bin" Feature="MainFeature" ExcludePattern="*~|#*#|%*%|._|CVS|.cvsignore|SCCS|vssver.scc|mssccprj.scc|vssver2.scc|.svn|.DS_Store" ExcludeFlags="6" FileAddOptions="4"/>
+    <ROW Directory_="include_Dir" SourcePath="x64\include" Feature="MainFeature" ExcludePattern="*~|#*#|%*%|._|CVS|.cvsignore|SCCS|vssver.scc|mssccprj.scc|vssver2.scc|.svn|.DS_Store" ExcludeFlags="6" FileAddOptions="4"/>
+    <ROW Directory_="lib_3_Dir" SourcePath="x64\lib" Feature="MainFeature" ExcludePattern="*~|#*#|%*%|._|CVS|.cvsignore|SCCS|vssver.scc|mssccprj.scc|vssver2.scc|.svn|.DS_Store" ExcludeFlags="6" FileAddOptions="4"/>
+    <ROW Directory_="deps_Dir" SourcePath="x64\deps" Feature="MainFeature" ExcludePattern="*~|#*#|%*%|._|CVS|.cvsignore|SCCS|vssver.scc|mssccprj.scc|vssver2.scc|.svn|.DS_Store" ExcludeFlags="6" FileAddOptions="4"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.XmlAttributeComponent">
+    <ROW XmlAttribute="xmlnsds" XmlElement="swidsoftware_identification_tag" Name="xmlns:ds" Flags="14" Order="0" Value="http://www.w3.org/2000/09/xmldsig#"/>
+    <ROW XmlAttribute="xmlnsswid" XmlElement="swidsoftware_identification_tag" Name="xmlns:swid" Flags="14" Order="1" Value="http://standards.iso.org/iso/19770/-2/2008/schema.xsd"/>
+    <ROW XmlAttribute="xmlnsxsi" XmlElement="swidsoftware_identification_tag" Name="xmlns:xsi" Flags="14" Order="2" Value="http://www.w3.org/2001/XMLSchema-instance"/>
+    <ROW XmlAttribute="xsischemaLocation" XmlElement="swidsoftware_identification_tag" Name="xsi:schemaLocation" Flags="14" Order="3" Value="http://standards.iso.org/iso/19770/-2/2008/schema.xsd software_identification_tag.xsd"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.XmlElementComponent">
+    <ROW XmlElement="swidbuild" ParentElement="swidnumeric" Name="swid:build" Condition="1" Order="2" Flags="14" Text="0" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidentitlement_required_indicator" ParentElement="swidsoftware_identification_tag" Name="swid:entitlement_required_indicator" Condition="1" Order="0" Flags="14" Text="false" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidmajor" ParentElement="swidnumeric" Name="swid:major" Condition="1" Order="0" Flags="14" Text="1" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidminor" ParentElement="swidnumeric" Name="swid:minor" Condition="1" Order="1" Flags="14" Text="0" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidname" ParentElement="swidproduct_version" Name="swid:name" Condition="1" Order="0" Flags="14" Text="[ProductVersion]" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidname_1" ParentElement="swidsoftware_creator" Name="swid:name" Condition="1" Order="0" Flags="14" Text="[Manufacturer]" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidname_2" ParentElement="swidsoftware_licensor" Name="swid:name" Condition="1" Order="0" Flags="14" Text="[Manufacturer]" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidname_3" ParentElement="swidtag_creator" Name="swid:name" Condition="1" Order="0" Flags="14" Text="[Manufacturer]" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidnumeric" ParentElement="swidproduct_version" Name="swid:numeric" Condition="1" Order="1" Flags="14" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidproduct_title" ParentElement="swidsoftware_identification_tag" Name="swid:product_title" Condition="1" Order="1" Flags="14" Text="[ProductName]" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidproduct_version" ParentElement="swidsoftware_identification_tag" Name="swid:product_version" Condition="1" Order="2" Flags="14" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidregid" ParentElement="swidsoftware_creator" Name="swid:regid" Condition="1" Order="1" Flags="14" Text="cppscript.org.example" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidregid_1" ParentElement="swidsoftware_licensor" Name="swid:regid" Condition="1" Order="1" Flags="14" Text="cppscript.org.example" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidregid_2" ParentElement="swidtag_creator" Name="swid:regid" Condition="1" Order="1" Flags="14" Text="cppscript.org.example" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidreview" ParentElement="swidnumeric" Name="swid:review" Condition="1" Order="3" Flags="14" Text="0" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidsoftware_creator" ParentElement="swidsoftware_identification_tag" Name="swid:software_creator" Condition="1" Order="3" Flags="14" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidsoftware_id" ParentElement="swidsoftware_identification_tag" Name="swid:software_id" Condition="1" Order="5" Flags="14" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidsoftware_identification_tag" Name="swid:software_identification_tag" Condition="1" Order="0" Flags="14" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidsoftware_licensor" ParentElement="swidsoftware_identification_tag" Name="swid:software_licensor" Condition="1" Order="4" Flags="14" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidtag_creator" ParentElement="swidsoftware_identification_tag" Name="swid:tag_creator" Condition="1" Order="6" Flags="14" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidtag_creator_regid" ParentElement="swidsoftware_id" Name="swid:tag_creator_regid" Condition="1" Order="1" Flags="14" Text="cppscript.org.example" UpdateIndexInParent="0"/>
+    <ROW XmlElement="swidunique_id" ParentElement="swidsoftware_id" Name="swid:unique_id" Condition="1" Order="0" Flags="14" Text="[ProductName]" UpdateIndexInParent="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.XmlFileComponent">
+    <ROW XmlFile="regid.199509.com.example_ProductN_1" FileName="CPPSCR~1.SWI|cppscript.org.example_[|ProductName].swidtag" DirProperty="cppscript.org.example_Dir" Component="ProductInformation" RootElement="swidsoftware_identification_tag" Flags="153" Version="1.0" Encoding="UTF-8" IndentUnits="2"/>
+    <ROW XmlFile="regid.199509.com.example_ProductNam" FileName="CPPSCR~1.SWI|cppscript.org.example_[|ProductName].swidtag" DirProperty="APPDIR" Component="ProductInformation" RootElement="swidsoftware_identification_tag" Flags="153" Version="1.0" Encoding="UTF-8" IndentUnits="2"/>
+  </COMPONENT>
+</DOCUMENT>

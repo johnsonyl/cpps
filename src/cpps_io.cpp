@@ -610,6 +610,36 @@ namespace cpps
 		}
 #endif
 	}
+	bool cpps_io_real_filename_filter(char const* needle, char const* haystack) {
+		for (; *needle != '\0'; ++needle) {
+			switch (*needle) {
+			case '?':
+				if (*haystack == '\0')
+					return false;
+				++haystack;
+				break;
+			case '.':
+				if (*haystack != '.')
+					return false;
+				++haystack;
+				break;
+			case '*': {
+				if (needle[1] == '\0')
+					return true;
+				size_t max = strlen(haystack);
+				for (size_t i = 0; i < max; i++)
+					if (cpps_io_real_filename_filter(needle + 1, haystack + i))
+						return true;
+				return false;
+			}
+			default:
+				if (*haystack != *needle)
+					return false;
+				++haystack;
+			}
+		}
+		return *haystack == '\0';
+	}
 	bool cpps_io_filename_filter(std::string filepath, std::string filter)
 	{
 		std::string filename = cpps_io_getfilename(filepath);
@@ -622,7 +652,7 @@ namespace cpps
 			*.*a             =  
 			*a*b*c*.*a*b*c*  =  xaxbxc.xaxbxc 
 		*/
-		return true;
+		return cpps_io_real_filename_filter(filename.c_str(),filter.c_str());
 	}
 
 	void cpps_real_walk(C*c,cpps_vector* vct,std::string path, bool bfindchildren = false,bool onlydir = false,std::string filter = "") {
@@ -646,7 +676,7 @@ namespace cpps
 		do
 		{
 			strcpy(dirNew, path.c_str());
-			strcat(dirNew, "/");
+			if(path[path.size() - 1] != '/') strcat(dirNew, "/");
 			strcat(dirNew, findData.name);
 
 			if (findData.attrib & _A_SUBDIR)
@@ -682,7 +712,7 @@ namespace cpps
 		{
 
 			strcpy(dirNew, path.c_str());
-			strcat(dirNew, "/");
+			if (path[path.size() - 1] != '/') strcat(dirNew, "/");
 			strcat(dirNew, filename->d_name);
 
 			// get rid of "." and ".."
@@ -968,6 +998,7 @@ namespace cpps
 			def("getmtime",cpps_io_last_write_time),
 			def("getctime",cpps_io_getctime),
 			def("getatime",cpps_io_getatime),
+			def("match", cpps_io_filename_filter),
 #ifdef _WIN32
 			def("getappdata",cpps_io_getappdata),
 #endif

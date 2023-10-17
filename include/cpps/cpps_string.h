@@ -49,6 +49,7 @@ namespace cpps
 		bool			cpps_string_isalpha();
 		bool			cpps_string_isspace();
 		bool			cpps_string_isdecimal();
+		void			cpps_string_resize(cpps_integer s);
 	public:
 		std::string&	real();
 		std::string		__str;

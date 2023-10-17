@@ -26,7 +26,7 @@ namespace cpps
 	
 
 	template<class T>
-	inline void		newclass(C *c, T ** ret,cpps_value *ret_value)
+	inline cpps_cppsclassvar* newclass(C* c, T** ret)
 	{
 		bool isstr = cpps_is_string<T>().b;
 		cpps_cppsclassvar* var;
@@ -36,13 +36,32 @@ namespace cpps
 			var = cpps_class_singleton<T*>::instance()->getcls()->create(c, true);
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, var);
-		 if (typeid(std::string) == typeid(T)) {
-			cpps::string* _cppstr = (cpps::string * )var->getclsptr();
+		if (typeid(std::string) == typeid(T)) {
+			cpps::string* _cppstr = (cpps::string*)var->getclsptr();
 			*ret = (T*)&(_cppstr->real());
 		}
 		else {
 			*ret = (T*)var->getclsptr();
 		}
+		return var;
+	}
+	template<class T>
+	inline void		newclass(C *c, T ** ret,cpps_value *ret_value)
+	{
+		bool isstr = cpps_is_string<T>().b;
+		cpps_cppsclassvar* var = newclass(c, ret);
+		
+		ret_value->tt = CPPS_TCLASSVAR;
+		ret_value->value.domain = (cpps_domain *)var;
+		if (isstr) ret_value->tt = CPPS_TSTRING;
+		ret_value->incruse();
+	}
+	template<class T>
+	inline void		newclass(C *c, cpps_value *ret_value)
+	{
+		bool isstr = cpps_is_string<T>().b;
+		T* ret = NULL;
+		cpps_cppsclassvar* var = newclass(c, ret);
 		
 		ret_value->tt = CPPS_TCLASSVAR;
 		ret_value->value.domain = (cpps_domain *)var;
