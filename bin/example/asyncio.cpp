@@ -15,6 +15,10 @@ async var test1()
 	
 	return "test1";
 }
+async var test2(){
+	throw "haha";
+	return "test2";
+}
 var test_call_back(var task, var context)
 {
 	println(task.get_name());
@@ -27,7 +31,15 @@ async var main() {
 	task1.set_name("Custom names are used to distinguish");
 	task1.add_done_callback(test_call_back, "Custom context content");
 	var task2 = asyncio.create_task(test1());
+	
+	
 
+	test2().then([](var result){
+		println("result{result}");
+	}).catch([](var e){
+		echo e;
+	});
+	println(await test1());
 	var ret = await asyncio.wait(task1);
 	if (ret.timeout())
 	{

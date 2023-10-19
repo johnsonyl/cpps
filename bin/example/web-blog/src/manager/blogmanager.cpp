@@ -30,7 +30,7 @@ class CBlogmanager
         // for(; start < end; start++){
         //     ret.push_back(bloglist[size-start]);   //反序
         // }
-        foreach(var i : xrange(start , end-1))
+        foreach(var i : xrange(start , end))
              ret.push_back(bloglist[size-i]);   //反序
         
         var prepageid = page-1;

@@ -1,0 +1,4 @@
+本代码是一个如何使用cpps编译各个平台hello world可执行文件的一个示例.
+只需要在当前目录中执行
+cpps setup.cpp build
+即可编译出helloworld.exe到dist文件夹.

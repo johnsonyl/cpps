@@ -16,7 +16,7 @@ class Home
 		println(name);
 		request.addheader({
 			Server:"John Server",
-			Content-Type:"text/plain; charset=UTF-8",
+			"Content-Type":"text/plain; charset=UTF-8",
 			Connection:"close"
 		});
 
@@ -41,7 +41,7 @@ class Student
 		
 		request.addheader({
 			Server:"John Server",
-			Content-Type:"text/plain; charset=UTF-8",
+			"Content-Type":"text/plain; charset=UTF-8",
 			Connection:"close"
 		});
 
@@ -54,7 +54,7 @@ class Student
 	{
 		request.addheader({
 			Server:"John Server",
-			Content-Type:"text/plain; charset=UTF-8",
+			"Content-Type":"text/plain; charset=UTF-8",
 			Connection:"close"
 		});
 
@@ -67,7 +67,7 @@ class Student
 	{
 		request.addheader({
 			Server:"John Server",
-			Content-Type:"text/plain; charset=UTF-8",
+			"Content-Type":"text/plain; charset=UTF-8",
 			Connection:"close"
 		});
 
@@ -81,7 +81,7 @@ var test(var request)
 {
 	request.addheader({
 			Server:"John Server",
-			Content-Type:"text/plain; charset=UTF-8",
+			"Content-Type":"text/plain; charset=UTF-8",
 			Connection:"close"
 		});
 
@@ -103,7 +103,7 @@ var option = new HttpServerOption()
 
 		request.addheader({
 			Server:"John Server",
-			Content-Type:"text/plain; charset=UTF-8",
+			"Content-Type":"text/plain; charset=UTF-8",
 			Connection:"close"
 		});
 
@@ -116,7 +116,7 @@ var option = new HttpServerOption()
 
 		request.addheader({
 			Server:"John Server",
-			Content-Type:"text/plain; charset=UTF-8",
+			"Content-Type":"text/plain; charset=UTF-8",
 			Connection:"close"
 		});
 
