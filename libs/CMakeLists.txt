@@ -61,7 +61,7 @@ ENDIF()
 # 包含子项目。
 
 add_subdirectory ("socket")
-add_subdirectory ("mariadb")
+#add_subdirectory ("mariadb")
 add_subdirectory ("mysql")
 #add_subdirectory ("curl")
 add_subdirectory ("json")

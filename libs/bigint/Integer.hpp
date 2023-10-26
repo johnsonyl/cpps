@@ -81,7 +81,7 @@ namespace JIO {
 
             constexpr inline static const T get(size_t index) noexcept {
                 constexpr T data[length == 0 ? 1 : length] = { values... };
-                return data[index];
+                return  data[index];
             }
 
             constexpr inline const T operator[](size_t index) const noexcept {
@@ -122,9 +122,9 @@ namespace JIO {
                 return data[index];
             }
 
-            constexpr inline T& operator[](size_t index) noexcept {
-                return data[index];
-            }
+            //constexpr inline T& operator[](size_t index) noexcept {
+            //    return data[index];
+            //}
         };
 
         struct unused {
@@ -134,7 +134,7 @@ namespace JIO {
             constexpr inline unused(T) noexcept { }
         };
 
-        constexpr inline void unused_array(std::initializer_list<unused>) noexcept { }
+        constexpr inline int unused_array(std::initializer_list<unused>) noexcept { return 0; }
 
         template<typename T, T... v1, T... v2>
         array_t<T, v1..., v2...>
@@ -180,12 +180,13 @@ namespace JIO {
 
         template<size_t... i1, size_t... i2, typename... Tp>
         constexpr inline auto p_element_h(array_t<size_t, i1...>,
-            array_t<size_t, i2...>, Tp... arr) noexcept {
+            array_t<size_t, i2...>, Tp... arr) -> decltype(p_wrapper<i1...>::template get_value<i2...>(arr...))  {
             return p_wrapper<i1...>::template get_value<i2...>(arr...);
         }
 
         template<size_t index, typename... Tp>
-        constexpr inline auto element(Tp... arr) noexcept {
+        constexpr inline auto element(Tp... arr) -> decltype(p_element_h(make_array<size_t, 0, index>(),
+            make_array<size_t, index + 1, sizeof...(arr)>(), arr...)) {
             return p_element_h(make_array<size_t, 0, index>(),
                 make_array<size_t, index + 1, sizeof...(arr)>(), arr...);
         }
@@ -194,7 +195,7 @@ namespace JIO {
         using element_t = decltype(element<index>(std::declval<Tp>()...));
 
         template<typename... Tp>
-        constexpr inline auto last_element(Tp... arr) noexcept {
+        constexpr inline auto last_element(Tp... arr) -> decltype(element<sizeof...(arr) - 1 >(arr...)) {
             return element<sizeof...(arr) - 1 >(arr...);
         }
 
@@ -254,7 +255,7 @@ namespace JIO {
         using ints_t = p_i_seq::t_array_t<char, short, int, long, long long>;
 
         template<typename Arr, size_t index>
-        constexpr inline auto is_unique_h1() {
+        constexpr inline bool is_unique_h1() {
             bool u = true;
             for (size_t i = 0; i < index; i++) {
                 if (Arr::get(i) == Arr::get(index)) {
@@ -2054,7 +2055,7 @@ namespace JIO {
                         return p_i_utils::min_int_value<Integer, sig>();
                     }
 
-                    constexpr inline Integer() noexcept = default;
+                    constexpr inline Integer() noexcept {};
 
                     constexpr inline bool isZero() const noexcept {
                         return value.isZero();

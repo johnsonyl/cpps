@@ -5,9 +5,15 @@
 #include <string>
 #include <fstream>
 
+#ifdef WIN32
 #include <libpng/pnglibconf.h>
 #include <libpng/pngconf.h>
 #include <libpng/png.h>
+#else
+#include <libpng16/pnglibconf.h>
+#include <libpng16/pngconf.h>
+#include <libpng16/png.h>
+#endif
 
 using namespace cpps;
 using namespace std;

@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.5)
 project(bigint)
 
 # 将源代码添加到此项目的可执行文件。
-
+set(CMAKE_CXX_STANDARD 14)
 IF(WINDOWS)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib ${PROJECT_SOURCE_DIR}/../../deps/deps/lib)
