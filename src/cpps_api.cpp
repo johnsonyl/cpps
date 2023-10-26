@@ -71,4 +71,8 @@ namespace cpps {
 	{
 		return v.tt == CPPS_TFUNCTION || v.tt == CPPS_TLAMBDAFUNCTION;
 	}
+	std::string cpps_getclassname(const cpps_value& v)
+	{
+		return v.isdomain() ? v.value.domain->domainname : "";
+	}
 }

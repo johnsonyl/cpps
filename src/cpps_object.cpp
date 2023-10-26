@@ -138,6 +138,10 @@ namespace cpps
 	{
 		return value.isref();
 	}
+	std::string	object::getclassname() {
+
+		return cpps_getclassname(value.real());
+	}
 
 	std::string object::tostring()
 	{

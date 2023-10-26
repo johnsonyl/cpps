@@ -1423,7 +1423,7 @@ namespace cpps {
 		int32		curoffset = buffer.offset();
 		while (cpps_parse_issymbol(ch)) {
 			tempStr += ch;
-			cpps_symbol* symbol = cpps_parse_getsymbol(tempStr, leftsymbol);
+			cpps_symbol* symbol = cpps_parse_getsymbol(c,tempStr, leftsymbol);
 			if (!symbol) {
 				if (symbolStr.empty() && !cpps_parse_issymbol(buffer.at(curoffset + 1))) {
 					return(NULL);
@@ -1435,7 +1435,7 @@ namespace cpps {
 			curoffset += 1;
 			ch = buffer.at(curoffset);
 		}
-		cpps_symbol* symbol = cpps_parse_getsymbol(symbolStr, leftsymbol);
+		cpps_symbol* symbol = cpps_parse_getsymbol(c, symbolStr, leftsymbol);
 		if (!symbol) {
 			return(NULL);
 		}
@@ -1717,7 +1717,7 @@ namespace cpps {
 			if (op->symbol->getprio() < compareop->symbol->getprio()) {
 				break;
 			}
-			if (op->symbol->getprio() == compareop->symbol->getprio() && !cpps_parse_isleftasso(op->symbol->getprio())) {
+			if (op->symbol->getprio() == compareop->symbol->getprio() && !cpps_parse_isleftasso(c,op->symbol->getprio())) {
 				break;
 			}
 			if (!compareop->parent)
@@ -3624,10 +3624,8 @@ namespace cpps {
 			}
 		}
 		/*×¢²á¸¸ÀàµÄoperator.*/
-		for (size_t i = 0; i < parentclass->operatorlist.size(); i++) {
-			if (parentclass->operatorlist[i]) {
-				cppsclass->operatorlist[i] = parentclass->operatorlist[i];
-			}
+		for (auto v : parentclass->operatorlist) {
+			cppsclass->operatorlist[v.first] = v.second;
 		}
 		cppsclass->setidxoffset(parentclass, takeoff);
 		for (auto grandfather : parentclass->parentclasslist()) {
@@ -3637,6 +3635,7 @@ namespace cpps {
 	}
 	void cpps_step_class(C* c, cpps_domain* domain, node* d) {
 		cpps_cppsclass* cppsclass = CPPSNEW (cpps_cppsclass)(d->s, d, domain, cpps_domain_type_class);
+		cppsclass->setDefaultCState(c);
 		cpps_regvar* v = CPPSNEW (cpps_regvar)();
 		v->setvarname(d->s);
 		v->setconst(true);
@@ -3715,7 +3714,7 @@ namespace cpps {
 
 							/*×¢²áoperator.*/
 							if (varName->symbol) {
-								cppsclass->operatorreg(varName->symbol->symboltype, func);
+								cppsclass->operatorreg(varName->symbol->symbolfuncname, func);
 							}
 
 							auto tmp = cpps_value(func);
@@ -4346,7 +4345,7 @@ namespace cpps {
 				object leftobject = object(left);
 				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
 				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
-				cpps_function*func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+				cpps_function*func = cppsclass->getoperator("[]");
 				object symbolfunc = func ?cpps_value(func) : nil;
 				if (symbolfunc.isfunction()) {
 					
@@ -4615,7 +4614,7 @@ namespace cpps {
 					object leftobject = object(left);
 					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
 					cpps_cppsclass* cppsclass2 = cppsclassvar->getcppsclass();
-					cpps_function* func = cppsclass2->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+					cpps_function* func = cppsclass2->getoperator("[]");
 					object symbolfunc = func ? cpps_value(func) : nil;
 					if (symbolfunc.isfunction())
 					{
@@ -4722,7 +4721,7 @@ namespace cpps {
 					object leftobject = object(left);
 					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
 					cpps_cppsclass* cppsclass2 = cppsclassvar->getcppsclass();
-					cpps_function* func = cppsclass2->getoperator(CPPS_SYMBOL_TYPE_GETOBJECT);
+					cpps_function* func = cppsclass2->getoperator("[]");
 					object symbolfunc = func ? cpps_value(func) : nil;
 					if (symbolfunc.isfunction())
 					{
@@ -4786,7 +4785,7 @@ namespace cpps {
 						return;
 					}
 					else {
-						cpps_function* func = cppsclass->getoperator(CPPS_SYMBOL_TYPE_GETSUBOBJECT);
+						cpps_function* func = cppsclass->getoperator("->");
 						object symbolfunc = func ? cpps_value(func) : nil;
 						if (symbolfunc.isfunction())
 						{

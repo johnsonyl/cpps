@@ -4,9 +4,6 @@ namespace cpps
 {
 
 	
-	CPPS_SYMBOL_MAP		symbolmap;						//操作符表
-	CPPS_SYMBOL_MAP		leftsymbolmap;					//左操作符表
-	bool				symbolleftasso[MAXSYMBOLPRIO];	//操作符是否左结合
 
 
 	void cpps_add(cpps_value &a, cpps_value b, cpps_value &_result)
@@ -1552,83 +1549,83 @@ namespace cpps
 	{
 		
 		
-		leftsymbolmap["++"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	"++left",	CPPS_SYMBOL_TYPE_LEFTAUTOINCREASE);
-		leftsymbolmap["--"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	"--left",	CPPS_SYMBOL_TYPE_LEFTAUTODECREASE);
-		leftsymbolmap["+"]	= new cpps_symbol(0, 1, NOLIMIT,		"+left",	CPPS_SYMBOL_TYPE_PLUS);
-		leftsymbolmap["-"]	= new cpps_symbol(0, 1, NOLIMIT,		"-left",	CPPS_SYMBOL_TYPE_MINUS);
-		leftsymbolmap["!"]	= new cpps_symbol(0, 1, NOLIMIT,		"!left",	CPPS_SYMBOL_TYPE_NOT);
-		leftsymbolmap["~"]	= new cpps_symbol(0, 1, NOLIMIT,		"~left",	CPPS_SYMBOL_TYPE_NOT2);
-		symbolmap["++"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	"++",		CPPS_SYMBOL_TYPE_RIGHTAUTOINCREASE);
-		symbolmap["--"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	"--",		CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE);
-		symbolmap["*"]		= new cpps_symbol(1, 2, NOLIMIT,		"*",		CPPS_SYMBOL_TYPE_MUL);
-		symbolmap["/"]		= new cpps_symbol(1, 2, NOLIMIT,		"/",		CPPS_SYMBOL_TYPE_DIVIDE);
-		symbolmap["%"]		= new cpps_symbol(1, 2, NOLIMIT,		"%",		CPPS_SYMBOL_TYPE_QUYU);
-		symbolmap["+"]		= new cpps_symbol(2, 2, NOLIMIT,		"+",		CPPS_SYMBOL_TYPE_ADD);
-		symbolmap["&"]		= new cpps_symbol(2, 2, NOLIMIT,		"&",		CPPS_SYMBOL_TYPE_ADD2);
-		symbolmap["|"]		= new cpps_symbol(2, 2, NOLIMIT,		"|",		CPPS_SYMBOL_TYPE_ADD3);
-		symbolmap["^"]		= new cpps_symbol(2, 2, NOLIMIT,		"^",		CPPS_SYMBOL_TYPE_ADD4);
-		symbolmap["<<"]		= new cpps_symbol(2, 2, NOLIMIT,		"<<",		CPPS_SYMBOL_TYPE_ADD5);
-		symbolmap[">>"]		= new cpps_symbol(2, 2, NOLIMIT,		">>",		CPPS_SYMBOL_TYPE_ADD6);
-		symbolmap["-"]		= new cpps_symbol(2, 2, NOLIMIT,		"-",		CPPS_SYMBOL_TYPE_SUBTRACT);
-		symbolmap[".."]		= new cpps_symbol(3, 2, NOLIMIT,		"..",		CPPS_SYMBOL_TYPE_STRCAT);
-		symbolmap[">"]		= new cpps_symbol(4, 2, NOLIMIT,		">",		CPPS_SYMBOL_TYPE_BIGGER);
-		symbolmap[">="]		= new cpps_symbol(4, 2, NOLIMIT,		">=",		CPPS_SYMBOL_TYPE_BIGGEROREQUEL);
-		symbolmap["<"]		= new cpps_symbol(4, 2, NOLIMIT,		"<",		CPPS_SYMBOL_TYPE_LESS);
-		symbolmap["<="]		= new cpps_symbol(4, 2, NOLIMIT,		"<=",		CPPS_SYMBOL_TYPE_LESSOREQUEL);
-		symbolmap["=="]		= new cpps_symbol(5, 2, NOLIMIT,		"==",		CPPS_SYMBOL_TYPE_EQUEL);
-		symbolmap["!="]		= new cpps_symbol(5, 2, NOLIMIT,		"!=",		CPPS_SYMBOL_TYPE_NOTEQUEL);
-		symbolmap["&&"]		= new cpps_symbol(6, 2, NOLIMIT,		"&&",		CPPS_SYMBOL_TYPE_AND);
-		symbolmap["||"]		= new cpps_symbol(7, 2, NOLIMIT,		"||",		CPPS_SYMBOL_TYPE_OR);
-		symbolmap["?"]		= new cpps_symbol(8, 3, NOLIMIT,		"?",		CPPS_SYMBOL_TYPE_TERNARYOPERATOR);
-		symbolmap["="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"=",		CPPS_SYMBOL_TYPE_ASSIGNMENT);
-		symbolmap["+="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"+=",		CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT);
-		symbolmap["&="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"&=",		CPPS_SYMBOL_TYPE_ADD2ANDASSIGNMENT);
-		symbolmap["|="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"|=",		CPPS_SYMBOL_TYPE_ADD3ANDASSIGNMENT);
-		symbolmap["^="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"^=",		CPPS_SYMBOL_TYPE_ADD4ANDASSIGNMENT);
-		symbolmap["<<="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"<<=",		CPPS_SYMBOL_TYPE_ADD5ANDASSIGNMENT);
-		symbolmap[">>="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	">>=",		CPPS_SYMBOL_TYPE_ADD6ANDASSIGNMENT);
-		symbolmap["-="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"-=",		CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT);
-		symbolmap["*="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"*=",		CPPS_SYMBOL_TYPE_MULANDASSIGNMENT);
-		symbolmap["/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"/=",		CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT);
-		symbolmap["..="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..",		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT);
-		symbolmap["[]"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"[]",		CPPS_SYMBOL_TYPE_GETOBJECT);
-		symbolmap["->"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"->",		CPPS_SYMBOL_TYPE_GETSUBOBJECT);
+		c->leftsymbolmap["++"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	"++left",	CPPS_SYMBOL_TYPE_LEFTAUTOINCREASE);
+		c->leftsymbolmap["--"] = new cpps_symbol(0, 1, RIGHTMUSTVAR,	"--left",	CPPS_SYMBOL_TYPE_LEFTAUTODECREASE);
+		c->leftsymbolmap["+"]	= new cpps_symbol(0, 1, NOLIMIT,		"+left",	CPPS_SYMBOL_TYPE_PLUS);
+		c->leftsymbolmap["-"]	= new cpps_symbol(0, 1, NOLIMIT,		"-left",	CPPS_SYMBOL_TYPE_MINUS);
+		c->leftsymbolmap["!"]	= new cpps_symbol(0, 1, NOLIMIT,		"!left",	CPPS_SYMBOL_TYPE_NOT);
+		c->leftsymbolmap["~"]	= new cpps_symbol(0, 1, NOLIMIT,		"~left",	CPPS_SYMBOL_TYPE_NOT2);
+		c->symbolmap["++"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	"++",		CPPS_SYMBOL_TYPE_RIGHTAUTOINCREASE);
+		c->symbolmap["--"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	"--",		CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE);
+		c->symbolmap["*"]		= new cpps_symbol(1, 2, NOLIMIT,		"*",		CPPS_SYMBOL_TYPE_MUL);
+		c->symbolmap["/"]		= new cpps_symbol(1, 2, NOLIMIT,		"/",		CPPS_SYMBOL_TYPE_DIVIDE);
+		c->symbolmap["%"]		= new cpps_symbol(1, 2, NOLIMIT,		"%",		CPPS_SYMBOL_TYPE_QUYU);
+		c->symbolmap["+"]		= new cpps_symbol(2, 2, NOLIMIT,		"+",		CPPS_SYMBOL_TYPE_ADD);
+		c->symbolmap["&"]		= new cpps_symbol(2, 2, NOLIMIT,		"&",		CPPS_SYMBOL_TYPE_ADD2);
+		c->symbolmap["|"]		= new cpps_symbol(2, 2, NOLIMIT,		"|",		CPPS_SYMBOL_TYPE_ADD3);
+		c->symbolmap["^"]		= new cpps_symbol(2, 2, NOLIMIT,		"^",		CPPS_SYMBOL_TYPE_ADD4);
+		c->symbolmap["<<"]		= new cpps_symbol(2, 2, NOLIMIT,		"<<",		CPPS_SYMBOL_TYPE_ADD5);
+		c->symbolmap[">>"]		= new cpps_symbol(2, 2, NOLIMIT,		">>",		CPPS_SYMBOL_TYPE_ADD6);
+		c->symbolmap["-"]		= new cpps_symbol(2, 2, NOLIMIT,		"-",		CPPS_SYMBOL_TYPE_SUBTRACT);
+		c->symbolmap[".."]		= new cpps_symbol(3, 2, NOLIMIT,		"..",		CPPS_SYMBOL_TYPE_STRCAT);
+		c->symbolmap[">"]		= new cpps_symbol(4, 2, NOLIMIT,		">",		CPPS_SYMBOL_TYPE_BIGGER);
+		c->symbolmap[">="]		= new cpps_symbol(4, 2, NOLIMIT,		">=",		CPPS_SYMBOL_TYPE_BIGGEROREQUEL);
+		c->symbolmap["<"]		= new cpps_symbol(4, 2, NOLIMIT,		"<",		CPPS_SYMBOL_TYPE_LESS);
+		c->symbolmap["<="]		= new cpps_symbol(4, 2, NOLIMIT,		"<=",		CPPS_SYMBOL_TYPE_LESSOREQUEL);
+		c->symbolmap["=="]		= new cpps_symbol(5, 2, NOLIMIT,		"==",		CPPS_SYMBOL_TYPE_EQUEL);
+		c->symbolmap["!="]		= new cpps_symbol(5, 2, NOLIMIT,		"!=",		CPPS_SYMBOL_TYPE_NOTEQUEL);
+		c->symbolmap["&&"]		= new cpps_symbol(6, 2, NOLIMIT,		"&&",		CPPS_SYMBOL_TYPE_AND);
+		c->symbolmap["||"]		= new cpps_symbol(7, 2, NOLIMIT,		"||",		CPPS_SYMBOL_TYPE_OR);
+		c->symbolmap["?"]		= new cpps_symbol(8, 3, NOLIMIT,		"?",		CPPS_SYMBOL_TYPE_TERNARYOPERATOR);
+		c->symbolmap["="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"=",		CPPS_SYMBOL_TYPE_ASSIGNMENT);
+		c->symbolmap["+="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"+=",		CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT);
+		c->symbolmap["&="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"&=",		CPPS_SYMBOL_TYPE_ADD2ANDASSIGNMENT);
+		c->symbolmap["|="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"|=",		CPPS_SYMBOL_TYPE_ADD3ANDASSIGNMENT);
+		c->symbolmap["^="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"^=",		CPPS_SYMBOL_TYPE_ADD4ANDASSIGNMENT);
+		c->symbolmap["<<="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"<<=",		CPPS_SYMBOL_TYPE_ADD5ANDASSIGNMENT);
+		c->symbolmap[">>="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	">>=",		CPPS_SYMBOL_TYPE_ADD6ANDASSIGNMENT);
+		c->symbolmap["-="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"-=",		CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT);
+		c->symbolmap["*="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"*=",		CPPS_SYMBOL_TYPE_MULANDASSIGNMENT);
+		c->symbolmap["/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"/=",		CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT);
+		c->symbolmap["..="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..",		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT);
+		c->symbolmap["[]"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"[]",		CPPS_SYMBOL_TYPE_GETOBJECT);
+		c->symbolmap["->"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"->",		CPPS_SYMBOL_TYPE_GETSUBOBJECT);
 
-		symbolleftasso[0] = false;
-		symbolleftasso[1] = true;
-		symbolleftasso[2] = true;
-		symbolleftasso[3] = true;
-		symbolleftasso[4] = true;
-		symbolleftasso[5] = true;
-		symbolleftasso[6] = true;
-		symbolleftasso[7] = true;
-		symbolleftasso[8] = false;
-		symbolleftasso[9] = true;
+		c->symbolleftasso[0] = false;
+		c->symbolleftasso[1] = true;
+		c->symbolleftasso[2] = true;
+		c->symbolleftasso[3] = true;
+		c->symbolleftasso[4] = true;
+		c->symbolleftasso[5] = true;
+		c->symbolleftasso[6] = true;
+		c->symbolleftasso[7] = true;
+		c->symbolleftasso[8] = false;
+		c->symbolleftasso[9] = true;
 	}
 
-	bool cpps_parse_isleftasso(usint8 prio)
+	bool cpps_parse_isleftasso(C* c, usint8 prio)
 	{
 		//assert(getprio() < MAXSYMBOLPRIO);
-		return symbolleftasso[prio];
+		return c->symbolleftasso[prio];
 	}
 
-	cpps_symbol* cpps_parse_getsymbol(std::string& symbolstr, bool leftsymbol)
+	cpps_symbol* cpps_parse_getsymbol(C*c,std::string& symbolstr, bool leftsymbol)
 	{
 		cpps_symbol* ret = NULL;
 
 		CPPS_SYMBOL_MAP::iterator it;
 		if (leftsymbol)
 		{
-			it = leftsymbolmap.find(symbolstr);
-			if (it != leftsymbolmap.end())
+			it = c->leftsymbolmap.find(symbolstr);
+			if (it != c->leftsymbolmap.end())
 			{
 				ret = it->second;
 			}
 		}
 		else
 		{
-			it = symbolmap.find(symbolstr);
-			if (it != symbolmap.end())
+			it = c->symbolmap.find(symbolstr);
+			if (it != c->symbolmap.end())
 			{
 				ret = it->second;
 			}
@@ -1651,11 +1648,12 @@ namespace cpps
 			object left = object(a);
 			cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(a);
 			cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
-			cpps_function* func = cppsclass->getoperator(d->symbol->symboltype);
+			cpps_function* func = cppsclass->getoperator(d->symbol->symbolfuncname);
 			if (func) {
 				object symbolfunc = cpps_value(func);
 				cpps_value b;
-				cpps_calculate_expression(c, domain, root, d->l[1], leftdomain, b);
+				if(d->l.size() > 1)
+					cpps_calculate_expression(c, domain, root, d->l[1], leftdomain, b);
 				if (func->getIsNeedC()) {
 					ret = doclassfunction(c, left, symbolfunc, cpps::object::create(c,c),b ).getval();
 				}

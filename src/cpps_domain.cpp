@@ -72,7 +72,7 @@ namespace cpps
 		return domainname;
 	}
 
-	void cpps_domain::regfunc(cpps_reg* f)
+	void cpps_domain::regfunc(cpps_reg* f,cpps::C* c)
 	{
 		hasVar = true;
 		do
@@ -93,12 +93,12 @@ namespace cpps
 			{
 				cpps_regfunction* func = (cpps_regfunction*)f;
 				if (func->func->isoperator()) {
-					cpps_symbol* symbol = cpps_parse_getsymbol(f->varname, false);
+					/*cpps_symbol* symbol = cpps_parse_getsymbol(c ,f->varname, false);
 					if (!symbol){
 						throw cpps_error(__FILE__, __LINE__, cpps_error_normalerror, "%s operator symbol is not support.", f->varname.c_str());
-					}
+					}*/
 					cpps_cppsclass* cppsclass = (cpps_cppsclass*)this;
-					cppsclass->operatorreg(symbol->symboltype, func->func);
+					cppsclass->operatorreg(f->varname, func->func);
 				}
 				auto tmp = cpps_value(func->func);
 				var->setval(tmp);
@@ -109,6 +109,7 @@ namespace cpps
 			else if (f->type == cpps_def_regclass)
 			{
 				cpps_regclass* cls = (cpps_regclass*)f;
+				cls->cls->setDefaultCState(c);
 				auto tmp = cpps_value(cls->cls);
 				var->setval(tmp);
 				var->setsource(true);
@@ -142,10 +143,8 @@ namespace cpps
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)this;
 
 				//×¢²á¸¸ÀàµÄoperator.
-				for (size_t i = 0; i < _parent->operatorlist.size(); i++) {
-					if (_parent->operatorlist[i]) {
-						cppsclass->operatorlist[i] = _parent->operatorlist[i];
-					}
+				for (auto v : _parent->operatorlist) {
+					cppsclass->operatorlist[v.first] = v.second;
 				}
 			}
 			else if (f->type == cpps_def_regenum)

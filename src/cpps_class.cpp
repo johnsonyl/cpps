@@ -9,11 +9,8 @@ namespace cpps
 		if (_o) { o = CPPSNEW(node)(); o->clone(_o); }
 		else o = NULL;
 		classname = _classname;
-		operatorlist.resize(CPPS_SYMBOL_TYPE_END);
+		
 
-		for (size_t i = 0; i < operatorlist.size(); i++) {
-			operatorlist[i] = NULL;
-		}
 	}
 
 	cpps_cppsclass::~cpps_cppsclass()
@@ -50,14 +47,14 @@ namespace cpps
 		CPPSDELETE(this);
 	}
 
-	void cpps_cppsclass::operatorreg(int8 type, cpps_function* func)
+	void cpps_cppsclass::operatorreg(std::string symbolname, cpps_function* func)
 	{
-		operatorlist[type] = func;
+		operatorlist[symbolname] = func;
 	}
 
-	cpps::cpps_function* cpps_cppsclass::getoperator(int8 type)
+	cpps::cpps_function* cpps_cppsclass::getoperator(std::string symbolname)
 	{
-		return operatorlist[type];
+		return operatorlist[symbolname];
 	}
 
 	cpps::node* cpps_cppsclass::getvars_node()

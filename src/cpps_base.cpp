@@ -748,10 +748,10 @@ namespace cpps
 		if (!cpps_isstring(buffer)) return nil;
 
 		std::string* str = cpps_get_string(buffer);
-
+		bool _buildoffset = c->buildoffset;
 		c->buildoffset = false;
 		node* o = loadbuffer(c, c->_G, *str, c->curnode->filename);
-		c->buildoffset = true;
+		c->buildoffset = _buildoffset;
 	
 
 		node *copynode = NULL;
@@ -837,7 +837,7 @@ namespace cpps
 			def_inside("print", cpps_base_printf),
 			def_inside("printfln", cpps_base_printfln),
 			def_inside("println", cpps_base_printfln),
-			def_inside("endl", cpps_base_endl),
+			//def_inside("endl", cpps_base_endl),
 			def_inside("dump", cpps_base_dump),
 			def("exit", cpps_base_exit),
 			def("sleep", cpps_base_sleep),

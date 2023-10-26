@@ -2,8 +2,34 @@
 
 namespace cpps
 {
-	
+	object doclassfunction(C* c, object domain, object func);
 
+	bool cpps_to_bool(const cpps_value& src)
+	{
+		const cpps_value& obj = src.real();
+		bool ret = 0;
+		if (obj.tt == CPPS_TNUMBER)
+		{
+			ret = obj.value.number;
+		}
+		if (obj.tt == CPPS_TBOOLEAN)
+		{
+			ret = obj.value.b;
+		}
+		else if (obj.tt == CPPS_TINTEGER)
+		{
+			ret = obj.value.integer;
+		}
+		else if (obj.tt == CPPS_TSTRING)
+		{
+			std::string* tmpStr = cpps_get_string(obj);
+			ret = tmpStr->size();
+		}
+		else {
+			ret = obj.tt != CPPS_TNIL;
+		}
+		return ret;
+	}
 	cpps_number cpps_to_number(const cpps_value& src)
 	{
 		const cpps_value& obj = src.real();
@@ -153,6 +179,28 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(right);
 				return (*(tmpStr)) < (*(tmpStr2));
 			}
+			case CPPS_TCLASSVAR: {
+				object left = object(*this);
+				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
+				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+				C* c = cppsclass->getDefaultCState();
+				cpps_function* func = cppsclass->getoperator("<");
+				if (func) {
+					object right_object = object(right);
+					cpps_cppsclassvar* right_cppsclassvar = cpps_to_cpps_cppsclassvar(right);
+					cpps_cppsclass* right_cppsclass = right_cppsclassvar->getcppsclass();
+					if (right_cppsclass != cppsclass) return cppsclass < right_cppsclass;
+					object symbolfunc = cpps_value(func);
+					cpps::cpps_value ret;
+					if (func->getIsNeedC()) {
+						ret = doclassfunction(c, left, symbolfunc, cpps::object::create(c, c), right).getval();
+					}
+					else {
+						ret = doclassfunction(c, left, symbolfunc, right).getval();
+					}
+					return cpps_to_bool(ret);
+				}
+			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, "<   ... It can't be used as a key.type: %d", right.tt));
 			}
@@ -173,6 +221,28 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(right);
 				return (*(tmpStr)) > (*(tmpStr2));
 			}
+			case CPPS_TCLASSVAR: {
+				object left = object(*this);
+				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
+				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+				C* c = cppsclass->getDefaultCState();
+				cpps_function* func = cppsclass->getoperator(">");
+				if (func) {
+					object right_object = object(right);
+					cpps_cppsclassvar* right_cppsclassvar = cpps_to_cpps_cppsclassvar(right);
+					cpps_cppsclass* right_cppsclass = right_cppsclassvar->getcppsclass();
+					if (right_cppsclass != cppsclass) return cppsclass > right_cppsclass;
+					object symbolfunc = cpps_value(func);
+					cpps::cpps_value ret;
+					if (func->getIsNeedC()) {
+						ret = doclassfunction(c, left, symbolfunc, cpps::object::create(c, c), right).getval();
+					}
+					else {
+						ret = doclassfunction(c, left, symbolfunc, right).getval();
+					}
+					return cpps_to_bool(ret);
+				}
+			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, ">   ... It can't be used as a key. type: %d", right.tt));
 			}
@@ -192,6 +262,28 @@ namespace cpps
 				std::string* tmpStr = cpps_get_string(*this);
 				std::string* tmpStr2 = cpps_get_string(right);
 				return (*(tmpStr)) == (*(tmpStr2));
+			}
+			case CPPS_TCLASSVAR: {
+				object left = object(*this);
+				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
+				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+				C* c = cppsclass->getDefaultCState();
+				cpps_function* func = cppsclass->getoperator("==");
+				if (func) {
+					object right_object = object(right);
+					cpps_cppsclassvar* right_cppsclassvar = cpps_to_cpps_cppsclassvar(right);
+					cpps_cppsclass* right_cppsclass = right_cppsclassvar->getcppsclass();
+					if (right_cppsclass != cppsclass) return cppsclass == right_cppsclass;
+					object symbolfunc = cpps_value(func);
+					cpps::cpps_value ret;
+					if (func->getIsNeedC()) {
+						ret = doclassfunction(c, left, symbolfunc, cpps::object::create(c, c), right).getval();
+					}
+					else {
+						ret = doclassfunction(c, left, symbolfunc, right).getval();
+					}
+					return cpps_to_bool(ret);
+				}
 			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, "==   ... It can't be used as a key. type: %d", right.tt));
@@ -331,6 +423,28 @@ namespace cpps
 
 				return (*(tmpStr)) <= (*(tmpStr2));
 			}
+			case CPPS_TCLASSVAR: {
+				object left = object(*this);
+				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
+				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+				C* c = cppsclass->getDefaultCState();
+				cpps_function* func = cppsclass->getoperator("<=");
+				if (func) {
+					object right_object = object(right);
+					cpps_cppsclassvar* right_cppsclassvar = cpps_to_cpps_cppsclassvar(right);
+					cpps_cppsclass* right_cppsclass = right_cppsclassvar->getcppsclass();
+					if (right_cppsclass != cppsclass) return cppsclass <= right_cppsclass;
+					object symbolfunc = cpps_value(func);
+					cpps::cpps_value ret;
+					if (func->getIsNeedC()) {
+						ret = doclassfunction(c, left, symbolfunc, cpps::object::create(c, c), right).getval();
+					}
+					else {
+						ret = doclassfunction(c, left, symbolfunc, right).getval();
+					}
+					return cpps_to_bool(ret);
+				}
+			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, "<=   ... It can't be used as a key.type: %d", right.tt));
 			}
@@ -367,6 +481,28 @@ namespace cpps
 				std::string* tmpStr2 = (std::string*)cppsclassvar2->getclsptr();
 
 				return (*(tmpStr)) >= (*(tmpStr2));
+			}
+			case CPPS_TCLASSVAR: {
+				object left = object(*this);
+				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
+				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+				C* c = cppsclass->getDefaultCState();
+				cpps_function* func = cppsclass->getoperator(">=");
+				if (func) {
+					object right_object = object(right);
+					cpps_cppsclassvar* right_cppsclassvar = cpps_to_cpps_cppsclassvar(right);
+					cpps_cppsclass* right_cppsclass = right_cppsclassvar->getcppsclass();
+					if (right_cppsclass != cppsclass) return cppsclass >= right_cppsclass;
+					object symbolfunc = cpps_value(func);
+					cpps::cpps_value ret;
+					if (func->getIsNeedC()) {
+						ret = doclassfunction(c, left, symbolfunc, cpps::object::create(c, c), right).getval();
+					}
+					else {
+						ret = doclassfunction(c, left, symbolfunc, right).getval();
+					}
+					return cpps_to_bool(ret);
+				}
 			}
 			default:
 				throw(cpps_error("unknow file", 0, 0, ">=   ... It can't be used as a key.type: %d", right.tt));
@@ -441,6 +577,16 @@ namespace cpps
 		case CPPS_TSTRING: {
 			std::string* tmpStr = cpps_get_string(_Keyval);
 			return std::hash<std::string>()(*(tmpStr));
+		}
+		case CPPS_TCLASSVAR: {
+			object left = object(_Keyval);
+			cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(_Keyval);
+			cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+			C* c = cppsclass->getDefaultCState();
+			object hash_value = left["hash_value"];
+			if (hash_value.isfunction()) {
+				return (size_t)doclassfunction(c, left, hash_value).toint();
+			}
 		}
 		default:
 			throw(cpps_error("unknow file", 0, 0, "==   ... It can't be used as a HashKey. type: %d", _Keyval.tt));
