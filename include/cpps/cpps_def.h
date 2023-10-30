@@ -69,8 +69,8 @@
 #define  CPPS_BUILDER_VERSION ""
 #endif
 
-#define CPPS_VER		"1.0.1 Build 20210305 [" CPPS_BUILDER_VERSION "]"
-#define CPPS_VERN		10001
+#define CPPS_VER		"1.0.2 Build 20231026 [" CPPS_BUILDER_VERSION "]"
+#define CPPS_VERN		10002
 #define CPPS_NAME		"CPPS"
 #ifndef M_PI
 #define M_PI				3.14159265358979323846
@@ -230,6 +230,13 @@ enum
 #define cpps_def_regvar					3
 #define cpps_def_regparentclass			4
 #define cpps_def_regenum				5
+
+
+#define MAXSYMBOLPRIO 10 // ²»µÃ³¬¹ý16
+
+#define NOLIMIT		((usint8)0x00)
+#define LEFTMUSTVAR ((usint8)0x80)
+#define RIGHTMUSTVAR ((usint8)0x40)
 
 
 #define CPPS_TO_REAL_VALUE(left) if (left.tt == CPPS_TREF){ left = *left.value.value;}

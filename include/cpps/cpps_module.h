@@ -213,7 +213,7 @@ namespace cpps
 
 		void	operator [](regxmodule m)
 		{
-			domain->regfunc(m.f);
+			domain->regfunc(m.f,cState);
 		}
 
 	public:

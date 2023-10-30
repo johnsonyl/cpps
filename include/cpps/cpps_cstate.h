@@ -21,6 +21,12 @@ namespace cpps
 	struct cpps_domain;
 	struct cpps_value;
 	struct cpps_cppsclassvar;
+	struct cpps_symbol;
+#ifdef _DEBUG
+	typedef	std::map<std::string, cpps_symbol*> CPPS_SYMBOL_MAP;
+#else
+	typedef	phmap::flat_hash_map<std::string, cpps_symbol*> CPPS_SYMBOL_MAP;
+#endif
 	struct cpps_stack
 	{
 		cpps_stack();
@@ -90,6 +96,11 @@ namespace cpps
 		bool																		isterminate;
 		bool																		isloadbase;
 		memory_allocal_handler*														memory_handler;
+
+		CPPS_SYMBOL_MAP																symbolmap;						//操作符表
+		CPPS_SYMBOL_MAP																leftsymbolmap;					//左操作符表
+		bool																		symbolleftasso[MAXSYMBOLPRIO];	//操作符是否左结合
+
 		void clone(C* clone_c);
 	};
 }

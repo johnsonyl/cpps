@@ -25,6 +25,7 @@ namespace cpps {
 	void cpps_parse_builtin(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer, int32 limit);
 	void cpps_parse_def(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer, int32 limit);
 	node* cpps_parse_new_setv(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer);
+	void cpps_parse_foreach2(C* c, cpps_node_domain* fordomain, node* child, node* root, cppsbuffer& buffer);
 	void cpps_gc_add_barrier(C* c, cpps_regvar* v);
 	void cpps_gc_check_gen0(C* c);
 	void cpps_gc_check_gen1(C* c);
@@ -97,7 +98,7 @@ namespace cpps {
 			|| ch == '%' || ch == '!' || ch == '['
 			|| ch == ']' || ch == '.' || ch == '='
 			|| ch == '<' || ch == '>' || ch == '?'
-			|| ch == '^' );
+			|| ch == '^' || ch == '~' || ch == '^' );
 	}
 	bool cpps_parse_isnotvarname(char ch) {
 		return(ch == '~' || ch == '!' || ch == '@' || ch == '#' || ch == '$'
@@ -1934,9 +1935,7 @@ namespace cpps {
 		child->setdomain(fordomain);
 		child->type = CPPS_OFOR;
 		node* for1 = CPPSNEW(node)(child, child->filename, buffer.line());
-		node* for2 = CPPSNEW(node)(child, child->filename, buffer.line());
-		node* for3 = CPPSNEW(node)(child, child->filename, buffer.line());
-		node* for4 = CPPSNEW(node)(child, child->filename, buffer.line());
+		
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(') {
@@ -1958,10 +1957,24 @@ namespace cpps {
 		}
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
+		
+
+		if (buffer.cur() == ':')
+		{
+			//foreach 优化
+			child->type = CPPS_OFOREACH;
+			cpps_parse_foreach2(c, fordomain, child, root, buffer);
+			return;
+		}
 		if (buffer.cur() != ';') {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing first ';' after for"));
 		}
 		buffer.pop();
+
+		node* for2 = CPPSNEW(node)(child, child->filename, buffer.line());
+		node* for3 = CPPSNEW(node)(child, child->filename, buffer.line());
+		node* for4 = CPPSNEW(node)(child, child->filename, buffer.line());
+
 		/* pop ; */
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
@@ -2006,8 +2019,7 @@ namespace cpps {
 		child->setdomain(fordomain);
 		child->type = CPPS_OFOREACH;
 		node* for1 = CPPSNEW(node)(child, child->filename, buffer.line());
-		node* for2 = CPPSNEW(node)(child, child->filename, buffer.line());
-		node* for4 = CPPSNEW(node)(child, child->filename, buffer.line());
+		
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '(') {
@@ -2027,9 +2039,19 @@ namespace cpps {
 		} while (buffer.cur() == ',' && !buffer.isend());
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
+		
+
+		cpps_parse_foreach2(c, fordomain, child, root, buffer);
+		
+	}
+	void cpps_parse_foreach2(C*c, cpps_node_domain* fordomain,node * child, node* root, cppsbuffer& buffer) {
+
 		if (buffer.cur() != ':')
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing ':'after foreach"));
 		buffer.pop();
+
+		node* for2 = CPPSNEW(node)(child, child->filename, buffer.line());
+		node* for4 = CPPSNEW(node)(child, child->filename, buffer.line());
 		/* for2 修改成获取表达式 */
 		cpps_parse_rmspaceandenter(buffer);
 		cpps_parse_expression(c, fordomain, for2, root, buffer);

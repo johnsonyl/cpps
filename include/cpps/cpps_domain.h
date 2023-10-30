@@ -29,7 +29,7 @@ namespace cpps
 		void												init(cpps_domain* p, char type, std::string name);
 		void												init(cpps_domain* p, char type);
 		std::string											getdomainname();
-		void												regfunc(cpps_reg* f);
+		void												regfunc( cpps_reg* f, cpps::C* c = NULL);
 		cpps_regvar*										getvar(std::string s, cpps_domain *&leftdomain, bool findparent = true,bool filterroot = false);
 		void												regvar(C *c,cpps_regvar * v);
 		void												unregvar(C *c, cpps_regvar * v);

@@ -10,12 +10,6 @@
 //@website		:	http://cppscript.org
 //==================================
 
-#define MAXSYMBOLPRIO 10 // ²»µÃ³¬¹ý16
-
-#define NOLIMIT		((usint8)0x00)
-#define LEFTMUSTVAR ((usint8)0x80)
-#define RIGHTMUSTVAR ((usint8)0x40)
-
 namespace cpps
 {
 	enum cpps_symbol_type
@@ -61,11 +55,13 @@ namespace cpps
 		CPPS_SYMBOL_TYPE_TERNARYOPERATOR,
 		CPPS_SYMBOL_TYPE_GETOBJECT,
 		CPPS_SYMBOL_TYPE_GETSUBOBJECT,
+		CPPS_SYMBOL_TYPE_POW,
+		CPPS_SYMBOL_TYPE_POWANDASSIGNMENT,
+		CPPS_SYMBOL_TYPE_FLOORDIVISION,
+		CPPS_SYMBOL_TYPE_FLOORDIVISIONANDASSIGNMENT,
 		CPPS_SYMBOL_TYPE_END
 
 	};
-	struct cpps_symbol;
-	typedef	phmap::flat_hash_map<std::string, cpps_symbol*> CPPS_SYMBOL_MAP;
 
 	struct cpps_symbol
 	{
@@ -100,8 +96,8 @@ namespace cpps
 			symbolfuncname = name;
 		}
 	};
-	bool			cpps_parse_isleftasso(usint8 prio);
-	cpps_symbol*	cpps_parse_getsymbol(std::string& symbolstr, bool leftsymbol);
+	bool			cpps_parse_isleftasso(C*c,usint8 prio);
+	cpps_symbol*	cpps_parse_getsymbol(C*c,std::string& symbolstr, bool leftsymbol);
 	void			cpps_regsymbols(C * c);
 
 }

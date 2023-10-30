@@ -30,6 +30,7 @@ namespace cpps
 	bool cpps_isclass(const cpps_value& v);
 	bool cpps_isellipsis(const cpps_value& v);
 	bool cpps_istuple(const cpps_value& v);
+	std::string cpps_getclassname(const cpps_value& v);
 }
 
 #endif // CPPS_BASE_CPPS_HEAD_

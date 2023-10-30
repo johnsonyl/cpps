@@ -28,13 +28,17 @@ namespace cpps
 		std::string							getclassname();
 		std::vector<cpps_cppsclass*>&		parentclasslist();
 		virtual void						release();
-		virtual void						operatorreg(int8 type, cpps_function* func);
-		virtual cpps_function*				getoperator(int8 type);
+		virtual void						operatorreg(std::string symbolname, cpps_function* func);
+		virtual cpps_function*				getoperator(std::string symbolname);
 		node*								getvars_node();
+		C*									getDefaultCState(){return _c;}
+		void								setDefaultCState(C* c) { _c = c; }
+
 		node* o; //定义的变量
 		std::string classname;
-		std::vector<cpps_cppsclass*>		_parentclasslist;
-		std::vector<cpps_function*>			operatorlist; //牺牲内存提高运行效率.
+		std::vector<cpps_cppsclass*>								_parentclasslist;
+		phmap::flat_hash_map<std::string, cpps_function*>			operatorlist; //牺牲内存提高运行效率.
+		C* _c; //放一个C的指针会不会更方便操作。
 	};
 
 	template <class T>

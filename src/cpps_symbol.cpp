@@ -752,13 +752,13 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) | cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) | cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				break;
 			case CPPS_TNUMBER:
@@ -808,13 +808,13 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) ^ cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) ^ cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				break;
 			case CPPS_TNUMBER:
@@ -864,20 +864,20 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) & cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) & cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
 				v.decruse();
-				v.tt = CPPS_TINTEGER;
 				v.value.integer = cpps_to_integer(v) & cpps_to_integer(b);
+				v.tt = CPPS_TINTEGER;
 				break;
 			default:
 				break;
@@ -920,20 +920,20 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) << cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) << cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
 				v.decruse();
-				v.tt = CPPS_TINTEGER;
 				v.value.integer = cpps_to_integer(v) << cpps_to_integer(b);
+				v.tt = CPPS_TINTEGER;
 				break;
 			default:
 				break;
@@ -976,20 +976,20 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) >> cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = cpps_to_integer(v) >> cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
 				}
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
 				v.decruse();
-				v.tt = CPPS_TINTEGER;
 				v.value.integer = cpps_to_integer(v) >> cpps_to_integer(b);
+				v.tt = CPPS_TINTEGER;
 				break;
 			default:
 				break;
@@ -1005,6 +1005,198 @@ namespace cpps
 
 	}
 
+	inline void cpps_symbol_pow(cpps_value& a, cpps_value b, cpps_value& _result)
+	{
+		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = (bool)pow(a.value.b , b.value.b);
+			return;
+		}
+
+		_result.tt = CPPS_TNIL;
+		switch (a.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = pow(cpps_to_number(a) , cpps_to_number(b));
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = pow(cpps_to_number(a), cpps_to_number(b));
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = pow(cpps_to_number(a), cpps_to_number(b));
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			_result.tt = CPPS_TNUMBER;
+			_result.value.number = pow(cpps_to_number(a), cpps_to_number(b));
+			break;
+		default:
+			_result.tt = CPPS_TNIL;
+			break;
+		}
+	}
+	inline void cpps_symbol_powandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	{
+		if (a.tt == CPPS_TNIL)
+		{
+			return;
+		}
+
+		if (a.tt == CPPS_TREF) {
+
+			cpps_value& v = *(a.value.value);
+
+			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+			{
+				return;
+			}
+			;
+			_result.tt = CPPS_TNIL;
+			switch (v.tt)
+			{
+			case CPPS_TINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.number = pow(cpps_to_number(v), cpps_to_number(b));
+					v.tt = CPPS_TNUMBER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.number = pow(cpps_to_number(v), cpps_to_number(b));
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.number = pow(cpps_to_number(v), cpps_to_number(b));
+					v.tt = CPPS_TNUMBER;
+				}
+				break;
+			case CPPS_TNUMBER:
+			case CPPS_TSTRING:
+				v.decruse();
+				v.value.number = pow(cpps_to_number(v), cpps_to_number(b));
+				v.tt = CPPS_TNUMBER;
+				break;
+			default:
+				break;
+			}
+			_result = a;
+		}
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv = (char)pow((double)strv, cpps_to_number(b));
+			_result = (cpps_number)strv;
+		}
+
+	}
+	
+	inline void cpps_symbol_floordivision(cpps_value& a, cpps_value b, cpps_value& _result)
+	{
+		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+		{
+			_result.tt = CPPS_TBOOLEAN;
+			_result.value.b = (bool)floor(a.value.b / b.value.b);
+			return;
+		}
+
+		_result.tt = CPPS_TNIL;
+		switch (a.tt)
+		{
+		case CPPS_TINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
+			}
+			break;
+		case CPPS_TNUMBER:
+		case CPPS_TSTRING:
+			_result.tt = CPPS_TNUMBER;
+			_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
+			break;
+		default:
+			_result.tt = CPPS_TNIL;
+			break;
+		}
+	}
+	inline void cpps_symbol_floordivisionandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	{
+		if (a.tt == CPPS_TNIL)
+		{
+			return;
+		}
+
+		if (a.tt == CPPS_TREF) {
+
+			cpps_value& v = *(a.value.value);
+
+			if (v.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
+			{
+				return;
+			}
+			;
+			_result.tt = CPPS_TNIL;
+			switch (v.tt)
+			{
+			case CPPS_TINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.tt = CPPS_TINTEGER;
+					v.value.integer = (cpps_integer)floor(cpps_to_number(v)/ cpps_to_number(b));
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.tt = CPPS_TINTEGER;
+					v.value.integer = (cpps_integer)floor(cpps_to_number(v)/ cpps_to_number(b));
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.integer = (cpps_integer)floor(cpps_to_number(v)/ cpps_to_number(b));
+				}
+				break;
+			case CPPS_TNUMBER:
+			case CPPS_TSTRING:
+				v.decruse();
+				v.tt = CPPS_TNUMBER;
+				v.value.integer = (cpps_integer)floor(cpps_to_number(v)/ cpps_to_number(b));
+				break;
+			default:
+				break;
+			}
+			_result = a;
+		}
+		else if (a.tt == CPPS_TSTRINGV)
+		{
+			char& strv = *(a.value.strv);
+			strv = (char)floor((double)strv/ cpps_to_number(b));
+			_result = (cpps_integer)strv;
+		}
+
+	}
 	void cpps_subtractandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
@@ -1032,19 +1224,21 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TNUMBER;
 					v.value.number = cpps_to_number(v) - cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TNUMBER;
 					v.value.number = cpps_to_number(v) - cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
 				}
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
-				v.tt = CPPS_TNUMBER;
+
+				v.decruse();
 				v.value.number = cpps_to_number(v) - cpps_to_number(b);
+				v.tt = CPPS_TNUMBER;
 				break;
 			default:
 				break;
@@ -1087,19 +1281,20 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TNUMBER;
 					v.value.number = cpps_to_number(v) * cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TNUMBER;
 					v.value.number = cpps_to_number(v) * cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
 				}
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
-				v.tt = CPPS_TNUMBER;
+				v.decruse();
 				v.value.number = cpps_to_number(v) * cpps_to_number(b);
+				v.tt = CPPS_TNUMBER;
 				break;
 			default:
 				break;
@@ -1141,19 +1336,20 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
-					v.tt = CPPS_TNUMBER;
 					v.value.number = cpps_to_number(v) / cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TNUMBER;
 					v.value.number = cpps_to_number(v) / cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
 				}
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
-				v.tt = CPPS_TNUMBER;
+				v.decruse();
 				v.value.number = cpps_to_number(v) / cpps_to_number(b);
+				v.tt = CPPS_TNUMBER;
 				break;
 			default:
 				break;
@@ -1559,6 +1755,8 @@ namespace cpps
 		c->symbolmap["--"]		= new cpps_symbol(0, 1, LEFTMUSTVAR,	"--",		CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE);
 		c->symbolmap["*"]		= new cpps_symbol(1, 2, NOLIMIT,		"*",		CPPS_SYMBOL_TYPE_MUL);
 		c->symbolmap["/"]		= new cpps_symbol(1, 2, NOLIMIT,		"/",		CPPS_SYMBOL_TYPE_DIVIDE);
+		c->symbolmap["~/"]		= new cpps_symbol(1, 2, NOLIMIT,		"~/",		CPPS_SYMBOL_TYPE_FLOORDIVISION);
+		c->symbolmap["**"]		= new cpps_symbol(1, 2, NOLIMIT,		"**",		CPPS_SYMBOL_TYPE_POW);
 		c->symbolmap["%"]		= new cpps_symbol(1, 2, NOLIMIT,		"%",		CPPS_SYMBOL_TYPE_QUYU);
 		c->symbolmap["+"]		= new cpps_symbol(2, 2, NOLIMIT,		"+",		CPPS_SYMBOL_TYPE_ADD);
 		c->symbolmap["&"]		= new cpps_symbol(2, 2, NOLIMIT,		"&",		CPPS_SYMBOL_TYPE_ADD2);
@@ -1582,12 +1780,15 @@ namespace cpps
 		c->symbolmap["&="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"&=",		CPPS_SYMBOL_TYPE_ADD2ANDASSIGNMENT);
 		c->symbolmap["|="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"|=",		CPPS_SYMBOL_TYPE_ADD3ANDASSIGNMENT);
 		c->symbolmap["^="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"^=",		CPPS_SYMBOL_TYPE_ADD4ANDASSIGNMENT);
-		c->symbolmap["<<="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"<<=",		CPPS_SYMBOL_TYPE_ADD5ANDASSIGNMENT);
-		c->symbolmap[">>="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	">>=",		CPPS_SYMBOL_TYPE_ADD6ANDASSIGNMENT);
+		c->symbolmap["<<="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"<<=",		CPPS_SYMBOL_TYPE_ADD5ANDASSIGNMENT);
+		c->symbolmap[">>="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	">>=",		CPPS_SYMBOL_TYPE_ADD6ANDASSIGNMENT);
 		c->symbolmap["-="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"-=",		CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT);
 		c->symbolmap["*="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"*=",		CPPS_SYMBOL_TYPE_MULANDASSIGNMENT);
 		c->symbolmap["/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"/=",		CPPS_SYMBOL_TYPE_DIVIDEANDASSIGNMENT);
-		c->symbolmap["..="]	= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..",		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT);
+		c->symbolmap["~/="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"~/=",		CPPS_SYMBOL_TYPE_FLOORDIVISIONANDASSIGNMENT);
+		c->symbolmap["**="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"**=",		CPPS_SYMBOL_TYPE_POWANDASSIGNMENT);
+
+		c->symbolmap["..="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..",		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT);
 		c->symbolmap["[]"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"[]",		CPPS_SYMBOL_TYPE_GETOBJECT);
 		c->symbolmap["->"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"->",		CPPS_SYMBOL_TYPE_GETSUBOBJECT);
 
@@ -1872,6 +2073,34 @@ namespace cpps
 			cpps_value b;
 			cpps_calculate_expression(c, domain, root, d->l[1], leftdomain, b);
 			cpps_add6andassignment( a, b.real(), ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_POW:
+		{
+			cpps_value b;
+			cpps_calculate_expression(c, domain, root, d->l[1], leftdomain, b);
+			cpps_symbol_pow(a.real(), b.real(), ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_POWANDASSIGNMENT:
+		{
+			cpps_value b;
+			cpps_calculate_expression(c, domain, root, d->l[1], leftdomain, b);
+			cpps_symbol_powandassignment(a, b.real(), ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_FLOORDIVISION:
+		{
+			cpps_value b;
+			cpps_calculate_expression(c, domain, root, d->l[1], leftdomain, b);
+			cpps_symbol_floordivision(a.real(), b.real(), ret);
+			break;
+		}
+		case CPPS_SYMBOL_TYPE_FLOORDIVISIONANDASSIGNMENT:
+		{
+			cpps_value b;
+			cpps_calculate_expression(c, domain, root, d->l[1], leftdomain, b);
+			cpps_symbol_floordivisionandassignment(a, b.real(), ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_SUBTRACTANDASSIGNMENT:

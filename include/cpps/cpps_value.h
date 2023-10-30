@@ -95,6 +95,7 @@ namespace cpps
 
 
 
+	bool	cpps_to_bool(const cpps_value& src);
 	cpps_number	cpps_to_number(const cpps_value& src);
 	cpps_integer cpps_to_integer(const cpps_value& src);
 	std::string cpps_to_string(const cpps_value& src);

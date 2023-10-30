@@ -169,7 +169,7 @@ namespace cpps
 		bool					isclass();
 		bool					isclassvar();
 		bool					isref();
-
+		std::string				getclassname();
 		//convert
 		std::string				tostring();
 		cpps_integer			toint();
