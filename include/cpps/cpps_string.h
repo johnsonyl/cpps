@@ -78,7 +78,7 @@ namespace cpps
 		static cpps::string* apply(cpps_value obj)
 		{
 			if (!match(obj))
-				throw(cpps_error("0", 0, 0, "cppsvalue can't convert to cpps_string, cppsvalue type is %s , conversion failed.", cpps_base_type(obj).c_str()));
+				throw(cpps_error(__FILE__, __LINE__, 0, "cppsvalue can't convert to cpps_string, cppsvalue type is %s , conversion failed.", cpps_base_type(obj).c_str()));
 
 
 			cpps_cppsclassvar* clsvar = (cpps_cppsclassvar*)obj.value.domain;

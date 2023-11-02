@@ -33,6 +33,8 @@ namespace cpps
 		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *prevdomain, cpps_std_vector *o, cpps_stack *stack, std::vector< cpps_regvar*>* lambdastacklist);
 		void			setasync(bool b);
 		virtual bool	isasync();
+		void			setmulitparams(bool b);
+		virtual bool	ismulitparams();
 		virtual bool	iscppsfunc() { return true; }
 		void			rebuildfunc(node* p, node* c, usint32 count);
 		void			setquatoreturn(bool b);
@@ -43,6 +45,7 @@ namespace cpps
 		node		*params;
 		node		*context;
 		bool		quatoreturn;
+		bool		mulitparams;
 		cpps_domain	*domain; //在每个函数中临时创建一个域。 提供临时变量
 #ifdef CPPS_JIT_COMPILER
 		char*		jitbuffer; //JIT缓存

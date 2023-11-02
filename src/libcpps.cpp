@@ -298,13 +298,27 @@ namespace cpps {
 	}
 	void cpps_parse_def_function_param(C* c, cpps_node_domain* domain, node* right, node* root, cppsbuffer& buffer) {
 		node* typen = CPPSNEW( node)(right, right->filename, buffer.line());
-		typen->type = CPPS_VARNAME;
-		typen->s = cpps_parse_varname(buffer);
-		if (typen->s != "var") throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "you need to put an 'var' before defining the parameters"));
-		/* 剔除空格 */
-		cpps_parse_rmspaceandenter(buffer);
-		node* varname = CPPSNEW( node)(typen, right->filename, buffer.line());
-		if (buffer.cur() == '&') {
+		node* varname = NULL;
+		if (buffer.cur() == '.' && buffer.at(buffer.offset() + 1) == '.' && buffer.at(buffer.offset() + 2) == '.') {
+			// var func(var a,... ps){}
+			typen->type = CPPS_VARNAME;
+			buffer.pop();//.
+			buffer.pop();//.
+			buffer.pop();//.
+			right->quote = true; //quote true 代表是多参数
+			/* 剔除空格 */
+			cpps_parse_rmspaceandenter(buffer);
+		}
+		else {
+			typen->type = CPPS_VARNAME;
+			typen->s = cpps_parse_varname(buffer);
+			if (typen->s != "var") throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "you need to put an 'var' before defining the parameters"));
+			/* 剔除空格 */
+			cpps_parse_rmspaceandenter(buffer);
+		}
+		
+		varname = CPPSNEW( node)(typen, right->filename, buffer.line());
+		if (buffer.cur() == '&' && typen->type == CPPS_VARNAME) {
 			buffer.pop();
 			varname->quote = true;
 			cpps_parse_rmspaceandenter(buffer);
@@ -322,7 +336,7 @@ namespace cpps {
 		}
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
-		if (buffer.cur() == '='){
+		if (buffer.cur() == '=' && typen->type == CPPS_VARNAME){
 			/*有默认值 也就是可以不填... */ 
 			buffer.pop();
 			/* 剔除空格 */
@@ -351,6 +365,16 @@ namespace cpps {
 				cpps_parse_rmspaceandenter(buffer);
 			}
 			cpps_parse_def_function_param(c, funcdomain, params, root, buffer);
+			if (params->quote) {
+				//多参数,必须结束
+				cpps_parse_rmspaceandenter(buffer);
+				ch = buffer.cur();
+				if (ch != ')') {
+					throw(cpps_error(right->filename, buffer.line(), cpps_error_deffuncrror, "mulitparams func parse error.."));
+				}
+				buffer.pop();
+				break;
+			}
 		}
 
 		cpps_parse_rmspaceandenter(buffer);
@@ -2979,6 +3003,9 @@ namespace cpps {
 					if (isasync == node_var_type::node_var_type_asyncvar)
 						func->setasync(true);
 					func->setquatoreturn(varName->quote);
+					if (var->l[0]->quote)
+						func->setmulitparams(true);
+
 					auto tmp = cpps_value(func);
 					v->setval(tmp);
 				}
@@ -3733,7 +3760,7 @@ namespace cpps {
 								func->setasync(true);
 							}
 							func->setquatoreturn(varName->quote);
-
+							func->setmulitparams(var->l[0]->quote);
 							/*注册operator.*/
 							if (varName->symbol) {
 								cppsclass->operatorreg(varName->symbol->symbolfuncname, func);

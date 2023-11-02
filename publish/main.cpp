@@ -75,6 +75,19 @@ if(args.size() == 3)
 	io.remove(tarlibfile);
 	println("copy {sourcelibfile} -> {tarlibfile}");
 	io.copy(sourcelibfile,tarlibfile);
+	
+	
+	
+	//deps
+	io.rmdir("{publishpath}deps");
+	io.mkdirs("{publishpath}deps/deps/bin");
+	io.mkdirs("{publishpath}deps/deps/include");
+	io.mkdirs("{publishpath}deps/deps/lib");
+	var sourceincludepath = io.normpath("{cppspath}deps/deps");
+	var tarincludepath = io.normpath("{publishpath}deps/deps");
+	println("copydir {sourceincludepath} -> {tarincludepath}");
+	io.copydir(sourceincludepath,tarincludepath);
+	
 
 	println("publish done.");
 

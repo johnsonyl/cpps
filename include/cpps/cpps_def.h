@@ -160,6 +160,7 @@
 #define CPPS_QUOTEVARNAME		221 //引用变量名字
 #define CPPS_QUOTEGETCHIILD		222  //引用变量名字
 #define CPPS_QUOTEGETOBJECT		223  //引用变量名字
+#define CPPS_MULITPARAMS		224 //多参数
 
 
 

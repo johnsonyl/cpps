@@ -62,6 +62,11 @@ namespace cpps
 		}
 		return nil;
 	}
+	void cpps_base_printf_new(C* c, cpps::cpps_value args, ...) {
+		for (auto& v : cpps::object::vector(object(args))) {
+			cpps_base_printf(c, v.real());
+		}
+	}
 	void cpps_base_printf(C*c,object b)
 	{
 		if (type(b) == CPPS_TNUMBER)
@@ -91,7 +96,7 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TCLASSVAR)
 		{
-			if (b.value.value.domain->domainname == "vector")
+			if (b.getclassname() == "vector")
 			{
 				cout << "[";
 				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
@@ -110,7 +115,7 @@ namespace cpps
 				}
 				cout << "]";
 			}
-			else if (b.value.value.domain->domainname == "set")
+			else if (b.getclassname() == "set")
 			{
 				cout << "[";
 				bool first = true;
@@ -129,7 +134,7 @@ namespace cpps
 				}
 				cout << "]";
 			}
-			else if (b.value.value.domain->domainname == "map")
+			else if (b.getclassname() == "map")
 			{
 				cout << "{ ";
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
@@ -196,8 +201,18 @@ namespace cpps
 	void cpps_base_endl() {
 		cout << endl;
 	}
-	void cpps_base_printfln(C*c,object b)
-	{
+	void cpps_base_printfln_new(C* c, cpps::cpps_value args, ...) {
+		bool isfirst = true;
+		for (auto& v : cpps::object::vector(object(args))) {
+			if (!isfirst) {
+				cout << ",";
+			}
+			isfirst = false;
+			cpps_base_printf(c, v.real());
+		}
+		cout << endl;
+	}
+	void cpps_base_printfln(C* c, object b) {
 		cpps_base_printf(c,b);
 		cout << endl;
 	}
@@ -833,10 +848,10 @@ namespace cpps
 			_class<node>("cpps_node")
 				.def("release",&node::cpps_release),
 			def_inside("parse", cpps_base_parse),
-			def_inside("printf", cpps_base_printf),
-			def_inside("print", cpps_base_printf),
-			def_inside("printfln", cpps_base_printfln),
-			def_inside("println", cpps_base_printfln),
+			def("printf", cpps_base_printf_new),
+			def("print", cpps_base_printf_new),
+			def("printfln", cpps_base_printfln_new),
+			def("println", cpps_base_printfln_new),
 			//def_inside("endl", cpps_base_endl),
 			def_inside("dump", cpps_base_dump),
 			def("exit", cpps_base_exit),

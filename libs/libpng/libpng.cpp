@@ -42,7 +42,28 @@ bool is_png(cpps::cpps_value v)
 	}
 	return png_sig_cmp(pngsig, 0, png_sig_size) == 0;
 }
+cpps_integer cpps_png_rbga(cpps::object r, cpps::object  g, cpps::object  b, cpps::object  a) {
+	cpps_integer _r = r.toint();
+	cpps_integer _g = g.toint();
+	cpps_integer _b = b.toint();
+	cpps_integer _a = a.toint();
 
+	
+	char rgba[RGBASIZE] = { _a,_b,_g,_r };
+	return *((cpps_integer*)rgba);
+}
+cpps::tuple cpps_png_color(C*c,cpps::object color) {
+	cpps_integer _color = color.toint();
+	cpps_integer _r = (cpps_integer)((char*) & _color)[3];
+	cpps_integer _g = (cpps_integer)((char*)&_color)[2];
+	cpps_integer _b = (cpps_integer)((char*)&_color)[1];
+	cpps_integer _a = (cpps_integer)((char*)&_color)[0];
+
+
+	cpps::tuple ret(object::create(c, _r), object::create(c, _g), object::create(c, _b), object::create(c, _a));
+
+	return ret;
+}
 struct cpps_png_struct {
 	png_struct* ptr;
 };
@@ -198,6 +219,8 @@ cpps_export_void cpps_attach(cpps::C* c)
 	
 	cpps::_module(c, "libpng")[
 		def("is_png", is_png),
+		def("RGBA", cpps_png_rbga),
+		def_inside("COLOR", cpps_png_color),
 		_class<cpps_png_struct>("png_struct"),
 		_class<cpps_png_info>("png_info"),
 		_class<cpps_png_bytepp>("png_bytepp")

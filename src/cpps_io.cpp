@@ -246,6 +246,15 @@ namespace cpps
 	
 	cpps_integer cpps_io_mkdirs(std::string szdir)
 	{
+#ifdef _WIN32
+		if (-1 != _access(szdir.c_str(), 0))
+			return 0;
+#else
+
+		if (-1 != access(szdir.c_str(), 0))
+			return 0;
+#endif
+
 		std::string strdir = szdir;
 		cpps_integer iret = 0;
 		size_t index = strdir.find_last_of('/');
@@ -829,6 +838,8 @@ namespace cpps
 	}
 
 	cpps_integer cpps_io_copy(std::string sourcefile, std::string targetfile) {
+		cpps_io_mkdirs(cpps_io_getfilepath(targetfile));
+
 		// int c to store one char at a time
 		sourcefile = cpps_io_string_replace(sourcefile, "\\", "/");
 		targetfile = cpps_io_string_replace(targetfile, "\\", "/");
@@ -900,6 +911,7 @@ namespace cpps
 		cpps_cpp_real_walk(files, sourcepath, true);
 		cpps_integer ret = cpps_io_mkdirs(targetpath);
 		for (auto file : files) {
+			ret = 0;
 			std::string tarfile = cpps_io_string_replace(file, sourcepath, targetpath);
 			if (cpps_io_isfile(file))
 				ret = cpps_io_copy(file, tarfile);
@@ -991,6 +1003,7 @@ namespace cpps
 			def_inside("splitdrive", cpps_io_splitdrive),
 			def("getrealpath", cpps_real_path),
 			def("file_exists",cpps_io_file_exists),
+			def("access",cpps_io_file_exists),
 			def_inside("walk",cpps_io_walk),
 			def_inside("listdir",cpps_io_listdir),
 			def_inside("stat",cpps_io_get_stat),

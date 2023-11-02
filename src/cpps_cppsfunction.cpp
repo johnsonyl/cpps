@@ -23,7 +23,7 @@ namespace cpps
 
 		varcount = count;
 		quatoreturn = false;
-
+		mulitparams = false;
 
 #ifdef CPPS_JIT_COMPILER
 		jitbuffer = NULL;
@@ -86,28 +86,45 @@ namespace cpps
 
 			if (varname->type == CPPS_VARNAME)
 			{
-				cpps_regvar* v = CPPSNEW( cpps_regvar)();
+				cpps_regvar* v = CPPSNEW(cpps_regvar)();
 				v->setvarname(varname->s);
+				//如果是多参数并且是最后一个参数
+				if (ismulitparams() && i == params->l.size()-1) {
+					
+					cpps_vector* vct = NULL; cpps_value vct_v;
+					newclass<cpps_vector>(c, &vct, &vct_v);
+					for (size_t j = i; j < o->size(); j++) {
 
-				if (i >= o->size())
-				{
-					if (varname->l.size() > 0)
+						cpps_value value = (*o)[j];
+						if (value.tt == CPPS_TREF && !varname->quote)
+							vct->push_back(*value.value.value);
+						else
+							vct->push_back(value);
+					}
+					v->setval(vct_v);
+				}
+				else {
+					if (i >= o->size())
 					{
-						node* var = varname->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
-						cpps_domain* leftdomain = NULL;
-						cpps_value value;
-						cpps_calculate_expression(c, prevdomain, prevdomain, var, leftdomain,value);
-						v->setval(value.real());
+						if (varname->l.size() > 0)
+						{
+							node* var = varname->l[0]; //默认参数。。。 如果穿进来则不执行默认参数
+							cpps_domain* leftdomain = NULL;
+							cpps_value value;
+							cpps_calculate_expression(c, prevdomain, prevdomain, var, leftdomain, value);
+							v->setval(value.real());
+						}
+					}
+					else
+					{
+						cpps_value value = (*o)[i];
+						if (value.tt == CPPS_TREF && !varname->quote)
+							v->setval(*value.value.value);
+						else
+							v->setval(value);
 					}
 				}
-				else
-				{
-					cpps_value value = (*o)[i];
-					if (value.tt == CPPS_TREF && !varname->quote)
-						v->setval(*value.value.value);
-					else
-						v->setval(value);
-				}
+				
 				funcdomain->regvar(c, v);
 				if (varname->offsettype == CPPS_OFFSET_TYPE_SELF)
 				{
@@ -154,6 +171,16 @@ namespace cpps
 	bool cpps_cppsfunction::isasync()
 	{
 		return nasync;
+	}
+
+	void cpps_cppsfunction::setmulitparams(bool b)
+	{
+		mulitparams = b;
+	}
+
+	bool cpps_cppsfunction::ismulitparams()
+	{
+		return mulitparams;
 	}
 
 	void cpps_cppsfunction::rebuildfunc(node* p, node* c, usint32 count)

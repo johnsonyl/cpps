@@ -1,6 +1,7 @@
 #include "cpps/cpps.h"
 namespace cpps
 {
+	size_t formatcheck(C* c, std::string& fmt, size_t j, size_t i, std::string& take, cpps_value& v);
 	cpps_integer	cpps_string_len(cpps_value v)
 	{
 		if (v.tt == CPPS_TSTRING) {
@@ -250,8 +251,40 @@ namespace cpps
 
 		return tmpStr->substr(size_t(pos), 1);
 	}
-	std::string cpps_string_format(const char* fmt, ...)
+	std::string cpps_string_format(C*c,cpps::cpps_value args, ...)
 	{
+		cpps::object::vector vct = cpps::object::vector(cpps::object(args));
+
+		std::string fmt = vct[0].tostring();
+		size_t idx = 1;
+
+
+		std::string take;
+		for (size_t i = 0; i < fmt.size(); i++)
+		{
+			if (fmt[i] == '%')
+			{
+				if (fmt[i + 1] == '%')
+				{
+					fmt.replace(i, 2, "%");
+					continue;
+				}
+				take = "";
+				for (size_t j = i; j < fmt.size(); j++)
+				{
+					take.push_back(fmt[j]);
+					size_t newsize = formatcheck(c,fmt, j, i, take, vct[(cpps_integer)idx].realval());
+					if (newsize != 0)
+					{
+						idx++;
+						i += newsize - 1;
+						break;
+					}
+
+				}
+			}
+		}
+
 		return fmt;
 	}
 	void cpps_string_real_tolower(std::string& s) {
