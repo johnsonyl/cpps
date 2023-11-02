@@ -253,7 +253,8 @@ namespace cpps
 	}
 	std::string cpps_string_format(C*c,cpps::cpps_value args, ...)
 	{
-		cpps::object::vector vct = cpps::object::vector(cpps::object(args));
+		cpps::object _vct = cpps::object(args);
+		cpps::object::vector vct = cpps::object::vector(_vct);
 
 		std::string fmt = vct[0].tostring();
 		size_t idx = 1;

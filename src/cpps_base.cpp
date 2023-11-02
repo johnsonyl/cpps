@@ -63,7 +63,8 @@ namespace cpps
 		return nil;
 	}
 	void cpps_base_printf_new(C* c, cpps::cpps_value args, ...) {
-		for (auto& v : cpps::object::vector(object(args))) {
+		cpps::object _vct = object(args);
+		for (auto& v : cpps::object::vector(_vct)) {
 			cpps_base_printf(c, v.real());
 		}
 	}
@@ -203,7 +204,8 @@ namespace cpps
 	}
 	void cpps_base_printfln_new(C* c, cpps::cpps_value args, ...) {
 		bool isfirst = true;
-		for (auto& v : cpps::object::vector(object(args))) {
+		cpps::object _vct = object(args);
+		for (auto& v : cpps::object::vector(_vct)) {
 			if (!isfirst) {
 				cout << ",";
 			}

@@ -43,10 +43,10 @@ bool is_png(cpps::cpps_value v)
 	return png_sig_cmp(pngsig, 0, png_sig_size) == 0;
 }
 cpps_integer cpps_png_rbga(cpps::object r, cpps::object  g, cpps::object  b, cpps::object  a) {
-	cpps_integer _r = r.toint();
-	cpps_integer _g = g.toint();
-	cpps_integer _b = b.toint();
-	cpps_integer _a = a.toint();
+	char _r = (char) r.toint();
+	char _g = (char) g.toint();
+	char _b = (char) b.toint();
+	char _a = (char) a.toint();
 
 	
 	char rgba[RGBASIZE] = { _a,_b,_g,_r };
