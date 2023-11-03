@@ -1,7 +1,7 @@
 #include "json/json.h"
 #include "jsonconvert.h"
-
-std::string json_itos_func(cpps_integer n)
+template <typename T>
+std::string json_itos_func(T n)
 {
 	std::ostringstream result;
 	result << n;
@@ -24,6 +24,9 @@ Json::Value cppstojsonvalue(cpps::C* c, cpps::object obj)
 		break;
 	case CPPS_TINTEGER:
 		ret = (Json::Int64)(cpps::object_cast<cpps_integer>(obj));
+		break;
+	case CPPS_TUINTEGER:
+		ret = (Json::UInt64)(cpps::object_cast<cpps_uinteger>(obj));
 		break;
 	case CPPS_TFUNCTION:
 		ret = std::string("func@") + obj.value.value.func->getfuncname();
@@ -53,6 +56,14 @@ Json::Value cppstojsonvalue(cpps::C* c, cpps::object obj)
 				else if (k.tt == CPPS_TINTEGER)
 				{
 					ret[json_itos_func(k.value.integer)] = v2;
+				}
+				else if (k.tt == CPPS_TUINTEGER)
+				{
+					ret[json_itos_func(k.value.uinteger)] = v2;
+				}
+				else if (k.tt == CPPS_TUINTEGER)
+				{
+					ret[json_itos_func(k.value.uinteger)] = v2;
 				}
 			}
 		}

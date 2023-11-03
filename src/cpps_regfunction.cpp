@@ -7,7 +7,7 @@ namespace cpps
 	
 	std::string transformat(std::string fmt, cpps_value v)
 	{
-		char buffer[1024];
+		char buffer[1024] = {0};
 		if (v.tt == CPPS_TSTRING)
 		{
 
@@ -26,6 +26,10 @@ namespace cpps
 		else if (v.tt == CPPS_TINTEGER)
 		{
 			sprintf(buffer, fmt.c_str(), v.value.integer);
+		}
+		else if (v.tt == CPPS_TUINTEGER)
+		{
+			sprintf(buffer, fmt.c_str(), v.value.uinteger);
 		}
 		return buffer;
 	}

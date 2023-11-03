@@ -15,11 +15,11 @@ namespace cpps {
 	/*
 	zlib.adler32(data,adler = -1)
 	*/
-	cpps_integer cpps_compress_zlib_adler32(cpps_value data, cpps_value adler);
+	cpps_uinteger cpps_compress_zlib_adler32(cpps_value data, cpps_value adler);
 	/*
 	zlib.adler32(data,adler = -1)
 	*/
-	cpps_integer cpps_compress_zlib_crc32(cpps_value data, cpps_value crc);
+	cpps_uinteger cpps_compress_zlib_crc32(cpps_value data, cpps_value crc);
 
 }
 

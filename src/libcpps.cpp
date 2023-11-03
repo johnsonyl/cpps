@@ -36,6 +36,7 @@ namespace cpps {
 	std::string cpps_real_path();
 	void		gc_cleanup(C* c,bool cleanall = false);
 	void cpps_detach_library(HMODULE module, const std::string& libname, C* c);
+	int32 cpps_str2ui64(const char* s, cpps_uinteger* result);
 
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc)
 	{
@@ -1066,12 +1067,30 @@ namespace cpps {
 					if (closure && t->offsettype == CPPS_OFFSET_TYPE_SELF){ /*整理修改可能是闭包变量并且增加了计数,当没有使用的时候它就会被释放了..*/
 						t->closure = true; /*闭包创建永不删除*/
 					}
+					//这里可以优化如果目标是一个常量值，则可以直接取值不需要在调用它了。类似  a+b+c b为常量10 则优化a+10+c 
+					//下个版本优化
 				}
 			}
 			/* 剔除空格 */
 			cpps_parse_rmspaceandenter(buffer);
 		}
 		return(param);
+	}
+	void cpps_checknumber_right(C* c, cpps_node_domain* domain, node* number, cppsbuffer& buffer) {
+		char v = buffer.cur();
+		switch (v) {
+		case 'u':
+		case 'U':
+			buffer.pop();
+			number->type = CPPS_OUINTEGER;
+			cpps_str2ui64(number->s.c_str(), &number->value.uinteger);
+			break;
+		case 'L':
+			buffer.pop();
+		default:
+			cpps_str2i64(number->s.c_str(), &number->value.integer);
+			break;
+		}
 	}
 	node* cpps_parse_number(C* c, cpps_node_domain* domain, node* o, cppsbuffer& buffer) {
 		node* str = CPPSNEW( node)(o->filename, buffer.line());
@@ -1101,7 +1120,9 @@ namespace cpps {
 			cpps_str2i64(str->s.c_str(), &str->value.integer);
 		}
 		else {
-			cpps_str2i64(str->s.c_str(), &str->value.integer);
+			//检测后面又没有U或者u 为unsigned
+			cpps_parse_rmspaceandenter(buffer);
+			cpps_checknumber_right(c, domain, str, buffer);
 		}
 		return(str);
 	}
@@ -2336,7 +2357,7 @@ namespace cpps {
 		cpps_parse_rmspaceandenter(buffer);
 		/*#import "base64" √*/
 		if (buffer.cur() != '\"') {
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '<' after include"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '\"' after include"));
 		}
 		buffer.pop();
 		/* 剔除空格 */
@@ -2345,7 +2366,7 @@ namespace cpps {
 		child->s = path;
 		cpps_parse_rmspaceandenter(buffer);
 		if (buffer.cur() != '\"') {
-			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '>'after include"));
+			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '\"'after include"));
 		}
 		buffer.pop();
 		/*载入文件*/
@@ -4108,6 +4129,12 @@ namespace cpps {
 		*result = cpps_number2integer(n);
 		return(1);
 	}
+	int32 cpps_str2ui64(const char* s, cpps_uinteger* result) {
+		cpps_number n = 0;
+		cpps_str2d(s, &n);
+		*result = cpps_number2uinteger(n);
+		return(1);
+	}
 	cpps_regvar* getregvar(cpps_domain* domain, node* o) {
 		cpps_domain* leftdomain = NULL;
 		cpps_regvar* v = domain->getvar(o->s, leftdomain);
@@ -4635,13 +4662,13 @@ namespace cpps {
 					cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain,right);
 					CPPS_TO_REAL_VALUE(right);
 
-					if (right.tt != CPPS_TINTEGER) {
+					if (!cpps_isint(right.tt )) {
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array must contain a number as an index."));
 					}
 					leftdomain = takedomain;
-					if (pVec->size() <= right.value.integer)
-						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), right.value.integer));
-					cpps_integer idx = right.value.integer;
+					cpps_integer idx = cpps_to_integer(right);
+					if (pVec->size() <= idx)
+						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), idx));
 					if (idx < 0) {
 						idx = pVec->size() + idx;
 					}
@@ -4686,13 +4713,14 @@ namespace cpps {
 				cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain,right);
 				CPPS_TO_REAL_VALUE(right);
 
-				if (right.tt != CPPS_TINTEGER) {
+				if (!cpps_isint(right)) {
 					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String must contain a number as an index."));
 				}
+				cpps_integer idx = cpps_to_integer(right);
+
 				leftdomain = takedomain;
-				if ((cpps_integer)str->size() <= right.value.integer)
-					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), right.value.integer));
-				cpps_integer idx = right.value.integer;
+				if ((cpps_integer)str->size() <= idx)
+					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), idx));
 				if (idx < 0) {
 					idx = str->size() + idx;
 				}
@@ -4742,13 +4770,13 @@ namespace cpps {
 					cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain, right);
 					CPPS_TO_REAL_VALUE(right);
 
-					if (right.tt != CPPS_TINTEGER) {
+					if (!cpps_isint(right)) {
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array must contain a number as an index."));
 					}
+					cpps_integer idx = cpps_to_integer(right);
 					leftdomain = takedomain;
-					if (pVec->size() <= right.value.integer)
-						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), right.value.integer));
-					cpps_integer idx = right.value.integer;
+					if (pVec->size() <= idx)
+						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array has crossed the current length: [%d]. You need to get the length: [%d]..", pVec->size(), idx));
 					if (idx < 0) {
 						idx = pVec->size() + idx;
 					}
@@ -4793,14 +4821,14 @@ namespace cpps {
 				cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain,right);
 				CPPS_TO_REAL_VALUE(right);
 
-				if (right.tt != CPPS_TINTEGER) {
+				if (!cpps_isint(right)) {
 					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String must contain a number as an index."));
 				}
+				cpps_integer idx = cpps_to_integer(right);
 				leftdomain = takedomain;
-				if ((cpps_integer)str->size() <= right.value.integer)
-					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), right.value.integer));
+				if ((cpps_integer)str->size() <= idx)
+					throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "String has crossed the current length: [%d]. You need to get the length: [%d]..", str->size(), idx));
 
-				cpps_integer idx = right.value.integer;
 				if (idx < 0) {
 					idx = str->size() + idx;
 				}
@@ -4949,6 +4977,10 @@ namespace cpps {
 		else if (d->type == CPPS_OINTEGER) {
 			ret.tt = CPPS_TINTEGER;
 			ret.value.integer = d->value.integer;
+		}
+		else if (d->type == CPPS_OUINTEGER) {
+			ret.tt = CPPS_TUINTEGER;
+			ret.value.uinteger = d->value.uinteger;
 		}
 		else if (d->type == CPPS_OINTEGER16) {
 			ret.tt = CPPS_TINTEGER;

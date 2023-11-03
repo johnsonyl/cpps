@@ -24,6 +24,33 @@ namespace cpps
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) + cpps_to_integer(b);
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) + cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_number(a) + cpps_to_number(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_number(a) + cpps_to_number(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) + cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) + cpps_to_uinteger(b);
+			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
 				_result.tt = CPPS_TNUMBER;
@@ -62,6 +89,33 @@ namespace cpps
 			{
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) & cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) & cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) & cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) & cpps_to_integer(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) & cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) & cpps_to_uinteger(b);
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
@@ -103,6 +157,33 @@ namespace cpps
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) | cpps_to_integer(b);
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) | cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) | cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) | cpps_to_integer(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) | cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) | cpps_to_uinteger(b);
+			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
 				_result.tt = CPPS_TINTEGER;
@@ -142,6 +223,33 @@ namespace cpps
 			{
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) ^ cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) ^ cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) ^ cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) ^ cpps_to_integer(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) ^ cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) ^ cpps_to_uinteger(b);
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
@@ -183,6 +291,33 @@ namespace cpps
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) << cpps_to_integer(b);
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) << cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) << cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) << cpps_to_integer(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) << cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) << cpps_to_uinteger(b);
+			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
 				_result.tt = CPPS_TINTEGER;
@@ -222,6 +357,33 @@ namespace cpps
 			{
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) >> cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) >> cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) >> cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TINTEGER;
+				_result.value.integer = cpps_to_integer(a) >> cpps_to_integer(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) >> cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) >> cpps_to_uinteger(b);
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
@@ -263,6 +425,33 @@ namespace cpps
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) - cpps_to_integer(b);
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) - cpps_to_integer(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_number(a) - cpps_to_number(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_number(a) - cpps_to_number(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) - cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) - cpps_to_integer(b);
+			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
 				_result.tt = CPPS_TNUMBER;
@@ -303,6 +492,33 @@ namespace cpps
 				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = cpps_to_integer(a) * cpps_to_integer(b);
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) * cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_number(a) * cpps_to_number(b);
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = cpps_to_number(a) * cpps_to_number(b);
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) * cpps_to_uinteger(b);
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.tt = CPPS_TUINTEGER;
+				_result.value.uinteger = cpps_to_uinteger(a) * cpps_to_uinteger(b);
+			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
 				_result.tt = CPPS_TNUMBER;
@@ -338,6 +554,7 @@ namespace cpps
 		switch (a.tt)
 		{
 		case CPPS_TINTEGER:
+		case CPPS_TUINTEGER:
 		case CPPS_TNUMBER:
 		case CPPS_TSTRING:
 			if (cpps_to_number(b) != 0)
@@ -365,6 +582,7 @@ namespace cpps
 		{
 		case CPPS_TNUMBER:
 		case CPPS_TINTEGER:
+		case CPPS_TUINTEGER:
 		case CPPS_TSTRING:
 			if (cpps_to_number(b) != 0)
 			{
@@ -451,6 +669,9 @@ namespace cpps
 			case CPPS_TINTEGER:
 				v.value.integer++;
 				break;
+			case CPPS_TUINTEGER:
+				v.value.uinteger++;
+				break;
 			default:
 				
 				break;
@@ -477,6 +698,9 @@ namespace cpps
 				break;
 			case CPPS_TINTEGER:
 				v.value.integer++;
+				break;
+			case CPPS_TUINTEGER:
+				v.value.uinteger++;
 				break;
 			default:
 				
@@ -506,6 +730,9 @@ namespace cpps
 			case CPPS_TINTEGER:
 				v.value.integer--;
 				break;
+			case CPPS_TUINTEGER:
+				v.value.uinteger--;
+				break;
 			default:
 				
 				break;
@@ -532,6 +759,9 @@ namespace cpps
 			case CPPS_TINTEGER:
 				v.value.integer--;
 				break;
+			case CPPS_TUINTEGER:
+				v.value.uinteger--;
+				break;
 			default:
 				
 				break;
@@ -556,12 +786,16 @@ namespace cpps
 		{
 		case CPPS_TINTEGER:
 			_result.tt = CPPS_TINTEGER;
-			_result.value.integer = a.value.integer;
+			_result.value.integer = +a.value.integer;
+			break;
+		case CPPS_TUINTEGER:
+			_result.tt = CPPS_TUINTEGER;
+			_result.value.uinteger = +a.value.uinteger;
 			break;
 		case CPPS_TNUMBER:
 		case CPPS_TSTRING:
 			_result.tt = CPPS_TINTEGER;
-			_result.value.number = cpps_to_number(a);
+			_result.value.number = +cpps_to_number(a);
 		default:
 			
 			break;
@@ -578,6 +812,10 @@ namespace cpps
 		case CPPS_TINTEGER:
 			_result.tt = CPPS_TINTEGER;
 			_result.value.integer = -a.value.integer;
+			break;
+		case CPPS_TUINTEGER:
+			_result.tt = CPPS_TUINTEGER;
+			_result.value.uinteger = -a.value.uinteger;
 			break;
 		case CPPS_TNUMBER:
 		case CPPS_TSTRING:
@@ -694,6 +932,11 @@ namespace cpps
 				{
 					v.value.integer += b.value.integer;
 				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = v.value.integer + cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
 					v.tt = CPPS_TNUMBER;
@@ -703,6 +946,28 @@ namespace cpps
 				{
 					v.tt = CPPS_TNUMBER;
 					v.value.number = cpps_integer2number(v.value.integer) + cpps_to_number(b);
+				}
+				break;
+			case CPPS_TUINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger += b.value.integer;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = v.value.uinteger + cpps_to_uinteger(b);
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_integer2number(v.value.uinteger) + b.value.number;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.tt = CPPS_TNUMBER;
+					v.value.number = cpps_integer2number(v.value.uinteger) + cpps_to_number(b);
 				}
 				break;
 			case CPPS_TNUMBER:
@@ -749,6 +1014,33 @@ namespace cpps
 				if (b.tt == CPPS_TINTEGER)
 				{
 					v.value.integer |= b.value.integer;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = v.value.integer | b.value.uinteger;
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.integer = cpps_to_integer(v) | cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.integer = cpps_to_integer(v) | cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger |= cpps_to_uinteger(b);
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger |= b.value.uinteger;
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
@@ -806,6 +1098,33 @@ namespace cpps
 				{
 					v.value.integer ^= b.value.integer;
 				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = cpps_to_uinteger(v) ^ cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.integer = cpps_to_integer(v) ^ cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.integer = cpps_to_integer(v) ^ cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger ^= cpps_to_uinteger(b);
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = cpps_to_uinteger(v) ^ cpps_to_uinteger(b);
+				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
 					v.value.integer = cpps_to_integer(v) ^ cpps_to_integer(b);
@@ -861,6 +1180,34 @@ namespace cpps
 				if (b.tt == CPPS_TINTEGER)
 				{
 					v.value.integer &= b.value.integer;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger &= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.integer = cpps_to_integer(v) & cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.integer = cpps_to_integer(v) & cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger &= cpps_to_uinteger(b);
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger &= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
@@ -918,6 +1265,34 @@ namespace cpps
 				{
 					v.value.integer <<= b.value.integer;
 				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger <<= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.integer = cpps_to_integer(v) << cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.integer = cpps_to_integer(v) << cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger <<= cpps_to_uinteger(b);
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger <<= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
 					v.value.integer = cpps_to_integer(v) << cpps_to_integer(b);
@@ -974,6 +1349,34 @@ namespace cpps
 				{
 					v.value.integer >>= b.value.integer;
 				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger >>= cpps_to_integer(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.integer = cpps_to_integer(v) >> cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.integer = cpps_to_integer(v) >> cpps_to_integer(b);
+					v.tt = CPPS_TINTEGER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger >>= cpps_to_uinteger(b);
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger >>= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
 					v.value.integer = cpps_to_integer(v) >> cpps_to_integer(b);
@@ -1020,8 +1423,34 @@ namespace cpps
 		case CPPS_TINTEGER:
 			if (b.tt == CPPS_TINTEGER)
 			{
+				_result.value.integer = (cpps_integer)pow(cpps_to_number(a) , cpps_to_number(b));
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.value.uinteger = (cpps_uinteger)pow(cpps_to_number(a) , cpps_to_number(b));
+				_result.tt = CPPS_TUINTEGER;
+			}
+			else if (b.tt == CPPS_TNUMBER)
+			{
 				_result.tt = CPPS_TNUMBER;
-				_result.value.number = pow(cpps_to_number(a) , cpps_to_number(b));
+				_result.value.number = pow(cpps_to_number(a), cpps_to_number(b));
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				_result.tt = CPPS_TNUMBER;
+				_result.value.number = pow(cpps_to_number(a), cpps_to_number(b));
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TINTEGER)
+			{
+				_result.value.uinteger = (cpps_uinteger)pow(cpps_to_number(a) , cpps_to_number(b));
+				_result.tt = CPPS_TUINTEGER;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.value.uinteger = (cpps_uinteger)pow(cpps_to_number(a) , cpps_to_number(b));
+				_result.tt = CPPS_TUINTEGER;
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
@@ -1068,8 +1497,35 @@ namespace cpps
 
 				if (b.tt == CPPS_TINTEGER)
 				{
+					v.value.integer = (cpps_integer)pow(cpps_to_number(v), cpps_to_number(b));
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = (cpps_uinteger)pow(cpps_to_number(v), cpps_to_number(b));
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.number = pow(cpps_to_number(v), cpps_to_number(b));
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
 					v.value.number = pow(cpps_to_number(v), cpps_to_number(b));
 					v.tt = CPPS_TNUMBER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				//v.decruse();
+
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger = (cpps_uinteger)pow(cpps_to_number(v), cpps_to_number(b));
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = (cpps_uinteger)pow(cpps_to_number(v), cpps_to_number(b));
+					v.tt = CPPS_TUINTEGER;
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
@@ -1116,23 +1572,28 @@ namespace cpps
 		case CPPS_TINTEGER:
 			if (b.tt == CPPS_TINTEGER)
 			{
-				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
+				_result.tt = CPPS_TINTEGER;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				_result.value.uinteger = (cpps_uinteger)floor(cpps_to_number(a) / cpps_to_number(b));
+				_result.tt = CPPS_TUINTEGER;
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
-				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
+				_result.tt = CPPS_TINTEGER;
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
-				_result.tt = CPPS_TINTEGER;
 				_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
+				_result.tt = CPPS_TINTEGER;
 			}
 			break;
 		case CPPS_TNUMBER:
 		case CPPS_TSTRING:
-			_result.tt = CPPS_TNUMBER;
+			_result.tt = CPPS_TINTEGER;
 			_result.value.integer = (cpps_integer)floor(cpps_to_number(a) / cpps_to_number(b));
 			break;
 		default:
@@ -1164,8 +1625,13 @@ namespace cpps
 
 				if (b.tt == CPPS_TINTEGER)
 				{
-					v.tt = CPPS_TINTEGER;
 					v.value.integer = (cpps_integer)floor(cpps_to_number(v)/ cpps_to_number(b));
+					v.tt = CPPS_TINTEGER;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger = (cpps_uinteger)floor(cpps_to_number(v)/ cpps_to_number(b));
+					v.tt = CPPS_TUINTEGER;
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
@@ -1174,14 +1640,14 @@ namespace cpps
 				}
 				else if (b.tt == CPPS_TSTRING)
 				{
-					v.tt = CPPS_TNUMBER;
+					v.tt = CPPS_TINTEGER;
 					v.value.integer = (cpps_integer)floor(cpps_to_number(v)/ cpps_to_number(b));
 				}
 				break;
 			case CPPS_TNUMBER:
 			case CPPS_TSTRING:
 				v.decruse();
-				v.tt = CPPS_TNUMBER;
+				v.tt = CPPS_TINTEGER;
 				v.value.integer = (cpps_integer)floor(cpps_to_number(v)/ cpps_to_number(b));
 				break;
 			default:
@@ -1221,6 +1687,33 @@ namespace cpps
 				if (b.tt == CPPS_TINTEGER)
 				{
 					v.value.integer -= cpps_to_integer(b);
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger -= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.number = cpps_to_number(v) - cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.number = cpps_to_number(v) - cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger -= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger -= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
 				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
@@ -1279,6 +1772,33 @@ namespace cpps
 				{
 					v.value.integer *= cpps_to_integer(b);
 				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger *= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.number = cpps_to_number(v) * cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.number = cpps_to_number(v) * cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.integer *= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger *= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
 					v.value.number = cpps_to_number(v) * cpps_to_number(b);
@@ -1334,6 +1854,33 @@ namespace cpps
 				{
 					v.value.integer /= cpps_to_integer(b);
 				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger /= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TNUMBER)
+				{
+					v.value.number = cpps_to_number(v) / cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
+				}
+				else if (b.tt == CPPS_TSTRING)
+				{
+					v.value.number = cpps_to_number(v) / cpps_to_number(b);
+					v.tt = CPPS_TNUMBER;
+				}
+				break;
+			case CPPS_TUINTEGER:
+				if (b.tt == CPPS_TINTEGER)
+				{
+					v.value.uinteger /= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
+				else if (b.tt == CPPS_TUINTEGER)
+				{
+					v.value.uinteger /= cpps_to_uinteger(b);
+					v.tt = CPPS_TUINTEGER;
+				}
 				else if (b.tt == CPPS_TNUMBER)
 				{
 					v.value.number = cpps_to_number(v) / cpps_to_number(b);
@@ -1378,6 +1925,10 @@ namespace cpps
 			{
 				ret.value.b = a.value.number > b.value.integer;
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.number > b.value.uinteger;
+			}
 			else if (b.tt == CPPS_TSTRING)
 			{
 				ret.value.b = a.value.number > cpps_to_number(b);
@@ -1395,6 +1946,32 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = a.value.integer > b.value.integer;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger > b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number > cpps_to_integer(b);
+			}
+			else
+			{
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = a.value.integer > b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = a.value.uinteger > b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger > b.value.uinteger;
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
@@ -1419,6 +1996,10 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = cpps_to_integer(a) > b.value.integer;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = cpps_to_uinteger(a) > b.value.uinteger;
 			}
 			else
 			{
@@ -1445,6 +2026,10 @@ namespace cpps
 			{
 				ret.value.b = a.value.number < b.value.integer;
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.number < b.value.uinteger;
+			}
 			else if (b.tt == CPPS_TSTRING)
 			{
 				ret.value.b = a.value.number < cpps_to_number(b);
@@ -1462,6 +2047,32 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = a.value.integer < b.value.integer;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger < b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number < cpps_to_integer(b);
+			}
+			else
+			{
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = a.value.integer < b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = a.value.uinteger < b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger < b.value.uinteger;
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
@@ -1486,6 +2097,10 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = cpps_to_integer(a) < b.value.integer;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = cpps_to_uinteger(a) < b.value.uinteger;
 			}
 			else
 			{
@@ -1512,6 +2127,10 @@ namespace cpps
 			{
 				ret.value.b = a.value.number >= b.value.integer;
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.number >= b.value.uinteger;
+			}
 			else if (b.tt == CPPS_TSTRING)
 			{
 				ret.value.b = a.value.number >= cpps_to_number(b);
@@ -1529,6 +2148,32 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = a.value.integer >= b.value.integer;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger >= b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number >= cpps_to_integer(b);
+			}
+			else
+			{
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = a.value.integer >= b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = a.value.uinteger >= b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger >= b.value.uinteger;
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
@@ -1553,6 +2198,10 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = cpps_to_integer(a) >= b.value.integer;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = cpps_to_uinteger(a) >= b.value.uinteger;
 			}
 			else
 			{
@@ -1579,6 +2228,10 @@ namespace cpps
 			{
 				ret.value.b = a.value.number <= b.value.integer;
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.number <= b.value.uinteger;
+			}
 			else if (b.tt == CPPS_TSTRING)
 			{
 				ret.value.b = a.value.number <= cpps_to_number(b);
@@ -1596,6 +2249,32 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = a.value.integer <= b.value.integer;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = a.value.uinteger <= b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				ret.value.b = a.value.number <= cpps_to_integer(b);
+			}
+			else
+			{
+				throw(cpps_error("", 0, 0, "Can't compare non number with number."));
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = a.value.integer <= b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = a.value.uinteger <= b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger <= b.value.uinteger;
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
@@ -1620,6 +2299,10 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = cpps_to_integer(a) <= b.value.integer;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = cpps_to_uinteger(a) <= b.value.uinteger;
 			}
 			else
 			{
@@ -1652,6 +2335,10 @@ namespace cpps
 			{
 				ret.value.b = a.value.number == b.value.integer;
 			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.number == b.value.uinteger;
+			}
 			else if (b.tt == CPPS_TSTRING)
 			{
 				cpps_number t = cpps_to_number(b);
@@ -1667,6 +2354,29 @@ namespace cpps
 			else if (b.tt == CPPS_TINTEGER)
 			{
 				ret.value.b = a.value.integer == b.value.integer;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger == b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TSTRING)
+			{
+				cpps_integer t = cpps_to_integer(b);
+				ret.value.b = a.value.integer == t;
+			}
+			break;
+		case CPPS_TUINTEGER:
+			if (b.tt == CPPS_TNUMBER)
+			{
+				ret.value.b = a.value.integer == b.value.number;
+			}
+			else if (b.tt == CPPS_TINTEGER)
+			{
+				ret.value.b = a.value.uinteger == b.value.uinteger;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				ret.value.b = a.value.uinteger == b.value.uinteger;
 			}
 			else if (b.tt == CPPS_TSTRING)
 			{
@@ -1684,17 +2394,24 @@ namespace cpps
 			}
 			else if (b.tt == CPPS_TINTEGER)
 			{
-				std::string *t = cpps_get_string(b);
+				std::string t = cpps_to_string(b);
 
 				std::string* tmpStr = cpps_get_string(a);
-				ret.value.b = *(tmpStr) == *t;
+				ret.value.b = *(tmpStr) == t;
+			}
+			else if (b.tt == CPPS_TUINTEGER)
+			{
+				std::string t = cpps_to_string(b);
+
+				std::string* tmpStr = cpps_get_string(a);
+				ret.value.b = *(tmpStr) == t;
 			}
 			else if (b.tt == CPPS_TNUMBER)
 			{
-				std::string *t = cpps_get_string(b);
+				std::string t = cpps_to_string(b);
 
 				std::string* tmpStr = cpps_get_string(a);
-				ret.value.b = *(tmpStr) == *t;
+				ret.value.b = *(tmpStr) == t;
 			}
 			break; 
 		case CPPS_TBOOLEAN:

@@ -32,7 +32,7 @@ namespace cpps
 		client_option.option_data = opt["data"];
 		client_option.option_close = opt["close"];
 		client_option.option_parser = opt["parser"];
-		if (cpps::type(opt["headersize"]) == CPPS_TINTEGER) client_option.option_headsize = object_cast<cpps_integer>(opt["headersize"]);
+		if (cpps::type(opt["headersize"]) == CPPS_TINTEGER || cpps::type(opt["headersize"]) == CPPS_TUINTEGER) client_option.option_headsize = object_cast<cpps_integer>(opt["headersize"]);
 		return this;
 	}
 

@@ -12,7 +12,7 @@ using namespace std;
 std::string EncodeQuoted(std::string pSrc,cpps_value MaxLineLen)
 {
 	int nMaxLineLen = 73;
-	if (MaxLineLen.tt == CPPS_TINTEGER) nMaxLineLen = (int) MaxLineLen.value.integer;
+	if (cpps_isint(MaxLineLen)) nMaxLineLen = (int) MaxLineLen.value.integer;
 
 	std::string pDst = "";
 	int nLineLen = 0;

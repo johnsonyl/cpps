@@ -30,7 +30,7 @@ namespace cpps
 		if (cpps::type(option["host"]) == CPPS_TSTRING) host = cpps::object_cast<std::string>(option["host"]);
 		if (cpps::type(option["user"]) == CPPS_TSTRING) user = cpps::object_cast<std::string>(option["user"]);
 		if (cpps::type(option["passwd"]) == CPPS_TSTRING) passwd = cpps::object_cast<std::string>(option["passwd"]);
-		if (cpps::type(option["port"]) == CPPS_TINTEGER) port = cpps::object_cast<cpps::usint16>(option["port"]);
+		if (cpps::type(option["port"]) == CPPS_TINTEGER || cpps::type(option["port"]) == CPPS_TUINTEGER) port = cpps::object_cast<cpps::usint16>(option["port"]);
 		if (cpps::type(option["isreconnect"]) == CPPS_TBOOLEAN) isreconnect = cpps::object_cast<bool>(option["isreconnect"]);
 
 		return real_connect();
@@ -103,6 +103,14 @@ namespace cpps
 					paramDatalist[i].length = sizeof(cpps_integer);
 					paramlist[i].buffer_type = MYSQL_TYPE_LONGLONG;
 					paramlist[i].buffer_length = sizeof(cpps_integer);
+				}
+				else if (v.tt == CPPS_TUINTEGER)
+				{
+					cpps_uinteger n = v.value.uinteger;
+					memcpy(paramDatalist[i].buff, (const void*)&n, sizeof(cpps_uinteger));
+					paramDatalist[i].length = sizeof(cpps_uinteger);
+					paramlist[i].buffer_type = MYSQL_TYPE_LONGLONG;
+					paramlist[i].buffer_length = sizeof(cpps_uinteger);
 				}
 				else if (v.tt == CPPS_TNUMBER)
 				{

@@ -60,7 +60,7 @@ namespace cpps
 		void				incruse() const;
 		bool				isdomain() const;
 		bool				isref() const;
-		const cpps_value&			real() const;
+		const cpps_value&	real() const;
 		cpps_value&			real();
 		cpps_value			ref();
 
@@ -72,7 +72,8 @@ namespace cpps
 		union Value
 		{
 			cpps_number			number;		// double float 
-			cpps_integer		integer;	// double float 
+			cpps_integer		integer;	// __int64 
+			cpps_uinteger		uinteger;	// unsigned __int64
 			int32				b;			// bool
 			void*				p;			// 用户自定义数据
 			cpps_function*		func;		// func
@@ -92,12 +93,14 @@ namespace cpps
 #pragma pack()
 #define cpps_integer2number(i) (cpps_number)(i)
 #define cpps_number2integer(n) (cpps_integer)(n)
+#define cpps_number2uinteger(n) (cpps_uinteger)(n)
 
 
 
 	bool	cpps_to_bool(const cpps_value& src);
 	cpps_number	cpps_to_number(const cpps_value& src);
 	cpps_integer cpps_to_integer(const cpps_value& src);
+	cpps_uinteger cpps_to_uinteger(const cpps_value& src);
 	std::string cpps_to_string(const cpps_value& src);
 	std::string* cpps_get_string(const cpps_value& src);
 	cpps_vector* cpps_to_cpps_vector(const cpps_value& src);

@@ -64,6 +64,7 @@ namespace cpps
 		{
 			cpps_number			number;		// double float 
 			cpps_integer		integer;	// int
+			cpps_uinteger		uinteger;	// int
 			int32				b;			// bool
 			cpps_value*			val;		// value
 		};

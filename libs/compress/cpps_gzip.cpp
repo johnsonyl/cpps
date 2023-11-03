@@ -79,7 +79,7 @@ namespace cpps {
 
 	cpps::cpps_value cpps_compress_gzip_compress(C* c, cpps_value data, cpps_value level)
 	{
-		cpps_integer nlevel = level.tt == CPPS_TINTEGER ? level.value.integer : Z_DEFAULT_COMPRESSION;
+		cpps_integer nlevel = cpps_isint(level) ? level.value.integer : Z_DEFAULT_COMPRESSION;
 		Bytef* buf = NULL;
 		uLong len = 0;
 
@@ -122,7 +122,7 @@ namespace cpps {
 
 	cpps::cpps_value cpps_compress_gzip_decompress(C* c, cpps_value data, cpps_value bufsize)
 	{
-		cpps_integer nbufsize = bufsize.tt == CPPS_TINTEGER ? bufsize.value.integer : DEF_BUF_SIZE;
+		cpps_uinteger nbufsize = cpps_isint(bufsize) ? bufsize.value.uinteger : DEF_BUF_SIZE;
 
 		Bytef* buf = NULL;
 		uLong len = 0;

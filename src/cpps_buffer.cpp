@@ -69,14 +69,14 @@ namespace cpps
 		int32 ret = bufferoffset++;
 
 
-		//退出最后一个
-		if (ret > (getcurfile().end+1)) {
-			if (files.size() > 1) files.pop_back();
+		if (ret >= (getcurfile().end)) {
+			if (files.size() > 1) { files.pop_back(); }
 		}
-
 
 		if (buffer[(size_t)ret] == '\n')
 			getcurfile().line++;
+
+		
 
 		return buffer[(size_t)ret];
 	}
@@ -155,9 +155,9 @@ namespace cpps
 		cppsbuffer_file file;
 		file.filename = _filename;
 		file.begin = bufferoffset;
-		file.end = bufferoffset + _buffersize;
+		file.end = file.begin + _buffersize;
 		file.line = 1;
-		for (auto f : files)
+		for (auto& f : files)
 		{
 			f.end += _buffersize;
 		}

@@ -20,6 +20,10 @@ namespace cpps
 		{
 			ret = obj.value.integer;
 		}
+		else if (obj.tt == CPPS_TUINTEGER)
+		{
+			ret = obj.value.uinteger;
+		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
 			std::string* tmpStr = cpps_get_string(obj);
@@ -41,6 +45,10 @@ namespace cpps
 		else if (obj.tt == CPPS_TINTEGER)
 		{
 			ret = cpps_integer2number(obj.value.integer);
+		}
+		else if (obj.tt == CPPS_TUINTEGER)
+		{
+			ret = cpps_integer2number(obj.value.uinteger);
 		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
@@ -64,11 +72,25 @@ namespace cpps
 		{
 			ret = obj.value.integer;
 		}
+		else if (obj.tt == CPPS_TUINTEGER)
+		{
+			ret = obj.value.integer;
+		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
 			std::string* tmpStr = cpps_get_string(obj);
 			cpps_str2i64(tmpStr->c_str(), &ret);
 		}
+		return ret;
+	}
+	cpps_uinteger cpps_to_uinteger(const cpps_value& src)
+	{
+		const cpps_value& obj = src.real();
+		cpps_uinteger ret = 0;
+		if (obj.tt == CPPS_TUINTEGER)
+			ret = obj.value.uinteger;
+		else
+			ret = (cpps_uinteger)cpps_to_integer(src);
 		return ret;
 	}
 	std::string* cpps_get_string(const cpps_value& src)
@@ -93,6 +115,10 @@ namespace cpps
 		else if (obj.tt == CPPS_TINTEGER)
 		{
 			return std::to_string(obj.value.integer);
+		}
+		else if (obj.tt == CPPS_TUINTEGER)
+		{
+			return std::to_string(obj.value.uinteger);
 		}
 		else if (obj.tt == CPPS_TSTRING)
 		{
@@ -174,6 +200,7 @@ namespace cpps
 			{
 			case CPPS_TNUMBER: return value.number < right.value.number;
 			case CPPS_TINTEGER: return value.integer < right.value.integer;
+			case CPPS_TUINTEGER: return value.uinteger < right.value.uinteger;
 			case CPPS_TSTRING: {
 				std::string* tmpStr = cpps_get_string(*this);
 				std::string* tmpStr2 = cpps_get_string(right);
@@ -216,6 +243,7 @@ namespace cpps
 			{
 			case CPPS_TNUMBER: return value.number > right.value.number;
 			case CPPS_TINTEGER: return value.integer > right.value.integer;
+			case CPPS_TUINTEGER: return value.uinteger > right.value.uinteger;
 			case CPPS_TSTRING: {
 				std::string* tmpStr = cpps_get_string(*this);
 				std::string* tmpStr2 = cpps_get_string(right);
@@ -258,6 +286,7 @@ namespace cpps
 			{
 			case CPPS_TNUMBER: return value.number == right.value.number;
 			case CPPS_TINTEGER: return value.integer == right.value.integer;
+			case CPPS_TUINTEGER: return value.uinteger == right.value.uinteger;
 			case CPPS_TSTRING: {
 				std::string* tmpStr = cpps_get_string(*this);
 				std::string* tmpStr2 = cpps_get_string(right);
@@ -381,18 +410,15 @@ namespace cpps
 
 	cpps_value::cpps_value(const unsigned __int64 i)
 	{
-		tt = CPPS_TINTEGER;
-		value.integer = i;
+		tt = CPPS_TUINTEGER;
+		value.uinteger = i;
 	}
 #else
 	cpps_value::cpps_value(const long unsigned int i)
 	{
-		tt = CPPS_TINTEGER;
-		value.integer = i;
+		tt = CPPS_TUINTEGER;
+		value.uinteger = i;
 	}
-
-	
-
 #endif
 	cpps_value::cpps_value(char& strv)
 	{
@@ -414,6 +440,7 @@ namespace cpps
 			{
 			case CPPS_TNUMBER: return value.number <= right.value.number;
 			case CPPS_TINTEGER: return value.integer <= right.value.integer;
+			case CPPS_TUINTEGER: return value.uinteger <= right.value.uinteger;
 			case CPPS_TSTRING: {
 				cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)value.domain;
 				std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
@@ -473,6 +500,7 @@ namespace cpps
 			{
 			case CPPS_TNUMBER: return value.number >= right.value.number;
 			case CPPS_TINTEGER: return value.integer >= right.value.integer;
+			case CPPS_TUINTEGER: return value.uinteger >= right.value.uinteger;
 			case CPPS_TSTRING: {
 				cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)value.domain;
 				std::string* tmpStr = (std::string*)cppsclassvar->getclsptr();
@@ -514,6 +542,7 @@ namespace cpps
 	void cpps_value::decruse()
 	{
 		if (tt == CPPS_TINTEGER) return;
+		if (tt == CPPS_TUINTEGER) return;
 		if (tt == CPPS_TNIL) return;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->decruse();
@@ -521,6 +550,7 @@ namespace cpps
 	void cpps_value::decruse() const
 	{
 		if (tt == CPPS_TINTEGER) return;
+		if (tt == CPPS_TUINTEGER) return;
 		if (tt == CPPS_TNIL) return;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->decruse();
@@ -529,6 +559,7 @@ namespace cpps
 	 void cpps_value::incruse()
 	{
 		 if (tt == CPPS_TINTEGER) return;
+		 if (tt == CPPS_TUINTEGER) return;
 		 if (tt == CPPS_TNIL) return;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->incruse();
@@ -536,6 +567,7 @@ namespace cpps
 	 void cpps_value::incruse()const
 	 {
 		 if (tt == CPPS_TINTEGER) return;
+		 if (tt == CPPS_TUINTEGER) return;
 		 if (tt == CPPS_TNIL) return;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			 value.domain->incruse();
@@ -544,6 +576,7 @@ namespace cpps
 	bool cpps_value::isdomain() const
 	{
 		if (tt == CPPS_TINTEGER) return false;
+		if (tt == CPPS_TUINTEGER) return false;
 		if (tt == CPPS_TNIL) return false;
 		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE;
 	}
@@ -574,6 +607,7 @@ namespace cpps
 		{
 		case CPPS_TNUMBER: return std::hash<cpps_number>()(_Keyval.value.number);
 		case CPPS_TINTEGER: return std::hash<cpps_integer>()(_Keyval.value.integer);
+		case CPPS_TUINTEGER: return std::hash<cpps_integer>()(_Keyval.value.uinteger);
 		case CPPS_TSTRING: {
 			std::string* tmpStr = cpps_get_string(_Keyval);
 			return std::hash<std::string>()(*(tmpStr));

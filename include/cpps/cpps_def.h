@@ -103,6 +103,7 @@
 #define CPPS_TTUPLE				12
 #define CPPS_TSTRINGV			13
 #define CPPS_TELLIPSIS			14
+#define CPPS_TUINTEGER			15	
 
 #define CPPS_SINGLERET		0
 #define CPPS_MUNITRET		1
@@ -161,6 +162,7 @@
 #define CPPS_QUOTEGETCHIILD		222  //引用变量名字
 #define CPPS_QUOTEGETOBJECT		223  //引用变量名字
 #define CPPS_MULITPARAMS		224 //多参数
+#define CPPS_OUINTEGER			225 //数字（正整数）
 
 
 
@@ -341,6 +343,7 @@ throw;\
 
 typedef double cpps_number;
 typedef __int64 cpps_integer;
+typedef unsigned long long cpps_uinteger;
 
 namespace cpps
 {
@@ -402,6 +405,7 @@ namespace cpps
 #pragma warning(disable: 4100)  
 #pragma warning(disable: 4702) 
 #pragma warning(disable: 4706) 
+#pragma warning(disable: 4146) 
 #pragma warning(disable: 4458) 
 #pragma warning(disable: 6285) 
 #pragma warning(disable: 6255) 

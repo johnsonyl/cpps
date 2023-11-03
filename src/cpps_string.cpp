@@ -129,7 +129,7 @@ namespace cpps
 	{
 		if (v.tt != CPPS_TSTRING) return nil;
 		cpps_integer ncount = -1;
-		if (count.tt == CPPS_TINTEGER) ncount = count.value.integer;
+		if (cpps_isint(count)) ncount = count.value.integer;
 		cpps_vector *vec;
 		cpps_value ret;
 		newclass<cpps_vector>(c, &vec,&ret);
@@ -299,7 +299,7 @@ namespace cpps
 			char& strv = *(v.value.strv);
 			return (cpps_integer)tolower(strv);
 		}
-		if (v.tt == CPPS_TINTEGER) {
+		if (v.tt == CPPS_TINTEGER || v.tt == CPPS_TUINTEGER) {
 			return (cpps_integer)tolower((int)cpps_to_integer(v));
 		}
 		if (v.tt != CPPS_TSTRING) return nil;
@@ -319,7 +319,7 @@ namespace cpps
 			char& strv = *(v.value.strv);
 			return (cpps_integer)toupper(strv);
 		}
-		if (v.tt == CPPS_TINTEGER) {
+		if (v.tt == CPPS_TINTEGER || v.tt == CPPS_TUINTEGER) {
 			return (cpps_integer)toupper((int)cpps_to_integer(v));
 		}
 		if (v.tt != CPPS_TSTRING) return nil;

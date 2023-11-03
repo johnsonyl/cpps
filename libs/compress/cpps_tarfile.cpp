@@ -26,7 +26,7 @@ namespace cpps {
 		if (decompress_file_buffer) {
 			return false;
 		}
-		cpps_integer nbufsize = bufsize.tt == CPPS_TINTEGER ? bufsize.value.integer : 10240;
+		cpps_uinteger nbufsize = cpps_isint(bufsize) ? bufsize.value.uinteger : 10240;
 		std::string mode = "r";
 		if (vmode.isstring()) mode = vmode.tostring();
 

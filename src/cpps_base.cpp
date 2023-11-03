@@ -81,6 +81,11 @@ namespace cpps
 			int64 s = object_cast<int64>(b);
 			cout << s;
 		}
+		else if (type(b) == CPPS_TUINTEGER)
+		{
+			usint64 s = object_cast<usint64>(b);
+			cout << s;
+		}
 		else if (type(b) == CPPS_TSTRING)
 		{
 			std::string s = object_cast<std::string>(b);
@@ -236,6 +241,10 @@ namespace cpps
 	{
 		return cpps_to_integer(v);
 	}
+	cpps_uinteger cpps_base_touinteger(cpps_value v)
+	{
+		return cpps_to_uinteger(v);
+	}
 	std::string cpps_base_tostring(cpps_value v)
 	{
 		return cpps_to_string(v);
@@ -326,6 +335,8 @@ namespace cpps
 			return "nil";
 		case CPPS_TINTEGER:
 			return "integer";
+		case CPPS_TUINTEGER:
+			return "unsigned integer";
 		case CPPS_TNUMBER:
 			return "number";
 		case CPPS_TBOOLEAN:
@@ -626,7 +637,7 @@ namespace cpps
 	{
 		if (v.tt != CPPS_TCLASSVAR) return nil;
 		cpps_integer serializer_type = 1;//1. serializer.vector 2.serializer.map
-		if (tp.tt == CPPS_TINTEGER) serializer_type = tp.value.integer;
+		if (cpps_isint(tp)) serializer_type = tp.value.integer;
 		cpps_cppsclassvar* classvar = (cpps_cppsclassvar*)v.value.domain;
 
 
@@ -865,7 +876,9 @@ namespace cpps
 			def("tonumber", cpps_base_tonumber),
 			def("double", cpps_base_tonumber),
 			def("toint", cpps_base_tointeger),
+			def("touint", cpps_base_touinteger),
 			def("int", cpps_base_tointeger),
+			def("uint", cpps_base_touinteger),
 			def("tostring", cpps_base_tostring),
 			def("str", cpps_base_tostring),
 			def("isstring", cpps_base_isstring),
@@ -903,6 +916,7 @@ namespace cpps
 		];
 		cpps::_module(c, "ot")[
 			defvar(c,"int", CPPS_TINTEGER),
+			defvar(c,"uint", CPPS_TUINTEGER),
 			defvar(c,"bool", CPPS_TBOOLEAN),
 			defvar(c,"string", CPPS_TSTRING),
 			defvar(c,"classvar", CPPS_TCLASSVAR),

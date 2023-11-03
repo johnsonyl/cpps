@@ -28,8 +28,8 @@ namespace cpps
 			if(!match(obj))
 				throw(cpps_error(__FILE__, __LINE__, 0, "cppsvalue can't convert to %s, cppsvalue type is %s , conversion failed.", typeid(R).name() , cpps_base_type(obj).c_str()));
 
-			if (obj.tt == CPPS_TNIL) return NULL;
-			if (obj.tt == CPPS_TUSERDATA) return static_cast<R>(obj.value.p);
+			if (obj.tt == CPPS_TNIL) return static_cast<cpps_integer>(NULL);
+			if (obj.tt == CPPS_TUSERDATA) return (R)(cpps_integer(obj.value.p));
 			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
 			return static_cast<R>(clsvar->getclsptr());
 		}
@@ -40,7 +40,7 @@ namespace cpps
 	{\
 	static bool	match(const cpps_value& obj)\
 	{\
-	return obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TNUMBER; \
+	return obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TUINTEGER || obj.tt == CPPS_TNUMBER; \
 	}\
 	static t		apply(const cpps_value& obj)\
 	{\
@@ -69,7 +69,9 @@ namespace cpps
 	def_cpps_number_cast(unsigned __int64, integer);
 #endif
 #endif
-
+#ifndef _WIN32
+	def_cpps_number_cast(long long unsigned int, integer);
+#endif
 	def_cpps_number_cast(float, number);
 	def_cpps_number_cast(double, number);
 	def_cpps_number_cast(long double, number);
@@ -80,7 +82,7 @@ namespace cpps
 	{
 		static bool	match(const cpps_value& obj)
 		{
-			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
+			return obj.tt == CPPS_TSTRING || obj.tt == CPPS_TINTEGER ||obj.tt == CPPS_TUINTEGER || obj.tt == CPPS_TBOOLEAN || obj.tt == CPPS_TNUMBER || obj.tt == CPPS_TNIL;
 		}
 		static std::string		apply(const cpps_value& obj)
 		{
@@ -172,6 +174,7 @@ namespace cpps
 				}
 				break;
 			case CPPS_TINTEGER:
+			case CPPS_TUINTEGER:
 				if (obj.value.integer != 0)
 				{
 					return true;
@@ -377,6 +380,10 @@ namespace cpps
 	def_cpps_cpp_to_cpps_number_cast(unsigned __int64, integer);
 #endif
 #endif
+#ifndef _WIN32
+	def_cpps_cpp_to_cpps_number_cast(long long unsigned int, integer);
+#endif
+
 	def_cpps_cpp_to_cpps_number_cast(float, number);
 	def_cpps_cpp_to_cpps_number_cast(double, number);
 	def_cpps_cpp_to_cpps_number_cast(long double, number);

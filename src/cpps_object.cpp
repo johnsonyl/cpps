@@ -21,6 +21,8 @@ namespace cpps
 			return "nil";
 		case CPPS_TINTEGER:
 			return "integer";
+		case CPPS_TUINTEGER:
+			return "unsigned integer";
 		case CPPS_TNUMBER:
 			return "number";
 		case CPPS_TBOOLEAN:

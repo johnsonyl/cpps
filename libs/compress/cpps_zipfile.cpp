@@ -22,7 +22,7 @@ namespace cpps
 
 	bool cpps_zipfile::open(std::string file, cpps_value pwd, cpps_value mode, cpps_value level)
 	{
-		nlevel = level.tt == CPPS_TINTEGER ? level.value.integer : Z_BEST_COMPRESSION;
+		nlevel = cpps_isint(level) ? level.value.integer : Z_BEST_COMPRESSION;
 		smode = mode.tt == CPPS_TSTRING ? cpps_to_string(mode) : "r";
 		password = mode.tt == CPPS_TSTRING ? cpps_to_string(pwd) : "";
 		file_path = file;
