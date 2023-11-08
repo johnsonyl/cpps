@@ -279,6 +279,10 @@ namespace cpps
 	{
 		return cpps_isint(v);
 	}
+	bool cpps_base_isuint(cpps_value v)
+	{
+		return cpps_isuint(v);
+	}
 	bool cpps_base_isbool(cpps_value v)
 	{
 		return cpps_isbool(v);
@@ -883,6 +887,7 @@ namespace cpps
 			def("str", cpps_base_tostring),
 			def("isstring", cpps_base_isstring),
 			def("isint", cpps_base_isint),
+			def("isuint", cpps_base_isuint),
 			def("isbool", cpps_base_isbool),
 			def("isvector", cpps_base_isvector),
 			def("isrange", cpps_base_isrange),

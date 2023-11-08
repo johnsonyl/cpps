@@ -37,6 +37,7 @@ namespace cpps {
 	void		gc_cleanup(C* c,bool cleanall = false);
 	void cpps_detach_library(HMODULE module, const std::string& libname, C* c);
 	int32 cpps_str2ui64(const char* s, cpps_uinteger* result);
+	void cpps_base_printfln_new(C* c, cpps::cpps_value args, ...);
 
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc)
 	{
@@ -162,10 +163,32 @@ namespace cpps {
 		return(ret);
 	}
 	bool cpps_parse_isbuiltinname(std::string s) {
-		return(s == "if" || s == "echo" || s == "const" || s == "async" || s == "yield" || s == "try" || s == "throw" || s == "namespace" || s == "var" || s == "else" || s == "for" || s == "foreach" || s == "do" || s == "while" || s == "class" || s == "module" || s == "struct" || s == "break" || s == "continue" || s == "case" || s == "switch" || s == "enum" || s == "return" || s == "dofile" || s == "import" || s == "include" || s == "dostring"|| s == "parse"|| s == "assert"|| s == "donode" );
+		return(s == "if" || s == "echo" || s == "const" ||
+			s == "async" || s == "yield" || s == "try" || 
+			s == "throw" || s == "namespace" || s == "var" || 
+			s == "else" || s == "for" || s == "foreach" ||
+			s == "do" || s == "while" || s == "class" ||
+			s == "module" || s == "struct" || s == "break" ||
+			s == "continue" || s == "case" || s == "switch" ||
+			s == "enum" || s == "return" || s == "dofile" ||
+			s == "import" || s == "include" || s == "dostring"||
+			s == "parse"|| s == "assert"|| s == "donode" );
 	}
 	bool cpps_is_not_use_var_name(std::string s) {
-		return(cpps_parse_isbuiltinname(s) || s == "true" || s == "catch" || s == "null" || s == "nil" || s == "NULL" || s == "false" || s == "map" || s == "vector" || s == "math" || s == "string" || s == "time" || s == "io" || s == "GC");
+		return(cpps_parse_isbuiltinname(s) ||
+			s == "true" ||
+			s == "catch" ||
+			s == "null" ||
+			s == "nil" ||
+			s == "NULL" || 
+			s == "false" || 
+			s == "map" || 
+			s == "vector" ||
+			s == "math" ||
+			s == "string" || 
+			s == "time" ||
+			s == "io" ||
+			s == "GC");
 	}
 	std::string cpps_parse_loadinterger16(cppsbuffer& buffer) {
 		std::string ret = "";
@@ -1449,6 +1472,10 @@ namespace cpps {
 				p = cpps_parse_regx(c, domain, o, root, buffer, '\'');
 			}
 		}
+		else if (ch == ':' && buffer.at(buffer.offset() + 1) == ':') {
+			p = CPPSNEW(node)(o->filename, buffer.line());
+			p->type = CPPS_OGLOBAL;
+		}
 		else if (!cpps_parse_isnotvarname(ch))
 			/* 变量参数 */ {
 			 p = cpps_parse_var_param(c, domain, o, root, buffer, true);
@@ -1931,7 +1958,19 @@ namespace cpps {
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
 		/* 查找后续参数 */
-		cpps_parse_expression(c, domain, child, root, buffer);
+		//cpps_parse_expression(c, domain, child, root, buffer);
+		while (true) {
+
+			/* 查找后续参数 */
+			cpps_parse_rmspaceandenter(buffer);
+			cpps_parse_expression(c, domain, child, root, buffer);
+			cpps_parse_rmspaceandenter(buffer);
+			if (buffer.cur() != ',') break;
+
+			buffer.pop(); /* pop ,*/
+
+		}
+
 	}
 	void cpps_parse_return(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		/* 先检测 这个return 是否合法. */
@@ -2642,6 +2681,21 @@ namespace cpps {
 				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "parse error [%s] .", child->s.c_str()));
 			}
 		}
+		else if (buffer.cur() == ':' && buffer.at(buffer.offset() + 1) == ':') {
+			// ::println("1") => _G.println("1"); ::代表是根节点的println
+			child->type = CPPS_OEXPRESSION;
+			cpps_parse_expression(c, domain, child, root, buffer);
+			/* 剔除空格 */
+			cpps_parse_rmspaceandenter(buffer);
+			if ((limit & CPPS_NOT_DONTDELETEEND) == 0) {
+				if (buffer.cur() != ';') {
+					/* 未找到;号. 该不该报错呢？ */
+				}
+				else if (buffer.cur() == ';') {
+					buffer.pop();
+				}
+			}
+		}
 		else {
 			if (cpps_parse_isnumber(buffer.cur())) {
 				/* 首字母为 数字的话肯定有问题.想都别想.. */
@@ -3077,8 +3131,20 @@ namespace cpps {
 		if (d->l.size() == 1) {
 			cpps_domain* leftdomain = NULL;
 			cpps_value	ret_value;
-			cpps_calculate_expression(c, domain, root, d->l[0], leftdomain,ret_value);
+			if (d->l.size() == 1)
+				cpps_calculate_expression(c, domain, root, d->l[0], leftdomain,ret_value);
+			else if (d->l.size() > 1) {
+				cpps_vector* vec;
+				newclass(c, &vec, &ret_value);
+				ret_value.tt = CPPS_TTUPLE;
+				for (auto nn : d->l) {
+					cpps_value vv;
+					cpps_calculate_expression(c, domain, root, nn, leftdomain, vv);
+					vec->realvector().emplace_back(vv.real());
+				}
+			}
 			CPPS_TO_REAL_VALUE(ret_value);
+
 
 			object echofunc = cpps::object::globals(c)["__echofunc"];
 			object echoleft = cpps::object::globals(c)["__echoleft"];
@@ -3091,7 +3157,10 @@ namespace cpps {
 				}
 			}
 			else {
-				cpps_base_printfln(c,ret_value);
+				if (d->l.size() == 1)
+					cpps_base_printfln(c, ret_value);
+				else
+					cpps_base_printfln_new(c,ret_value);
 			}
 		}
 	}
@@ -4950,6 +5019,10 @@ namespace cpps {
 		if (_classvarroot->parent[1] && _classvarroot->parent[1]->domainType == cpps_domain_type_classvar)
 			ret = cpps_value((cpps_cppsclassvar*)_classvarroot->parent[1]);
 	}
+	void cpps_calculate_expression_global(C*c,node *d,cpps_domain* root, cpps_value& ret)
+	{
+		ret = cpps::object::globals(c).getval();
+	}
 
 	void cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain,cpps_value &ret) {
 		if (d->type == CPPS_OOFFSET) {
@@ -5009,6 +5082,10 @@ namespace cpps {
 		else if (d->type == CPPS_OTHIS)
 		{
 			cpps_calculate_expression_this(d,root, ret);
+		}
+		else if (d->type == CPPS_OGLOBAL)
+		{
+			cpps_calculate_expression_global(c,d,root, ret);
 		}
 		else if (d->type == CPPS_OAWAIT)
 		{
@@ -5116,6 +5193,7 @@ namespace cpps {
 		}
 		if (func.tt == CPPS_TFUNCTION) {
 			cpps_function* f = func.value.func;
+			bool take_disabled_non_def_var = c->disabled_non_def_var;
 			if (f->funcname == "isvalid") c->disabled_non_def_var = true;
 			cpps_std_vector params;
 			cpps_value		isNeedC;
@@ -5146,9 +5224,10 @@ namespace cpps {
 					
 					ret = cpps_execute_callfunction(c, f, execdomain, filename, line, funcname, params);
 
-					c->disabled_non_def_var = false;
 				}
 			}
+			if (f->funcname == "isvalid") c->disabled_non_def_var = take_disabled_non_def_var;
+
 			cpps_regvar* v = cpps_node_to_regver(domain, d->getleft(), false);
 			if (v && v->varName == "debug" && d->getleft()->getright()->s == "breakpoint") {
 				cpps_debug_breakpoint(c, domain, root, d);

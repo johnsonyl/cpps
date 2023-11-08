@@ -163,6 +163,7 @@
 #define CPPS_QUOTEGETOBJECT		223  //引用变量名字
 #define CPPS_MULITPARAMS		224 //多参数
 #define CPPS_OUINTEGER			225 //数字（正整数）
+#define CPPS_OGLOBAL			226 //_G
 
 
 

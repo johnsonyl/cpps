@@ -2,14 +2,14 @@
 
 namespace cpps
 {
-	void fail(std::string msg, int32 n /*= cpps_error_normalerror*/, const char* f /*= __FILE__*/, usint32 l /*= __LINE__*/)
+	inline void fail(std::string msg, int32 n /*= cpps_error_normalerror*/, const char* f /*= __FILE__*/, usint32 l /*= __LINE__*/)
 	{
 		throw cpps_error(f, l, n, msg.c_str());
 	}
 
 	
 
-	void error(C* c, const char* format, ...)
+	inline void error(C* c, const char* format, ...)
 	{
 		char szString[4096];
 		va_list ap;
