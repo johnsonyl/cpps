@@ -3,10 +3,13 @@
 namespace cpps
 {
 	void cpps_create_root_G(C* c);
+	void cpps_gc_add_gen0(C* c, const cpps_value& v);
+	void gc_swap(C* src, C* dest);
 	cpps_thread::cpps_thread()
 	{
 		_cx_thread = NULL;
 		_cx_parent_thread_c = NULL;
+		_isdone = false;
 	}
 
 
@@ -17,6 +20,7 @@ namespace cpps
 			_cx_thread = NULL;
 		}
 		_cx_parent_thread_c = NULL;
+		_isdone = false;
 	}
 
 	void cpps_thread::constructor(C* _cx_parent_thread,object func, object v)
@@ -34,6 +38,10 @@ namespace cpps
 	{
 		return _cx_thread->joinable();
 	}
+	bool cpps_thread::isdone()
+	{
+		return _isdone;
+	}
 	void cpps_thread::detach()
 	{
 		_cx_thread->detach();
@@ -49,10 +57,21 @@ namespace cpps
 		cpps_create_root_G(c);
 		c->clone(pthis->_cx_parent_thread_c);
 		_CPPS_TRY
-			cpps::dofunction(c, func, v);
+			object ret = cpps::dofunction(c, func, v);
+			pthis->set_return(ret);
+			//这里需要特殊处理，因为返回来的对象可能在此线程的GC中。但是需要把这个指针放到主线程。否则会内存泄露。但是如何拿到主GC呢？
 		_CPPS_CATCH
 		c->_G->cleanup();
-		cpps::close(c);
+		cpps::close(c,pthis->_cx_parent_thread_c);
+		pthis->_isdone = true;
+	}
+	void cpps_thread::set_return(cpps::object v)
+	{
+		_ret_Value = v.realval();
+	}
+	cpps_value cpps_thread::get_return()
+	{
+		return _ret_Value;
 	}
 	cpps_integer cpps_this_thread_get_id() {
 		std::thread::id tid = std::this_thread::get_id();
@@ -161,6 +180,8 @@ namespace cpps
 				.def("joinable", &cpps_thread::joinable)
 				.def("swap", &cpps_thread::swap)
 				.def("detach", &cpps_thread::detach)
+				.def("get",&cpps_thread::get_return)
+				.def("isdone",&cpps_thread::isdone)
 		];
 		cpps::_module(c, "chrono")[
 			def_inside("nanoseconds", cpps_chrono_nanoseconds),

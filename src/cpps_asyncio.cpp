@@ -10,6 +10,9 @@ namespace cpps {
 	cpps_value cpps_async_run(C* c, cpps_value obj) {
 		return cpps_async_get_event_loop(c)->run_until_complete(c,obj);
 	}
+	bool cpps_async_isterminate(C* c) {
+		return c->ordinator->isterminate;
+	}
 	cpps_value cpps_async_await(C* c, cpps_value var) {
 		cpps_async_task* vtask = NULL;
 		cpps_value ret;
@@ -125,6 +128,7 @@ namespace cpps {
 			def_inside("wait", cpps_async_await,true),
 			def_inside("wait_for", cpps_async_wait_for,true),
 			def_inside("run", cpps_async_run),
+			def_inside("is_terminate",cpps_async_isterminate),
 			defvar(c,"pending", (cpps_integer) cpps_async_task_pending),
 			defvar(c,"running", (cpps_integer)cpps_async_task_running),
 			defvar(c,"done", (cpps_integer)cpps_async_task_done),

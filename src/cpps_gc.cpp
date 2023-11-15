@@ -10,9 +10,16 @@ namespace cpps
 
 	void cpps_gc_remove_barrier(C*c, cpps_regvar *v)
 	{
-			c->getbarrierlist()->erase(v);
+		c->getbarrierlist()->erase(v);
 	}
 
+	void cpps_gc_add_gen0(C*c,const cpps_value &v)
+	{
+		if (cpps_isclassvar(v.real()) || cpps_isstring(v.real()) || cpps_istuple(v.real()))
+		{
+			cpps_gc_add_gen0(c, cpps_to_cpps_cppsclassvar(v.real()));
+		}
+	}
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p)
 	{
 		c->setgen0size(c->getgen0size() + p->size());
@@ -25,8 +32,8 @@ namespace cpps
 		//新增到老生代
 		c->getgen1()->insert(p);
 	}
-	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, phmap::flat_hash_set<cpps_cppsclassvar *> *oldgen, phmap::flat_hash_set<cpps_cppsclassvar *> *newgen, size_t &size, phmap::flat_hash_set<cpps_cppsclassvar *> &isCheck);
-	void cpps_gc_check_child(const cpps_value &v, C* c, bool checkchild, phmap::flat_hash_set<cpps_cppsclassvar *> * oldgen, phmap::flat_hash_set<cpps_cppsclassvar *> * newgen, size_t &size, phmap::flat_hash_set<cpps_cppsclassvar *> &isCheck)
+	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, CLASSVARSET *oldgen, CLASSVARSET *newgen, size_t &size, CLASSVARSET &isCheck);
+	void cpps_gc_check_child(const cpps_value &v, C* c, bool checkchild, CLASSVARSET * oldgen, CLASSVARSET * newgen, size_t &size, CLASSVARSET &isCheck)
 	{
 		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList.begin(); it != v.value.domain->varList.end(); ++it)
 		{
@@ -38,7 +45,7 @@ namespace cpps
 		}
 	}
 	//
-	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, phmap::flat_hash_set<cpps_cppsclassvar *> *oldgen, phmap::flat_hash_set<cpps_cppsclassvar *> *newgen, size_t &size, phmap::flat_hash_set<cpps_cppsclassvar *> &isCheck)
+	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, CLASSVARSET *oldgen, CLASSVARSET *newgen, size_t &size, CLASSVARSET &isCheck)
 	{
 		if (v.tt == CPPS_TCLASSVAR)
 		{
@@ -55,7 +62,7 @@ namespace cpps
 					const cpps_value& value = *it;
 					cpps_gc_check_gen_value(c, value, checkchild, oldgen, newgen, size, isCheck);
 				}
-				phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+				CLASSVARSET::iterator it = oldgen->find(pClsVar);
 				if (it != oldgen->end())
 				{
 					oldgen->erase(it);
@@ -79,7 +86,7 @@ namespace cpps
 					cpps_gc_check_gen_value(c, value1, checkchild, oldgen, newgen, size, isCheck);
 
 				}
-				phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+				CLASSVARSET::iterator it = oldgen->find(pClsVar);
 				if (it != oldgen->end())
 				{
 					oldgen->erase(it);
@@ -91,7 +98,7 @@ namespace cpps
 			else if (v.tt == CPPS_TCLASSVAR)
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
-				phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+				CLASSVARSET::iterator it = oldgen->find(pClsVar);
 				if (it != oldgen->end())
 				{
 					oldgen->erase(it);
@@ -109,7 +116,7 @@ namespace cpps
 		else if(v.tt == CPPS_TSTRING)
 		{
 			cpps_cppsclassvar *pClsVar = static_cast<cpps_cppsclassvar *>(v.value.domain);
-			phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = oldgen->find(pClsVar);
+			CLASSVARSET::iterator it = oldgen->find(pClsVar);
 			if (it != oldgen->end())
 			{
 				oldgen->erase(it);
@@ -123,7 +130,7 @@ namespace cpps
 	void cpps_gc_check_gen0(C *c)
 	{
 
-		phmap::flat_hash_set<cpps_cppsclassvar *> isCheck;
+		CLASSVARSET isCheck;
 	
 		const cpps_value value = c->_G;
 		size_t tmp = c->getgen1size();
@@ -131,7 +138,7 @@ namespace cpps
 		c->setgen1size(tmp);
 
 
-		phmap::flat_hash_set<cpps_cppsclassvar *> tempoldgen;
+		CLASSVARSET tempoldgen;
 		size_t tempoldgensize = 0;
 
 		for (phmap::flat_hash_set<cpps_regvar*>::iterator it = c->getbarrierlist()->begin();
@@ -182,17 +189,17 @@ namespace cpps
 	void cpps_gc_check_gen1(C *c)
 	{
 
-		phmap::flat_hash_set<cpps_cppsclassvar *> newgen;
+		CLASSVARSET newgen;
 		size_t newgensize = 0;
-		phmap::flat_hash_set<cpps_cppsclassvar *> isCheck1;
-		phmap::flat_hash_set<cpps_cppsclassvar *> isCheck;
+		CLASSVARSET isCheck1;
+		CLASSVARSET isCheck;
 		cpps_value value = c->_G;
 		cpps_gc_check_child(value, c, true, c->getgen0(), &newgen, newgensize, isCheck);
 		cpps_gc_check_child(value, c, true, c->getgen1(), &newgen, newgensize, isCheck1);
 
 
 
-		phmap::flat_hash_set<cpps_cppsclassvar *> tempoldgen;
+		CLASSVARSET tempoldgen;
 		size_t tempoldgensize = 0;
 
 		//先把新生代的检测了
@@ -345,6 +352,11 @@ namespace cpps
 			c->getbarrierlist()->clear();
 		}
 	}
+	void gc_swap(C* src,C* dest) {
+		for (auto item : *src->getgen1()) {
+			cpps_gc_add_gen0(dest, item);
+		}
+	}
 	std::string gcinfo(C *c)
 	{
 		//c->gclock.lock();
@@ -365,7 +377,7 @@ namespace cpps
 		sprintf(buffer, "c->gen0.size(): %I64d \n", c->getgen0()->size());
 		ret += buffer;
 
-		for (phmap::flat_hash_set<cpps_cppsclassvar *>::iterator it = c->getgen1()->begin(); it != c->getgen1()->end(); it++)
+		for (CLASSVARSET::iterator it = c->getgen1()->begin(); it != c->getgen1()->end(); it++)
 		{
 			auto v = *it;
 			if (v->domainname == "String")

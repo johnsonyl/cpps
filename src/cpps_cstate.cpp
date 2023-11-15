@@ -64,15 +64,15 @@ namespace cpps
 		return savemoduledatas[modulename];
 	}
 
-	phmap::flat_hash_set<cpps_cppsclassvar*>* C::getgen0()
+	CLASSVARSET* C::getgen0()
 	{
-		phmap::flat_hash_set<cpps_cppsclassvar*>*ret = &gen0;
+		CLASSVARSET*ret = &gen0;
 		return ret;
 	}
 
-	phmap::flat_hash_set<cpps_cppsclassvar *>* C::getgen1()
+	CLASSVARSET* C::getgen1()
 	{
-		phmap::flat_hash_set<cpps_cppsclassvar*>* ret = &gen1;
+		CLASSVARSET* ret = &gen1;
 		return ret;
 	}
 	void		C::setgen0size(size_t s)

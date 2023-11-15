@@ -82,6 +82,8 @@ namespace cpps
 		template<class F>
 		_class<C>& base()
 		{
+			assert(cpps_class_singleton<F*>::instance()->getcls());
+
 			cpps_reg* r = make_parentclass(cpps_class_singleton<F*>::instance()->getcls());
 			r->isneedC = false;
 			_cls->regfunc(r);

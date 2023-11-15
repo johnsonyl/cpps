@@ -21,6 +21,7 @@ class basethread
 			var b = _thread.run();
 			if(b == false) break;
 		}
+		_thread.state = threadstate::stoped;
 	}
 	var 	start(){
 		state = threadstate::running;
@@ -36,5 +37,49 @@ class basethread
 	}
 	var isrunning(){
 		return state == threadstate::running;
+	}
+}
+
+enum future_status{
+	ready = 0,
+	timeout = 1,
+	deferred = 2	//延迟执行的暂未实现
+};
+
+class future{
+	var _thread = null;
+	var lock = new mutex();
+	future(var func,... params){
+		_thread = new thread(func,params);
+	}
+	var wait_for(var tm){
+		lock.lock();
+		var curtm = time.gettickcount();
+		while(time.gettickcount() - curtm < tm){
+			if(_thread.isdone()) {
+				lock.unlock();
+				return future_status::ready;
+			}
+			sleep(1);
+		}
+		lock.unlock();
+		
+		return future_status::timeout;
+	}
+	var wait(){
+		lock.lock();
+		_thread.join();
+		_thread = null;
+		lock.unlock();
+	}
+	var get(){
+		return _thread.get();
+	}
+}
+
+namespace std{
+	//std::async(
+	var _async(var func,... params){
+		return new future(func,params);
 	}
 }

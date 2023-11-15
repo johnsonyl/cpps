@@ -16,7 +16,7 @@ namespace cpps {
 	int32 cpps_parse_expression_step(C* c, cpps_node_domain* domain, node* param, node*& lastOpNode, node* root, cppsbuffer& buffer);
 	node* cpps_parse_param(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer);
 	node* cpps_parse_symbol(C* c, cpps_node_domain* domain, node* o, cppsbuffer& buffer, bool leftsymbol = false);
-	node* cpps_parse_string(C* c, cpps_node_domain* domain, node* o, cppsbuffer& buffer, int8 endch);
+	node* cpps_parse_string(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, int8 endch);
 	void cpps_parse_var(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer, int32 limit, node_var_type vartype);
 	node* cpps_parse_var_param(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer, bool findparent = true);
 	node* cpps_parse_number(C* c, cpps_node_domain* domain, node* o, cppsbuffer& buffer);
@@ -34,7 +34,8 @@ namespace cpps {
 	bool cpps_io_file_exists(std::string path);
 	std::string cpps_getcwd();
 	std::string cpps_real_path();
-	void		gc_cleanup(C* c,bool cleanall = false);
+	void gc_cleanup(C* c,bool cleanall = false);
+	void gc_swap(C* src, C* dest);
 	void cpps_detach_library(HMODULE module, const std::string& libname, C* c);
 	int32 cpps_str2ui64(const char* s, cpps_uinteger* result);
 	void cpps_base_printfln_new(C* c, cpps::cpps_value args, ...);
@@ -736,7 +737,7 @@ namespace cpps {
 					throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "enum only defined integer value."));
 
 				enum_value->value.integer = value->value.integer;
-				if(enum_value->value.integer <= enum_idx)
+				if(enum_value->value.integer < enum_idx )
 					throw(cpps_error(child->filename, buffer.line(), cpps_error_moduleerror, "enum the value defined must be greater than the previous value ."));
 				enum_idx = enum_value->value.integer + 1;
 				value->release();
@@ -2666,7 +2667,7 @@ namespace cpps {
 		else if (buffer.cur() == '#'){
 			/* 剔除空格 */
 			if (limit & CPPS_NOT_DEFSYSTEM) {
-				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "Definition assemble not allowed"));
+				throw(cpps_error(buffer.getcurfile().filename, buffer.line(), cpps_error_normalerror, "Definition system not allowed"));
 			}
 			buffer.pop();
 			cpps_parse_rmspaceandenter(buffer);
@@ -2875,7 +2876,7 @@ namespace cpps {
 		c->modulelist.clear();
 	}
 
-	int32 close(cpps::C*& c) {
+	int32 close(cpps::C*& c,cpps::C* parent_c) {
 
 		c->barrierList.clear();
 		c->resume();
@@ -2888,7 +2889,13 @@ namespace cpps {
 		c->domain_pool.freeall();
 		c->stack_pool.freeall();
 		cpps_unregasyncio(c);
-		gc_cleanup(c, true);
+		if(c->isloadbase == false)
+			gc_cleanup(c, true);
+		else {
+			gc_cleanup(c);
+			if(parent_c) gc_swap(c,parent_c);
+		}
+
 		cpps_free_all_library(c);
 		c->_class_map_classvar.clear();
 
@@ -3312,7 +3319,7 @@ namespace cpps {
 		fordomain->isbreak = false;
 		if(!for1->l.empty()) cpps_step_all(c, CPPS_MUNITRET, fordomain, root, for1);
 		cpps_domain* execdomain = c->domain_alloc();
-		while (true) {
+		while (true && !c->isterminate) {
 			cpps_domain* leftdomain = NULL;
 			cpps_value	canwhile;
 			if (for2->l.size() == 0)
@@ -3380,7 +3387,7 @@ namespace cpps {
 					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
-					if (isbreak)
+					if (isbreak || c->isterminate)
 						break;
 					/* 需要跳出循环 */
 				}
@@ -3404,7 +3411,7 @@ namespace cpps {
 					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
-					if (isbreak)
+					if (isbreak || c->isterminate)
 						break;
 					/* 需要跳出循环 */
 				}
@@ -3432,7 +3439,7 @@ namespace cpps {
 					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
-					if (isbreak)
+					if (isbreak || c->isterminate)
 						break;
 					/* 需要跳出循环 */
 				}
@@ -3506,14 +3513,15 @@ namespace cpps {
 		node* while1 = d->l[0];
 		node* while2 = d->l[1];
 		cpps_domain* execdomain = c->domain_alloc();
-		while (true) {
+		while (true && !c->isterminate) {
 			cpps_domain* leftdomain = NULL;
 			cpps_value	canwhile;
 			cpps_calculate_expression(c, whiledomain, root, while1->l[0], leftdomain,canwhile);
 			CPPS_TO_REAL_VALUE(canwhile);
 
+
 			bool		b = cpps_converter<bool>::apply(canwhile);
-			if (b == false)
+			if (b == false )
 				break;
 			execdomain->init(whiledomain, cpps_domain_type_exec);
 			execdomain->setexecdomain(whiledomain);

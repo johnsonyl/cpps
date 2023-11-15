@@ -363,7 +363,7 @@ namespace cpps
 		if (!clone_domain->stacklist->empty()) {
 			resize((usint16)clone_domain->stacklist->size());
 			for (size_t i = 0; i < clone_domain->stacklist->size(); i++)
-				stacklist[i] = clone_domain->stacklist[i];
+				(* stacklist)[i] = (*clone_domain->stacklist)[i];
 		}
 		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = clone_domain->varList.begin(); it != clone_domain->varList.end(); ++it)
 		{

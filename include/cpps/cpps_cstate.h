@@ -38,14 +38,19 @@ namespace cpps
 		int32			l;
 	};
 	namespace coroutine {struct Ordinator;}
+#ifdef _DEBUG
+	typedef std::set<cpps_cppsclassvar*> CLASSVARSET;
+#else
+	typedef phmap::flat_hash_set<cpps_cppsclassvar*> CLASSVARSET;
+#endif
 	struct cpps_module_data {}; //interface 
 	struct C
 	{
 		C():C(0,NULL){};
 		C(int argc, char** argv);
 		virtual ~C();
-		phmap::flat_hash_set<cpps_cppsclassvar *>*									getgen0();
-		phmap::flat_hash_set<cpps_cppsclassvar *>*									getgen1();
+		CLASSVARSET*																getgen0();
+		CLASSVARSET*																getgen1();
 		void																		setgen0size(size_t s);
 		size_t																		getgen0size();
 		void																		setgen1size(size_t s);
@@ -71,8 +76,8 @@ namespace cpps
 		cpps_domain*																_G;	//根节点
 		std::vector<cpps_stack*>													*_callstack; //堆栈
 		phmap::flat_hash_set<cpps_regvar*>											barrierList; //分界List
-		phmap::flat_hash_set<cpps_cppsclassvar *>									gen0; //分界List
-		phmap::flat_hash_set<cpps_cppsclassvar *>									gen1; //分界List
+		CLASSVARSET									gen0; //分界List
+		CLASSVARSET									gen1; //分界List
 		size_t																		gen0size;//新生代当前占内存大小（字节）
 		size_t																		gen1size;//老生代当前占内存大小（字节）
 		size_t																		lastgensize;

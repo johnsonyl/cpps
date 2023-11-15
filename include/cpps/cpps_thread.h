@@ -22,12 +22,16 @@ namespace cpps
 		void			constructor(C* __parent_thread, object func, object v);
 		void			join();
 		bool			joinable();
+		bool			isdone();
 		void			detach();
 		void			swap(cpps_thread* _swap_thread);
 		static	void	_cx_thread_func(cpps_thread* pthis, object func, object v);
-
+		void			set_return(cpps::object v);
+		cpps_value		get_return();
 		C*				_cx_parent_thread_c;
 		std::thread		*_cx_thread;
+		cpps_value		_ret_Value;
+		std::atomic<bool> _isdone;
 	};
 
 	void		cpps_regthread(C* c);

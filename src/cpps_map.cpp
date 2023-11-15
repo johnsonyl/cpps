@@ -170,7 +170,7 @@ namespace cpps
 		}
 	}
 
-	phmap::flat_hash_map<cpps::cpps_value, cpps::cpps_value, cpps::cpps_value::hash>& cpps_map::realmap()
+	cpps_hash_map& cpps_map::realmap()
 	{
 		return _map;
 	}

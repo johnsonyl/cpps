@@ -14,9 +14,13 @@
 
 namespace cpps
 {
-
+#ifdef _DEBUG
+	typedef std::unordered_map<cpps_value, cpps_value, cpps_value::hash> cpps_hash_map;
+	typedef std::unordered_set<cpps_value, cpps_value::hash> cpps_hash_set;
+#else
 	typedef phmap::flat_hash_map<cpps_value, cpps_value, cpps_value::hash> cpps_hash_map;
 	typedef phmap::flat_hash_set<cpps_value, cpps_value::hash> cpps_hash_set;
+#endif
 	struct object;
 	struct cpps_map
 	{
