@@ -43,9 +43,9 @@ var render(var request,var __html,var __data)
 {
 	request.addheader({
 		Server:"cpps Server",
-		Content-Type:"text/html; charset=UTF-8",
+		"Content-Type":"text/html; charset=UTF-8",
 		Connection:"close",
-		Access-Control-Allow-Origin:"*"
+		"Access-Control-Allow-Origin":"*"
 	});
 	
 	var __htmltextblock;
@@ -60,7 +60,7 @@ var render(var request,var __html,var __data)
 		__cache.htmlpath = "{io.getcwd()}/{__html}";
 		__cache.__s = socket.prasehtml2str(request,__cache.htmlpath,__cache.__htmltextblock);
 		__cache.lastchangetime = io.last_write_time(__cache.htmlpath);
-		__cache.__node = parse(__cache.__headers..__cache.__s);
+		__cache.__node = parse("{__cache.__headers}{__cache.__s}");
 		__http__template__cache__.insert(__html,__cache);
 	}
 	else {
@@ -69,7 +69,7 @@ var render(var request,var __html,var __data)
 			__cache.__htmltextblock.clear();
 			__cache.__s = socket.prasehtml2str(request,__cache.htmlpath,__cache.__htmltextblock);
 			__cache.__node.release();
-			__cache.__node = parse(__cache.__headers..__cache.__s);
+			__cache.__node = parse("{__cache.__headers}{__cache.__s}");
 			__cache.lastchangetime = lasttime;
 		}
 	}
@@ -80,8 +80,38 @@ var render(var request,var __html,var __data)
 	setechofunc(nil);
 	request.send(200,"OK");
 }
+
+
 module socket
 {
+	class Echo_handler{
+		var __holder = "";
+		var EchoFunc(var s){ __holder.append(s);}
+	}
+	var render2str(var __html,var __data = {})
+	{
+		var __htmltextblock;
+		var holder = new socket::Echo_handler();
+		
+		var __cache = __http__template__cache__.find(__html);
+		if(__cache == null){
+			__cache = new HttpTemplateCache();
+			
+			foreach(var kv:__data){
+				__cache.__headers ..= "var {kv.first()} = __data['{kv.first()}'];\n";
+			}
+			__cache.htmlpath = "{io.getcwd()}/{__html}";
+			__cache.__s = socket.prasehtml2str(null,__cache.htmlpath,__cache.__htmltextblock);
+			__cache.lastchangetime = io.last_write_time(__cache.htmlpath);
+			__cache.__node = parse("{__cache.__headers}{__cache.__s}");
+			__http__template__cache__.insert(__html,__cache);	
+		}
+		__htmltextblock = __cache.__htmltextblock;
+		setechofunc(holder.EchoFunc,holder);
+		donode(__cache.__node);
+		setechofunc(nil);
+		return holder.__holder;
+	}
 	var initmimetype(var server)
 	{
 		server.add_type("x-world/x-3dmf","3dm");

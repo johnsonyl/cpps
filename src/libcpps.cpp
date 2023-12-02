@@ -39,7 +39,9 @@ namespace cpps {
 	void cpps_detach_library(HMODULE module, const std::string& libname, C* c);
 	int32 cpps_str2ui64(const char* s, cpps_uinteger* result);
 	void cpps_base_printfln_new(C* c, cpps::cpps_value args, ...);
-
+	bool cpps_io_isdir(std::string p);
+	bool cpps_io_isfile(std::string p);
+	void cpps_cpp_real_walk(std::vector<std::string>& vct, std::string path, bool bfindchildren);
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc)
 	{
 #ifdef _WIN32
@@ -2426,7 +2428,21 @@ namespace cpps {
 		return "";
 	}
 	
-	
+	void cpps_parse_include_file(C* c, std::string path,cppsbuffer &buffer) {
+		if (cpps_io_isdir(path)) {
+			std::vector<std::string> files;
+			cpps_cpp_real_walk(files, path, false);
+			for (std::string& _path : files) {
+				cpps_parse_include_file(c, _path, buffer);
+			}
+		}
+		else if (cpps_io_isfile(path)) {
+			/*载入文件*/
+			std::string fileSrc;
+			cpps_load_filebuffer(path.c_str(), fileSrc);
+			buffer.append(path, fileSrc.c_str(), (int32)fileSrc.size());
+		}
+	}
 	void cpps_parse_include(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		child->type = CPPS_OINCLUDE;
 		/* 剔除空格 */
@@ -2447,11 +2463,7 @@ namespace cpps {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_classerror, "Missing '>'after include"));
 		}
 		buffer.pop();
-		/*载入文件*/
-		std::string fileSrc;
-		cpps_load_filebuffer(path.c_str(), fileSrc);
-		buffer.append(path,fileSrc.c_str(),(int32) fileSrc.size());
-
+		cpps_parse_include_file(c, path, buffer);
 	}
 	void cpps_parse_dofile(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		child->type = CPPS_ODOFILE;
@@ -2804,9 +2816,14 @@ namespace cpps {
 	void cpps_init_memory(C*c) {
 		c->memory_handler = CPPSMEMORYHANDLER();
 	}
+	void cpps_init_c(C* c) {
+		c->_classvarlock = new cpps_lock();
+		c->_gen0lock = new cpps_lock();
+	}
 	cpps::C* create(int argc, char** argv) {
 		CPPSMEMORYINIT();
 		C* c = new cpps::C(argc, argv);
+		cpps_init_c(c);
 		cpps_init_memory(c);
 		cpps_create_root_G(c);
 		cpps_regsymbols(c);
@@ -4008,8 +4025,8 @@ namespace cpps {
 				throw(cpps_error(lastNamespace->getleft()->filename, lastNamespace->getleft()->line, cpps_error_normalerror, "[%s] not found or not defined", lastNamespace->getleft()->s.c_str()));
 			lastNamespace = lastNamespace->getleft();
 		}
-		if (v && v->getval().tt == CPPS_TCLASS) {
-			cpps_cppsclass* cppsclass = (cpps_cppsclass*)v->getval().value.domain;
+		if (v && v->getval().real().tt == CPPS_TCLASS) {
+			cpps_cppsclass* cppsclass = (cpps_cppsclass*)v->getval().real().value.domain;
 			cpps_cppsclassvar* cppsclassvar = cppsclass->create(c);
 			/* 将类对象里面的变量创建出来 */
 			cpps_step_newclassvar_reg_baselassvar(cppsclass, c, cppsclassvar, root);
@@ -4066,12 +4083,12 @@ namespace cpps {
 						cpps_call_parent_class_default_constructor(c, n, parent_cppsclass, domain, root, leftdomain);
 					}
 					cpps_regvar* var = cppsclassvar->getvar("constructor", leftdomain);
-					if (var && var->getval().tt == CPPS_TFUNCTION) {
+					if (var && var->getval().real().tt == CPPS_TFUNCTION) {
 						/*cpps_function* f = var->getValue().value.func;*/
 						cpps_domain* execdomain = c->domain_alloc();
 						execdomain->init(domain, cpps_domain_type_func);
 						execdomain->setexecdomain(domain);
-						cpps_step_callfunction(c, execdomain, root, var->getval(), d, leftdomain);
+						cpps_step_callfunction(c, execdomain, root, var->getval().real(), d, leftdomain);
 						execdomain->destory(c);
 						c->domain_free(execdomain);
 					}
@@ -4080,7 +4097,7 @@ namespace cpps {
 			leftdomain = takedomain2;
 		}
 		else {
-			throw(cpps_error(d->filename, d->line, cpps_error_normalerror, "The object out of new [%s] must be a class object", d->s.c_str()));
+			throw(cpps_error(d->filename, d->line, cpps_error_normalerror, "The object out of new [%s] must be a class object type is : %d", d->s.c_str(), v->getval().tt));
 		}
 	}
 
@@ -4739,7 +4756,7 @@ namespace cpps {
 					cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain,right);
 					CPPS_TO_REAL_VALUE(right);
 
-					if (!cpps_isint(right.tt )) {
+					if (!cpps_isint(right )) {
 						throw(cpps_error(d->getright()->filename, d->getright()->line, cpps_error_classerror, "Array must contain a number as an index."));
 					}
 					leftdomain = takedomain;
@@ -4825,8 +4842,10 @@ namespace cpps {
 			cpps_calculate_expression_quote_real(v->getval(),ret,false);
 		}
 		else {
-			if (!c->disabled_non_def_var)
+			if (!c->disabled_non_def_var) {
 				printf("Warning:  got a not existent variable of [%s].  line: %d file: %s\n", d->s.c_str(), d->line, d->filename.c_str());
+			}
+			ret = nil;
 		}
 	}
 	void cpps_calculate_expression_quotegetchild(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
@@ -4965,7 +4984,8 @@ namespace cpps {
 				execdomain->setexecdomain(left.value.domain);
 				cpps_value src;
 				cpps_calculate_expression(c, execdomain, root, d->getright(), leftdomain,src);
-				cpps_calculate_expression_quote_real(src, ret, false);
+				if(src.tt != CPPS_TNIL)
+					cpps_calculate_expression_quote_real(src, ret, false);
 				execdomain->destory(c);
 				c->domain_free(execdomain);
 			}
@@ -5202,7 +5222,8 @@ namespace cpps {
 		if (func.tt == CPPS_TFUNCTION) {
 			cpps_function* f = func.value.func;
 			bool take_disabled_non_def_var = c->disabled_non_def_var;
-			if (f->funcname == "isvalid") c->disabled_non_def_var = true;
+			if (f->funcname == "isvalid") 
+				c->disabled_non_def_var = true;
 			cpps_std_vector params;
 			cpps_value		isNeedC;
 			if (f->getIsNeedC()) {

@@ -17,6 +17,7 @@ class basethread
 	var 	run(){ return false;}
 	//static
 	var 	_basethread_thread_func(var _thread){
+		if(isvalid(_thread.init)) _thread.init();
 		while(_thread.state == threadstate::running){
 			var b = _thread.run();
 			if(b == false) break;

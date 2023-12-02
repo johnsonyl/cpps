@@ -183,7 +183,9 @@ cpps_export_void  cpps_attach(cpps::C* c)
 		.def_inside("connect", &cpps_socket_client::connect)
 		.def("send", &cpps_socket_client::send)
 		.def("isconnect", &cpps_socket_client::isconnect)
-		.def("closesocket", &cpps_socket_client::closesocket),
+		.def("closesocket", &cpps_socket_client::closesocket)
+		.def("setuserdata", &cpps_socket_client::setuserdata)
+		.def("getuserdata", &cpps_socket_client::getuserdata),
 		_class< cpps_socket_httpserver_request>("httprequest")
 		.def("addheader", &cpps_socket_httpserver_request::addheader)
 		.def("append", &cpps_socket_httpserver_request::append)

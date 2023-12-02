@@ -48,8 +48,11 @@ namespace cpps
 		virtual size_t size() { return sizeof(*this) + (__class ? sizeof(*__class) : 0 ); }
 		virtual void destory(C* c, bool isclose = false) {
 			cpps_domain::destory(c);
-			if (__class && isallocclass())
+			if (__class && isallocclass()) {
+				c->_classvarlock->lock();
 				c->_class_map_classvar.erase(__class);
+				c->_classvarlock->unlock();
+			}
 		}
 		CLS *__class;
 	};

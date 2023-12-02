@@ -1039,6 +1039,7 @@ namespace cpps
 				.def("readInt32", &Buffer::readint32)
 				.def("readInt", &Buffer::readint)
 				.def("readNumber", &Buffer::readnumber)
+				.def("readFloat", &Buffer::readfloat)
 				.def("readString", &Buffer::readstring)
 				.def("readBool", &Buffer::readbool)
 				.def("writeInt8", &Buffer::writeint8)
@@ -1046,11 +1047,16 @@ namespace cpps
 				.def("writeInt32", &Buffer::writeint32)
 				.def("writeInt", &Buffer::writeint)
 				.def("writeNumber", &Buffer::writenumber)
+				.def("writeFloat", &Buffer::writefloat)
 				.def("writeString", &Buffer::writestring)
 				.def("writeBool", &Buffer::writebool)
 				.def("seek", &Buffer::seek)
 				.def("clear", &Buffer::clear)
+				.def("endian", &Buffer::endian)
 				.def("length", &Buffer::length),
+			_enum(c,"BUFFERENDIAN")
+				.value("LITTLE_ENDIAN",0)
+				.value("BIG_ENDIAN",1),
 			_class<FILE>("FILE"),
 			_class< cpps_io_stat>("statinfo")
 				.def("dev",&cpps_io_stat::dev)
@@ -1079,6 +1085,7 @@ namespace cpps
 		buff = NULL;
 		offset = 0;
 		buffsize = 0;
+		_endian = 0;
 	}
 
 	Buffer::~Buffer()
@@ -1088,12 +1095,18 @@ namespace cpps
 
 	void Buffer::read(Buffer* out, cpps_integer len)
 	{
+		char _tmpendian = _endian;
+		_endian = 0;
 		out->_write(getbuffer(), length());
+		_endian = _tmpendian;
 	}
 
 	cpps::Buffer* Buffer::write(Buffer* buf, cpps_integer len)
 	{
+		char _tmpendian = _endian;
+		_endian = 0;
 		_write(buf->getbuffer(), len);
+		_endian = _tmpendian;
 		return this;
 	}
 
@@ -1104,16 +1117,28 @@ namespace cpps
 		char* ret = getbuffer() + length();
 		if (out)
 		{
-			memcpy(out, ret, (size_t)len);
+			if (_endian == 0)
+				memcpy(out, ret, (size_t)len);
+			else
+				_rmemcpy(out, ret, (size_t)len);
+
 		}
 		seek(length() + len);
 		return ret;
 	}
 
+	void Buffer::_rmemcpy(char*dest,const char* buf, size_t len) {
+		for (size_t i = len,i2 = 0; i > 0; i--,i2++)
+			dest[i2] = buf[i-1];
+	}
 	void Buffer::_write(const char* buf, cpps_integer len)
 	{
 		realloc(length() + len);
-		memcpy(getbuffer() + length(), buf, (size_t)len);
+		if (_endian == 0)
+			memcpy(getbuffer() + length(), buf, (size_t)len);
+		else
+			_rmemcpy(getbuffer() + length(), buf, (size_t)len);
+
 		seek(length() + len);
 	}
 
@@ -1175,11 +1200,21 @@ namespace cpps
 		return ret;
 	}
 
+	cpps_number Buffer::readfloat()
+	{
+		float ret = 0;
+		_read((char*)&ret, sizeof(float));
+		return (float)ret;
+	}
+
 	std::string Buffer::readstring(cpps_integer len)
 	{
 		std::string ret;
 		ret.resize(size_t(len));
+		char _tmpendian = _endian;
+		_endian = 0;
 		_read((char*)ret.c_str(), len);
+		_endian = _tmpendian;
 		return ret;
 	}
 
@@ -1220,9 +1255,18 @@ namespace cpps
 		return this;
 	}
 
+	cpps::Buffer* Buffer::writefloat(cpps_number i)
+	{
+		_write((char*)&i, sizeof(float));
+		return this;
+	}
+
 	cpps::Buffer* Buffer::writestring(std::string s)
 	{
+		char _tmpendian = _endian;
+		_endian = 0;
 		_write(s.c_str(), s.size());
+		_endian = _tmpendian;
 		return this;
 	}
 
@@ -1256,6 +1300,11 @@ namespace cpps
 		buff = NULL;
 		buffsize = 0;
 		offset = 0;
+	}
+	void Buffer::endian(cpps::object v)
+	{
+		cpps_integer _e = v.toint();
+		_endian = (char)_e;
 	}
 
 	void Buffer::realloc(cpps_integer s)

@@ -105,7 +105,9 @@ namespace cpps
 		CPPS_SYMBOL_MAP																symbolmap;						//操作符表
 		CPPS_SYMBOL_MAP																leftsymbolmap;					//左操作符表
 		bool																		symbolleftasso[MAXSYMBOLPRIO];	//操作符是否左结合
-
+		C*																			_parentCState;//父类CState
+		cpps_lock																	*_classvarlock;
+		cpps_lock																	*_gen0lock;
 		void clone(C* clone_c);
 	};
 }

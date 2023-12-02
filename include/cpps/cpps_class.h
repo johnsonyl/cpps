@@ -54,11 +54,13 @@ namespace cpps
 			cpps_classvar<T>* v = CPPSNEW( cpps_classvar<T>)(getclassname(), this, cpps_domain_type_classvar, alloc);
 			if (alloc){
 				cpps_cppsclassvar* class_var = (cpps_cppsclassvar* )v;
+				
 #ifdef _DEBUG
 				if(c) c->_class_map_classvar.insert(std::map<void*, cpps_cppsclassvar*>::value_type(v->__class, class_var));
 #else
 				if (c) c->_class_map_classvar.insert(phmap::flat_hash_map<void*, cpps_cppsclassvar*>::value_type(v->__class, class_var));
 #endif
+
 			}
 			return v;
 		}

@@ -50,6 +50,7 @@ namespace cpps
 		void			read(Buffer *out, cpps_integer len);
 		Buffer			*write(Buffer *buf, cpps_integer len);
 		char *			_read(char *out, cpps_integer len);
+		void			_rmemcpy(char* dest, const char* buf, size_t len);
 		void			_write(const char *buf, cpps_integer len);
 		std::string		tostring();
 		cpps_integer	tointeger();
@@ -59,6 +60,7 @@ namespace cpps
 		cpps_integer	readint32();
 		cpps_integer	readint();
 		cpps_number		readnumber();
+		cpps_number		readfloat();
 		std::string		readstring(cpps_integer len);
 		bool			readbool();
 		Buffer*			writeint8(signed char i);
@@ -66,17 +68,20 @@ namespace cpps
 		Buffer*			writeint32(int32 i);
 		Buffer*			writeint(cpps_integer i);
 		Buffer*			writenumber(cpps_number i);
+		Buffer*			writefloat(cpps_number i);
 		Buffer*			writestring(std::string s);
 		Buffer*			writebool(bool b);
 		void			seek(cpps_integer s);
 		cpps_integer	length();
 		char *			getbuffer();
 		void			clear();
+		void			endian(cpps::object v);
 		void			realloc(cpps_integer s);
 	public:
 		cpps_integer	offset;
 		char*			buff;
 		cpps_integer	buffsize; //×î´ósize
+		char			_endian;
 	};
 
 	void	cpps_regio(C *c);

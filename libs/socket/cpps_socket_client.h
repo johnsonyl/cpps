@@ -37,6 +37,8 @@ namespace cpps {
 		virtual void							closesocket();
 		bool									isconnect();
 		void									closed();
+		void									setuserdata(cpps::object userdata);
+		cpps_value								getuserdata();
 
 	public:
 		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
@@ -51,7 +53,7 @@ namespace cpps {
 		cpps_socket_client_option				client_option;
 		cpps::C*								c;
 		bool									client_connection;
-
+		cpps::object							user_data;
 	};
 }
 

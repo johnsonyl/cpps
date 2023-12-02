@@ -99,16 +99,18 @@ namespace cpps
 				return ret;
 
 			ret.tt = CPPS_TSTRING;
+			C* pc = c->_parentCState ? c->_parentCState : c;
+			pc->_classvarlock->lock();
 
 #ifdef _DEBUG
-			std::map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+			std::map<void*, cpps_cppsclassvar*>::iterator it = pc->_class_map_classvar.find(v);
 #else
-			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find(v);
+			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = pc->_class_map_classvar.find(v);
 #endif
 			cpps_cppsclassvar* var;
-			if (it == c->_class_map_classvar.end())
+			if (it == pc->_class_map_classvar.end())
 			{
-				var = cpps_class_singleton<cpps::string*>::instance()->getcls()->create(c, false);
+				var = cpps_class_singleton<cpps::string*>::instance()->getcls()->create(pc, false);
 				var->setclsptr((void*)v);
 
 				//将新创建出来的添加到新生区稍后检测要不要干掉
@@ -116,6 +118,7 @@ namespace cpps
 			}
 			else
 				var = it->second;
+			pc->_classvarlock->unlock();
 
 			ret.value.domain = var;
 			ret.value.domain->incruse();

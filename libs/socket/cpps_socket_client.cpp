@@ -62,10 +62,10 @@ namespace cpps
 
 		struct addrinfo SocketAddr, * res = NULL, * ressave = NULL;
 		memset(&SocketAddr, 0, sizeof(SocketAddr));
-		SocketAddr.ai_flags = AI_PASSIVE;
+		SocketAddr.ai_flags = AI_ALL;
 		SocketAddr.ai_family = AF_UNSPEC;
-		SocketAddr.ai_socktype = SOCK_STREAM;
-		SocketAddr.ai_protocol = IPPROTO_IP;
+		SocketAddr.ai_socktype = 0;
+		SocketAddr.ai_protocol = 0;
 		int  ret;
 		char s_port[256];
 #ifdef WIN32
@@ -82,13 +82,13 @@ namespace cpps
 		}
 #endif
 		create(fd);
-
 		ressave = res;
 		
 		//尝试绑定端口
 		while (res != NULL) {
-
-			if (uv_tcp_connect(uv_connect, fd, (const struct sockaddr*) & res->ai_addr, on_connect)) {
+			int result = uv_tcp_connect(uv_connect, fd, (const struct sockaddr*)res->ai_addr, on_connect);
+			
+			if (result) {
 				res = res->ai_next;
 				continue;
 			}
@@ -99,7 +99,7 @@ namespace cpps
 		//绑定失败
 		if (NULL == res)
 		{
-			cpps_socket::close("conecction error..", onClsoeCallback);
+			cpps_socket::close("connection error..", onClsoeCallback);
 			return false;
 		}
 
@@ -146,7 +146,7 @@ namespace cpps
 
 				if (cpps::type(client_option.option_data) == CPPS_TFUNCTION)
 				{
-					cpps::dofunction(c, client_option.option_data, buffer_var);
+					cpps::dofunction(c, client_option.option_data, buffer_var,this);
 				}
 			}
 			else
@@ -159,7 +159,7 @@ namespace cpps
 					buffer_copyout(buffer_ptr->getbuffer(), size_t(client_option.option_headsize));
 					if (cpps::type(client_option.option_parser) == CPPS_TFUNCTION)
 					{
-						cpps_integer size = object_cast<cpps_integer>(cpps::dofunction(c, client_option.option_parser, buffer_var));
+						cpps_integer size = object_cast<cpps_integer>(cpps::dofunction(c, client_option.option_parser, buffer_var,this));
 						if (size == -1)
 						{
 							//说明包头异常关闭它.
@@ -178,7 +178,7 @@ namespace cpps
 							buffer_remove(buffer_ptr->getbuffer(), size_t(size));
 							if (cpps::type(client_option.option_data) == CPPS_TFUNCTION)
 							{
-								cpps::dofunction(c, client_option.option_data, buffer_var);
+								cpps::dofunction(c, client_option.option_data, buffer_var,this);
 							}
 							packetsize = (cpps_integer)get_buffer_length();
 						}
@@ -200,10 +200,20 @@ namespace cpps
 		client_connection = false;
 		if (cpps::type(client_option.option_close) == CPPS_TFUNCTION)
 		{
-			cpps::dofunction(c, client_option.option_close, 0, closemsg);
+			cpps::dofunction(c, client_option.option_close, 0, closemsg,this);
 		}
 	
 
+	}
+
+	void cpps_socket_client::setuserdata(cpps::object userdata)
+	{
+		user_data = userdata;
+	}
+
+	cpps_value cpps_socket_client::getuserdata()
+	{
+		return user_data.getval();
 	}
 
 	void cpps_socket_client::onClsoeCallback(uv_handle_t* handle)
@@ -224,7 +234,7 @@ namespace cpps
 		client->client_connection = true;
 		if (cpps::type(client->client_option.option_connected) == CPPS_TFUNCTION)
 		{
-			cpps::dofunction(client->c, client->client_option.option_connected);
+			cpps::dofunction(client->c, client->client_option.option_connected, client);
 		}
 	}
 

@@ -118,6 +118,7 @@ namespace cpps
 		isterminate = false;
 		isloadbase = false;
 		_callstack = CPPSNEW( std::vector<cpps_stack*>)();
+		_parentCState = NULL;
 	}
 
 	C::~C()
@@ -147,7 +148,11 @@ namespace cpps
 
 	void C::clone(C* clone_c)
 	{
+		if (clone_c == this) return;
 		_G->clone(clone_c->_G);
+		_parentCState = clone_c;
+		_gen0lock = new cpps_lock();
+		_classvarlock = clone_c->_classvarlock;
 		isloadbase = true;
 	}
 

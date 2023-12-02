@@ -94,6 +94,7 @@ void cpps::memory_allocal_handler::mfree(void* m)
 #else
 #ifdef _WIN32
 	if (m) {
+		//printf("Thread ID:%d release Address: %I64d \r\n", GetCurrentThreadId(), (size_t)m);
 		VirtualFree(m, 0, MEM_RELEASE);
 	}
 #else

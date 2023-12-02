@@ -12,6 +12,10 @@ cpps_export_void cpps_attach(C* c)
 			.def("value", &xml_attribute::value)
 			.def("set_name", &xml_attribute::set_name)
 			.def("set_value", &xml_attribute::set_value),
+		_class<xml_document>("document")
+			.base<xml_node>()
+			.def("parse", &xml_document::parse)
+			.def("clear", &xml_document::clear),
 		_class<xml_node>("node")
 			.def("constructor", &xml_node::create)
 			.def("to_string", &xml_node::to_string)
@@ -45,16 +49,13 @@ cpps_export_void cpps_attach(C* c)
 			.def_inside("remove_last_attribute", &xml_node::remove_last_attribute)
 			.def_inside("remove_attribute", &xml_node::remove_attribute)
 			.def("remove_all_attributes", &xml_node::remove_all_attributes),
-		_class<xml_document>("document")
-			.base<xml_node>()
-			.def("parse", &xml_document::parse)
-			.def("clear", &xml_document::clear),
 		def_inside("xml_check", xml_check)
 	];
 }
 
 cpps_export_void  cpps_detach(C * c)
 {
+	cpps::_unmodule(c, "xml");
 }
 
 cpps_export_finish

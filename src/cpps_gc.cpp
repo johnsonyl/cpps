@@ -18,13 +18,16 @@ namespace cpps
 		if (cpps_isclassvar(v.real()) || cpps_isstring(v.real()) || cpps_istuple(v.real()))
 		{
 			cpps_gc_add_gen0(c, cpps_to_cpps_cppsclassvar(v.real()));
+			
 		}
 	}
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p)
 	{
+		c->_gen0lock->lock();
 		c->setgen0size(c->getgen0size() + p->size());
 		//新增到新生代
 		c->getgen0()->insert(p);
+		c->_gen0lock->unlock();
 	}
 	void cpps_gc_add_gen1(C*c, cpps_cppsclassvar *p)
 	{
@@ -130,6 +133,7 @@ namespace cpps
 	void cpps_gc_check_gen0(C *c)
 	{
 
+		c->_gen0lock->lock();
 		CLASSVARSET isCheck;
 	
 		const cpps_value value = c->_G;
@@ -183,12 +187,14 @@ namespace cpps
 		c->getgen0()->swap( tempoldgen);
 		c->setgen0size(tempoldgensize);
 
+		c->_gen0lock->unlock();
 	}
 
 	//检测老生代  这样检测估计后面就卡死了。  还得想办法优化！！！
 	void cpps_gc_check_gen1(C *c)
 	{
 
+		c->_gen0lock->lock();
 		CLASSVARSET newgen;
 		size_t newgensize = 0;
 		CLASSVARSET isCheck1;
@@ -275,6 +281,7 @@ namespace cpps
 
 
 
+		c->_gen0lock->unlock();
 	}
 	void		gc_cleanup(C *c,bool cleanall )
 	{

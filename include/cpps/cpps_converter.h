@@ -28,7 +28,7 @@ namespace cpps
 			if(!match(obj))
 				throw(cpps_error(__FILE__, __LINE__, 0, "cppsvalue can't convert to %s, cppsvalue type is %s , conversion failed.", typeid(R).name() , cpps_base_type(obj).c_str()));
 
-			if (obj.tt == CPPS_TNIL) return static_cast<cpps_integer>(NULL);
+			if (obj.tt == CPPS_TNIL) return (R)static_cast<cpps_integer>(NULL);
 			if (obj.tt == CPPS_TUSERDATA) return (R)(cpps_integer(obj.value.p));
 			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
 			return static_cast<R>(clsvar->getclsptr());
@@ -254,25 +254,30 @@ namespace cpps
 			}
 
 			ret.tt = CPPS_TCLASSVAR;
-			
+			C* pc = c->_parentCState ? c->_parentCState : c;
+			pc->_classvarlock->lock();
 #ifdef _DEBUG
-			std::map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find((void*)v);
+			std::map<void*, cpps_cppsclassvar*>::iterator it = pc->_class_map_classvar.find((void*)v);
 #else
-			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = c->_class_map_classvar.find((void*)v);
+			phmap::flat_hash_map<void*, cpps_cppsclassvar*>::iterator it = pc->_class_map_classvar.find((void*)v);
 #endif
 
 			
 			cpps_cppsclassvar* var;
-			if (it == c->_class_map_classvar.end())
+			if (it == pc->_class_map_classvar.end())
 			{
-				var = cpps_class_singleton<Type>::instance()->getcls()->create(c,false);
+				var = cpps_class_singleton<Type>::instance()->getcls()->create(pc,false);
+				pc->_classvarlock->unlock();
 				var->setclsptr((void*)v);
 
 				//将新创建出来的添加到新生区稍后检测要不要干掉
 				cpps_gc_add_gen0(c, var);
 			}
-			else
+			else {
+
+				pc->_classvarlock->unlock();
 				var = it->second;
+			}
 
 			ret.value.domain = var;
 			ret.value.domain->incruse();
