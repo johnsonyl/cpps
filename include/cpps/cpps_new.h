@@ -16,6 +16,7 @@
 
 namespace cpps
 {
+	cpps_integer cpps_this_thread_get_id();
 #ifdef _DEBUG
 	struct memory_info
 	{
@@ -36,13 +37,13 @@ namespace cpps
 	{
 		void*						mmalloc(size_t __size,const char *file, unsigned int _line);
 		void						mfree(void* m);
+		cpps_lock					_lock;
 #ifdef _DEBUG
 		size_t						size();
 		void						dump();
 		memory_info_list			memorylist;
 	private:
 		size_t	_size;
-		cpps_lock _lock;
 #endif
 	};
 	struct memory_allocal
@@ -50,11 +51,13 @@ namespace cpps
 		memory_allocal();
 		~memory_allocal();
 		void					init();
+		bool					global();
 		memory_allocal_handler* gethandler();
 		void					sethandler(memory_allocal_handler*);
 		static memory_allocal&	instance();
 		memory_allocal_handler* handler;
 		bool					_real;
+		cpps_integer			mainthreadid;
 	};
 }
 

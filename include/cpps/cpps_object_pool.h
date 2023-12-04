@@ -29,29 +29,37 @@ namespace cpps
 		}
 		T* alloc()
 		{
+			_lock.lock();
 			if (_object_list.empty())
 			{
+				_lock.unlock();
 				return CPPSNEW(T)();
 			}
 			T* obj = _object_list[_object_list.size() - 1];
 			_object_list.pop_back();
+			_lock.unlock();
 			return obj;
 		}
 		void	free(T* v)
 		{
+			_lock.lock();
 			_object_list.insert(_object_list.end(), v);
+			_lock.unlock();
 		}
 		void	freeall()
 		{
+			_lock.lock();
 			for (size_t i = 0; i < _object_list.size(); i++)
 			{
 				T* obj = _object_list[i];
 				CPPSDELETE( obj);
 			}
 			_object_list.clear();
+			_lock.unlock();
 		}
 	public:
 		std::vector<T*>		_object_list;
+		cpps::cpps_lock		_lock;
 	};
 }
 

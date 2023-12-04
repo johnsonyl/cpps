@@ -313,11 +313,11 @@ namespace cpps {
 		len = (uLong)output_buffer.size();
 
 		uLongf destlen = (uLongf)len + 20; /*不知道这个协议头到底是多大*/
-		Bytef* dest = (Bytef * )CPPSMALLOC(destlen);
+		Bytef* dest = (Bytef * )malloc(destlen);
 
 		int32 err = gzcompress(dest, &destlen, buf, len, Z_DEFAULT_COMPRESSION);
 		if (err != Z_OK) {
-			CPPSFREE(dest);
+			free(dest);
 			dest = NULL;
 			return false;
 		}
@@ -325,7 +325,7 @@ namespace cpps {
 		output_buffer.clear();
 		output_buffer.append((const char*)dest, destlen);
 
-		CPPSFREE(dest);
+		free(dest);
 		dest = NULL;
 		return true;
 	}

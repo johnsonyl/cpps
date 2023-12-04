@@ -1,6 +1,5 @@
 #include "cpps/cpps.h"
 
-
 #ifdef USE_NEDMALLOC
 #include "nedmalloc.h"
 #endif
@@ -9,6 +8,7 @@ cpps::memory_allocal::memory_allocal()
 {
 	handler = NULL;
 	_real = false;
+	mainthreadid = 0;
 }
 
 cpps::memory_allocal::~memory_allocal()
@@ -26,8 +26,14 @@ void cpps::memory_allocal::init()
 {
 	if (handler == NULL) {
 		_real = true;
+		mainthreadid = cpps_this_thread_get_id();
 		handler = new memory_allocal_handler();
 	}
+}
+
+bool cpps::memory_allocal::global()
+{
+	return !(_real && mainthreadid == cpps_this_thread_get_id());
 }
 
 cpps::memory_allocal_handler* cpps::memory_allocal::gethandler()
@@ -53,7 +59,13 @@ void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, uns
 #else
 #ifdef _WIN32
 	//__size = (size_t)ceil(__size / 1024.0) * 1024;
-	void* ret = (PBYTE)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE);
+	//void* ret =  (PBYTE)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE);
+	__size++;
+	char* ret = memory_allocal::instance().global() ? (char*)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE) : (char*)malloc( __size) ;
+	ret[0] = memory_allocal::instance().global() ? 1 : 0;
+	ret = ret + 1;
+	//if(memory_allocal::instance().global())
+		//printf("alloc %s memory...\n", memory_allocal::instance().global() ? "global" : "local");
 #else
 	void* ret = malloc(__size);
 #endif
@@ -95,7 +107,9 @@ void cpps::memory_allocal_handler::mfree(void* m)
 #ifdef _WIN32
 	if (m) {
 		//printf("Thread ID:%d release Address: %I64d \r\n", GetCurrentThreadId(), (size_t)m);
-		VirtualFree(m, 0, MEM_RELEASE);
+		char* p = (char*)m;
+		p = p - 1;
+		p[0] == 1 ? VirtualFree(p, 0, MEM_RELEASE) : free(p);
 	}
 #else
 	if(m) free(m);
