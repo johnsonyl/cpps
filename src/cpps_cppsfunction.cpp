@@ -5,7 +5,7 @@ namespace cpps
 
 	//内部
 	void					cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
-	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
+	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
 	void					make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_std_vector& params);
 	void					cpps_gc_add_barrier(C* c, cpps_regvar* v);
 	void					cpps_gc_remove_barrier(C* c, cpps_regvar* v);
@@ -146,7 +146,7 @@ namespace cpps
 		if (quatoreturn) {
 			funcdomain->funcRet.tt = CPPS_TREF;
 		}
-		cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context);
+		cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context, false);
 
 		if (ret) {
 			*ret = funcdomain->funcRet;//return的值反馈回去

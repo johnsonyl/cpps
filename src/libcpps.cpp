@@ -12,7 +12,7 @@ namespace cpps {
 	void cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain, cpps_value& ret);
 	void cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
 	cpps_value cpps_step_callfunction(C* c, cpps_domain* domain, cpps_domain* root, cpps_value func, node* d, cpps_domain* leftdomain);
-	void cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
+	void cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
 	void cpps_parse_dofunction(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer);
 	void cpps_parse_expression(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer);
 	int32 cpps_parse_expression_step(C* c, cpps_node_domain* domain, node* param, node*& lastOpNode, node* root, cppsbuffer& buffer);
@@ -2851,7 +2851,7 @@ namespace cpps {
 		_CPPS_TRY
 			node* o = loadbuffer(c, c->_G, str, "");
 		if (o)
-			cpps_step_all(c, CPPS_MUNITRET, 0, 0, o);
+			cpps_step_all(c, CPPS_MUNITRET, 0, 0, o, false);
 			/* dostring pcall */
 		if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
 		_CPPS_CATCH
@@ -2927,13 +2927,13 @@ namespace cpps {
 	int32  pcall(C* c, int32 retType, cpps_domain* domain, node* o) {
 		_CPPS_TRY
 		domain->resize(o->size);
-		cpps_step_all(c, retType, domain, domain, o);
+		cpps_step_all(c, retType, domain, domain, o, true);
 		_CPPS_CATCH
 		cpps_gc_check_step(c);
 		cpps_destory_node(c->o); c->o->release(); c->o = NULL;
 		return(0);
 	}
-	void  cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o) {
+	void  cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o,bool releasenode) {
 		if (domain == NULL)
 			domain = c->_G;
 		if (root == NULL)
@@ -2946,7 +2946,13 @@ namespace cpps {
 		for (size_t i = 0; i < count && !domain->isbreak && !c->isterminate; i++) {
 			node* d = o->l[i];
 			cpps_step(c, domain, root, d);
+			if (releasenode) {
+				cpps_destory_node(d);
+				d->release();
+			}
 		}
+		if (releasenode)
+			o->l.clear();
 	}
 
 	cpps_regvar* cpps_step_def_var_createvar( cpps_domain* domain, node* varName, C* c, cpps_domain* root, node_var_type isasync)
@@ -3315,10 +3321,10 @@ namespace cpps {
 		CPPS_SUBTRY
 			if (cpp_bool_value)
 			{
-				if(!d->l[1]->l.empty()) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[1]);
+				if(!d->l[1]->l.empty()) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[1], false);
 			}
 			else {
-				if (!d->l[2]->l.empty()) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[2]);
+				if (!d->l[2]->l.empty()) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d->l[2], false);
 			}
 		CPPS_SUBCATCH2
 		
@@ -3336,7 +3342,7 @@ namespace cpps {
 		node* for3 = d->l[2];
 		node* for4 = d->l[3];
 		fordomain->isbreak = false;
-		if(!for1->l.empty()) cpps_step_all(c, CPPS_MUNITRET, fordomain, root, for1);
+		if(!for1->l.empty()) cpps_step_all(c, CPPS_MUNITRET, fordomain, root, for1, false);
 		cpps_domain* execdomain = c->domain_alloc();
 		while (true && !c->isterminate) {
 			cpps_domain* leftdomain = NULL;
@@ -3361,7 +3367,7 @@ namespace cpps {
 				break;
 			/* 需要跳出循环 */
 			if (!for3->l.empty())
-				cpps_step_all(c, CPPS_MUNITRET, fordomain, root, for3);
+				cpps_step_all(c, CPPS_MUNITRET, fordomain, root, for3, false);
 		}
 		c->domain_free(execdomain);
 		fordomain->destory(c);
@@ -3379,7 +3385,7 @@ namespace cpps {
 		node* for4 = d->l[2];
 		foreachdomain->isbreak = false;
 		cpps_domain* leftdomain = NULL;
-		cpps_step_all(c, CPPS_MUNITRET,foreachdomain, root, for1);
+		cpps_step_all(c, CPPS_MUNITRET,foreachdomain, root, for1, false);
 		cpps_regvar* for1_v = foreachdomain->varList.empty() ? NULL : foreachdomain->varList.begin()->second;
 		cpps_value v;
 		cpps_calculate_expression(c, foreachdomain, root, for2->l[0], leftdomain, v);
@@ -3545,7 +3551,7 @@ namespace cpps {
 			execdomain->init(whiledomain, cpps_domain_type_exec);
 			execdomain->setexecdomain(whiledomain);
 			CPPS_SUBTRY
-			cpps_step_all(c, CPPS_MUNITRET, execdomain, root, while2);
+			cpps_step_all(c, CPPS_MUNITRET, execdomain, root, while2, false);
 			CPPS_SUBCATCH2
 			bool isbreak = execdomain->isbreak;
 			execdomain->destory(c);
@@ -3567,7 +3573,7 @@ namespace cpps {
 		if (v && (v->getval().isdomain() && v->getval().value.domain->domainType == cpps_domain_type_namespace))
 		{
 			ns = v->getval().value.domain;
-			cpps_step_all(c, CPPS_MUNITRET, ns, root, d);
+			cpps_step_all(c, CPPS_MUNITRET, ns, root, d, false);
 			return;
 		}
 
@@ -3585,7 +3591,7 @@ namespace cpps {
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			c->_G->regidxvar(d->offset, v);
 		}
-		cpps_step_all(c, CPPS_MUNITRET, ns, root, d);
+		cpps_step_all(c, CPPS_MUNITRET, ns, root, d, false);
 	}
 	void cpps_step_enum(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 
@@ -3640,7 +3646,7 @@ namespace cpps {
 				c->_G->regidxvar(d->offset, v);
 			}*/
 
-			cpps_step_all(c, CPPS_MUNITRET, ns, root, d);
+			cpps_step_all(c, CPPS_MUNITRET, ns, root, d, false);
 			return;
 		}
 		if (v) 
@@ -3656,7 +3662,7 @@ namespace cpps {
 	/*	if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			c->_G->regidxvar(d->offset, v);
 		}*/
-		cpps_step_all(c, CPPS_MUNITRET, ns, root, d);
+		cpps_step_all(c, CPPS_MUNITRET, ns, root, d, false);
 	}
 	void cpps_pop_stack_to_here(C* c, cpps_stack* here,bool cleanup) {
 		while (!c->getcallstack()->empty()) {
@@ -3678,7 +3684,7 @@ namespace cpps {
 		v->setval(cpps_cpp_to_cpps_converter<cpps_trycatch_error*>::apply(c, &e));
 		execdomain2->regvar(c, v);
 		CPPS_SUBTRY
-		cpps_step_all(c, CPPS_MUNITRET, execdomain2, root, catchfun->l[1]);
+		cpps_step_all(c, CPPS_MUNITRET, execdomain2, root, catchfun->l[1], false);
 		CPPS_SUBCATCH2
 		execdomain2->destory(c);
 		c->domain_free(execdomain2);
@@ -3709,7 +3715,7 @@ namespace cpps {
 		bool			hasCatch = false;
 		cpps_trycatch_error	throwerr;
 		try {
-			cpps_step_all(c, CPPS_MUNITRET, execdomain, root, func);
+			cpps_step_all(c, CPPS_MUNITRET, execdomain, root, func, false);
 			if (execdomain->funcRet.tt != CPPS_TNIL) {
 				throwerr = cpps_trycatch_error(d->filename, d->line, cpps_error_trycatherror, "The exception thrown by throw.");
 				throwerr._value = execdomain->funcRet;
@@ -3945,7 +3951,7 @@ namespace cpps {
 			stack->init((*it)->filename.c_str(), (*it)->line, "dofile");
 			c->push_stack(stack);
 			CPPS_SUBTRY
-			cpps_step_all(c, CPPS_MUNITRET, c->_G, c->_G, o2);
+			cpps_step_all(c, CPPS_MUNITRET, c->_G, c->_G, o2, false);
 			CPPS_SUBCATCH
 			c->pop_stack();
 			cpps_gc_check_step(c);
@@ -3969,7 +3975,7 @@ namespace cpps {
 		stack->init(d->filename.c_str(), d->line, "dostring");
 		c->push_stack(stack);
 		CPPS_SUBTRY
-		cpps_step_all(c, CPPS_MUNITRET, domain, root, o);
+		cpps_step_all(c, CPPS_MUNITRET, domain, root, o, false);
 		CPPS_SUBCATCH
 		c->pop_stack();
 		c->stack_free(stack);
@@ -4000,7 +4006,7 @@ namespace cpps {
 		stack->init(d->filename.c_str(), d->line, "donode");
 		c->push_stack(stack);
 		CPPS_SUBTRY
-		cpps_step_all(c, CPPS_MUNITRET, domain, root, n);
+		cpps_step_all(c, CPPS_MUNITRET, domain, root, n, false);
 		CPPS_SUBCATCH2
 		c->pop_stack();
 		c->stack_free(stack);
@@ -4011,7 +4017,7 @@ namespace cpps {
 		for (auto parentclass : cppsclass->parentclasslist()) {
 			cpps_step_newclassvar_reg_baselassvar(parentclass, c, cppsclassvar, root);
 			if (parentclass->o)
-				cpps_step_all(c, CPPS_MUNITRET, cppsclassvar, root, parentclass->o->getright());
+				cpps_step_all(c, CPPS_MUNITRET, cppsclassvar, root, parentclass->o->getright(), false);
 		}
 	}
 	void cpps_calculate_expression_newvar(cpps_domain* domain, node* d, C* c, cpps_domain* root, cpps_domain*& leftdomain, cpps_value& ret) {
@@ -4033,7 +4039,7 @@ namespace cpps {
 			/* 将类对象里面的变量创建出来 */
 			cpps_step_newclassvar_reg_baselassvar(cppsclass, c, cppsclassvar, root);
 			if (cppsclass->o)
-				cpps_step_all(c, CPPS_MUNITRET, cppsclassvar, root, cppsclass->o->getright());
+				cpps_step_all(c, CPPS_MUNITRET, cppsclassvar, root, cppsclass->o->getright(), false);
 			/* 将新创建出来的添加到新生区稍后检测要不要干掉 */
 			cpps_gc_add_gen0(c, cppsclassvar);
 			ret = cpps_value(cppsclassvar);
@@ -4109,7 +4115,7 @@ namespace cpps {
 		execdomain->init(domain, cpps_domain_type_exec);
 		execdomain->setexecdomain(domain);
 		CPPS_SUBTRY
-		cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d);
+		cpps_step_all(c, CPPS_MUNITRET, execdomain, root, d, false);
 		CPPS_SUBCATCH2
 		execdomain->destory(c);
 		c->domain_free(execdomain);
@@ -5177,7 +5183,7 @@ namespace cpps {
 			stack->init(d->filename.c_str(), d->line, "dostring");
 			c->push_stack(stack);
 			CPPS_SUBTRY
-			cpps_step_all(c, CPPS_MUNITRET, domain, root, o);
+			cpps_step_all(c, CPPS_MUNITRET, domain, root, o, false);
 			CPPS_SUBCATCH
 			c->pop_stack();
 			c->stack_free(stack);

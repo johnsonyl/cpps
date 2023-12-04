@@ -19,7 +19,7 @@ namespace cpps
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p);
 	void cpps_call_parent_class_default_constructor(C* c, node* n, cpps_cppsclass* parent_cppsclass, cpps_domain* domain, cpps_domain* root, cpps_domain* leftdomain);
 	void cpps_step_newclassvar_reg_baselassvar(cpps_cppsclass* cppsclass, C* c, cpps_cppsclassvar* cppsclassvar, cpps_domain* root);
-	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o);
+	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o,bool);
 	object					doclassfunction(C* c, object leftdomain, object func);
 	//可以增加到GC的PTR
 	
@@ -90,7 +90,7 @@ namespace cpps
 		cpps_step_newclassvar_reg_baselassvar(cppsclass, c, cppsclassvar, cppsclassvar);
 		//将类对象里面的变量创建出来
 		if (cppsclass->o)
-			cpps_step_all(c, CPPS_MUNITRET, cppsclassvar,cppsclassvar, cppsclass->o->getright());
+			cpps_step_all(c, CPPS_MUNITRET, cppsclassvar,cppsclassvar, cppsclass->o->getright(),false);
 		//将新创建出来的添加到新生区稍后检测要不要干掉
 		cpps_gc_add_gen0(c, cppsclassvar);
 		//执行0参数构造函数
