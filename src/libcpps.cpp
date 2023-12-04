@@ -7,6 +7,8 @@ namespace cpps {
 	struct     cpps_value;
 	struct     cpps_func_params;
 	void cpps_gc_add_gen0(C* c, cpps_cppsclassvar* p);
+	void cpps_console_color(cpps_integer color);
+	void cpps_console_clearcolor();
 	void cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain, cpps_value& ret);
 	void cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
 	cpps_value cpps_step_callfunction(C* c, cpps_domain* domain, cpps_domain* root, cpps_value func, node* d, cpps_domain* leftdomain);
@@ -5190,21 +5192,35 @@ namespace cpps {
 			if (!cpps_isfunction(value)) {
 				for (int i = 0; i < kg; i++)
 					printf(" ");
-				printf("%s%s = ", parent.c_str(), var.second->varName.c_str());
-				cpps_base_printf(c,value);
+
+				cpps::cpps_console_color(2);
+				printf(parent.empty() ? "%s%s": "%s.%s", parent.c_str(), var.second->varName.c_str());
+				cpps::cpps_console_clearcolor();
+				printf(" = ");
 				if (value.isdomain() && !value.value.domain->varList.empty())
 				{
+
+					cpps::cpps_console_color(4);
+					printf("<%s>\r\n", value.value.domain->domainname.c_str());
+					cpps::cpps_console_clearcolor();
+
 					for (int i = 0; i < kg; i++)
 						printf(" ");
-					printf("\r\n{\r\n");
+					printf("{\r\n");
 					cpps_domain* value_domain = value.value.domain;
-					cpps_debug_trace_domain(c,kg + 4, (parent.empty() ? std::string("") : (parent + ".")) + var.second->varName + ".", value_domain);
+					cpps_debug_trace_domain(c,kg + 4, (parent.empty() ? std::string("") : (parent + ".")) + var.second->varName , value_domain);
 					for (int i = 0; i < kg; i++)
 						printf(" ");
-					printf("}\r\n");
+					printf("}");
 
 				}
-				printf("\r\n");
+				else {
+					cpps::cpps_console_color(3);
+					cpps_base_printf(c, value);
+				}
+
+				cpps::cpps_console_clearcolor();
+				printf(",\r\n");
 			}
 		}
 	}

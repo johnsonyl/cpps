@@ -163,6 +163,7 @@ namespace cpps
 		bool					istuple();
 		bool					isellipsis();
 		bool					isint();
+		bool					ischar();
 		bool					isnumber();
 		bool					isnull();
 		bool					isfunction();
@@ -173,6 +174,7 @@ namespace cpps
 		//convert
 		std::string				tostring();
 		cpps_integer			toint();
+		char&					tochar();
 		cpps_number				tonumber();
 		bool					tobool();
 		object					toreal();

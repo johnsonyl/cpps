@@ -13,6 +13,7 @@ namespace cpps
 	cpps_integer cpps_math_rand();
 	bool cpps_isbasevar(const cpps_value& v);
 	bool cpps_io_isdir(std::string p);
+	void cpps_debug_trace_domain(C* c, int kg, std::string parent, cpps_domain* root);
 	bool cpps_base_isdebug() {
 #ifdef _DEBUG
 		return true;
@@ -64,7 +65,9 @@ namespace cpps
 	}
 	void cpps_base_printf_new(C* c, cpps::cpps_value args, ...) {
 		cpps::object _vct = object(args);
+		bool isfirst = true;
 		for (auto& v : cpps::object::vector(_vct)) {
+			if (!isfirst) cout << ","; isfirst = false;
 			cpps_base_printf(c, v.real());
 		}
 	}
@@ -180,7 +183,12 @@ namespace cpps
 					cpps_base_printf(c,doclassfunction(c,b, tostring));
 				}
 				else {
-					cout << "class <" << b.value.value.domain->domainname << ">";
+					cpps::cpps_console_color(4);
+					cout << "class <" << b.value.value.domain->domainname << ">" << endl;
+					cpps::cpps_console_clearcolor();
+					cout << "{" << endl;
+					cpps_debug_trace_domain(c, 4, "", b.value.value.domain);
+					cout << "}" << endl;
 				}
 			}
 		}
@@ -211,10 +219,7 @@ namespace cpps
 		bool isfirst = true;
 		cpps::object _vct = object(args);
 		for (auto& v : cpps::object::vector(_vct)) {
-			if (!isfirst) {
-				cout << ",";
-			}
-			isfirst = false;
+			if (!isfirst) cout << ","; isfirst = false;
 			cpps_base_printf(c, v.real());
 		}
 		cout << endl;

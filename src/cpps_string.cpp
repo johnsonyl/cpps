@@ -503,6 +503,7 @@ namespace cpps
  				.def("isalpha", &cpps::string::cpps_string_isalpha)
  				.def("isdecimal", &cpps::string::cpps_string_isdecimal)
  				.def("resize", &cpps::string::cpps_string_resize)
+ 				.def("insert", &cpps::string::cpps_string_insert)
 		];
 
 		cpps::_module(c,"string")[
@@ -874,7 +875,34 @@ namespace cpps
 	void string::cpps_string_resize(cpps_integer s) {
 		__str.resize((size_t)s);
 	}
-	
+
+	void string::cpps_string_insert_real(size_t &off, object& v)
+	{	
+		size_t len = 1;
+		if (v.isint()) 
+			__str.insert((size_t)off, 1, (char)v.toint());
+		else if (v.isstring()) {
+			std::string str = v.tostring();
+			__str.insert(off, str);
+			len = str.size();
+		}
+		else if(v.ischar())
+			__str.insert((size_t)off, 1, v.tochar());
+		else if (v.isvector())
+		{
+			len = 0;
+			for (auto& v2 : object::vector(v)) {
+				object o = object(v2);
+				cpps_string_insert_real(off, o);
+			}
+		}
+		off += len;
+	}
+
+	void string::cpps_string_insert(cpps_integer off, object v) {
+		size_t pos = (size_t)off;
+		cpps_string_insert_real(pos, v);
+	}
 
 	std::string& string::real()
 	{

@@ -111,6 +111,11 @@ namespace cpps
 		return cpps_isint(value.real());
 	}
 
+	bool object::ischar()
+	{
+		return cpps_ischar(value.real());
+	}
+
 	bool object::isnumber()
 	{
 		return cpps_isnumber(value.real());
@@ -153,6 +158,11 @@ namespace cpps
 	cpps_integer object::toint()
 	{
 		return object_cast<cpps_integer>(*this);
+	}
+
+	char& object::tochar()
+	{
+		return *value.real().value.strv;
 	}
 
 	cpps_number object::tonumber()

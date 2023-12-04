@@ -22,6 +22,7 @@ namespace cpps
 	bool cpps_isvector(const cpps_value& v);
 	bool cpps_isrange(const cpps_value& v);
 	bool cpps_isint(const cpps_value& v);
+	bool cpps_ischar(const cpps_value& v);
 	bool cpps_isuint(const cpps_value& v);
 	bool cpps_isbool(const cpps_value& v);
 	bool cpps_isnumber(const cpps_value& v);

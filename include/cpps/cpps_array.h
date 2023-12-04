@@ -47,6 +47,7 @@ namespace cpps
 		cpps_value							select(C* c, object o);
 		cpps_value							andfunc (C* c, object o);
 		cpps_value							multiplication(C* c, object o);
+		cpps_integer						indexof(cpps_value o);
 		cpps_std_vector&					realvector();
 	private:
 		cpps_std_vector							_vec;

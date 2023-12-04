@@ -5,6 +5,7 @@
 
 cpps::usint8	cpps_slevel_to_nlevel(std::string level);
 std::string		cpps_nlevel_to_slevel(cpps::usint8 level);
+cpps_integer cpps_this_thread_get_id();
 namespace cpps
 {
 	std::string cpps_time_time2str(cpps_integer nt);
@@ -98,6 +99,8 @@ namespace cpps
 			ret = 9;
 		else if (kn == "funcName")
 			ret = 10;
+		else if (kn == "tid")
+			ret = 10;
 		return ret;
 	}
 	std::string		cpps_logging_handler::make_format(usint8 k, cpps_logger_message* msg)
@@ -160,6 +163,13 @@ namespace cpps
 			{
 				std::stringstream s;
 				s << msg->funcname;
+				ret = s.str();
+				break;
+			}
+			case 11:/*tid*/
+			{
+				std::stringstream s;
+				s << cpps_this_thread_get_id();
 				ret = s.str();
 				break;
 			}

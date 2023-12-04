@@ -206,6 +206,11 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(right);
 				return (*(tmpStr)) < (*(tmpStr2));
 			}
+			case CPPS_TFUNCTION:
+			case CPPS_TLAMBDAFUNCTION:
+			{
+				return value.uinteger < right.value.uinteger;
+			}
 			case CPPS_TCLASSVAR: {
 				object left = object(*this);
 				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
@@ -248,6 +253,11 @@ namespace cpps
 				std::string* tmpStr = cpps_get_string(*this);
 				std::string* tmpStr2 = cpps_get_string(right);
 				return (*(tmpStr)) > (*(tmpStr2));
+			}
+			case CPPS_TFUNCTION:
+			case CPPS_TLAMBDAFUNCTION:
+			{
+				return value.uinteger > right.value.uinteger;
 			}
 			case CPPS_TCLASSVAR: {
 				object left = object(*this);
@@ -292,6 +302,11 @@ namespace cpps
 				std::string* tmpStr2 = cpps_get_string(right);
 				return (*(tmpStr)) == (*(tmpStr2));
 			}
+			case CPPS_TFUNCTION:
+			case CPPS_TLAMBDAFUNCTION:
+			{
+				return value.uinteger == right.value.uinteger;
+			}
 			case CPPS_TCLASSVAR: {
 				object left = object(*this);
 				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
@@ -303,6 +318,7 @@ namespace cpps
 					cpps_cppsclassvar* right_cppsclassvar = cpps_to_cpps_cppsclassvar(right);
 					cpps_cppsclass* right_cppsclass = right_cppsclassvar->getcppsclass();
 					if (right_cppsclass != cppsclass) return cppsclass == right_cppsclass;
+					if (right_cppsclassvar == cppsclassvar) return true; //同一个指针
 					object symbolfunc = cpps_value(func);
 					cpps::cpps_value ret;
 					if (func->getIsNeedC()) {
@@ -450,6 +466,11 @@ namespace cpps
 
 				return (*(tmpStr)) <= (*(tmpStr2));
 			}
+			case CPPS_TFUNCTION:
+			case CPPS_TLAMBDAFUNCTION:
+			{
+				return value.uinteger <= right.value.uinteger;
+			}
 			case CPPS_TCLASSVAR: {
 				object left = object(*this);
 				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
@@ -509,6 +530,11 @@ namespace cpps
 				std::string* tmpStr2 = (std::string*)cppsclassvar2->getclsptr();
 
 				return (*(tmpStr)) >= (*(tmpStr2));
+			}
+			case CPPS_TFUNCTION:
+			case CPPS_TLAMBDAFUNCTION:
+			{
+				return value.uinteger >= right.value.uinteger;
 			}
 			case CPPS_TCLASSVAR: {
 				object left = object(*this);
@@ -607,10 +633,15 @@ namespace cpps
 		{
 		case CPPS_TNUMBER: return std::hash<cpps_number>()(_Keyval.value.number);
 		case CPPS_TINTEGER: return std::hash<cpps_integer>()(_Keyval.value.integer);
-		case CPPS_TUINTEGER: return std::hash<cpps_integer>()(_Keyval.value.uinteger);
+		case CPPS_TUINTEGER: return std::hash<cpps_uinteger>()(_Keyval.value.uinteger);
 		case CPPS_TSTRING: {
 			std::string* tmpStr = cpps_get_string(_Keyval);
 			return std::hash<std::string>()(*(tmpStr));
+		}
+		case CPPS_TFUNCTION:
+		case CPPS_TLAMBDAFUNCTION:
+		{
+			return std::hash<cpps_integer>()(_Keyval.value.integer);
 		}
 		case CPPS_TCLASSVAR: {
 			object left = object(_Keyval);

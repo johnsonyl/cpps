@@ -36,6 +36,10 @@ namespace cpps {
 	{
 		return v.tt == CPPS_TINTEGER || v.tt == CPPS_TUINTEGER;
 	}
+	bool cpps_ischar(const cpps_value& v) 
+	{
+		return v.tt == CPPS_TSTRINGV;
+	}
 	bool cpps_isuint(const cpps_value &v)
 	{
 		return  v.tt == CPPS_TUINTEGER;

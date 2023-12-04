@@ -50,6 +50,8 @@ namespace cpps
 		bool			cpps_string_isspace();
 		bool			cpps_string_isdecimal();
 		void			cpps_string_resize(cpps_integer s);
+		void			cpps_string_insert_real(size_t& off, object& v);
+		void			cpps_string_insert(cpps_integer off, object v);
 	public:
 		std::string&	real();
 		std::string		__str;

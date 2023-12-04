@@ -33,6 +33,7 @@ namespace cpps
 				.def("clear", &cpps_vector::clear)
 				.def("size", &cpps_vector::size)
 				.def("has", &cpps_vector::has)
+				.def("indexof", &cpps_vector::indexof)
 				.def_operator_inside("*",&cpps_vector::multiplication)
 				.def_operator_inside("&",&cpps_vector::andfunc)
 				.def_operator_inside("+",&cpps_vector::andfunc)
@@ -288,6 +289,16 @@ namespace cpps
 			}
 		}
 		return ret;
+	}
+
+	cpps_integer cpps_vector::indexof(cpps_value o)
+	{
+		cpps_integer i = 0;
+		for (auto& v : realvector()) {
+			if (v == o) return i;
+			i++;
+		}
+		return -1;
 	}
 
 	std::vector<cpps::cpps_value>& cpps_vector::realvector()
