@@ -67,7 +67,8 @@ namespace cpps
 		cpps::object _vct = object(args);
 		bool isfirst = true;
 		for (auto& v : cpps::object::vector(_vct)) {
-			if (!isfirst) cout << ","; isfirst = false;
+			if (!isfirst) cout << ","; 
+			isfirst = false;
 			cpps_base_printf(c, v.real());
 		}
 	}
@@ -219,7 +220,8 @@ namespace cpps
 		bool isfirst = true;
 		cpps::object _vct = object(args);
 		for (auto& v : cpps::object::vector(_vct)) {
-			if (!isfirst) cout << ","; isfirst = false;
+			if (!isfirst) cout << ","; 
+			isfirst = false;
 			cpps_base_printf(c, v.real());
 		}
 		cout << endl;
