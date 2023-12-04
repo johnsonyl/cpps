@@ -5,11 +5,12 @@
 
 cpps::usint8	cpps_slevel_to_nlevel(std::string level);
 std::string		cpps_nlevel_to_slevel(cpps::usint8 level);
-cpps_integer cpps_this_thread_get_id();
+
 namespace cpps
 {
 	std::string cpps_time_time2str(cpps_integer nt);
 	std::string cpps_io_getfilename(std::string str);
+	cpps_integer cpps_this_thread_get_id();
 	cpps_logging_handler::cpps_logging_handler( cpps_logging_handler_type type)
 	{
 		handler_type = type;
