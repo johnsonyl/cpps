@@ -108,6 +108,7 @@ namespace cpps
 		C*																			_parentCState;//∏∏¿‡CState
 		cpps_lock																	*_classvarlock;
 		cpps_lock																	*_gen0lock;
+		int32																		_lambdanum;
 		void clone(C* clone_c);
 	};
 }

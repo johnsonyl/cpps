@@ -119,6 +119,7 @@ namespace cpps
 		isloadbase = false;
 		_callstack = CPPSNEW( std::vector<cpps_stack*>)();
 		_parentCState = NULL;
+		_lambdanum = 0;
 	}
 
 	C::~C()

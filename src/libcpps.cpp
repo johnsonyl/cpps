@@ -1527,8 +1527,8 @@ namespace cpps {
 		while (cpps_parse_expression_step(c, domain, param, lastOpNode, root, buffer) == CPPS_NOERROR)
 			;
 	}
-	std::string buildlambda() {
-		std::string	ret = "lamdba@";
+	std::string buildlambda(C*c) {
+		std::string	ret = "lamdba@" + std::to_string(c->_lambdanum++) + "_";
 		int		i;
 		int		len = 20;
 		for (i = 0; i < len; ++i)
@@ -1553,7 +1553,7 @@ namespace cpps {
 			lamdbavar->type = CPPS_ODEFVAR;
 			r->l.insert(r->l.begin(), lamdbavar);
 			node* str = CPPSNEW( node)(lamdbavar, param->filename, buffer.line());
-			str->s = buildlambda();
+			str->s = buildlambda(c);
 			str->type = CPPS_VARNAME;
 
 			/*加快运行速度*/
@@ -3386,7 +3386,7 @@ namespace cpps {
 		/* 它可能被释放,所以存在某个地方. */
 		cpps_regvar* var = CPPSNEW (cpps_regvar);
 		var->setval(v);
-		var->varName = buildlambda() + "foreach-list";
+		var->varName = buildlambda(c) + "foreach-list";
 		foreachdomain->regvar(c, var);
 		if (v.tt == CPPS_TNIL)
 			return;
