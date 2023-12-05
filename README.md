@@ -1,19 +1,19 @@
 # cppscript
-#### **欢迎**
+#### **Welcome**
 
-CPPS 是一个功能强大，运行速度快，容易上手的解释型脚本语言，非常容易学习和使用，并且可以很容易的嵌入到C++项目中。
+CPPS is a powerful, fast, and easy-to-use interpreted scripting language. It is very easy to learn and use, and can be easily embedded into C++ projects.
 
-CPPS 被设计的初衷是让那些和作者一样不喜欢LUA,PY,等等脚本语法的开发者使用，它可以对接各种项目，无论游戏，WEB，或者是人工智能方面。
+CPPS was originally designed to be used by developers who like the author don't like LUA, Python syntax. It can be connected to various projects, whether it is Games, Web, or AI.
 
-它的语法极为像C++,所以C++开发者可以很快速的上手，无需太深入的学习它。
+Its syntax is very similar to C++, so C++ developers can get started quickly without having to learn it in depth.
 
-*招募协同软件作者,三方模块作者.*
+*Recruiting collaborative software authors and third-party module authors.*
 
-#### **下载与编译**
+#### **Download and Compile**
 
-CPPS 的下载与安装非常简单，CPPS不依赖于任何第三方库，仅仅下载就可以编译。
+The download and installation of CPPS is very simple. CPPS does not depend on any third-party libraries and can be compiled by just downloading it.
 
-*LINUX & MACOS*：
+*LINUX & MACOS*:
 -
 ```
 git clone https://github.com/johnsonyl/cpps.git
@@ -24,7 +24,7 @@ make
 
 make install
 
-;根据需要是否编译扩展模块.
+;Whether to compile extension modules as needed.
 cpps buildlibs
 
 ```
@@ -35,33 +35,33 @@ git clone https://github.com/johnsonyl/cpps.git
 
 cmake .
 
-使用Visual Studio打开libcpps.sln进行编译即可。
+Use Visual Studio to open libcpps.sln and compile it.
 
 cd libs
 
-;根据需要是否编译扩展模块.
+;Whether to compile extension modules as needed.
 
-cmake .
+cmake.
 
-使用Visual Studio打开cppslibs.sln进行编译即可。
+Use Visual Studio to open cppslibs.sln and compile it.
 
 ```
 
-是不是非常简单？
+Isn't it very simple?
 
-libs 文件夹是内部扩展模块.具体编译规则请查看文档.
+The libs folder is an internal extension module. Please check the documentation for specific compilation rules.
 
-[更新日志](changelog.md) 最后更新日期:2021-03-06 23:52:00 Beijing/cn
+[Change log](changelog.md) Last updated date: 2021-03-06 23:52:00 Beijing/cn
 
-脚本文档在
+The script documentation is at
 
 http://docs.cppscript.org
 
-QQ群：
+QQ group:
 
-CPPS脚本交流群 282081601
+CPPS script communication group: 282081601
 
-作者Q：88481106
+Author QQ: 88481106
 
 
 Example:
