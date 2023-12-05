@@ -2957,6 +2957,7 @@ namespace cpps {
 			if (releasenode) {
 				cpps_destory_node(d);
 				d->release();
+				o->l[i] = NULL;
 			}
 		}
 		if (releasenode)
