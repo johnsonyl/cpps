@@ -43,7 +43,8 @@ namespace cpps
 		void												setidxoffset(cpps_domain* parentclass, int32 off);
 		void												resize(usint16 size);
 		virtual void										release() { CPPSDELETE( this); }
-
+		void												lock() { _lock.lock(); }
+		void												unlock() { _lock.unlock(); }
 
 		cpps_domain											*parent[2]; // 0为父域， 1为执行域
 		char												domainType;
@@ -56,6 +57,7 @@ namespace cpps
 		int32												offset;
 		int32												offsettype;
 		phmap::flat_hash_map<cpps_domain*, int32>*						parentclassoffset; //基类偏移
+		cpps_lock											_lock;
 		void clone(cpps_domain* clone_domain);
 	};
 

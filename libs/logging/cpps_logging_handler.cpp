@@ -101,7 +101,7 @@ namespace cpps
 		else if (kn == "funcName")
 			ret = 10;
 		else if (kn == "tid")
-			ret = 10;
+			ret = 11;
 		return ret;
 	}
 	std::string		cpps_logging_handler::make_format(usint8 k, cpps_logger_message* msg)
@@ -181,6 +181,10 @@ namespace cpps
 	{
 	}
 
+	void cpps_logging_handler::close()
+	{
+	}
+
 	bool cpps_logging_handler::runing()
 	{
 		return runstate;
@@ -190,6 +194,7 @@ namespace cpps
 	{
 		while (handler->runing())
 			handler->work();
+		handler->close();
 	}
 
 	void cpps_logging_handler::setformatter(std::string format)

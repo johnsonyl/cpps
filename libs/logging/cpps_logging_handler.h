@@ -36,6 +36,7 @@ namespace cpps
 		usint8										make_format_id(std::string kn);
 		std::string									make_format(usint8 k, cpps_logger_message* msg);
 		virtual void								pop(usint8 level,std::string& msg);
+		virtual void								close();
 		bool										runing();
 		static void									run(cpps_logging_handler* logger);
 		void										setformatter(std::string format);

@@ -11,6 +11,7 @@
 #include "cpps_logging_filehandler.h"
 #include "cpps_logging_rotatingfilehandler.h"
 #include "cpps_logging_timerotatingfilehandler.h"
+#include "cpps_logging_scripthandler.h"
 
 using namespace cpps;
 using namespace std;
@@ -165,14 +166,31 @@ cpps_logging_handler* cpps_create_logging_handler(C* c, std::string cls, cpps_ma
 
 		return handler;
 	}
-	else if (cls == "logging.handlers.HTTPHandler")
+	else {
+		object _class = object::globals(c)[cls];
+		if (_class.isclass()) {
+			cpps_logging_scripthandler* handler = new cpps_logging_scripthandler(c);
+			std::string level = cpps_to_string(cpps_map_get_value(config, "level"));
+			cpps_value formatter_key = cpps_map_get_value(config, "formatter");
+			cpps_map* formatters_config = cpps_to_cpps_map(formatters->find(formatter_key));
+			if (formatters_config)
+			{
+				handler->setformatter(cpps_to_string(cpps_map_get_value(formatters_config, "format")));
+			}
+			handler->level = cpps_slevel_to_nlevel(level);
+			handler->create(cls, config);
+			return handler;
+		}
+		
+	}
+	/*else if (cls == "logging.handlers.HTTPHandler")
 	{
 
 	}
 	else if (cls == "logging.handlers.SMTPHandler")
 	{
 
-	}
+	}*/
 	return NULL;
 }
 
@@ -265,53 +283,58 @@ bool cpps_create_logger_with_config(C*c,cpps::object config)
 	cpps_map* filters = cpps_to_cpps_map(cpps_map_get_value(m, "filters"));
 	cpps_map* handlers = cpps_to_cpps_map(cpps_map_get_value(m, "handlers") );
 	cpps_map* loggers = cpps_to_cpps_map(cpps_map_get_value(m, "loggers"));
-	if (!loggers)
-		throw(cpps_error("module logging error", 0, 0, "loggers is not defined in config."));
-	if (!handlers)
-		throw(cpps_error("module logging error", 0, 0, "handlers is not defined in config."));
-	if (!formatters)
-		throw(cpps_error("module logging error", 0, 0, "formatters is not defined in config."));
-	if (!filters)
-		throw(cpps_error("module logging error", 0, 0, "filters is not defined in config."));
+	
+		//throw(cpps_error("module logging error", 0, 0, "loggers is not defined in config."));
+	
 
+	if (loggers) {
 
-	for (auto n : loggers->realmap())
-	{
-		std::string logger_name = cpps_to_string(n.first);
-		cpps_map* config = cpps_to_cpps_map(n.second);
-		if (config)
+		if (!handlers)
+			throw(cpps_error("module logging error", 0, 0, "handlers is not defined in config."));
+		if (!formatters)
+			throw(cpps_error("module logging error", 0, 0, "formatters is not defined in config."));
+		if (!filters)
+			throw(cpps_error("module logging error", 0, 0, "filters is not defined in config."));
+
+		for (auto n : loggers->realmap())
 		{
-			cpps_logger* logger = new cpps_logger();
-			std::string level = cpps_to_string(cpps_map_get_value(config, "level"));
-			cpps_value propagate_val = cpps_map_get_value(config, "propagate");
-			bool propagate = propagate_val.tt == CPPS_TBOOLEAN ? propagate_val.value.b : true;
-			cpps_vector* loggers_handlers = cpps_to_cpps_vector(cpps_map_get_value(config, "handlers"));
-			if (loggers_handlers)
+			std::string logger_name = cpps_to_string(n.first);
+			cpps_map* config = cpps_to_cpps_map(n.second);
+			if (config)
 			{
-				for (auto& n2 : loggers_handlers->realvector())
+				cpps_logger* logger = new cpps_logger();
+				std::string level = cpps_to_string(cpps_map_get_value(config, "level"));
+				cpps_value propagate_val = cpps_map_get_value(config, "propagate");
+				bool propagate = propagate_val.tt == CPPS_TBOOLEAN ? propagate_val.value.b : true;
+				cpps_vector* loggers_handlers = cpps_to_cpps_vector(cpps_map_get_value(config, "handlers"));
+				if (loggers_handlers)
 				{
-					std::string n2s = cpps_to_string(n2);
-					cpps_map* handler_config = cpps_to_cpps_map(handlers->find(n2));
-					if (handler_config)
+					for (auto& n2 : loggers_handlers->realvector())
 					{
-						std::string cls = cpps_to_string(cpps_map_get_value(handler_config, "class"));
-						cpps_logging_handler* handler = cpps_create_logging_handler(c, cls, formatters, handler_config);
-						if(!handler) throw(cpps_error("module logging error", 0, 0, "handler config [%s] not found ..", cls.c_str()));
-						logger->addhandler(handler);
+						std::string n2s = cpps_to_string(n2);
+						cpps_map* handler_config = cpps_to_cpps_map(handlers->find(n2));
+						if (handler_config)
+						{
+							std::string cls = cpps_to_string(cpps_map_get_value(handler_config, "class"));
+							cpps_logging_handler* handler = cpps_create_logging_handler(c, cls, formatters, handler_config);
+							if (!handler) throw(cpps_error("module logging error", 0, 0, "handler config [%s] not found ..", cls.c_str()));
+							logger->addhandler(handler);
+						}
+						else
+							throw(cpps_error("module logging error", 0, 0, "handler class [%s] not found ..", n2s.c_str()));
 					}
-					else
-						throw(cpps_error("module logging error", 0, 0, "handler class [%s] not found ..", n2s.c_str()));
 				}
+				logger->level = cpps_slevel_to_nlevel(level);
+				logger->propagate = propagate;
+				logger->config.version = version;
+				logger->logger_name = logger_name;
+				//filters还不知道咋用
+				if (logger_name == "root") defaultlogger = logger;
+				loggerslist.insert(phmap::flat_hash_map<std::string, cpps_logger*>::value_type(logger_name, logger));
 			}
-			logger->level = cpps_slevel_to_nlevel(level);
-			logger->propagate = propagate;
-			logger->config.version = version;
-			logger->logger_name = logger_name;
-			//filters还不知道咋用
-			if (logger_name == "root") defaultlogger = logger;
-			loggerslist.insert(phmap::flat_hash_map<std::string, cpps_logger*>::value_type(logger_name, logger));
 		}
 	}
+	
 	return true;
 }
 void cpps_logging_debug(C* c, std::string msg)
@@ -416,8 +439,13 @@ cpps_export_void  cpps_attach(cpps::C* c)
 			.def("setwhen", &cpps_logging_timerotatingfilehandler::setwhen)
 			.def("setbackupcount", &cpps_logging_timerotatingfilehandler::setbackupcount)
 			.def("setlevel", &cpps_logging_timerotatingfilehandler::setlevel),
+		_class < cpps_logging_scripthandler>("ScriptHandler")
+			.def_inside("constructor",&cpps_logging_scripthandler::constructor)
+			.def("setformatter", &cpps_logging_scripthandler::setformatter)
+			.def("setlevel", &cpps_logging_scripthandler::setlevel)
+			.def_inside("get_handler",&cpps_logging_scripthandler::get_handler),
 		def_inside("create_with_config",cpps_create_logger_with_config),
-		def_inside("create", cpps_create_logger_with_config),
+		def_inside("create", cpps_create_logger),
 		def_inside("debug",cpps_logging_debug),
 		def_inside("info",cpps_logging_info),
 		def_inside("warning",cpps_logging_warning),

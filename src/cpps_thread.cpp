@@ -53,15 +53,12 @@ namespace cpps
 
 	void cpps_thread::_cx_thread_func(cpps_thread* pthis, object func, object v)
 	{
-		C* c = new cpps::C();
-		cpps_create_root_G(c);
-		c->clone(pthis->_cx_parent_thread_c);
+		C* c = cpps::create(pthis->_cx_parent_thread_c);
 		_CPPS_TRY
 			object ret = cpps::dofunction(c, func, v);
 			pthis->set_return(ret);
 			//这里需要特殊处理，因为返回来的对象可能在此线程的GC中。但是需要把这个指针放到主线程。否则会内存泄露。但是如何拿到主GC呢？
 		_CPPS_CATCH
-		c->_G->cleanup();
 		cpps::close(c,pthis->_cx_parent_thread_c);
 		pthis->_isdone = true;
 	}

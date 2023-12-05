@@ -2822,6 +2822,12 @@ namespace cpps {
 		c->_classvarlock = new cpps_lock();
 		c->_gen0lock = new cpps_lock();
 	}
+	cpps::C* create(C* _parent) {
+		C* c = new cpps::C();
+		cpps_create_root_G(c);
+		c->clone(_parent);
+		return c;
+	}
 	cpps::C* create(int argc, char** argv) {
 		CPPSMEMORYINIT();
 		C* c = new cpps::C(argc, argv);
@@ -2896,6 +2902,8 @@ namespace cpps {
 	}
 
 	int32 close(cpps::C*& c,cpps::C* parent_c) {
+		if(c->_parentCState != NULL)
+			c->_G->cleanup();
 
 		c->barrierList.clear();
 		c->resume();

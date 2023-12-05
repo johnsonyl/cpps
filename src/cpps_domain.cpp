@@ -204,13 +204,17 @@ namespace cpps
 	void cpps_domain::regvar(C* c, cpps_regvar* v)
 	{
 		hasVar = true;
+		lock();
 		varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(v->varName, v));
+		unlock();
 		if (c != NULL && this != c->_G) cpps_gc_add_barrier(c, v);
 	}
 
 	void cpps_domain::unregvar(C* c, cpps_regvar* v)
 	{
+		lock();
 		varList.erase(v->varName);
+		unlock();
 		cpps_gc_remove_barrier(c, v);
 	}
 
@@ -365,6 +369,7 @@ namespace cpps
 			for (size_t i = 0; i < clone_domain->stacklist->size(); i++)
 				(* stacklist)[i] = (*clone_domain->stacklist)[i];
 		}
+		clone_domain->lock();
 		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = clone_domain->varList.begin(); it != clone_domain->varList.end(); ++it)
 		{
 			cpps_regvar* v = it->second;
@@ -377,5 +382,6 @@ namespace cpps
 				hasVar = true;
 			}
 		}
+		clone_domain->unlock();
 	}
 }
