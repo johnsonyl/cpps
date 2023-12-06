@@ -30,6 +30,8 @@ namespace cpps
 				.def("clear", &cpps_map::clear)
 				.def("size", &cpps_map::size)
 				.def_inside("where", &cpps_map::where)
+				.def_operator("-=", &cpps_map::remove_at_map)
+				.def_operator("+=", &cpps_map::merge)
 				.def_inside("select", &cpps_map::select),
 			_class<cpps_set>("set")
 				.def("constructor", &cpps_set::constructor)
@@ -47,6 +49,8 @@ namespace cpps
 				.def("empty", &cpps_set::empty)
 				.def("clear", &cpps_set::clear)
 				.def("size", &cpps_set::size)
+				.def_operator("+=", &cpps_set::merge)
+				.def_operator("-=", &cpps_set::remove_at_set)
 				.def_operator("[]", &cpps_set::has)
 				.def_inside("where", &cpps_set::where)
 				.def_inside("select", &cpps_set::select)
@@ -165,9 +169,10 @@ namespace cpps
 		if (!cpps_ismap(right)) return;
 
 		cpps_map* rightmap = cpps_to_cpps_map(right);
-		for (auto it : rightmap->realmap()) {
+		realmap().merge(rightmap->realmap());
+		/*for (auto it : rightmap->realmap()) {
 			(*this)[it.first] = it.second;
-		}
+		}*/
 	}
 
 	cpps_hash_map& cpps_map::realmap()
@@ -181,6 +186,12 @@ namespace cpps
 		if (it != _map.end())
 		{
 			it->second = value;
+		}
+	}
+	void cpps_map::remove_at_map(cpps_map* _right)
+	{
+		for (auto v : _right->realmap()) {
+			realmap().erase(v.first);
 		}
 	}
 	cpps_value cpps_map::where(C* c, object o)
@@ -290,9 +301,7 @@ namespace cpps
 		if (!cpps_isset(right)) return;
 
 		cpps_set* rightset = cpps_to_cpps_set(right);
-		for (auto it : rightset->realset()) {
-			insert(it);
-		}
+		realset().merge(rightset->realset());
 	}
 
 
@@ -321,6 +330,13 @@ namespace cpps
 			}
 		}
 		return ret;
+	}
+
+	void cpps_set::remove_at_set(cpps_set* _right)
+	{
+		for (auto v : _right->realset()) {
+			realset().erase(v);
+		}
 	}
 
 	cpps::cpps_hash_set& cpps_set::realset()

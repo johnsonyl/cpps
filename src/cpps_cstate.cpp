@@ -147,8 +147,9 @@ namespace cpps
 		_callstack->clear();
 	}
 
-	void C::clone(C* clone_c)
+	void C::clone(C* clone_c2)
 	{
+		C* clone_c = clone_c2->_parentCState ? clone_c2->_parentCState : clone_c2;
 		if (clone_c == this) return;
 		_G->clone(clone_c->_G);
 		_parentCState = clone_c;

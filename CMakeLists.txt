@@ -13,6 +13,13 @@ elseif (CMAKE_HOST_UNIX)
     set(LINUX 1)
 endif ()
 
+#默认不启动TCMALLOC
+if (NOT CPPS_ENABLE_TCMALLOC)
+	set(CPPS_ENABLE_TCMALLOC "OFF")
+endif()
+
+
+
 if (WINDOWS)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	set(CMAKE_CXX_STANDARD 11)

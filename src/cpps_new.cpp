@@ -22,12 +22,13 @@ cpps::memory_allocal::~memory_allocal()
 	}
 }
 
-void cpps::memory_allocal::init()
+void cpps::memory_allocal::init(cpps_alloc_f _alloc_func, cpps_free_f _free_func)
 {
 	if (handler == NULL) {
 		_real = true;
 		mainthreadid = cpps_this_thread_get_id();
 		handler = new memory_allocal_handler();
+		handler->cpps_set_allocf(_alloc_func, _free_func);
 	}
 }
 
@@ -52,8 +53,15 @@ cpps::memory_allocal& cpps::memory_allocal::instance()
 	return ins;
 }
 
+cpps::memory_allocal_handler::memory_allocal_handler()
+{
+	alloc_func = NULL;
+	free_func = NULL;
+}
+
 void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, unsigned int _line)
 {
+	if (alloc_func != NULL) return alloc_func(__size);
 #ifdef USE_NEDMALLOC
 	void* ret = nedalloc::nedmalloc(__size);
 #else
@@ -87,6 +95,7 @@ void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, uns
 
 void cpps::memory_allocal_handler::mfree(void* m)
 {
+	if (free_func != NULL) { free_func(m); return; }
 #ifdef _DEBUG
 	_lock.lock();
 	auto it = memorylist.find(m);
@@ -115,6 +124,12 @@ void cpps::memory_allocal_handler::mfree(void* m)
 	if(m) free(m);
 #endif
 #endif
+}
+
+void cpps::memory_allocal_handler::cpps_set_allocf(cpps_alloc_f _alloc_func, cpps_free_f _free_func)
+{
+	alloc_func = _alloc_func;
+	free_func = _free_func;
 }
 
 

@@ -16,7 +16,7 @@ namespace cpps
 {
 	struct				object;
 	C*					create(C* _parent);
-	C*					create(int argc = 0, char** argv = NULL);
+	C*					create(int argc = 0, char** argv = NULL, cpps_alloc_f alloc_func = NULL, cpps_free_f free_func = NULL);
 	node* 				loadbuffer(C *c, cpps_domain* parent_domain,std::string &str, std::string filename);
 	int32				dostring(C *c, std::string str);
 	int32				loadfile(C *c, const char* path);
@@ -31,7 +31,6 @@ namespace cpps
 	int32				cpps_str2i64(const char *s, cpps_integer *result);
 	void				cpps_pop_stack_to_here(C* c, cpps_stack* here, bool cleanup = true);
 	void				cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain, cpps_value& ret);
-	
 }
 
 

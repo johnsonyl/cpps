@@ -271,6 +271,10 @@ typedef long long __int64;
 
 #define cpps_time_leap(year) (((year%4==0)&&(year%100!=0))||((year%4==0)&&(year%400==0))) 
 
+#define cpps_newclass(c,type1,name1,type2,name2) type1* name1;type2 name2; cpps::newclass(c,&name1,&name2)
+
+typedef void* (*cpps_alloc_f)(size_t);
+typedef void (*cpps_free_f)(void*);
 
 #define cpps_try try {
 

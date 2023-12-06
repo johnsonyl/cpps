@@ -48,19 +48,37 @@ namespace cpps
 		{
 			mysql_close(mysql);
 			mysql = NULL;
-			mysql_library_end();//free memory; 这里多连接不知道会不会释放其他连接的??
+			
 		}
 		connect_state = false;
 		affectedrows = 0;
 	}
 
-	cpps::cpps_value cpps_mysql::call(std::string spname, cpps::cpps_value params)
-	{
-
-		cpps::cpps_value nil;
+	cpps::cpps_value cpps_mysql::call(std::string spname, cpps::cpps_value params) {
 		std::string proc = "call ";
 		proc += spname;
 		proc += "(";
+		cpps_vector* vec = cpps_to_cpps_vector(params);
+		static cpps_vector tmp_empty_vector; //empty 
+		if (!vec)
+			vec = &tmp_empty_vector;
+		if (vec->size() > 0) {
+			for (size_t i = 0; i < vec->realvector().size(); i++)
+			{
+				if (i != 0)
+					proc += ",";
+
+				proc += "?";
+			}
+		}
+		proc += ");";
+		return execute(proc, params);
+	}
+	cpps::cpps_value cpps_mysql::execute(std::string proc, cpps::cpps_value params)
+	{
+
+		cpps::cpps_value nil;
+		
 
 		cpps_vector* vec = cpps_to_cpps_vector(params);
 		static cpps_vector tmp_empty_vector; //empty 
@@ -132,15 +150,10 @@ namespace cpps
 				{
 					paramDatalist[i].is_null = true;
 				}
-				if (i != 0)
-					proc += ",";
-
-				proc += "?";
 			}
 		}
 		
 
-		proc += ");";
 
 
 		if (!checkconnect() && !real_connect())
@@ -232,44 +245,7 @@ namespace cpps
 		}
 		return ret;
 	}
-	cpps::cpps_value cpps_mysql::execute(std::string sqlcmd)
-	{
 
-
-		cpps::cpps_value nil;
-		if (sqlcmd.empty()) return nil; //NIL
-
-		if (!checkconnect() && !real_connect())
-		{
-			return nil;
-		}
-
-		if (mysql_stmt_prepare(mysql_stmt, sqlcmd.c_str(),(unsigned long) sqlcmd.size()))
-		{
-			//如果断开连接了，那么尝试重连
-			if (!checkconnect() && !real_connect())
-			{
-				return nil;
-			}
-
-			//尝试再次转换
-			if (mysql_stmt_prepare(mysql_stmt, sqlcmd.c_str(), (unsigned long)sqlcmd.size()))
-			{
-				seterror(mysql_stmt_error(mysql_stmt));
-				return nil;
-			}
-		}
-		//执行语句
-		if (mysql_stmt_execute(mysql_stmt))
-		{
-			seterror(mysql_stmt_error(mysql_stmt));
-			return nil;
-		}
-		affectedrows = mysql_stmt_affected_rows(mysql_stmt);
-		cpps_create_class_var(cpps_vector,c,cpps_vector_var, cpps_vector_ptr);
-		result_build_records(cpps_vector_ptr,true);
-		return cpps_vector_var;
-	}
 
 	void cpps_mysql::result_build_records(cpps_vector* vec,bool is_mysql_stmt_store_result)
 	{

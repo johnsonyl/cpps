@@ -42,6 +42,7 @@ namespace cpps
 		cpps_integer	size();
 		void			merge(cpps_value right);
 		void			set(cpps_value key_val, cpps_value value);
+		void			remove_at_map(cpps_map* _right);
 
 		cpps_value		where(C* c, object o);
 		cpps_value		select(C* c, object o);
@@ -75,6 +76,7 @@ namespace cpps
 		void			merge(cpps_value right);
 		cpps_value		where(C* c, object o);
 		cpps_value		select(C* c, object o);
+		void			remove_at_set(cpps_set* _right);
 		cpps_hash_set&	realset();
 	private:
 		cpps_hash_set _set;

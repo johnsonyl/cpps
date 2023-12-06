@@ -9,6 +9,19 @@ using namespace std;
 
 namespace cpps { std::string cpps_io_getfilepath(std::string str);std::string cpps_rebuild_filepath(std::string path);std::string cpps_real_path(); }
 
+
+
+#ifdef USE_TCMALLOC
+
+void*	tcmalloc_func(size_t _size) {
+	return malloc(_size);
+}
+void	tcfree_func(void* p) {
+	free(p);
+}
+
+#endif
+
 int32 main(int argc,char **argv)
 {
 #ifdef _WIN32
@@ -69,9 +82,11 @@ int32 main(int argc,char **argv)
 #endif
 	}
 
-
+#ifdef USE_TCMALLOC
+	C* c = cpps::create(argc, argv, tcmalloc_func, tcfree_func);
+#else
 	C* c = cpps::create(argc,argv);
-
+#endif
 	printf("[CPPS %s (%s, %s) on %s %s]\n", CPPS_VER,__DATE__,__TIME__, CPPS_CURRENT_EASYPLANTFORM, CPPS_CURRENT_ARCH);
 
 

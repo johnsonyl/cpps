@@ -20,8 +20,8 @@ namespace cpps
 		cpps_vector();
 		virtual ~cpps_vector();
 		void								constructor(object v);
-		void								emplace_back(cpps_value v);
-		void								push_back(cpps_value v);
+		void								emplace_back(object v);
+		void								push_back(object v);
 		void								assign(cpps_vector* v);
 		void								extend(cpps_vector* v);
 		void								pop_back();
@@ -48,7 +48,11 @@ namespace cpps
 		cpps_value							andfunc (C* c, object o);
 		cpps_value							multiplication(C* c, object o);
 		cpps_integer						indexof(cpps_value o);
+		void								swap(cpps_vector* v);
+		void								shrink_to_fit();
 		cpps_std_vector&					realvector();
+		void								remove_vec(cpps_vector* v);
+
 	private:
 		cpps_std_vector							_vec;
 		cpps_std_vector::iterator				_begin;

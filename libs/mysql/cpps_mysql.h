@@ -40,9 +40,10 @@ namespace cpps {
 		bool						connect(C* cstate, cpps::object option);
 		void						close();
 		cpps_value					call(std::string spname, cpps::cpps_value params);
+		cpps_value					execute(std::string spname, cpps::cpps_value params = cpps::nil);
 		bool						checkconnect();
 		cpps::cpps_value			make_cpps_value(enum_field_types type, void* buffer, unsigned long size);
-		cpps_value					execute(std::string sqlcmd);
+		//cpps_value				execute(std::string sqlcmd);
 		void						result_build_records(cpps_vector* vec, bool is_mysql_stmt_store_result);
 
 		bool						real_connect();

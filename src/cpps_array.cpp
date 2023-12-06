@@ -37,10 +37,14 @@ namespace cpps
 				.def_operator_inside("*",&cpps_vector::multiplication)
 				.def_operator_inside("&",&cpps_vector::andfunc)
 				.def_operator_inside("+",&cpps_vector::andfunc)
+				.def_operator("+=",&cpps_vector::extend)
+				.def_operator("-=",&cpps_vector::remove_vec)
 				.def_inside("reverse", &cpps_vector::reverse)
 				.def_inside("where", &cpps_vector::where)
 				.def_inside("remove", &cpps_vector::remove)
 				.def_inside("select", &cpps_vector::select)
+				.def("swap", &cpps_vector::swap)
+				.def("shrink_to_fit", &cpps_vector::shrink_to_fit)
 		];
 	}
 	void	cpps_vector::constructor(object v) {
@@ -78,14 +82,26 @@ namespace cpps
 		_vec.clear();
 	}
 
-	void cpps_vector::emplace_back(cpps_value v)
+	void cpps_vector::emplace_back(object v)
 	{
-		_vec.emplace_back(v);
+		if (v.isvector()) {
+			cpps_vector* v2 = cpps_to_cpps_vector(v.realval());
+			extend(v2);
+		}
+		else {
+			_vec.emplace_back(v.realval());
+		}
 	}
 
-	void cpps_vector::push_back(cpps_value v)
+	void cpps_vector::push_back(object v)
 	{
-		_vec.push_back(v);
+		if (v.isvector()) {
+			cpps_vector* v2 = cpps_to_cpps_vector(v.realval());
+			extend(v2);
+		}
+		else {
+			_vec.push_back(v.realval());
+		}
 	}
 
 	void cpps_vector::assign(cpps_vector* v)
@@ -231,9 +247,7 @@ namespace cpps
 	}
 	cpps_value cpps_vector::reverse(C* c)
 	{
-		cpps_vector* vec;
-		cpps_value ret;
-		newclass(c, &vec,&ret);
+		cpps_newclass(c, cpps_vector, vec, cpps_value, ret);
 		vec->realvector() = realvector();
 		std::reverse(vec->realvector().begin(), vec->realvector().end());
 		return ret;
@@ -301,9 +315,32 @@ namespace cpps
 		return -1;
 	}
 
+	void cpps_vector::swap(cpps_vector* v)
+	{
+		realvector().swap(v->realvector());
+	}
+
+	void cpps_vector::shrink_to_fit()
+	{
+		realvector().shrink_to_fit();
+	}
+
 	std::vector<cpps::cpps_value>& cpps_vector::realvector()
 	{
 		return _vec;
+	}
+
+	void cpps_vector::remove_vec(cpps_vector* v)
+	{
+		auto it = realvector().begin();
+		for (; it != realvector().end();)
+		{
+			cpps_integer b = v->indexof(*it);
+			if (b != -1)
+				it = realvector().erase(it);
+			else
+				++it;
+		}
 	}
 
 }

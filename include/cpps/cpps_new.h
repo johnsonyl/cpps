@@ -35,22 +35,27 @@ namespace cpps
 #endif
 	struct  memory_allocal_handler
 	{
+		memory_allocal_handler();
 		void*						mmalloc(size_t __size,const char *file, unsigned int _line);
 		void						mfree(void* m);
-		cpps_lock					_lock;
+		void						cpps_set_allocf(cpps_alloc_f _alloc_func, cpps_free_f _free_func);
 #ifdef _DEBUG
+		cpps_lock					_lock;
 		size_t						size();
 		void						dump();
 		memory_info_list			memorylist;
 	private:
 		size_t	_size;
 #endif
+	private:
+		cpps_alloc_f				alloc_func;
+		cpps_free_f					free_func;
 	};
 	struct memory_allocal
 	{
 		memory_allocal();
 		~memory_allocal();
-		void					init();
+		void					init(cpps_alloc_f _alloc_func, cpps_free_f _free_func);
 		bool					global();
 		memory_allocal_handler* gethandler();
 		void					sethandler(memory_allocal_handler*);
@@ -65,7 +70,7 @@ namespace cpps
 #define CPPSNEW_S(_Size) cpps::memory_allocal::instance().gethandler()->mmalloc(_Size,__FILE__,__LINE__)
 #define CPPSMALLOC(_Size) cpps::memory_allocal::instance().gethandler()->mmalloc(_Size,__FILE__,__LINE__)
 #define CPPSFREE(_Ptr) cpps::memory_allocal::instance().gethandler()->mfree(_Ptr)
-#define CPPSMEMORYINIT() cpps::memory_allocal::instance().init()
+#define CPPSMEMORYINIT(_alloc_func, _free_func) cpps::memory_allocal::instance().init(_alloc_func, _free_func)
 #define CPPSMEMORYHANDLER() cpps::memory_allocal::instance().gethandler()
 #define CPPSMEMORYSETHANDLER(_handler) cpps::memory_allocal::instance().sethandler(_handler)
 #ifdef _DEBUG

@@ -866,7 +866,25 @@ namespace cpps {
 		catchfun->type = CPPS_OCATCH;
 		/* true */
 		cpps_parse_rmspaceandenter(buffer);
-		cpps_parse_line(c, trycatchdomain, func, root, buffer);
+		if (buffer.cur() == '{') {
+			buffer.pop();
+
+			cpps_parse_rmspaceandenter(buffer);
+
+			while (!buffer.isend()) {
+				/* 剔除回车. */
+				cpps_parse_rmspaceandenter(buffer);
+				/* 是否到最后了. */
+				if (buffer.cur() == '}') {
+					buffer.pop();
+					return;
+				}
+				cpps_parse_line(c, trycatchdomain, func, root, buffer);
+			}
+		}
+		else {
+			cpps_parse_line(c, trycatchdomain, func, root, buffer);
+		}
 		cpps_parse_rmspaceandenter(buffer);
 		std::string el = cpps_parse_varname(buffer);
 		if (el == "catch") {
@@ -892,7 +910,25 @@ namespace cpps {
 			buffer.pop();
 			/* pop } */
 			cpps_parse_rmspaceandenter(buffer);
-			cpps_parse_line(c, domain, catchstep, root, buffer);
+			if (buffer.cur() == '{') {
+				buffer.pop();
+
+				cpps_parse_rmspaceandenter(buffer);
+
+				while (!buffer.isend()) {
+					/* 剔除回车. */
+					cpps_parse_rmspaceandenter(buffer);
+					/* 是否到最后了. */
+					if (buffer.cur() == '}') {
+						buffer.pop();
+						return;
+					}
+					cpps_parse_line(c, domain, catchstep, root, buffer);
+				}
+			}
+			else {
+				cpps_parse_line(c, domain, catchstep, root, buffer);
+			}
 			cpps_parse_rmspaceandenter(buffer);
 		}
 		else {
@@ -1907,15 +1943,51 @@ namespace cpps {
 			buffer.pop();
 			return;
 		}
+		//优化{} 因为{}效率非常低。
+		if (buffer.cur() == '{') {
+			buffer.pop();
 
-		cpps_parse_line(c, ifdomain, t, root, buffer);
+			cpps_parse_rmspaceandenter(buffer);
+
+			while (!buffer.isend()) {
+				/* 剔除回车. */
+				cpps_parse_rmspaceandenter(buffer);
+				/* 是否到最后了. */
+				if (buffer.cur() == '}') {
+					buffer.pop();
+					return;
+				}
+				cpps_parse_line(c, ifdomain, t, root, buffer);
+			}
+		}
+		else {
+			cpps_parse_line(c, ifdomain, t, root, buffer);
+		}
 		cpps_parse_rmspaceandenter(buffer);
 		int32 offset = buffer.offset();
 		/* 记住当前的字符， 因为下一句可能不是else */
 		std::string el = cpps_parse_varname(buffer);
 		if (el == "else") {
 			cpps_parse_rmspaceandenter(buffer);
-			cpps_parse_line(c, domain, f, root, buffer);
+			if (buffer.cur() == '{') {
+				buffer.pop();
+
+				cpps_parse_rmspaceandenter(buffer);
+
+				while (!buffer.isend()) {
+					/* 剔除回车. */
+					cpps_parse_rmspaceandenter(buffer);
+					/* 是否到最后了. */
+					if (buffer.cur() == '}') {
+						buffer.pop();
+						return;
+					}
+					cpps_parse_line(c, ifdomain, f, root, buffer);
+				}
+			}
+			else {
+				cpps_parse_line(c, ifdomain, f, root, buffer);
+			}
 		}
 		else {
 			buffer.seek(offset);
@@ -2101,7 +2173,25 @@ namespace cpps {
 			buffer.pop();
 			return;
 		}
-		cpps_parse_line(c, fordomain, for4, root, buffer);
+		if (buffer.cur() == '{') {
+			buffer.pop();
+
+			cpps_parse_rmspaceandenter(buffer);
+
+			while (!buffer.isend()) {
+				/* 剔除回车. */
+				cpps_parse_rmspaceandenter(buffer);
+				/* 是否到最后了. */
+				if (buffer.cur() == '}') {
+					buffer.pop();
+					return;
+				}
+				cpps_parse_line(c, fordomain, for4, root, buffer);
+			}
+		}
+		else {
+			cpps_parse_line(c, fordomain, for4, root, buffer);
+		}
 	}
 	void cpps_parse_foreach(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		cpps_node_domain* fordomain = CPPSNEW( cpps_node_domain)(child,domain, cpps_domain_type_for, "for");
@@ -2157,7 +2247,25 @@ namespace cpps {
 			buffer.pop();
 			return;
 		}
-		cpps_parse_line(c, fordomain, for4, root, buffer);
+		if (buffer.cur() == '{') {
+			buffer.pop();
+
+			cpps_parse_rmspaceandenter(buffer);
+
+			while (!buffer.isend()) {
+				/* 剔除回车. */
+				cpps_parse_rmspaceandenter(buffer);
+				/* 是否到最后了. */
+				if (buffer.cur() == '}') {
+					buffer.pop();
+					return;
+				}
+				cpps_parse_line(c, fordomain, for4, root, buffer);
+			}
+		}
+		else {
+			cpps_parse_line(c, fordomain, for4, root, buffer);
+		}
 	}
 	void cpps_parse_while(C* c, cpps_node_domain* domain, node* child, node* root, cppsbuffer& buffer) {
 		cpps_node_domain* whiledomain = CPPSNEW( cpps_node_domain)(child,domain, cpps_domain_type_while, "while");
@@ -2188,7 +2296,25 @@ namespace cpps {
 			buffer.pop();
 			return;
 		}
-		cpps_parse_line(c, whiledomain, while2, root, buffer);
+		if (buffer.cur() == '{') {
+			buffer.pop();
+
+			cpps_parse_rmspaceandenter(buffer);
+
+			while (!buffer.isend()) {
+				/* 剔除回车. */
+				cpps_parse_rmspaceandenter(buffer);
+				/* 是否到最后了. */
+				if (buffer.cur() == '}') {
+					buffer.pop();
+					return;
+				}
+				cpps_parse_line(c, whiledomain, while2, root, buffer);
+			}
+		}
+		else {
+			cpps_parse_line(c, whiledomain, while2, root, buffer);
+		}
 	}
 	node* cpps_parse_getparent_node(node* root, node* parent) {
 		if (!root) return NULL;
@@ -2828,8 +2954,8 @@ namespace cpps {
 		c->clone(_parent);
 		return c;
 	}
-	cpps::C* create(int argc, char** argv) {
-		CPPSMEMORYINIT();
+	cpps::C* create(int argc, char** argv, cpps_alloc_f alloc_func, cpps_free_f free_func) {
+		CPPSMEMORYINIT(alloc_func, free_func);
 		C* c = new cpps::C(argc, argv);
 		cpps_init_c(c);
 		cpps_init_memory(c);
@@ -2942,6 +3068,9 @@ namespace cpps {
 		return(0);
 	}
 	void  cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o,bool releasenode) {
+		/*有可能里面的让我退出 */
+		size_t count = o->l.size();
+		if (count == 0) return;
 		if (domain == NULL)
 			domain = c->_G;
 		if (root == NULL)
@@ -2949,8 +3078,6 @@ namespace cpps {
 		if (o == NULL)
 			o = c->o;
 		domain->isbreak = false;
-		/*有可能里面的让我退出 */
-		size_t count = o->l.size();
 		for (size_t i = 0; i < count && !domain->isbreak && !c->isterminate; i++) {
 			node* d = o->l[i];
 			cpps_step(c, domain, root, d);
@@ -3417,7 +3544,7 @@ namespace cpps {
 						for1_v->setval(realvector[i]);
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
 					execdomain->setexecdomain(foreachdomain);
-					cpps_step(c, execdomain, root, for4->l[0]);
+					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
 					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
@@ -3441,7 +3568,7 @@ namespace cpps {
 						for1_v->setval(*it);
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
 					execdomain->setexecdomain(foreachdomain);
-					cpps_step(c, execdomain, root, for4->l[0]);
+					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
 					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
@@ -3469,7 +3596,7 @@ namespace cpps {
 					mapnode->_second = it->second;
 					execdomain->init(foreachdomain, cpps_domain_type_exec);
 					execdomain->setexecdomain(foreachdomain);
-					cpps_step(c, execdomain, root, for4->l[0]);
+					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
 					bool isbreak = execdomain->isbreak;
 					execdomain->destory(c);
 					cpps_gc_check_step(c);
@@ -3519,7 +3646,9 @@ namespace cpps {
 							for1_v->getval().value.integer = begin;
 						execdomain->init(foreachdomain, cpps_domain_type_exec);
 						execdomain->setexecdomain(foreachdomain);
-						if(for4_node) cpps_step(c, execdomain, root, for4_node);
+						//if(for4_node) cpps_step(c, execdomain, root, for4_node);
+
+						if (for4_node) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
 						bool isbreak = execdomain->isbreak;
 						execdomain->destory(c);
 						cpps_gc_check_step(c);
