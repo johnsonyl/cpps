@@ -14,7 +14,7 @@ if(WINDOWS)
 else()
 	message(${PROJECT_SOURCE_DIR}/../include)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../include /usr/local/include)
-	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../lib  /lib /usr/lib /usr/local/lib /usr/lib64)
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../lib  /lib /usr/lib /usr/local/lib /usr/lib64 /usr/local/lib64)
 endif()
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)

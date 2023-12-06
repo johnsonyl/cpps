@@ -169,10 +169,13 @@ namespace cpps
 		if (!cpps_ismap(right)) return;
 
 		cpps_map* rightmap = cpps_to_cpps_map(right);
+#ifndef _DEBUG
 		realmap().merge(rightmap->realmap());
-		/*for (auto it : rightmap->realmap()) {
+#else
+		for (auto it : rightmap->realmap()) {
 			(*this)[it.first] = it.second;
-		}*/
+		}
+#endif
 	}
 
 	cpps_hash_map& cpps_map::realmap()
@@ -301,7 +304,11 @@ namespace cpps
 		if (!cpps_isset(right)) return;
 
 		cpps_set* rightset = cpps_to_cpps_set(right);
+#ifndef _DEBUG
 		realset().merge(rightset->realset());
+#else
+		realset().insert(rightset->realset().begin(), rightset->realset().end());
+#endif
 	}
 
 

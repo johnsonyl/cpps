@@ -877,7 +877,7 @@ namespace cpps {
 				/* 是否到最后了. */
 				if (buffer.cur() == '}') {
 					buffer.pop();
-					return;
+					break;
 				}
 				cpps_parse_line(c, trycatchdomain, func, root, buffer);
 			}
@@ -921,7 +921,7 @@ namespace cpps {
 					/* 是否到最后了. */
 					if (buffer.cur() == '}') {
 						buffer.pop();
-						return;
+						break;
 					}
 					cpps_parse_line(c, domain, catchstep, root, buffer);
 				}
@@ -1955,7 +1955,7 @@ namespace cpps {
 				/* 是否到最后了. */
 				if (buffer.cur() == '}') {
 					buffer.pop();
-					return;
+					break;
 				}
 				cpps_parse_line(c, ifdomain, t, root, buffer);
 			}
@@ -1980,7 +1980,7 @@ namespace cpps {
 					/* 是否到最后了. */
 					if (buffer.cur() == '}') {
 						buffer.pop();
-						return;
+						break;
 					}
 					cpps_parse_line(c, ifdomain, f, root, buffer);
 				}

@@ -273,8 +273,6 @@ typedef long long __int64;
 
 #define cpps_newclass(c,type1,name1,type2,name2) type1* name1;type2 name2; cpps::newclass(c,&name1,&name2)
 
-typedef void* (*cpps_alloc_f)(size_t);
-typedef void (*cpps_free_f)(void*);
 
 #define cpps_try try {
 
@@ -524,6 +522,11 @@ typedef void(__stdcall*cpps_detach_func)(cpps::C *c);
 typedef void(*cpps_attach_func)(cpps::C *c);
 typedef void(*cpps_detach_func)(cpps::C *c);
 #endif
+
+
+typedef void* (*cpps_alloc_f)(size_t);
+typedef void (*cpps_free_f)(void*);
+
 //////////////////////////////////////////////////////////////////////////
 
 #endif // CPPS_DEF_CPPS_HEAD_
