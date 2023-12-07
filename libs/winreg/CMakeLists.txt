@@ -8,6 +8,7 @@ project(winreg)
 # 将源代码添加到此项目的可执行文件。
 
 IF(WINDOWS)
+	set(CMAKE_CXX_STANDARD 17)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include )
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib /lib)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})

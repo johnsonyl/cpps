@@ -14,6 +14,7 @@ namespace cpps
 	bool cpps_isbasevar(const cpps_value& v);
 	bool cpps_io_isdir(std::string p);
 	void cpps_debug_trace_domain(C* c, int kg, std::string parent, cpps_domain* root);
+	std::string cpps_io_getfilepath(std::string str);
 	bool cpps_base_isdebug() {
 #ifdef _DEBUG
 		return true;
@@ -380,8 +381,69 @@ namespace cpps
 #endif
 	}
 	
+	std::string cpps_module_path(std::string libname) {
+		std::string path = "lib/" + libname + "/";
+		std::string fpath;
+#ifdef _WIN32
+		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
+		if (!fpath.empty())
+		{
+			return cpps_io_getfilepath(fpath);
+		}
 
-	
+#else
+
+#if defined LINUX
+		fpath = cpps_rebuild_filepath(path + "lib" + (libname + ".so"));
+#elif defined __APPLE__
+		fpath = cpps_rebuild_filepath(path + "lib" + (libname + ".dylib"));
+#endif
+		if (!fpath.empty())
+		{
+			return cpps_io_getfilepath(fpath);
+		}
+
+#endif
+		fpath = cpps_rebuild_filepath(path + "main.cpp");
+		if (!fpath.empty())
+		{
+			return cpps_io_getfilepath(fpath);
+		}
+
+		return "";
+	}
+	bool cpps_checklibrary(std::string libname) {
+
+		std::string path = "lib/" + libname + "/";
+		std::string fpath;
+#ifdef _WIN32
+		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
+		if (!fpath.empty())
+		{
+			return true;
+		}
+
+#else
+
+#if defined LINUX
+		fpath = cpps_rebuild_filepath(path + "lib" + (libname + ".so"));
+#elif defined __APPLE__
+		fpath = cpps_rebuild_filepath(path + "lib" + (libname + ".dylib"));
+#endif
+		if (!fpath.empty())
+		{
+			return true;
+		}
+
+#endif
+		fpath = cpps_rebuild_filepath(path + "main.cpp");
+		if (!fpath.empty())
+		{
+			return true;
+		}
+
+		return false;
+	}
 	
 	bool	cpps_loadlibrary(C *c,std::string libname, cppsbuffer& buffer)
 	{
@@ -921,6 +983,8 @@ namespace cpps
 			def_inside("setechofunc", cpps_setechofunc),
 			defvar(c,"_VERSION", CPPS_VER),
 			defvar(c,"_VERSIONNO", CPPS_VERN),
+			def("check_module", cpps_checklibrary),
+			def("module_path", cpps_module_path),
 			//def_inside("loadlibrary", cpps_loadlibrary),
 			//def_inside("freelibrary", cpps_freelibrary),
 			def_inside("getargs", cpps_getargs),

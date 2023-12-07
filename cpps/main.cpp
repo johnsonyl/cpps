@@ -21,7 +21,41 @@ void	tcfree_func(void* p) {
 }
 
 #endif
+#ifndef _DEBUG
+void __check_cpps_package_json(int argc, char** argv) {
+	std::string path = cpps_rebuild_filepath("lib/@check_package/main.cpp");
+	
+#ifdef USE_TCMALLOC
+	C* c = cpps::create(argc, argv, tcmalloc_func, tcfree_func);
+#else
+	C* c = cpps::create(argc, argv);
+#endif
 
+	cpps_try
+		if (!path.empty()) cpps::dofile(c, path.c_str());
+	}
+	catch (cpps_error& e)
+	{
+		printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(), e.file().empty() ? (c->curnode ? c->curnode->filename.c_str() : "") : e.file().c_str(), e.line() == 0 ? (c->curnode ? c->curnode->line : 0) : e.line()); 
+		cpps::close(c); 
+		exit(0);
+	}
+	catch (cpps_trycatch_error& e)
+	{
+		printf("error: %d : %s file:%s line:%d \n", e.error(), e.what().c_str(), e.file().empty() ? (c->curnode ? c->curnode->filename.c_str() : "") : e.file().c_str(), e.line() == 0 ? (c->curnode ? c->curnode->line : 0) : e.line());
+		cpps::close(c);
+		exit(0);
+	}
+	catch (const char* s)
+	{
+		printf("error: %s \n", s);
+		cpps::close(c);
+		exit(0);
+	}
+
+	cpps::close(c);
+}
+#endif
 int32 main(int argc,char **argv)
 {
 #ifdef _WIN32
@@ -46,7 +80,7 @@ int32 main(int argc,char **argv)
 			printf("%d\r\n", CPPS_VERN);
 			return 0;
 		}
-		else if (path == "-install" || path == "-uninstall"|| path == "-update") {
+		else if (path == "-install" || path == "-uninstall"|| path == "-update" || path == "-init") {
 			path = "lib/install/main.cpp";
 			path = cpps_rebuild_filepath(path);
 #ifdef WIN32
@@ -81,13 +115,16 @@ int32 main(int argc,char **argv)
 		if(chdir(cpps_io_getfilepath(path).c_str())){}
 #endif
 	}
-
+	printf("[CPPS %s (%s, %s) on %s %s]\n", CPPS_VER, __DATE__, __TIME__, CPPS_CURRENT_EASYPLANTFORM, CPPS_CURRENT_ARCH);
+#ifndef _DEBUG
+	__check_cpps_package_json(argc, argv);
+#endif
 #ifdef USE_TCMALLOC
 	C* c = cpps::create(argc, argv, tcmalloc_func, tcfree_func);
 #else
 	C* c = cpps::create(argc,argv);
 #endif
-	printf("[CPPS %s (%s, %s) on %s %s]\n", CPPS_VER,__DATE__,__TIME__, CPPS_CURRENT_EASYPLANTFORM, CPPS_CURRENT_ARCH);
+
 
 
 	cpps_try

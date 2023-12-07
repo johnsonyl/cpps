@@ -44,6 +44,9 @@ namespace cpps {
 	bool cpps_io_isdir(std::string p);
 	bool cpps_io_isfile(std::string p);
 	void cpps_cpp_real_walk(std::vector<std::string>& vct, std::string path, bool bfindchildren);
+	node* cpps_parse_getsymbol2node(C* c, node* o, std::string  symbolStr, cppsbuffer& buffer, bool leftsymbol);
+
+
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc)
 	{
 #ifdef _WIN32
@@ -575,7 +578,15 @@ namespace cpps {
 		}
 		if (str->s == "operator") {
 			cpps_parse_rmspaceandenter(buffer);
-			node* op = cpps_parse_symbol(c, domain, str, buffer);
+			node* op = NULL;
+			if (buffer.cur() == '(' && buffer.at(buffer.offset() + 1) == ')') {
+				//operator () 特殊处理
+				op = cpps_parse_getsymbol2node(c, str, "()", buffer, false);
+			}
+			else {
+				op = cpps_parse_symbol(c, domain, str, buffer);
+			}
+			
 			if (!op) throw(cpps_error(str->filename, buffer.line(), cpps_error_varerror, "invalid operator symbol."));
 			str->s = op->symbol->symbolfuncname;
 			str->symbol = op->symbol;
@@ -1530,6 +1541,18 @@ namespace cpps {
 
 		return p;
 	}
+	node* cpps_parse_getsymbol2node(C*c, node* o, std::string  symbolStr, cppsbuffer& buffer, bool leftsymbol) {
+		cpps_symbol* symbol = cpps_parse_getsymbol(c, symbolStr, leftsymbol);
+		if (!symbol) {
+			return(NULL);
+		}
+		buffer.seek(buffer.offset() + (int32)symbolStr.size());
+		node* pNode = CPPSNEW(node)(o->filename, buffer.line());
+		pNode->type = CPPS_FUNCNAME;
+		pNode->symbol = symbol;
+		pNode->s = symbolStr;
+		return pNode;
+	}
 	node* cpps_parse_symbol(C* c, cpps_node_domain* domain, node* o, cppsbuffer& buffer, bool leftsymbol) {
 		std::string	symbolStr;
 		std::string	tempStr;
@@ -1549,16 +1572,7 @@ namespace cpps {
 			curoffset += 1;
 			ch = buffer.at(curoffset);
 		}
-		cpps_symbol* symbol = cpps_parse_getsymbol(c, symbolStr, leftsymbol);
-		if (!symbol) {
-			return(NULL);
-		}
-		buffer.seek(buffer.offset() + (int32)symbolStr.size());
-		node* pNode = CPPSNEW (node)(o->filename, buffer.line());
-		pNode->type = CPPS_FUNCNAME;
-		pNode->symbol = symbol;
-		pNode->s = symbolStr;
-		return(pNode);
+		return cpps_parse_getsymbol2node(c,o,symbolStr,buffer,leftsymbol);
 	}
 	void cpps_parse_expression(C* c, cpps_node_domain* domain, node* param, node* root, cppsbuffer& buffer) {
 		node* lastOpNode = param;
@@ -5373,12 +5387,24 @@ namespace cpps {
 	}
 	cpps_value cpps_step_callfunction(C* c, cpps_domain* domain, cpps_domain* root, cpps_value func, node* d, cpps_domain* leftdomain) {
 		cpps_value ret;
+		cpps_domain* _tmp = leftdomain;
 		if (func.tt == CPPS_TLAMBDAFUNCTION) {
 			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)func.value.domain;
 			cpps_lambda_function* pfunc = (cpps_lambda_function*)cppsclassvar->getclsptr();
 			func = pfunc;
 			func.tt = CPPS_TFUNCTION;
 		}
+		if (func.tt == CPPS_TCLASSVAR) {
+			cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(func);
+			cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
+			cpps_function* _func = cppsclass->getoperator("()");
+			if (_func) {
+				leftdomain = cppsclassvar;
+				func = _func;
+				func.tt = CPPS_TFUNCTION;
+			}
+		}
+
 		if (func.tt == CPPS_TFUNCTION) {
 			cpps_function* f = func.value.func;
 			bool take_disabled_non_def_var = c->disabled_non_def_var;
@@ -5426,11 +5452,14 @@ namespace cpps {
 			}
 		}
 		else {
+			
 			/* 需要一个函数，但是他不是！！！！ */
 			if (d->getleft()->l.size() == 2)
-				printf("cpps warring: [%s] is not function  line:%d , file:%s \n", d->getleft()->getright()->s.c_str(), d->line, d->filename.c_str()); else
+				printf("cpps warring: [%s] is not function  line:%d , file:%s \n", d->getleft()->getright()->s.c_str(), d->line, d->filename.c_str()); 
+			else
 				printf("cpps warring: [%s] is not function  line:%d , file:%s \n", d->getleft()->s.c_str(), d->line, d->filename.c_str());
 		}
+		leftdomain = _tmp;
 		return(ret);
 	}
 	cpps::object _G(C* c) {

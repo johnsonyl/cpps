@@ -2508,6 +2508,7 @@ namespace cpps
 		c->symbolmap["..="]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"..",		CPPS_SYMBOL_TYPE_STRCATASSIGNMENT);
 		c->symbolmap["[]"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"[]",		CPPS_SYMBOL_TYPE_GETOBJECT);
 		c->symbolmap["->"]		= new cpps_symbol(9, 2, LEFTMUSTVAR,	"->",		CPPS_SYMBOL_TYPE_GETSUBOBJECT);
+		c->symbolmap["()"]		= new cpps_symbol(9, 2, RIGHTMUSTVAR,	"()",		CPPS_SYMBOL_TYPE_FUNC);
 
 		c->symbolleftasso[0] = false;
 		c->symbolleftasso[1] = true;
