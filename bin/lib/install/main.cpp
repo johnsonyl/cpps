@@ -6,9 +6,85 @@ var args = getargs();
 var compiler_result = false;
 var install_path = "";
 var build_type = sys.debug;
-var modulename = args[2];
-if(modulename == "" || modulename == null) exit(0); 
+var _modulename = args[2];
+if(_modulename == "" || _modulename == null) exit(0); 
+var get_package_json(var modulename){
 
+	var modulepath = module_path(modulename);
+	var package_buff = io.readfile("{modulepath}package.json");
+	if(package_buff != null && !package_buff.empty()) 
+	{
+		return json.decode(package_buff);
+	}
+	return {
+		"name" : modulename,
+		"package" : {
+			"dependencies" : {}
+		},
+		"dependencies" : {}
+	};
+}
+var create_app_package_json(){
+	var app_name = io.normpath(io.getrealpath());
+	return {
+		"name" : app_name.substr(0,app_name.rfind("/")),
+		"package" : {
+			"dependencies" : {}
+		},
+		"dependencies" : {}
+	};
+}
+var get_app_package_json(){
+	var package_buff = io.readfile("package.json");
+	if(package_buff != null && !package_buff.empty()) 
+	{
+		return json.decode(package_buff);
+	}
+	return create_app_package_json();
+}
+var write_app_package_json(var v){
+	io.writefile("package.json",json.encode(v));
+}
+var make_pageage_info(var module_package,var info){
+	return module_package{
+		"version" : module_package->version,
+		"jsonfilepath" : info->downurl,
+		"targzfilepath" : info->downurl1,
+		"hash": info->hash,
+		"dependencies": module_package->packages->dependencies,
+		"cpps": ">1.0.2"
+	};
+}
+var package_json_install(var modulename,var info){
+	/**/
+	var module_package = get_package_json(modulename);
+	var app_package = get_app_package_json();
+	if(ismap(module_package) && ismap(app_package)){
+		app_package->dependencies += module_package->dependencies;
+		app_package->packages->dependencies.insert(modulename,module_package->version);
+		app_package->dependencies.insert(modulename,make_pageage_info(module_package,info));
+		write_app_package_json(app_package);
+	}
+}
+var package_json_uninstall(var modulename){
+	/**/
+	var module_package = get_package_json(modulename);
+	var app_package = get_app_package_json();
+	if(ismap(module_package) && ismap(app_package)){
+		for(var deps : app_package->packages->dependencies){
+			if(deps.first() != modulename){
+				var other_package = get_package_json(deps->first());
+				if(ismap(other_package)){
+					module_package->dependencies -= other_package->dependencies;
+				}
+			}
+		}
+		app_package->dependencies -= module_package->dependencies;
+		app_package->packages->dependencies.erase(modulename);
+		app_package->dependencies->erase(modulename);
+		write_app_package_json(app_package);
+	}
+}
 var download(var file,var showname)
 {
 	
@@ -41,21 +117,23 @@ var download(var file,var showname)
 	println("");
 	return ret;
 }
-var getmoduleinfo()
+var getmoduleinfo(var modulename)
 {
 	var url = "http://c.cppscript.org:88/download/downfile?name={modulename}";
 	var ret = http.get(url);
 	return json.decode(ret);
 }
-var install()
+var install(var modulename,var version,var is_update_package)
 {
-	var modulepath = "{io.getrealpath()}lib/{modulename}";
+	var modulepath = module_path(modulename);
 	var exists = io.file_exists(modulepath);
 	if(exists)
 	{
 		println_color("The {modulename} module is already installed.",1)
 		exit(0);
 	}
+	//默认安装在运行目录
+	modulepath = "lib/{modulename}";
 
 	println_color("-- Start install {modulename} module..",3);
 
@@ -64,7 +142,7 @@ var install()
 	//1.获取模块文件
 	//post 请求 获取压缩包地址 与 config.json地址
 	print("-- Seraching for module info...");
-	var info = getmoduleinfo();
+	var info = getmoduleinfo(modulename);
 	if(!ismap(info)){
 		println_color("faild",1);
 		println("Ops, cpps server is crash...")
@@ -106,7 +184,6 @@ var install()
 
 	//4.解压压缩包
 	print("-- Start uncompressed module files...");
-	var modulepath = "{io.getrealpath()}lib/{modulename}";
 	io.mkdirs(modulepath);
 
 	var jsonfile_realpath = "{modulepath}/{io.getfilename(jsonfilepath)}";
@@ -124,32 +201,68 @@ var install()
 	file.extractall("{modulepath}/");
 	println_color("ok",2);
 
-	install_path = "{io.getrealpath()}lib/{modulename}/";
+
+	if(is_update_package){
+		print("-- Downloading module dependencies files...");
+		var module_package = get_package_json(modulename);
+		var app_package = get_app_package_json();
+		if(ismap(module_package) && ismap(app_package)){
+			module_package->dependencies -= app_package->dependencies;
+			for(var deps : module_package->dependencies){
+				install(deps.first(),dep.scecond()->version,false);
+			}
+		}
+	}
+	
+
+	install_path = modulepath;
 	println_color("-- Start compiler module files...",3);
 
 	dofile("{modulepath}/setup.cpp"); //compiler
-	if(compiler_result)
+	if(compiler_result){
 		println_color("-- Install {modulename} is success.",2);
+		if(is_update_package) package_json_install(modulename,info);
+	}
 	else
 	{
 		println_color("-- Ops.. install {modulename} is faild. uninstall {modulename} module.",1);
-		uninstall();
+		uninstall(modulename, false);
 	}
 
 }
 
-var uninstall()
+var uninstall(var modulename,var is_update_package)
 {
-	
-	var modulepath = "{io.getrealpath()}lib/{modulename}";
+	var modulepath = module_path(modulename);
 	var exists = io.file_exists(modulepath);
 	if(!exists)
 	{
 		println_color("The {modulename} module is not already installed.",1);
 		return;
 	}
+	if(is_update_package){
+		println("-- Uninstall module dependencies files...");
+		var module_package = get_package_json(modulename);
+		var app_package = get_app_package_json();
+		if(ismap(module_package) && ismap(app_package)){
+			for(var deps : app_package->packages->dependencies){
+				if(deps.first() != modulename){
+					var other_package = get_package_json(deps->first());
+					if(ismap(other_package)){
+						module_package->dependencies -= other_package->dependencies;
+					}
+				}
+			}
+			for(var deps : module_package->dependencies){
+				uninstall(deps.first(),false);
+			}
+		}
+		package_json_uninstall(modulename);
+	}
+
 	var list = io.walk(modulepath);
 	println_color("-- Start uninstall {modulename}...",3);
+
 	var i = list.size()-1;
 	for(; i >= 0; i--){
 		var path = list[i];
@@ -165,9 +278,9 @@ var uninstall()
 	io.rmdir(modulepath);
 	println_color("-- Uninstall {modulename} is done.",2);
 }
-var update()
+var update(var modulename)
 {
-	var modulepath = "{io.getrealpath()}lib/{modulename}";
+	var modulepath = module_path(modulename);
 	var exists = io.file_exists(modulepath);
 	if(!exists)
 	{
@@ -175,21 +288,21 @@ var update()
 		return;
 	}
 	print("-- Loading module info...");
-	var info = getmoduleinfo();
+	var info = getmoduleinfo(modulename);
 	println_color("ok",2);
 	print("-- Checking module version info...");
 	println_color("ok",2);
-	uninstall();
-	install();
+	uninstall(modulename,true);
+	install(modulename,"last",true);
 }
 if(args[1] == "-install"){
-	install();
+	install(_modulename,_version,true);
 }
 else if (args[1] == "-uninstall")
 {
-	uninstall();
+	uninstall(_modulename,true);
 }
 else if (args[1] == "-update")
 {
-	update();
+	update(_modulename);
 }
