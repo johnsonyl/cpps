@@ -38,7 +38,7 @@ namespace cpps {
 		}
 		int8 status = vtask->state();
 		while (status == cpps_async_task_running) {
-			coroutine::yield(loop->ordinator);
+			coroutine::yield(*loop->ordinator);
 			status = vtask->state();
 		}
 		return ret;
@@ -73,7 +73,7 @@ namespace cpps {
 				task->runstate = cpps_async_task_timeouted;
 				break;
 			}
-			coroutine::yield(loop->ordinator);
+			coroutine::yield(*loop->ordinator);
 			status = task->state();
 		}
 		return ret;

@@ -5,6 +5,7 @@ namespace cpps {
 	{
 		c = NULL;
 		runstate = false;
+		ordinator = Singleton<coroutine::Ordinator>::getInstance();
 	}
 
 	cpps_async_loop::~cpps_async_loop()
@@ -16,7 +17,7 @@ namespace cpps {
 	void cpps_async_loop::setcstate(C* pc)
 	{
 		c = pc;
-		c->ordinator = &ordinator;
+		c->ordinator = Singleton< coroutine::Ordinator>::getInstance();
 	}
 	cpps_value	 cpps_async_loop::run_until_complete(C* c, cpps_value task)
 	{
@@ -86,7 +87,7 @@ namespace cpps {
 		for (auto vtask : _tasks) {
 			cpps_async_task* task2 = cpps_converter<cpps_async_task*>::apply(vtask);
 			if (task2 && task2->rt != MAXUINT64)
-				coroutine::destroy(ordinator, task2->rt);
+				coroutine::destroy(*ordinator, task2->rt);
 		}
 		_tasks.clear();
 
@@ -120,14 +121,14 @@ namespace cpps {
 					else if (task->state() == cpps_async_task_running){
 						/*将这个协程的stack设置回来*/
 						c->setcallstack(&task->takestacklist);
-						coroutine::resume(ordinator, task->rt);
+						coroutine::resume(*ordinator, task->rt);
 						
 						vtask = _tasks[i]; /*需要恢复task*/
 						task = cpps_converter<cpps_async_task*>::apply(vtask);
 						hasrun = true;
 						if (task->state() == cpps_async_task_done || task->state() == cpps_async_task_thorw) {
 							if(task->state() == cpps_async_task_done) task->call_done_callback(c);
-							coroutine::destroy(ordinator, task->rt);
+							coroutine::destroy(*ordinator, task->rt);
 							task->rt = MAXUINT64;
 							_tasks[i] = nil;
 						}
@@ -138,16 +139,16 @@ namespace cpps {
 
 							c->setcallstack(&task->takestacklist);
 							c->isterminate = true; //通知协程停止.
-							ordinator.isterminate = true;//通知协程停止.
-							coroutine::resume(ordinator, task->rt); //停止的原因是为了清理变量,否则导致GC计数永不为0 导致不能释放内存.造成内存泄露.
+							ordinator->isterminate = true;//通知协程停止.
+							coroutine::resume(*ordinator, task->rt); //停止的原因是为了清理变量,否则导致GC计数永不为0 导致不能释放内存.造成内存泄露.
 
 							vtask = _tasks[i]; /*需要恢复task*/
 							task = cpps_converter<cpps_async_task*>::apply(vtask);
 
 							c->isterminate = false;//返回正常状态.
-							ordinator.isterminate = false;//返回正常状态.
+							ordinator->isterminate = false;//返回正常状态.
 
-							coroutine::destroy(ordinator, task->rt);
+							coroutine::destroy(*ordinator, task->rt);
 						}
 						task->rt = MAXUINT64;
 						_tasks[i] = nil; /*可以释放了.*/
@@ -195,7 +196,7 @@ namespace cpps {
 	void cpps_async_loop::push_task(C*c,cpps_value vtask) 
 	{
 		cpps_async_task* task = cpps_converter<cpps_async_task*>::apply(vtask);
-		task->rt = coroutine::create(ordinator,std::bind(cpps_async_task::run, task, c));/*创建协程*/
+		task->rt = coroutine::create(*ordinator,std::bind(cpps_async_task::run, task, c));/*创建协程*/
 		task->start(c);
 		
 		_tasks.push_back(vtask); //加入默认列表

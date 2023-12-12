@@ -13,6 +13,7 @@
 
 
 #include "cpps_def.h"
+#include "cpps_singleton.h"
 #include "cpps_lock.h"
 #include "cpps_new.h"
 #include "cpps_object_pool.h"

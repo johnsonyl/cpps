@@ -27,7 +27,7 @@ namespace cpps
 		void											push_task(C *c, cpps_value task);
 		cpps_value										run_until_complete(C* c, cpps_value task);
 		cpps_value										create_task(C* c, cpps_async_object* obj, cpps_async_task** outtask);
-		coroutine::Ordinator							ordinator;
+		coroutine::Ordinator							*ordinator;
 		std::vector< cpps_value >						_tasks;
 		C*												c;
 		bool											runstate;

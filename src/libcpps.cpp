@@ -3446,7 +3446,7 @@ namespace cpps {
 	}
 	void cpps_step_yield(C* c, cpps_domain* domain, node* d) {
 		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
-		cpps::coroutine::yield(loop->ordinator);
+		cpps::coroutine::yield(*loop->ordinator);
 	}
 	void cpps_step_if(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		cpps_domain* leftdomain = NULL;
