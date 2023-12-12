@@ -14,7 +14,6 @@
 
 namespace cpps
 {
-
 	struct cpps_vector
 	{
 		cpps_vector();
@@ -54,9 +53,8 @@ namespace cpps
 		void								remove_vec(cpps_vector* v);
 
 	private:
-		cpps_std_vector							_vec;
-		cpps_std_vector::iterator				_begin;
-
+		cpps_std_vector						_vec;
+		cpps_std_vector::iterator			_begin;
 	};
 	void	cpps_regarray(C *c);
 

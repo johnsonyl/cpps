@@ -392,6 +392,12 @@ namespace cpps
 		value.func = f;
 	}
 
+	cpps_value::cpps_value(cpps_classvar_quato* f)
+	{
+		tt = CPPS_TQUOTECLASSVAR;
+		value.quato = f;
+	}
+
 	cpps_value::cpps_value(const bool b)
 	{
 		tt = CPPS_TBOOLEAN;

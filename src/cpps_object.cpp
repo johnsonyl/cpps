@@ -2,8 +2,8 @@
 
 namespace cpps
 {
-
-
+	void cpps_base_printf(C* c, object b);
+	void cpps_calculate_expression_quote_real(cpps_domain* left, cpps_value& src, cpps_value& tar, bool isconst);
 	cpps::int32 type(object&& o) {
 		return type(o);
 	}
@@ -41,6 +41,15 @@ namespace cpps
 	std::string type_s(object&& o)
 	{
 		return type_s(o);
+	}
+	void print(C*c,const object& o)
+	{
+		cpps_base_printf(c, o);
+	}
+	void println(C*c,const object& o)
+	{
+		print(c,o);
+		printf("\n");
 	}
 //#define value.real() (value.tt == CPPS_TREF ? *(value.value.value) : value)
 
@@ -324,7 +333,7 @@ namespace cpps
 				cpps_domain* leftdomain = NULL;
 				cpps_regvar* var = value.real().value.domain->getvar(k, leftdomain, true,true);
 				if (var) {
-					ret = cpps_value(&var->getval());
+					cpps_calculate_expression_quote_real(value.real().value.domain, var->getval(), ret, false);
 				}
 			}
 		}

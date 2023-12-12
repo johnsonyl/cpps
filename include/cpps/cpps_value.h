@@ -22,6 +22,7 @@ namespace cpps
 	struct cpps_cppsclassvar;
 	struct cpps_vector;
 	struct cpps_map;
+	struct cpps_classvar_quato;
 	struct cpps_set;
 	struct cpps_pair;
 #pragma pack(1)
@@ -39,6 +40,7 @@ namespace cpps
 		cpps_value(char& strv);
 		cpps_value(const bool b);
 		cpps_value(cpps_function* f);
+		cpps_value(cpps_classvar_quato* f);
 		cpps_value(cpps_domain* d);
 		cpps_value(cpps_cppsclass* d);
 		cpps_value(cpps_cppsclassvar* d);
@@ -81,6 +83,7 @@ namespace cpps
 			cpps_regvar *		var;		// 变量指针
 			cpps_value *		value;		// 值引用
 			char*				strv;		// String[]扩展.
+			cpps_classvar_quato* quato;		// c++classvar quato
 		};
 		Value					value;		//值。
 		int8					tt;			//类型

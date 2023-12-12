@@ -33,6 +33,7 @@ namespace cpps
 		object();
 		object(const object& k);
 		object(const cpps_value& v);
+		
 
 		static object real(object& o);
 		struct vector
@@ -147,6 +148,10 @@ namespace cpps
 		static object	create(C*c, Type v) {
 			return object(c, v);
 		}
+		template<class Type>
+		static object	string(C*c, Type v) {
+			return object(c, v);
+		}
 		object&		operator=(const cpps_value k);
 		object&		operator=(const object& k);
 		//_G root node.
@@ -222,6 +227,18 @@ namespace cpps
 
 			value = cpps_cpp_to_cpps_converter<Type>::apply(c, v);
 		}
+		object(int64 v) { value = cpps_value((cpps_integer)v); }
+		object(int32 v) { value = cpps_value((cpps_integer)v); }
+		object(int16 v) { value = cpps_value((cpps_integer)v); }
+		object(int8 v) { value = cpps_value((cpps_integer)v); }
+		object(usint8 v) { value = cpps_value((cpps_uinteger)v); }
+		object(usint16 v) { value = cpps_value((cpps_uinteger)v); }
+		object(usint32 v) { value = cpps_value((cpps_uinteger)v); }
+		object(usint64 v) { value = cpps_value((cpps_uinteger)v); }
+		object(long double v) { value = cpps_value((cpps_number)v); }
+		object(double v) { value = cpps_value((cpps_number)v); }
+		object(float v) { value = cpps_value((cpps_number)v); }
+
 		cpps_value	value;
 	};
 
@@ -229,6 +246,9 @@ namespace cpps
 	std::string type_s(const object& o);
 	int32		type(object&& o);
 	std::string type_s(object&& o);
+
+	void		print(C*c,const object& o);
+	void		println(C* c, const object& o);
 }
 
 #endif // CPPS_OBJECT_CPPS_HEAD_

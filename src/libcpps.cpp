@@ -4514,9 +4514,13 @@ namespace cpps {
 			}
 		}
 	}
-	void cpps_calculate_expression_quote_real(cpps_value& src, cpps_value& tar, bool isconst)
+	void cpps_calculate_expression_quote_real(cpps_domain *left,cpps_value& src, cpps_value& tar, bool isconst)
 	{
-		if (src.tt == CPPS_TREF) {
+		if (src.tt == CPPS_TQUOTECLASSVAR) {
+			cpps_classvar_quato* f = src.value.quato;
+			tar = f->getvalue(left);
+		}
+		else if (src.tt == CPPS_TREF) {
 			//cpps_value tmp = *src.value.value;
 			//tar = cpps_value(isconst ? (tmp) : (&*src.value.value));
 			tar = isconst ? *src.value.value : cpps_value(&*src.value.value);
@@ -4542,20 +4546,20 @@ namespace cpps {
 		if (d->offsettype == CPPS_OFFSET_TYPE_GLOBAL) {
 			cpps_regvar* var = c->_G->getregidxvar(d->offset);
 			if (var) {
-				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
+				cpps_calculate_expression_quote_real( c->_G,var->getval(), ret, var->isconst());
 			}
 		}
 		else if (d->offsettype == CPPS_OFFSET_TYPE_SELF) {
 			cpps_regvar* var = root->getregidxvar(d->offset);
 			if (var) {
-				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
+				cpps_calculate_expression_quote_real( root, var->getval(), ret, var->isconst());
 			}
 		}
 		else if (d->offsettype == CPPS_OFFSET_TYPE_LEFTCLASS) {
 			cpps_regvar* var = c->_G->getregidxvar(d->offset);
 			if (var) {
 
-				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
+				cpps_calculate_expression_quote_real( c->_G,var->getval(), ret, var->isconst());
 
 				cpps_domain* _classvarroot = cpps_calculate_expression_offset_getclassvar(root);
 				assert(_classvarroot);
@@ -4568,7 +4572,7 @@ namespace cpps {
 
 			cpps_regvar* var = _classvarroot->parent[1]->getregidxvar(_classvarroot->parent[1]->parent[0]->getidxoffset(_classvarroot->parent[0]) + d->offset);
 			if (var) {
-				cpps_calculate_expression_quote_real(var->getval(), ret, var->isconst());
+				cpps_calculate_expression_quote_real( _classvarroot->parent[1],var->getval(), ret, var->isconst());
 			}
 		}
 	}
@@ -4758,7 +4762,7 @@ namespace cpps {
 					
 
 					cpps_value src = doclassfunction(c, leftobject, symbolfunc, tuple_value).value;
-					cpps_calculate_expression_quote_real(src, ret, false);
+					cpps_calculate_expression_quote_real( cpps_to_domain(left), src, ret, false);
 					
 				}
 				else
@@ -4943,7 +4947,7 @@ namespace cpps {
 					if (idx < 0) {
 						idx = pVec->size() + idx;
 					}
-					cpps_calculate_expression_quote_real(pVec->cpps_at(idx), ret, false);
+					cpps_calculate_expression_quote_real(NULL,pVec->cpps_at(idx), ret, false);
 				}
 				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "map") {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
@@ -4955,7 +4959,7 @@ namespace cpps {
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
-					cpps_calculate_expression_quote_real(pMap->cpps_find(right), ret, false);
+					cpps_calculate_expression_quote_real( NULL, pMap->cpps_find(right), ret, false);
 				}
 				else {
 					object leftobject = object(left);
@@ -4969,7 +4973,7 @@ namespace cpps {
 						cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain, param.getval());
 						cpps_value src = doclassfunction(c, leftobject, symbolfunc, param).value;
 						if (src.isref())
-							cpps_calculate_expression_quote_real(src, ret, false);
+							cpps_calculate_expression_quote_real( NULL, src, ret, false);
 						else
 							ret = src;
 					}
@@ -5016,7 +5020,7 @@ namespace cpps {
 			v = domain->getvar(d->s, leftdomain);
 
 		if (v) {
-			cpps_calculate_expression_quote_real(v->getval(),ret,false);
+			cpps_calculate_expression_quote_real(leftdomain? leftdomain : domain,v->getval(),ret,false);
 		}
 		else {
 			if (!c->disabled_non_def_var) {
@@ -5053,7 +5057,7 @@ namespace cpps {
 					if (idx < 0) {
 						idx = pVec->size() + idx;
 					}
-					cpps_calculate_expression_quote_real(pVec->cpps_at(idx), ret, false);
+					cpps_calculate_expression_quote_real(NULL,pVec->cpps_at(idx), ret, false);
 				}
 				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "map") {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
@@ -5065,7 +5069,7 @@ namespace cpps {
 					CPPS_TO_REAL_VALUE(right);
 
 					leftdomain = takedomain;
-					cpps_calculate_expression_quote_real(pMap->cpps_find(right), ret, false);
+					cpps_calculate_expression_quote_real( NULL, pMap->cpps_find(right), ret, false);
 				}
 				else {
 					object leftobject = object(left);
@@ -5079,7 +5083,7 @@ namespace cpps {
 						cpps_calculate_expression(c, domain, root, d->getright()->getleft()->getleft()->getleft(), leftdomain, param.getval());
 						cpps_value src = doclassfunction(c, leftobject, symbolfunc, param).value;
 						if (src.isref())
-							cpps_calculate_expression_quote_real(src, ret, false);
+							cpps_calculate_expression_quote_real( NULL, src, ret, false);
 						else
 							ret = src;
 					}
@@ -5130,7 +5134,7 @@ namespace cpps {
 					if (cppsclass->classname == "map") {
 						cpps_map* vmap = cpps_converter<cpps_map*>::apply(left);
 
-						cpps_calculate_expression_quote_real(vmap->cpps_find(cpps_value(c, d->getright()->s)), ret, false);
+						cpps_calculate_expression_quote_real( NULL, vmap->cpps_find(cpps_value(c, d->getright()->s)), ret, false);
 						//ret = vmap->cpps_find(cpps_value(c,d->getright()->s));
 						return;
 					}
@@ -5162,7 +5166,7 @@ namespace cpps {
 				cpps_value src;
 				cpps_calculate_expression(c, execdomain, root, d->getright(), leftdomain,src);
 				if(src.tt != CPPS_TNIL)
-					cpps_calculate_expression_quote_real(src, ret, false);
+					cpps_calculate_expression_quote_real( NULL, src, ret, false);
 				execdomain->destory(c);
 				c->domain_free(execdomain);
 			}
@@ -5190,7 +5194,7 @@ namespace cpps {
 				leftdomain = left.value.domain;
 				cpps_value src;
 				cpps_calculate_expression(c, left.value.domain, root, d->getright(), leftdomain,src);
-				cpps_calculate_expression_quote_real(src, ret, false);
+				cpps_calculate_expression_quote_real( NULL, src, ret, false);
 			}
 		}
 		else {

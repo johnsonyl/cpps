@@ -104,6 +104,7 @@
 #define CPPS_TSTRINGV			13
 #define CPPS_TELLIPSIS			14
 #define CPPS_TUINTEGER			15	
+#define CPPS_TQUOTECLASSVAR		16
 
 #define CPPS_SINGLERET		0
 #define CPPS_MUNITRET		1
@@ -234,6 +235,7 @@ enum
 #define cpps_def_regvar					3
 #define cpps_def_regparentclass			4
 #define cpps_def_regenum				5
+#define cpps_def_regclassvar			6
 
 
 #define MAXSYMBOLPRIO 10 // ²»µÃ³¬¹ý16

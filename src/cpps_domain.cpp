@@ -155,6 +155,14 @@ namespace cpps
 				var->setsource(true);
 				var->setconst(true);
 			}
+			else if (f->type == cpps_def_regclassvar) {
+				cpps_reg_class_var* _clsvar = (cpps_reg_class_var*)f;
+				_clsvar->_v->setclass((cpps_cppsclass*)this);
+				auto tmp = cpps_value(_clsvar->_v);
+				var->setval(tmp);
+				var->setsource(true);
+				var->setconst(false);
+			}
 			cpps_reg* take = f;
 			f = f->next;
 			take->release();

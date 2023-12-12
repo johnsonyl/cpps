@@ -28,6 +28,41 @@ namespace cpps
 	struct Buffer;
 
 
+	struct cpps_classvar_quato
+	{
+		cpps_classvar_quato(){}
+		virtual ~cpps_classvar_quato(){}
+		virtual void setvarname(std::string name) { varname = name; }
+		virtual std::string getvarname() { return varname; }
+		virtual cpps_cppsclass* getclass() { return _cls; }
+		virtual void setclass(cpps_cppsclass* cls) { _cls = cls; }
+		virtual void setvalue(cpps_domain *domain,cpps_value _v){}
+		virtual cpps_value getvalue( cpps_domain* domain) { return nil; }
+		virtual void release() { CPPSDELETE(this); }
+
+		std::string		varname;
+		cpps_cppsclass* _cls;
+	};
+
+	template<class _C>
+	struct cpps_classvar_quato_template : public cpps_classvar_quato
+	{
+		cpps_classvar_quato_template(std::string name, object _C::* _v) { setvarname(name); v = _v; }
+		virtual ~cpps_classvar_quato_template() {}
+		virtual void setvalue(cpps_domain* domain, cpps_value _v) {
+			cpps_classvar<_C>* cls = (cpps_classvar<_C> *)domain;
+			object& val = (cls->__class->*v);
+			val = _v.real();
+		}
+		virtual cpps_value getvalue(cpps_domain* domain) { 
+			cpps_classvar<_C>* cls = (cpps_classvar<_C> *)domain;
+			object& val = (cls->__class->*v);
+			return val.ref();
+		}
+		virtual void release() { CPPSDELETE(this); }
+
+		object _C::* v;
+	};
 
 	struct cpps_function
 	{
@@ -99,6 +134,22 @@ namespace cpps
 		virtual ~cpps_reggvar() {}
 		virtual void release() { CPPSDELETE( this); }
 
+	};
+	
+
+	
+	struct cpps_reg_class_var : public cpps_reg
+	{
+		cpps_reg_class_var(std::string n, cpps_classvar_quato* v)
+		{
+			type = cpps_def_regclassvar;
+			varname = n;
+			value.tt = CPPS_TUSERDATA;
+			_v = v;
+		}
+		virtual ~cpps_reg_class_var() {}
+		virtual void release() { CPPSDELETE(this); }
+		cpps_classvar_quato* _v;
 	};
 	struct cpps_regparentclass : public cpps_reg
 	{
@@ -198,7 +249,7 @@ namespace cpps
 
 			call_function< R>(c,*ret,domain, *o, func, f, cpps_is_void<R>());
 		}
-		virtual void release() { CPPSDELETE( this); }
+		virtual void release() { CPPSDELETE( this ); }
 		R(CLS::* f)();
 		vector1<R> param;
 	};
@@ -220,6 +271,11 @@ namespace cpps
 	cpps_reggvar* make_regvar(std::string name, F v)
 	{
 		return CPPSNEW( cpps_reggvar)(name, v);
+	}
+	template<typename _C>
+	cpps_reg_class_var* make_regclassvar(std::string name, object _C::* v)
+	{
+		return CPPSNEW(cpps_reg_class_var)(name, CPPSNEW(cpps_classvar_quato_template<_C>)(name,v));
 	}
 	cpps_regparentclass* make_parentclass(cpps_cppsclass* _cppsclass);
 	

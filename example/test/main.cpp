@@ -12,7 +12,7 @@ public:
 	int i;
 	void	parentTestFunc()
 	{
-		printf("call CppParentClassTest::parentTestFunc() : %d",i);
+		printf("call CppParentClassTest::parentTestFunc() : %d\n",i);
 	}
 };
 
@@ -73,14 +73,16 @@ int32 main(int argc,char **argv)
 	C* c = cpps::create(argc,argv);
 
 	cpps::_module(c)[
-		_class<CppParentClassTest>("CppParentClassTest")
-			.def("parentTestFunc",&CppParentClassTest::parentTestFunc),
 		_class<CppClassTest>("CppClassTest")
 			.base<CppParentClassTest>()
 			.def_operator("[]",&CppClassTest::test_operator)
 			.def("testFunc",&CppClassTest::testFunc)
 			.def("globalfunc", globalfunc)
-			.def_inside("testcb",&CppClassTest::testcb),
+			.def_inside("testcb",&CppClassTest::testcb)
+			.def_classvar("a",&CppClassTest::a)
+			.def_classvar("b",&CppClassTest::b),
+		_class<CppParentClassTest>("CppParentClassTest")
+			.def("parentTestFunc", &CppParentClassTest::parentTestFunc),
 		_enum(c,"TESTENUM")
 			.value("ENUM_ONE", TESTENUM::ENUM_ONE)
 			.value("ENUM_TWO", TESTENUM::ENUM_TWO)
@@ -141,27 +143,27 @@ int32 main(int argc,char **argv)
 
 
 
-		cpps::object key = cpps::object::create(c, "z");
+		cpps::object key = cpps::object::string(c, "z");
 
 
 
 		cpps::object::map bmap(c, b);
-		bmap["z00"] = cpps::object::create(c, "hello world");
+		bmap["z00"] = cpps::object::string(c, "hello world");
 		cout << "bmap-> It's Work bmap['z00'] = " << object_cast<std::string>(bmap["z00"]).c_str() << endl;
 
-		bmap[1] = cpps::object::create(c, "interge key it's work too");
+		bmap[1] = cpps::object::string(c, "interge key it's work too");
 		cout << "bmap-> It's Work bmap[1] = " << object_cast<std::string>(bmap[1]).c_str() << endl;
 
 		//////////////////////////////////////////////////////////////////////////
 
 		//defined a global var;
-		cpps::object::define(c, "x", cpps::object::create(c, "hello world"));
+		cpps::object::define(c, "x", cpps::object::string(c, "hello world"));
 
 		cout << "x = " << object_cast<std::string>(cpps::object::globals(c)["x"]).c_str() << endl;
-		cpps::object::globals(c)["x"] = cpps::object::create(c, "wonderful world");
+		cpps::object::globals(c)["x"] = cpps::object::string(c, "wonderful world");
 		cout << "x = " << object_cast<std::string>(cpps::object::globals(c)["x"]).c_str() << endl;
 
-		_G(c)["x"] = cpps::object::create(c, "_G get var it's work.");// work too
+		_G(c)["x"] = cpps::object::string(c, "_G get var it's work.");// work too
 		cout << "x = " << object_cast<std::string>(_G(c)["x"]).c_str() << endl;
 
 		//////////////////////////////////////////////////////////////////////////
@@ -171,13 +173,13 @@ int32 main(int argc,char **argv)
 		if (Agent.isclass())
 		{
 			cpps::object Agentvar = cpps::object::create_with_cppsclassvar(c, Agent);
-			Agentvar["val"] = cpps::object::create(c, "this is string.");
+			Agentvar["val"] = cpps::object::string(c, "this is string.");
 			cpps::object testfunc = Agentvar["test"];
 			if (testfunc.isfunction())
 			{
 				cpps::doclassfunction(c, Agentvar, testfunc);
 			}
-			Agentvar["val"] = cpps::object::create(c, "change string value.");
+			Agentvar["val"] = cpps::object::string(c, "change string value.");
 			if (testfunc.isfunction())
 			{
 				cpps::doclassfunction(c, Agentvar, testfunc);
@@ -197,17 +199,23 @@ int32 main(int argc,char **argv)
 		}
 
 		if (testFunc.isfunction()) {
-			cpps::doclassfunction(c, cppclassvar, testFunc, cpps::object::create(c, 123456)); //or get function and call it.
+			cpps::doclassfunction(c, cppclassvar, testFunc,  123456); //or get function and call it.
 		}
 
 		if (testFunc.isfunction()) {
-			cpps::doclassfunction(c, cppclassvar, testFunc, cpps::object::create(c, "asdfsadf")); //or get function and call it.
+			cpps::doclassfunction(c, cppclassvar, testFunc, cpps::object::string(c, "asdfsadf")); //or get function and call it.
 		}
 
 		cpps::object parentTestFunc = cppclassvar["parentTestFunc"];
 		if (parentTestFunc.isfunction()) {
 			cpps::doclassfunction(c, cppclassvar, parentTestFunc); //or get function and call it.
 		}
+		cpps::object _a = cppclassvar["a"];
+		_a = 10;
+		cpps::println(c,_a);
+		cpps::println(c,ptr->a);
+
+
 
 	}
 	cpps::close(c);
