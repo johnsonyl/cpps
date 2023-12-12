@@ -910,7 +910,7 @@ namespace cpps {
 			cpps_parse_rmspaceandenter(buffer);
 			std::string ifvar = cpps_parse_varname(buffer);
 			if (ifvar != "var")
-				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "'var' needs to be defined to receive variables."));
+				throw(cpps_error(catchfun->filename, buffer.line(), cpps_error_trycatherror, "'var' needs to be defined to variables."));
 			cpps_parse_rmspaceandenter(buffer);
 			catchvar->s = cpps_parse_varname(buffer);
 			catchvar->type = CPPS_VARNAME;
@@ -2965,7 +2965,7 @@ namespace cpps {
 	cpps::C* create(C* _parent) {
 		C* c = new cpps::C();
 		cpps_create_root_G(c);
-		c->clone(_parent);
+		c->clone(_parent->_parentCState ? _parent->_parentCState : _parent);
 		return c;
 	}
 	cpps::C* create(int argc, char** argv, cpps_alloc_f alloc_func, cpps_free_f free_func) {
@@ -3556,14 +3556,17 @@ namespace cpps {
 				for (size_t i = 0; i < realvector.size(); i++) {
 					if (for1_v)
 						for1_v->setval(realvector[i]);
-					execdomain->init(foreachdomain, cpps_domain_type_exec);
-					execdomain->setexecdomain(foreachdomain);
-					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
-					bool isbreak = execdomain->isbreak;
-					execdomain->destory(c);
-					cpps_gc_check_step(c);
-					if (isbreak || c->isterminate)
-						break;
+					if (!for4->empty()) {
+
+						execdomain->init(foreachdomain, cpps_domain_type_exec);
+						execdomain->setexecdomain(foreachdomain);
+						cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
+						bool isbreak = execdomain->isbreak;
+						execdomain->destory(c);
+						cpps_gc_check_step(c);
+						if (isbreak || c->isterminate)
+							break;
+					}
 					/* 需要跳出循环 */
 				}
 				c->domain_free(execdomain);
@@ -3580,15 +3583,18 @@ namespace cpps {
 				for (; it != itend; ++it) {
 					if (for1_v)
 						for1_v->setval(*it);
-					execdomain->init(foreachdomain, cpps_domain_type_exec);
-					execdomain->setexecdomain(foreachdomain);
-					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
-					bool isbreak = execdomain->isbreak;
-					execdomain->destory(c);
-					cpps_gc_check_step(c);
-					if (isbreak || c->isterminate)
-						break;
-					/* 需要跳出循环 */
+					if (!for4->empty()) {
+						execdomain->init(foreachdomain, cpps_domain_type_exec);
+						execdomain->setexecdomain(foreachdomain);
+						cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
+						bool isbreak = execdomain->isbreak;
+						execdomain->destory(c);
+						cpps_gc_check_step(c);
+
+						if (isbreak || c->isterminate)
+							break;
+					}
+					
 				}
 				c->domain_free(execdomain);
 			}
@@ -3608,14 +3614,17 @@ namespace cpps {
 				for (; it != itend; ++it) {
 					mapnode->_first = it->first;
 					mapnode->_second = it->second;
-					execdomain->init(foreachdomain, cpps_domain_type_exec);
-					execdomain->setexecdomain(foreachdomain);
-					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
-					bool isbreak = execdomain->isbreak;
-					execdomain->destory(c);
-					cpps_gc_check_step(c);
-					if (isbreak || c->isterminate)
-						break;
+					if (!for4->empty()) {
+
+						execdomain->init(foreachdomain, cpps_domain_type_exec);
+						execdomain->setexecdomain(foreachdomain);
+						cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
+						bool isbreak = execdomain->isbreak;
+						execdomain->destory(c);
+						cpps_gc_check_step(c);
+						if (isbreak || c->isterminate)
+							break;
+					}
 					/* 需要跳出循环 */
 				}
 				c->domain_free(execdomain);
@@ -3627,42 +3636,43 @@ namespace cpps {
 				if (for1_v)
 					for1_v->getval().tt = CPPS_TINTEGER;
 				cpps_domain* execdomain = c->domain_alloc();
-				node* for4_node = for4->l.empty() ? NULL: for4->l[0];
-				if (for4_node && for4_node->type == CPPS_OEXPRESSION &&
-					for4_node->l[0]->symbol &&
-					for4_node->l[0]->symbol->symboltype == CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT&&
-					for4_node->l[0]->getleft()&&
-					(for4_node->l[0]->getleft()->type == CPPS_QUOTEOFFSET || for4_node->l[0]->getleft()->type == CPPS_OOFFSET) &&
-					for4_node->l[0]->getright()&&
-					(for4_node->l[0]->getright()->type == CPPS_QUOTEOFFSET || for4_node->l[0]->getright()->type == CPPS_OOFFSET || for4_node->l[0]->getright()->type == CPPS_OINTEGER)
-					)
-				{
-					node* left = for4_node->l[0]->getleft();
-					node* right = for4_node->l[0]->getright();
-					cpps_value left_value;
-					cpps_value right_value;
-					cpps_domain* leftdomain = NULL;
-					cpps_calculate_expression_quoteoffset(left, c, left_value, root, leftdomain);
-					cpps_calculate_expression_quoteoffset(right, c, right_value, root, leftdomain);
-					for (cpps_integer begin = range->begin; begin < range->end; begin += range->inc) {
-						if (for1_v)
-							for1_v->getval().value.integer = begin;
-						left_value.real().value.integer += right_value.real().value.integer;
-						
+				//node* for4_node = for4->l.empty() ? NULL: for4->l[0];
+				//if (for4_node && for4_node->type == CPPS_OEXPRESSION &&
+				//	for4_node->l[0]->symbol &&
+				//	for4_node->l[0]->symbol->symboltype == CPPS_SYMBOL_TYPE_ADDANDASSIGNMENT&&
+				//	for4_node->l[0]->getleft()&&
+				//	(for4_node->l[0]->getleft()->type == CPPS_QUOTEOFFSET || for4_node->l[0]->getleft()->type == CPPS_OOFFSET) &&
+				//	for4_node->l[0]->getright()&&
+				//	(for4_node->l[0]->getright()->type == CPPS_QUOTEOFFSET || for4_node->l[0]->getright()->type == CPPS_OOFFSET || for4_node->l[0]->getright()->type == CPPS_OINTEGER)
+				//	)
+				//{
+				//	node* left = for4_node->l[0]->getleft();
+				//	node* right = for4_node->l[0]->getright();
+				//	cpps_value left_value;
+				//	cpps_value right_value;
+				//	cpps_domain* leftdomain = NULL;
+				//	cpps_calculate_expression_quoteoffset(left, c, left_value, root, leftdomain);
+				//	cpps_calculate_expression_quoteoffset(right, c, right_value, root, leftdomain);
+				//	for (cpps_integer begin = range->begin; begin < range->end; begin += range->inc) {
+				//		if (for1_v)
+				//			for1_v->getval().value.integer = begin;
+				//		left_value.real().value.integer += right_value.real().value.integer;
+				//		
 
-						/*cpps_value ret;
-						cpps_addandassignment(left_value, right_value.real(), ret);*/
-					}
-				}
-				else {
+				//		/*cpps_value ret;
+				//		cpps_addandassignment(left_value, right_value.real(), ret);*/
+				//	}
+				//}
+				//else {
 					for (cpps_integer begin = range->begin; begin < range->end; begin += range->inc) {
 						if (for1_v)
 							for1_v->getval().value.integer = begin;
 						execdomain->init(foreachdomain, cpps_domain_type_exec);
 						execdomain->setexecdomain(foreachdomain);
 						//if(for4_node) cpps_step(c, execdomain, root, for4_node);
-
-						if (for4_node) cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
+						if (!for4->empty()) {
+							cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
+						}
 						bool isbreak = execdomain->isbreak;
 						execdomain->destory(c);
 						cpps_gc_check_step(c);
@@ -3670,7 +3680,7 @@ namespace cpps {
 							break;
 							/* 需要跳出循环 */
 					}
-				}
+				//}
 				
 				c->domain_free(execdomain);
 			}
@@ -3700,17 +3710,19 @@ namespace cpps {
 			bool		b = cpps_converter<bool>::apply(canwhile);
 			if (b == false )
 				break;
-			execdomain->init(whiledomain, cpps_domain_type_exec);
-			execdomain->setexecdomain(whiledomain);
-			CPPS_SUBTRY
-			cpps_step_all(c, CPPS_MUNITRET, execdomain, root, while2, false);
-			CPPS_SUBCATCH2
-			bool isbreak = execdomain->isbreak;
-			execdomain->destory(c);
-			cpps_gc_check_step(c);
-			if (isbreak)
-				break;
-			/* 需要跳出循环 */
+			if (!while2->empty()) {
+				execdomain->init(whiledomain, cpps_domain_type_exec);
+				execdomain->setexecdomain(whiledomain);
+				CPPS_SUBTRY
+					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, while2, false);
+				CPPS_SUBCATCH2
+					bool isbreak = execdomain->isbreak;
+				execdomain->destory(c);
+				cpps_gc_check_step(c);
+				if (isbreak)
+					break;
+				/* 需要跳出循环 */
+			}
 		}
 		c->domain_free(execdomain);
 		whiledomain->destory(c);
@@ -3827,6 +3839,8 @@ namespace cpps {
 		}
 	}
 	void cpps_do_catch(C* c, cpps_domain* parent_domain, cpps_domain* root_domain, cpps_domain* root, node* catchfun, cpps_trycatch_error& e) {
+		if (catchfun->l[1]->empty()) return;
+
 		cpps_domain* execdomain2 = c->domain_alloc();
 		execdomain2->init(parent_domain, cpps_domain_type_exec);
 		execdomain2->setexecdomain(root_domain);
@@ -4263,6 +4277,7 @@ namespace cpps {
 
 	void cpps_step_assemble(C* c, cpps_domain* domain, cpps_domain* root, node* d)
 	{
+		if (d->empty()) return;
 		cpps_domain* execdomain = c->domain_alloc();
 		execdomain->init(domain, cpps_domain_type_exec);
 		execdomain->setexecdomain(domain);

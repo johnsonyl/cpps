@@ -291,4 +291,9 @@ namespace cpps {
 		cpps_destory_node(this);
 	}
 
+	bool node::empty()
+	{
+		return l.empty();
+	}
+
 }

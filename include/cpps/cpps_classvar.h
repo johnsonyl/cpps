@@ -45,7 +45,7 @@ namespace cpps
 			CPPSDELETE( this);
 		}
 		virtual void setclsptr(void* p) { __class = (CLS*)p; }
-		virtual size_t size() { return sizeof(*this) + (__class ? sizeof(*__class) : 0 ); }
+		virtual size_t size() { return sizeof(*this) + ((__class && isallocclass()) ? sizeof(*__class) : 0); }
 		virtual void destory(C* c, bool isclose = false) {
 			cpps_domain::destory(c);
 			if (__class && isallocclass()) {
