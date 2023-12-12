@@ -3509,7 +3509,9 @@ namespace cpps {
 				break;
 			execdomain->init(fordomain, cpps_domain_type_exec);
 			execdomain->setexecdomain(fordomain);
-			if (!for4->l.empty())cpps_step(c, execdomain, root, for4->l[0]);
+			if (!for4->l.empty())
+				cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
+
 			bool isbreak = execdomain->isbreak;
 			execdomain->destory(c);
 			cpps_gc_check_step(c);
