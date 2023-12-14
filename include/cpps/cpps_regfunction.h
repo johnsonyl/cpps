@@ -23,6 +23,8 @@ namespace cpps
 	class cpps_is_void;
 	template <class C>
 	struct cpps_class;
+	template <class C>
+	struct cpps_classvar;
 	struct cpps_cppsclass;
 	struct cpps_cpps_value;
 	struct Buffer;
@@ -47,15 +49,16 @@ namespace cpps
 	template<class _C>
 	struct cpps_classvar_quato_template : public cpps_classvar_quato
 	{
+
 		cpps_classvar_quato_template(std::string name, object _C::* _v) { setvarname(name); v = _v; }
 		virtual ~cpps_classvar_quato_template() {}
 		virtual void setvalue(cpps_domain* domain, cpps_value _v) {
-			cpps_classvar<_C>* cls = (cpps_classvar<_C> *)domain;
+			cpps_classvar<_C>* cls = static_cast<cpps_classvar<_C>*>(domain);
 			object& val = (cls->__class->*v);
 			val = _v.real();
 		}
-		virtual cpps_value getvalue(cpps_domain* domain) { 
-			cpps_classvar<_C>* cls = (cpps_classvar<_C> *)domain;
+		virtual cpps_value getvalue(cpps_domain* domain) {
+			cpps_classvar<_C>* cls = static_cast<cpps_classvar<_C>*>(domain);
 			object& val = (cls->__class->*v);
 			return val.ref();
 		}

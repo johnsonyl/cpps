@@ -377,7 +377,7 @@ namespace cpps
 			for (size_t i = 0; i < clone_domain->stacklist->size(); i++)
 				(* stacklist)[i] = (*clone_domain->stacklist)[i];
 		}
-		clone_domain->lock();
+		clone_domain->lock_shared();
 		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = clone_domain->varList.begin(); it != clone_domain->varList.end(); ++it)
 		{
 			cpps_regvar* v = it->second;
@@ -390,6 +390,6 @@ namespace cpps
 				hasVar = true;
 			}
 		}
-		clone_domain->unlock();
+		clone_domain->unlock_shared();
 	}
 }

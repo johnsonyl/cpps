@@ -102,7 +102,7 @@ namespace cpps
 
 			ret.tt = CPPS_TSTRING;
 			C* pc = c->_parentCState ? c->_parentCState : c;
-			pc->_classvarlock->lock();
+			pc->_classvarlock->lock_shared();
 
 #ifdef _DEBUG
 			std::map<void*, cpps_cppsclassvar*>::iterator it = pc->_class_map_classvar.find(v);
@@ -120,7 +120,7 @@ namespace cpps
 			}
 			else
 				var = it->second;
-			pc->_classvarlock->unlock();
+			pc->_classvarlock->unlock_shared();
 
 			ret.value.domain = var;
 			ret.value.domain->incruse();

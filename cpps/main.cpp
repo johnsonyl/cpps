@@ -80,7 +80,7 @@ int32 main(int argc,char **argv)
 			printf("%d\r\n", CPPS_VERN);
 			return 0;
 		}
-		else if (path == "-install" || path == "-uninstall"|| path == "-update" || path == "-init") {
+		else if (path == "-install" || path == "-i" || path == "-up" || path == "-un" || path == "-uninstall" || path == "-update" || path == "-init") {
 			path = "lib/install/main.cpp";
 			path = cpps_rebuild_filepath(path);
 #ifdef WIN32

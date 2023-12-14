@@ -481,7 +481,9 @@ typedef struct {
 #include <chrono>
 #include <iomanip>
 #include <fstream>
-//#include <filesystem> C++17 暂时不用了.
+#if _HAS_CXX17
+#include <filesystem> //C++17 暂时不用了
+#endif
 #include <stdio.h>
 #include <string>
 #include <vector>

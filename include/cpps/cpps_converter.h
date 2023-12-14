@@ -255,7 +255,7 @@ namespace cpps
 
 			ret.tt = CPPS_TCLASSVAR;
 			C* pc = c->_parentCState ? c->_parentCState : c;
-			pc->_classvarlock->lock();
+			pc->_classvarlock->lock_shared();
 #ifdef _DEBUG
 			std::map<void*, cpps_cppsclassvar*>::iterator it = pc->_class_map_classvar.find((void*)v);
 #else
@@ -267,7 +267,7 @@ namespace cpps
 			if (it == pc->_class_map_classvar.end())
 			{
 				var = cpps_class_singleton<Type>::instance()->getcls()->create(pc,false);
-				pc->_classvarlock->unlock();
+				pc->_classvarlock->unlock_shared();
 				var->setclsptr((void*)v);
 
 				//将新创建出来的添加到新生区稍后检测要不要干掉
@@ -275,7 +275,7 @@ namespace cpps
 			}
 			else {
 
-				pc->_classvarlock->unlock();
+				pc->_classvarlock->unlock_shared();
 				var = it->second;
 			}
 

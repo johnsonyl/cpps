@@ -84,24 +84,12 @@ namespace cpps
 
 	void cpps_vector::emplace_back(object v)
 	{
-		if (v.isvector()) {
-			cpps_vector* v2 = cpps_to_cpps_vector(v.realval());
-			extend(v2);
-		}
-		else {
-			_vec.emplace_back(v.realval());
-		}
+		_vec.emplace_back(v.realval());
 	}
 
 	void cpps_vector::push_back(object v)
 	{
-		if (v.isvector()) {
-			cpps_vector* v2 = cpps_to_cpps_vector(v.realval());
-			extend(v2);
-		}
-		else {
-			_vec.push_back(v.realval());
-		}
+		_vec.push_back(v.realval());
 	}
 
 	void cpps_vector::assign(cpps_vector* v)

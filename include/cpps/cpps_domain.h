@@ -45,6 +45,8 @@ namespace cpps
 		virtual void										release() { CPPSDELETE( this); }
 		void												lock() { _lock.lock(); }
 		void												unlock() { _lock.unlock(); }
+		void												lock_shared() { _lock.lock_shared(); }
+		void												unlock_shared() { _lock.unlock_shared(); }
 
 		cpps_domain											*parent[2]; // 0Îª¸¸Óò£¬ 1ÎªÖ´ÐÐÓò
 		char												domainType;

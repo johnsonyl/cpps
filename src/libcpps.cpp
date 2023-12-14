@@ -2239,9 +2239,14 @@ namespace cpps {
 	}
 	void cpps_parse_foreach2(C*c, cpps_node_domain* fordomain,node * child, node* root, cppsbuffer& buffer) {
 
-		if (buffer.cur() != ':')
+		if (buffer.cur() == ':')
+			buffer.pop();
+		else if (buffer.cur() == 'i' && buffer.at(buffer.offset() + 1) == 'n') {
+			buffer.pop();
+			buffer.pop();
+		}
+		else
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_forerror, "Missing ':'after foreach"));
-		buffer.pop();
 
 		node* for2 = CPPSNEW(node)(child, child->filename, buffer.line());
 		node* for4 = CPPSNEW(node)(child, child->filename, buffer.line());

@@ -118,7 +118,7 @@ void cpps::memory_allocal_handler::mfree(void* m)
 		//printf("Thread ID:%d release Address: %I64d \r\n", GetCurrentThreadId(), (size_t)m);
 		char* p = (char*)m;
 		p = p - 1;
-		p[0] == 1 ? VirtualFree(p, 0, MEM_RELEASE) : free(p);
+		if (p[0] == 1)  VirtualFree(p, 0, MEM_RELEASE); else free(p);
 	}
 #else
 	if(m) free(m);
