@@ -4299,86 +4299,144 @@ namespace cpps {
 	void cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		/*记录当前执行的node*/
 		c->curnode = d;
-
-		if (d->type == CPPS_OEXPRESSION) {
+		switch (d->type) {
+		case  CPPS_OEXPRESSION :
+		{
 			cpps_value ret; cpps_domain* leftdomain = NULL;	cpps_calculate_expression(c, domain, root, d->l[0], leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_ODEFVAR) {
-			cpps_step_def_var(c, domain, root, d , node_var_type::node_var_type_var);
+		case  CPPS_ODEFVAR:
+		{
+			cpps_step_def_var(c, domain, root, d, node_var_type::node_var_type_var);
+			break;
 		}
-		else if (d->type == CPPS_ODEFCONSTVAR) {
+		case  CPPS_ODEFCONSTVAR:
+		{
 			cpps_step_def_var(c, domain, root, d, node_var_type::node_var_type_constvar);
+			break;
 		}
-		else if (d->type == CPPS_ODEFASYNCVAR) {
+		case  CPPS_ODEFASYNCVAR:
+		{
 			cpps_step_def_var(c, domain, root, d, node_var_type::node_var_type_asyncvar);
+			break;
 		}
-		else if (d->type == CPPS_OASSEMBLE) {
+		case  CPPS_OASSEMBLE:
+		{
 			cpps_step_assemble(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_ORETURN) {
+		case  CPPS_ORETURN:
+		{
 			cpps_step_return(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OTHROW) {
+		case  CPPS_OTHROW:
+		{
 			cpps_step_throw(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OECHO){
+		case  CPPS_OECHO:
+		{
 			cpps_step_echo(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OBREAK) {
+		case  CPPS_OBREAK:
+		{
 			cpps_step_break(c, domain, d);
+			break;
 		}
-		else if (d->type == CPPS_OCONTINUE) {
+		case  CPPS_OCONTINUE:
+		{
 			cpps_step_continue(c, domain, d);
+			break;
 		}
-		else if (d->type == CPPS_OYIELD) {
+		case  CPPS_OYIELD:
+		{
 			cpps_step_yield(c, domain, d);
+			break;
 		}
-		else if (d->type == CPPS_OIF) {
+		case  CPPS_OIF:
+		{
 			cpps_step_if(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OFOR) {
+		case  CPPS_OFOR:
+		{
 			cpps_step_for(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OFOREACH) {
+		case  CPPS_OFOREACH:
+		{
 			cpps_step_foreach(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OWHILE) {
+		case  CPPS_OWHILE:
+		{
 			cpps_step_while(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OCLASS) {
+		case  CPPS_OCLASS:
+		{
 			cpps_step_class(c, domain, d);
+			break;
 		}
-		else if (d->type == CPPS_ONAMESPACE) {
+		case  CPPS_ONAMESPACE:
+		{
 			cpps_step_namespace(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OMODULE) {
+		case  CPPS_OMODULE:
+		{
 			cpps_step_module(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OENUM) {
+		case  CPPS_OENUM:
+		{
 			cpps_step_enum(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OTRYCATCH) {
+		case  CPPS_OTRYCATCH:
+		{
 			cpps_step_trycath(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_ODOFILE) {
+		case  CPPS_ODOFILE:
+		{
 			cpps_step_dofile(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OINCLUDE) {
+		case  CPPS_OINCLUDE:
+		{
 			/*do nothing...*/
+			break;
 		}
-		else if (d->type == CPPS_OIMPORT) {
+		case  CPPS_OIMPORT:
+		{
 			//cpps_step_import(c, domain, root, d);
 			/*do nothing...*/
+			break;
 		}
-		else if (d->type == CPPS_ODOSTRING) {
+		case  CPPS_ODOSTRING:
+		{
 			cpps_step_dostring(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_ODONODE) {
+		case  CPPS_ODONODE:
+		{
 			cpps_step_donode(c, domain, root, d);
+			break;
 		}
-		else if (d->type == CPPS_OASSERT) {
+		case  CPPS_OASSERT:
+		{
 			cpps_step_assert(c, domain, root, d);
+			break;
 		}
+		default:
+		{
+
+		}
+		}
+		
 	}
 	int32 cpps_str2d(const char* s, cpps_number* result) {
 		char* endptr;
@@ -5239,96 +5297,127 @@ namespace cpps {
 	}
 
 	void cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain,cpps_value &ret) {
-		if (d->type == CPPS_OOFFSET) {
+		switch (d->type) {
+		case CPPS_OOFFSET:
+		{
 			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
+			break;
 		}
-		else if (d->type == CPPS_FUNCNAME) {
+		case CPPS_FUNCNAME: {
 			cpps_symbol_handle(c, domain, root, d, ret);
+			break;
 		}
-		else if (d->type == CPPS_QUOTEOFFSET) {
+		case CPPS_QUOTEOFFSET: {
 			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
+			break;
 		}
-		else if (d->type == CPPS_VARNAME) {
+		case CPPS_VARNAME: {
 			cpps_calculate_expression_quotevarname(c, leftdomain, domain, d, ret);
+			break;
 		}
-		else if (d->type == CPPS_ODOFUNCTION) {
+		case CPPS_ODOFUNCTION: {
 			cpps_calculate_expression_dofunction(c, domain, root, d, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_OSTR) {
+		case CPPS_OSTR: {
 			cpps_calculate_expression_ostr(ret, d, leftdomain, c, domain, root);
+			break;
 		}
-		else if (d->type == CPPS_ONUMBER) {
+		case CPPS_ONUMBER: {
 			ret.tt = CPPS_TNUMBER;
 			ret.value.number = d->value.number;
+			break;
 		}
-		else if (d->type == CPPS_OINTEGER) {
+		case CPPS_OINTEGER: {
 			ret.tt = CPPS_TINTEGER;
 			ret.value.integer = d->value.integer;
+			break;
 		}
-		else if (d->type == CPPS_OUINTEGER) {
+		case CPPS_OUINTEGER: {
 			ret.tt = CPPS_TUINTEGER;
 			ret.value.uinteger = d->value.uinteger;
+			break;
 		}
-		else if (d->type == CPPS_OINTEGER16) {
+		case CPPS_OINTEGER16: {
 			ret.tt = CPPS_TINTEGER;
 			ret.value.integer = d->value.integer;
+			break;
 		}
-		else if (d->type == CPPS_ONEWVAR) {
+		case CPPS_ONEWVAR: {
 			cpps_calculate_expression_newvar(domain, d, c, root, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_OBRACKET) {
+		case CPPS_OBRACKET: {
 			cpps_domain* leftdomain2 = NULL;
 			/* 获取第一个节点 */
 			if (d->getleft()) cpps_calculate_expression(c, domain, root, d->getleft(), leftdomain2, ret);
 
+
+			break;
 		}
-		else if (d->type == CPPS_OARRAY) {
+		case CPPS_OARRAY: {
 			cpps_calculate_expression_array(ret, c, d, leftdomain, domain, root);
+			break;
 		}
-		else if (d->type == CPPS_OOBJECT) {
+		case CPPS_OOBJECT: {
 			cpps_calculate_expression_object(ret, c, d, leftdomain, domain, root);
+			break;
 		}
-		else if (d->type == CPPS_OBOOL) {
+		case CPPS_OBOOL: {
 			ret.tt = CPPS_TBOOLEAN;
 			ret.value.b = (d->s[0] == 't');
 			/* 首字母为t 就直接认为他是 true */
+			break;
 		}
-		else if (d->type == CPPS_OTHIS)
+		case CPPS_OTHIS:
 		{
-			cpps_calculate_expression_this(d,root, ret);
+			cpps_calculate_expression_this(d, root, ret);
+			break;
 		}
-		else if (d->type == CPPS_OGLOBAL)
+		case CPPS_OGLOBAL:
 		{
-			cpps_calculate_expression_global(c,d,root, ret);
+			cpps_calculate_expression_global(c, d, root, ret);
+			break;
 		}
-		else if (d->type == CPPS_OAWAIT)
+		case CPPS_OAWAIT:
 		{
 			cpps_calculate_expression_await(c, domain, root, d, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_VARNAME_LAMBDA) {
-			cpps_calculate_expression_lambda(c,domain,root, d, leftdomain, ret);
+		case CPPS_VARNAME_LAMBDA: {
+			cpps_calculate_expression_lambda(c, domain, root, d, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_OELLIPSIS){
+		case CPPS_OELLIPSIS: {
 			ret.tt = CPPS_TELLIPSIS;
+			break;
 		}
-		else if (d->type == CPPS_OGETCHIILD) {
+		case CPPS_OGETCHIILD: {
 			cpps_calculate_expression_getchild(c, domain, root, d, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_OSLICE) {
+		case CPPS_OSLICE: {
 			cpps_calculate_expression_slice(c, domain, root, d, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_OGETOBJECT) {
+		case CPPS_OGETOBJECT: {
 			cpps_calculate_expression_quotegetobject(c, domain, root, d, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_QUOTEVARNAME) {
+		case CPPS_QUOTEVARNAME: {
 			cpps_calculate_expression_quotevarname(c, leftdomain, domain, d, ret);
+			break;
 		}
-		else if (d->type == CPPS_QUOTEGETCHIILD) {
+		case CPPS_QUOTEGETCHIILD: {
 			cpps_calculate_expression_quotegetchild(c, domain, root, d, leftdomain, ret);
+			break;
 		}
-		else if (d->type == CPPS_QUOTEGETOBJECT) {
+		case CPPS_QUOTEGETOBJECT: {
 			cpps_calculate_expression_quotegetobject(c, domain, root, d, leftdomain, ret);
+			break;
 		}
+		}
+		
 	}
 	/* ///////////////////// */
 	cpps_value cpps_execute_callfunction(C* c, cpps_function* f, cpps_domain* domain, std::string filename, int32 line, std::string funcname, cpps_std_vector& params) {

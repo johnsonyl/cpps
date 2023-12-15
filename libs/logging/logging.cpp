@@ -443,7 +443,8 @@ cpps_export_void  cpps_attach(cpps::C* c)
 			.def_inside("constructor",&cpps_logging_scripthandler::constructor)
 			.def("setformatter", &cpps_logging_scripthandler::setformatter)
 			.def("setlevel", &cpps_logging_scripthandler::setlevel)
-			.def_inside("get_handler",&cpps_logging_scripthandler::get_handler),
+			.def("get_handler",&cpps_logging_scripthandler::get_handler)
+			.def_operator("->", &cpps_logging_scripthandler::get_handler),
 		def_inside("create_with_config",cpps_create_logger_with_config),
 		def_inside("create", cpps_create_logger),
 		def_inside("debug",cpps_logging_debug),
