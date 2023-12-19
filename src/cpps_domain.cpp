@@ -370,6 +370,16 @@ namespace cpps
 		stacklist->resize(size);
 	}
 
+	void cpps_domain::release() { CPPSDELETE(this); }
+
+	void cpps_domain::lock() { _lock.lock(); }
+
+	void cpps_domain::unlock() { _lock.unlock(); }
+
+	void cpps_domain::lock_shared() { _lock.lock_shared(); }
+
+	void cpps_domain::unlock_shared() { _lock.unlock_shared(); }
+
 	void cpps_domain::clone(cpps_domain* clone_domain)
 	{
 		if (!clone_domain->stacklist->empty()) {

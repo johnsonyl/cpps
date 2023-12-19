@@ -62,4 +62,8 @@ namespace cpps
 		return o;
 	}
 
+	C* cpps_cppsclass::getDefaultCState() { return _c; }
+
+	void cpps_cppsclass::setDefaultCState(C* c) { _c = c; }
+
 }

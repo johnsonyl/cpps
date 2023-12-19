@@ -168,6 +168,10 @@ namespace cpps
 	{
 		return object_cast<cpps_integer>(*this);
 	}
+	cpps_uinteger object::touint()
+	{
+		return object_cast<cpps_uinteger>(*this);
+	}
 
 	char& object::tochar()
 	{
@@ -427,6 +431,11 @@ namespace cpps
 		_vec->erase(idx);
 	}
 
+	size_t object::vector::size()
+	{
+		return realvector().size();
+	}
+
 	cpps::object object::vector::toobject()
 	{
 		return _src_value;
@@ -479,6 +488,11 @@ namespace cpps
 		return _src_value;
 	}
 
+	size_t object::map::size()
+	{
+		return realmap().size();
+	}
+
 	cpps::cpps_hash_map& object::map::realmap()
 	{
 		return _map->realmap();
@@ -522,6 +536,11 @@ namespace cpps
 	cpps::object object::set::toobject()
 	{
 		return _src_value;
+	}
+
+	size_t object::set::size()
+	{
+		return realset().size();
 	}
 
 	cpps::cpps_hash_set& object::set::realset()

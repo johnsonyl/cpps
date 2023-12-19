@@ -42,11 +42,11 @@ namespace cpps
 		int32												getidxoffset(cpps_domain* parentclass);
 		void												setidxoffset(cpps_domain* parentclass, int32 off);
 		void												resize(usint16 size);
-		virtual void										release() { CPPSDELETE( this); }
-		void												lock() { _lock.lock(); }
-		void												unlock() { _lock.unlock(); }
-		void												lock_shared() { _lock.lock_shared(); }
-		void												unlock_shared() { _lock.unlock_shared(); }
+		virtual void										release();
+		void												lock();
+		void												unlock();
+		void												lock_shared();
+		void												unlock_shared();
 
 		cpps_domain											*parent[2]; // 0Îª¸¸Óò£¬ 1ÎªÖ´ÐÐÓò
 		char												domainType;

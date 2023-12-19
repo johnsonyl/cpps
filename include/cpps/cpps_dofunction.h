@@ -127,7 +127,7 @@ namespace cpps
 				cpps_domain *execdomain2 =  c->_G;
 				
 				cpps_stack* stack = c->stack_alloc();
-				stack->init("", 0, f->funcname.c_str());
+				stack->init(__FILE__, __LINE__, f->funcname.c_str());
 				c->push_stack(stack);
 
 				f->callfunction(c, &ret, execdomain2, &paramlist, NULL,NULL);
@@ -162,7 +162,7 @@ namespace cpps
 				cpps_domain *execdomain2 = domain.value.value.domain;
 				
 				cpps_stack* stack = c->stack_alloc();
-				stack->init("", 0, f->funcname.c_str());
+				stack->init(__FILE__, __LINE__, f->funcname.c_str());
 				c->push_stack(stack);
 
 				f->callfunction(c, &ret, execdomain2, &paramlist, NULL, NULL);

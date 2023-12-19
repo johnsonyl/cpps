@@ -32,15 +32,15 @@ namespace cpps
 
 	struct cpps_classvar_quato
 	{
-		cpps_classvar_quato(){}
-		virtual ~cpps_classvar_quato(){}
-		virtual void setvarname(std::string name) { varname = name; }
-		virtual std::string getvarname() { return varname; }
-		virtual cpps_cppsclass* getclass() { return _cls; }
-		virtual void setclass(cpps_cppsclass* cls) { _cls = cls; }
-		virtual void setvalue(cpps_domain *domain,cpps_value _v){}
-		virtual cpps_value getvalue( cpps_domain* domain) { return nil; }
-		virtual void release() { CPPSDELETE(this); }
+		cpps_classvar_quato();
+		virtual ~cpps_classvar_quato();
+		virtual void setvarname(std::string name);
+		virtual std::string getvarname();
+		virtual cpps_cppsclass* getclass();
+		virtual void setclass(cpps_cppsclass* cls);
+		virtual void setvalue(cpps_domain* domain, cpps_value _v);
+		virtual cpps_value getvalue(cpps_domain* domain);
+		virtual void release();
 
 		std::string		varname;
 		cpps_cppsclass* _cls;
@@ -69,22 +69,22 @@ namespace cpps
 
 	struct cpps_function
 	{
-		cpps_function() { isNeedC = false; nasync = false; _cls = NULL; }
-		virtual ~cpps_function() {}
-		virtual void	callfunction(C *c, cpps_value *ret, cpps_domain *domain, cpps_std_vector *o, cpps_stack *stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL){}
-		virtual void			setfuncname(std::string name){	funcname = name;}
-		virtual std::string		getfuncname(){return funcname;}
-		virtual void release() { CPPSDELETE( this); }
-		virtual void setIsNeedC(bool b)	{isNeedC = b;}
-		virtual bool getIsNeedC(){ return isNeedC; }
-		virtual int8 getparamcount() { return 0; }
-		virtual bool isasync() { return nasync; }
-		virtual bool isoperator() { return noperator; }
-		virtual void setasync(bool b) { nasync = b; }
-		virtual void setoperator(bool b) { noperator = b; }
-		virtual bool iscppsfunc() { return false; }
-		virtual cpps_cppsclass* getclass() { return _cls; }
-		virtual void setclass(cpps_cppsclass* cls) { _cls = cls; }
+		cpps_function();
+		virtual ~cpps_function();
+		virtual void	callfunction(C* c, cpps_value* ret, cpps_domain* domain, cpps_std_vector* o, cpps_stack* stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL);
+		virtual void			setfuncname(std::string name);
+		virtual std::string		getfuncname();
+		virtual void release();
+		virtual void setIsNeedC(bool b);
+		virtual bool getIsNeedC();
+		virtual int8 getparamcount();
+		virtual bool isasync();
+		virtual bool isoperator();
+		virtual void setasync(bool b);
+		virtual void setoperator(bool b);
+		virtual bool iscppsfunc();
+		virtual cpps_cppsclass* getclass();
+		virtual void setclass(cpps_cppsclass* cls);
 		bool			isNeedC;
 		std::string		funcname;
 		bool			nasync;
@@ -95,14 +95,9 @@ namespace cpps
 
 	struct cpps_reg
 	{
-		cpps_reg()
-		{
-			next = NULL;
-			type = 0;
-			isneedC = false;
-		}
-		virtual ~cpps_reg(){}
-		virtual void release() { CPPSDELETE( this); }
+		cpps_reg();
+		virtual ~cpps_reg();
+		virtual void release();
 		cpps_reg* next;
 		int8	type;
 		std::string varname;
@@ -112,30 +107,17 @@ namespace cpps
 
 	struct cpps_regfunction : public cpps_reg
 	{
-		cpps_regfunction(std::string f,cpps_function* func, bool isasync = false, bool isoperator = false)
-		:func(func)
-		{
-			type = cpps_def_regfunction;
-			varname = f;
-			func->setfuncname(f);
-			func->setasync(isasync);
-			func->setoperator(isoperator);
-		}
-		virtual ~cpps_regfunction() {}
-		virtual void release() { CPPSDELETE( this); }
+		cpps_regfunction(std::string f, cpps_function* func, bool isasync = false, bool isoperator = false);
+		virtual ~cpps_regfunction();
+		virtual void release();
 
 		cpps_function* func;
 	};
 	struct cpps_reggvar : public cpps_reg
 	{
-		cpps_reggvar(std::string n, cpps_value v)
-		{
-			type = cpps_def_regvar;
-			varname = n;
-			value = v;
-		}
-		virtual ~cpps_reggvar() {}
-		virtual void release() { CPPSDELETE( this); }
+		cpps_reggvar(std::string n, cpps_value v);
+		virtual ~cpps_reggvar();
+		virtual void release();
 
 	};
 	
@@ -143,38 +125,23 @@ namespace cpps
 	
 	struct cpps_reg_class_var : public cpps_reg
 	{
-		cpps_reg_class_var(std::string n, cpps_classvar_quato* v)
-		{
-			type = cpps_def_regclassvar;
-			varname = n;
-			value.tt = CPPS_TUSERDATA;
-			_v = v;
-		}
-		virtual ~cpps_reg_class_var() {}
-		virtual void release() { CPPSDELETE(this); }
+		cpps_reg_class_var(std::string n, cpps_classvar_quato* v);
+		virtual ~cpps_reg_class_var();
+		virtual void release();
 		cpps_classvar_quato* _v;
 	};
 	struct cpps_regparentclass : public cpps_reg
 	{
-		cpps_regparentclass(cpps_cppsclass* _cppsclass)
-		{
-			type = cpps_def_regparentclass;
-			__cppsclass = _cppsclass;
-		}
-		virtual ~cpps_regparentclass() {}
-		virtual void release() { CPPSDELETE( this); }
+		cpps_regparentclass(cpps_cppsclass* _cppsclass);
+		virtual ~cpps_regparentclass();
+		virtual void release();
 		cpps_cppsclass* __cppsclass;
 	};
 	struct cpps_regclass : public cpps_reg
 	{
-		cpps_regclass(std::string name, cpps_cppsclass *c)
-		:cls(c)
-		{
-			type = cpps_def_regclass;
-			varname = name;
-		}
-		virtual ~cpps_regclass() {}
-		virtual void release() { CPPSDELETE( this); }
+		cpps_regclass(std::string name, cpps_cppsclass* c);
+		virtual ~cpps_regclass();
+		virtual void release();
 
 		cpps_cppsclass* cls;
 	};
@@ -182,25 +149,16 @@ namespace cpps
 	template<class C>
 	struct cpps_regclass_template : public cpps_regclass
 	{
-		cpps_regclass_template(std::string name, cpps_class<C> *c)
-		:cpps_regclass(name,c)
-		{
-
-		}
-		virtual ~cpps_regclass_template(){}
-		virtual void release() { CPPSDELETE( this); }
+		cpps_regclass_template(std::string name, cpps_class<C>* c);
+		virtual ~cpps_regclass_template();
+		virtual void release();
 	};
 
 	struct cpps_regenum : public cpps_reg
 	{
-		cpps_regenum(std::string name, cpps_domain* c)
-		{
-			type = cpps_def_regenum;
-			_enum_domain = c;
-			varname = name;
-		}
-		virtual ~cpps_regenum() {}
-		virtual void release() { CPPSDELETE(this); }
+		cpps_regenum(std::string name, cpps_domain* c);
+		virtual ~cpps_regenum();
+		virtual void release();
 		cpps_domain* _enum_domain;
 	};
 
@@ -282,6 +240,19 @@ namespace cpps
 	}
 	cpps_regparentclass* make_parentclass(cpps_cppsclass* _cppsclass);
 	
+	template<class C>
+	inline cpps_regclass_template<C>::cpps_regclass_template(std::string name, cpps_class<C>* c)
+		:cpps_regclass(name, c)
+	{
+
+	}
+
+	template<class C>
+	inline cpps_regclass_template<C>::~cpps_regclass_template() {}
+
+	template<class C>
+	inline void cpps_regclass_template<C>::release() { CPPSDELETE(this); }
+
 }
 
 

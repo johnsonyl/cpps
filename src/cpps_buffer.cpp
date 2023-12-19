@@ -172,4 +172,10 @@ namespace cpps
 		return files.back();
 	}
 
+	inline cppsbuffer_file::cppsbuffer_file() {
+		begin = 0;
+		end = 0;
+		line = 0;
+	}
+
 }

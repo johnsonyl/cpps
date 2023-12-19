@@ -89,7 +89,7 @@ namespace cpps
 
 	void cpps_vector::push_back(object v)
 	{
-		_vec.push_back(v.realval());
+		_vec.emplace_back(v.realval());
 	}
 
 	void cpps_vector::assign(cpps_vector* v)

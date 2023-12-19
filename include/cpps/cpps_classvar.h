@@ -16,15 +16,14 @@ namespace cpps
 {
 	struct cpps_cppsclassvar : public cpps_domain
 	{
-		cpps_cppsclassvar(std::string clsname,cpps_domain* p, char type, bool alloc)
-			:cpps_domain(p, type, clsname), isalloc(alloc){	usecount = 0;}
+		cpps_cppsclassvar(std::string clsname, cpps_domain* p, char type, bool alloc);
 		virtual ~cpps_cppsclassvar(){}
-		virtual void *getclsptr(){ return NULL; }
-		virtual void setclsptr(void *p){ }
-		virtual bool isallocclass() { return isalloc; }
-		virtual void release() { CPPSDELETE( this); }
-		virtual size_t size() { return sizeof(*this); }
-		virtual cpps_cppsclass* getcppsclass() { return (cpps_cppsclass * )parent[0]; }
+		virtual void* getclsptr();
+		virtual void setclsptr(void* p);
+		virtual bool isallocclass();
+		virtual void release();
+		virtual size_t size();
+		virtual cpps_cppsclass* getcppsclass();
 		bool isalloc;
 		int usecount;
 	};

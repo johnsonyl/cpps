@@ -67,6 +67,7 @@
 #include "cpps_debug.h"
 #include "cpps_xrange.h"
 #include "cpps_console.h"
+#include "cpps_random.h"
 #include "cpps_reg_cpps_class.h"
 
 #include "cpps_newptr.h"

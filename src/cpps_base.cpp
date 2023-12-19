@@ -708,8 +708,8 @@ namespace cpps
 	}
 	cpps_value cpps_base_serializer_encode(C*c,cpps_value v,cpps_value tp)
 	{
-		if (v.tt != CPPS_TCLASSVAR) return nil;
-		cpps_integer serializer_type = 1;//1. serializer.vector 2.serializer.map
+		if (v.tt != CPPS_TCLASSVAR) return v;
+		cpps_integer serializer_type = 2;//1. serializer.vector 2.serializer.map
 		if (cpps_isint(tp)) serializer_type = tp.value.integer;
 		cpps_cppsclassvar* classvar = (cpps_cppsclassvar*)v.value.domain;
 
@@ -718,8 +718,10 @@ namespace cpps
 		if (serializer_type == 1 && classvar->stacklist) {
 			cpps_vector* vct;
 			newclass<cpps_vector>(c, &vct,&ret);
-			for (auto var : *classvar->stacklist) 
+			for (auto var : *classvar->stacklist) {
+
 				vct->push_back(var->getval());
+			}
 		}
 		else if(serializer_type == 2){
 			cpps_map* m;
@@ -734,7 +736,7 @@ namespace cpps
 	{
 		cpps_value ret;
 
-		if (cls.tt != CPPS_TCLASS) return nil;
+		if (cls.tt != CPPS_TCLASS) return v;
 		cpps_cppsclass* cppsclass = (cpps_cppsclass*)cls.value.domain;
 
 		if (cpps_base_isvector(v)) {

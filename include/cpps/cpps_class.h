@@ -31,8 +31,8 @@ namespace cpps
 		virtual void						operatorreg(std::string symbolname, cpps_function* func);
 		virtual cpps_function*				getoperator(std::string symbolname);
 		node*								getvars_node();
-		C*									getDefaultCState(){return _c;}
-		void								setDefaultCState(C* c) { _c = c; }
+		C*									getDefaultCState();
+		void								setDefaultCState(C* c);
 
 		node* o; //定义的变量
 		std::string classname;

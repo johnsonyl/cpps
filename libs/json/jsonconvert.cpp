@@ -133,6 +133,10 @@ cpps::object jsonvaluetocpps(cpps::C *c, Json::Value& v)
 		}
 		return cpps::object(c, v.asString());
 	}
+	else if (v.isUInt64())
+	{
+		return cpps::object(c,v.asUInt64());
+	}
 	else if (v.isInt64())
 	{
 		return cpps::object(c,v.asInt64());

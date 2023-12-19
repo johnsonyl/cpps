@@ -2987,6 +2987,7 @@ namespace cpps {
 		cpps_regio(c);
 		cpps_regtime(c);
 		cpps_regarray(c);
+		cpps_regrandom(c);
 		cpps_reggc(c);
 		cpps_regdebug(c);
 		cpps_reglock(c);

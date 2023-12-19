@@ -73,29 +73,17 @@ namespace cpps
 		std::string symbolfuncname;		//²Ù×÷º¯ÊıÃû
 		int8	symboltype;
 
-		usint8 getprio(){ return symbollimit & 0x0F; }
-		usint8 getparamnum(){ return (symbollimit >> 4) & 0x03; }
-		usint8 getparamleftlimit(){ return symbollimit & 0x80; }
-		usint8 getparamrightlimit(){ return symbollimit & 0x40; }
-		int8   getsymboltype() { return symboltype; }
+		usint8 getprio();
+		usint8 getparamnum();
+		usint8 getparamleftlimit();
+		usint8 getparamrightlimit();
+		int8   getsymboltype();
 		//cpps_symbol(byte prio, byte paramnum,byte paramlimit,std::string funcname)
 		//{
 		//	symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
 		//	symbolfuncname = funcname;
 		//}
-		cpps_symbol(usint8 prio, usint8 paramnum, usint8 paramlimit,std::string name, usint8 type)
-		{
-#if defined(__APPLE__) && defined(__MACH__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
-#endif
-			symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 0x4) | paramlimit;
-#if defined(__APPLE__) && defined(__MACH__)
-#pragma clang diagnostic pop
-#endif
-			symboltype = type;
-			symbolfuncname = name;
-		}
+		cpps_symbol(usint8 prio, usint8 paramnum, usint8 paramlimit, std::string name, usint8 type);
 	};
 	bool			cpps_parse_isleftasso(C*c,usint8 prio);
 	cpps_symbol*	cpps_parse_getsymbol(C*c,std::string& symbolstr, bool leftsymbol);

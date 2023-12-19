@@ -277,7 +277,8 @@ namespace cpps
 	void cpps_regtime(C *c)
 	{
 		cpps::_module(c)[
-			def("now", cpps_time_gettime)
+			def("now", cpps_time_gettime),
+			def("tick", cpps_time_gettickcount)
 		];
 		cpps::_module(c, "time")[
 			def("gettime", cpps_time_gettime),
@@ -302,7 +303,8 @@ namespace cpps
 			def("addhours", cpps_time_addhours),
 			def("addminutes", cpps_time_addminutes),
 			def("addseconds", cpps_time_addseconds),
-			def("strftime", cpps_time_strftime)
+			def("strftime", cpps_time_strftime),
+			def("format", cpps_time_strftime)
 		];
 	}
 }

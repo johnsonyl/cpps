@@ -46,6 +46,7 @@ namespace cpps
 			cpps_std_vector::iterator					end();
 			void										push_back(object v);
 			void										erase(cpps_integer idx);
+			size_t										size();
 			object										toobject();
 			object										operator[](const cpps_integer k);
 			cpps_std_vector&							realvector();
@@ -65,6 +66,7 @@ namespace cpps
 			cpps_hash_map::iterator													end();
 			void																	insert(const object& key, const object& value);
 			object																	toobject();
+			size_t																	size();
 			template<class T>
 			bool																	has(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
@@ -98,6 +100,7 @@ namespace cpps
 			cpps_hash_set::iterator													end();
 			void																	insert(object& key);
 			object																	toobject();
+			size_t																	size();
 			template<class T>
 			bool																	has(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
@@ -179,6 +182,7 @@ namespace cpps
 		//convert
 		std::string				tostring();
 		cpps_integer			toint();
+		cpps_uinteger			touint();
 		char&					tochar();
 		cpps_number				tonumber();
 		bool					tobool();

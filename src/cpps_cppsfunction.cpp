@@ -201,4 +201,6 @@ namespace cpps
 		quatoreturn = b;
 	}
 
+	void cpps_cppsfunction::release() { CPPSDELETE(this); }
+
 }

@@ -15,11 +15,7 @@ namespace cpps
 {
 	struct cppsbuffer_file
 	{
-		cppsbuffer_file() {
-			begin = 0;
-			end = 0;
-			line = 0;
-		}
+		cppsbuffer_file();
 		std::string filename;
 		int32		begin;
 		int32		end;

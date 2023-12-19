@@ -32,6 +32,7 @@ namespace cpps
 		int8				state();
 		bool				cancelled();
 		bool				done();
+		cpps_integer		get_id();
 		bool				timeout();
 		bool				pending();
 		bool				running();

@@ -215,7 +215,7 @@ namespace cpps
 				object left = object(*this);
 				cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(*this);
 				cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
-				C* c = cppsclass->getDefaultCState();
+				C* c = cppsclass->getDefaultCState(); //这里绝对会有多线程问题。但是不知道咋办。
 				cpps_function* func = cppsclass->getoperator("<");
 				if (func) {
 					object right_object = object(right);

@@ -69,6 +69,10 @@ namespace cpps {
 	{
 		return runstate == cpps_async_task_done;
 	}
+	cpps_integer cpps_async_task::get_id()
+	{
+		return (cpps_integer)rt;
+	}
 
 	bool cpps_async_task::timeout()
 	{

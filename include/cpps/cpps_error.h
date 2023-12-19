@@ -35,27 +35,11 @@ enum
 
 struct cpps_error
 {
-	cpps_error(std::string f, cpps::usint32 l, cpps::int32 n, const char *format, ...)
-	{
-		char szString[4096];
-		va_list ap;
-		va_start(ap, format);
-#ifdef _WIN32
-		vsprintf_s(szString,4096, format, ap);
-#else
-		vsprintf(szString, format, ap);
-#endif
-		va_end(ap);
-
-		_erron = n;
-		_file = f;
-		_line = l;
-		s = szString;
-	}
-	std::string& what() { return s; }
-	cpps::int32 error() { return _erron; }
-	cpps::usint32 line() { return this->_line; }
-	std::string& file() { return _file; }
+	cpps_error(std::string f, cpps::usint32 l, cpps::int32 n, const char* format, ...);
+	std::string& what();
+	cpps::int32 error();
+	cpps::usint32 line();
+	std::string& file();
 
 	cpps::int32 _erron;
 	std::string _file;

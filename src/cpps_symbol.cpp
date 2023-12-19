@@ -906,7 +906,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_addandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_addandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -989,7 +989,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add3andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_add3andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1072,7 +1072,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add4andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_add4andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1155,7 +1155,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add2andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_add2andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1239,7 +1239,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add5andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_add5andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1323,7 +1323,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add6andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_add6andassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1408,7 +1408,7 @@ namespace cpps
 
 	}
 
-	inline void cpps_symbol_pow(cpps_value& a, cpps_value b, cpps_value& _result)
+	void cpps_symbol_pow(cpps_value& a, cpps_value b, cpps_value& _result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -1473,7 +1473,7 @@ namespace cpps
 			break;
 		}
 	}
-	inline void cpps_symbol_powandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_symbol_powandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1557,7 +1557,7 @@ namespace cpps
 
 	}
 	
-	inline void cpps_symbol_floordivision(cpps_value& a, cpps_value b, cpps_value& _result)
+	void cpps_symbol_floordivision(cpps_value& a, cpps_value b, cpps_value& _result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -1601,7 +1601,7 @@ namespace cpps
 			break;
 		}
 	}
-	inline void cpps_symbol_floordivisionandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
+	void cpps_symbol_floordivisionandassignment(cpps_value& a, cpps_value b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -2883,6 +2883,36 @@ namespace cpps
 		default:
 			break;
 		}
+	}
+
+	usint8 cpps_symbol::getprio() { return symbollimit & 0x0F; }
+
+	usint8 cpps_symbol::getparamnum() { return (symbollimit >> 4) & 0x03; }
+
+	usint8 cpps_symbol::getparamleftlimit() { return symbollimit & 0x80; }
+
+	usint8 cpps_symbol::getparamrightlimit() { return symbollimit & 0x40; }
+
+	int8 cpps_symbol::getsymboltype() { return symboltype; }
+
+	//cpps_symbol(byte prio, byte paramnum,byte paramlimit,std::string funcname)
+	//{
+	//	symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 4) | paramlimit;
+	//	symbolfuncname = funcname;
+	//}
+
+	cpps_symbol::cpps_symbol(usint8 prio, usint8 paramnum, usint8 paramlimit, std::string name, usint8 type)
+	{
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-int-conversion"
+#endif
+		symbollimit = (prio & 0x0F) | ((paramnum & 0x03) << 0x4) | paramlimit;
+#if defined(__APPLE__) && defined(__MACH__)
+#pragma clang diagnostic pop
+#endif
+		symboltype = type;
+		symbolfuncname = name;
 	}
 
 }

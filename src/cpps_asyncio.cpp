@@ -10,6 +10,9 @@ namespace cpps {
 	cpps_value cpps_async_run(C* c, cpps_value obj) {
 		return cpps_async_get_event_loop(c)->run_until_complete(c,obj);
 	}
+	cpps_integer cpps_async_get_current_id(C* c) {
+		return (cpps_integer)c->ordinator->current;
+	}
 	bool cpps_async_isterminate(C* c) {
 		return c->ordinator->isterminate;
 	}
@@ -120,6 +123,7 @@ namespace cpps {
 				.def("running",&cpps_async_task::running)
 				.def("set_name",&cpps_async_task::set_name)
 				.def("get_name",&cpps_async_task::get_name)
+				.def("get_id",&cpps_async_task::get_id)
 				.def("add_done_callback",&cpps_async_task::add_done_callback)
 				.def("remove_done_callback",&cpps_async_task::remove_done_callback),
 			def_inside("get_event_loop", cpps_async_get_event_loop),
@@ -133,8 +137,8 @@ namespace cpps {
 			defvar(c,"running", (cpps_integer)cpps_async_task_running),
 			defvar(c,"done", (cpps_integer)cpps_async_task_done),
 			defvar(c,"cancelled", (cpps_integer)cpps_async_task_cancelled),
-			defvar(c,"timeout", (cpps_integer)cpps_async_task_timeouted)
-
+			defvar(c,"timeout", (cpps_integer)cpps_async_task_timeouted),
+			def_inside("get_current_id", cpps_async_get_current_id)
 		];
 	}
 
@@ -146,3 +150,5 @@ namespace cpps {
 	}
 
 }
+
+void cpps::asyncio::yield(C* c) { coroutine::yield(*c->ordinator); }

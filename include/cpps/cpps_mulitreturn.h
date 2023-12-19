@@ -29,6 +29,7 @@ namespace cpps {
 			tuple_list.emplace_back(v);
 			push_back(_Args...);
 		}
+		std::vector<object> real() { return tuple_list; }
 		std::vector<object> tuple_list;
 	};
 }

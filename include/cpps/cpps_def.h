@@ -501,6 +501,7 @@ typedef struct {
 #include <future>
 #include <chrono>
 #include <functional>
+#include <random>
 //lib
 namespace cpps
 {

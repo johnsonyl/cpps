@@ -16,14 +16,8 @@ namespace cpps
 	struct cpps_async_object
 	{
 	public:
-		cpps_async_object() {
-			leftdomain = NULL;
-			f = NULL;
-			line = 0;
-			_task = NULL;
-			iscatchd = false;
-		}
-		virtual~cpps_async_object() {}
+		cpps_async_object();
+		virtual~cpps_async_object();
 
 		cpps_value			call(C* c);
 		void				done_cb(C* c, object ret);
