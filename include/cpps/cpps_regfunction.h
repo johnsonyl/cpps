@@ -30,42 +30,6 @@ namespace cpps
 	struct Buffer;
 
 
-	struct cpps_classvar_quato
-	{
-		cpps_classvar_quato();
-		virtual ~cpps_classvar_quato();
-		virtual void setvarname(std::string name);
-		virtual std::string getvarname();
-		virtual cpps_cppsclass* getclass();
-		virtual void setclass(cpps_cppsclass* cls);
-		virtual void setvalue(cpps_domain* domain, cpps_value _v);
-		virtual cpps_value getvalue(cpps_domain* domain);
-		virtual void release();
-
-		std::string		varname;
-		cpps_cppsclass* _cls;
-	};
-
-	template<class _C>
-	struct cpps_classvar_quato_template : public cpps_classvar_quato
-	{
-
-		cpps_classvar_quato_template(std::string name, object _C::* _v) { setvarname(name); v = _v; }
-		virtual ~cpps_classvar_quato_template() {}
-		virtual void setvalue(cpps_domain* domain, cpps_value _v) {
-			cpps_classvar<_C>* cls = static_cast<cpps_classvar<_C>*>(domain);
-			object& val = (cls->__class->*v);
-			val = _v.real();
-		}
-		virtual cpps_value getvalue(cpps_domain* domain) {
-			cpps_classvar<_C>* cls = static_cast<cpps_classvar<_C>*>(domain);
-			object& val = (cls->__class->*v);
-			return val.ref();
-		}
-		virtual void release() { CPPSDELETE(this); }
-
-		object _C::* v;
-	};
 
 	struct cpps_function
 	{
@@ -233,11 +197,7 @@ namespace cpps
 	{
 		return CPPSNEW( cpps_reggvar)(name, v);
 	}
-	template<typename _C>
-	cpps_reg_class_var* make_regclassvar(std::string name, object _C::* v)
-	{
-		return CPPSNEW(cpps_reg_class_var)(name, CPPSNEW(cpps_classvar_quato_template<_C>)(name,v));
-	}
+	
 	cpps_regparentclass* make_parentclass(cpps_cppsclass* _cppsclass);
 	
 	template<class C>

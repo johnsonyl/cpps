@@ -64,13 +64,13 @@ namespace cpps
 	def_cpps_number_cast(cpps_integer, integer);
 #ifdef _WIN32
 #ifdef _M_X64
-	def_cpps_number_cast(size_t, integer);
+	def_cpps_number_cast(size_t, uinteger);
 #else
-	def_cpps_number_cast(unsigned __int64, integer);
+	def_cpps_number_cast(unsigned __int64, uinteger);
 #endif
 #endif
 #ifndef _WIN32
-	def_cpps_number_cast(long long unsigned int, integer);
+	def_cpps_number_cast(long long unsigned int, uinteger);
 #endif
 	def_cpps_number_cast(float, number);
 	def_cpps_number_cast(double, number);
@@ -243,7 +243,7 @@ namespace cpps
 		static cpps_value apply(C *c, Type v)
 		{
 			cpps_value ret;
-			if (v == NULL) //NULL  == nil
+			if (v == nullptr) //NULL  == nil
 				return ret;
 
 			//USERDATA
@@ -380,13 +380,13 @@ namespace cpps
 	def_cpps_cpp_to_cpps_number_cast(cpps_integer, integer);
 #ifdef _WIN32
 #ifdef _M_X64
-	def_cpps_cpp_to_cpps_number_cast(size_t, integer);
+	def_cpps_cpp_to_cpps_number_cast(size_t, uinteger);
 #else
-	def_cpps_cpp_to_cpps_number_cast(unsigned __int64, integer);
+	def_cpps_cpp_to_cpps_number_cast(unsigned __int64, uinteger);
 #endif
 #endif
 #ifndef _WIN32
-	def_cpps_cpp_to_cpps_number_cast(long long unsigned int, integer);
+	def_cpps_cpp_to_cpps_number_cast(long long unsigned int, uinteger);
 #endif
 
 	def_cpps_cpp_to_cpps_number_cast(float, number);

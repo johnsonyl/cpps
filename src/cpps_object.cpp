@@ -314,6 +314,7 @@ namespace cpps
 		}
 		return *this;
 	}
+	
 
 
 	object object::globals(C* c)

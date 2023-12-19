@@ -43,6 +43,7 @@
 #include "cpps_make_function.h"
 #include "cpps_module.h"
 #include "cpps_object.h"
+#include "cpps_classvar_quato.h"
 #include "cpps_mulitreturn.h"
 #include "cpps_converter.h"
 #include "cpps_cast.h"

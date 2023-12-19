@@ -157,6 +157,13 @@ namespace cpps
 		}
 		object&		operator=(const cpps_value k);
 		object&		operator=(const object& k);
+		template<typename _T>
+		object& operator=(_T k)
+		{
+			object _obj(k);
+			*this = _obj;
+			return *this;
+		}
 		//_G root node.
 		static object globals(C* c);
 

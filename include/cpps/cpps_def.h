@@ -348,8 +348,11 @@ throw;\
 
 typedef double cpps_number;
 typedef __int64 cpps_integer;
+#ifdef _WIN32
 typedef unsigned long long cpps_uinteger;
-
+#else
+typedef long long unsigned int cpps_uinteger;
+#endif
 namespace cpps
 {
 	typedef char				int8;

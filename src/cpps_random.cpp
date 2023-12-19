@@ -23,12 +23,15 @@ namespace cpps {
 		else if (min.isint()) {
 			_max = min.toint();
 		}
-		std::uniform_int_distribution dist(_min, _max);
+		std::uniform_int_distribution<cpps_integer> dist(_min, _max);
 		return dist(generator);
 	}
 
 	cpps_number cpps_random::randf(object min, object max)
 	{
+#ifndef DBL_MAX
+#define DBL_MAX 1.7976931348623158e+308
+#endif
 		cpps_number _min = 0;
 		cpps_number _max = DBL_MAX;
 
@@ -39,7 +42,7 @@ namespace cpps {
 		else if (!min.isnull()) {
 			_max = min.tonumber();
 		}
-		std::uniform_real_distribution  dist(_min, _max);
+		std::uniform_real_distribution<cpps_number>  dist(_min, _max);
 		return dist(generator);
 	}
 

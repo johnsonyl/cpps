@@ -16,7 +16,6 @@ namespace cpps {
 		offsettype = -1;
 		size = -1;
 		varlist = NULL;
-		value.integer = 0;
 		value.uinteger = 0;
 		needdelete = false;
 		closure = false;
@@ -36,7 +35,6 @@ namespace cpps {
 		offsettype = -1;
 		size = -1;
 		varlist = NULL;
-		value.integer = 0;
 		value.uinteger = 0;
 		closure = false;
 		needdelete = false;
@@ -57,7 +55,6 @@ namespace cpps {
 		offsettype = -1;
 		size = -1;
 		varlist = NULL;
-		value.integer = 0;
 		value.uinteger = 0;
 		closure = false;
 		needdelete = false;

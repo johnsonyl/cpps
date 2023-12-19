@@ -436,7 +436,7 @@ namespace cpps
 		value.uinteger = i;
 	}
 #else
-	cpps_value::cpps_value(const long unsigned int i)
+	cpps_value::cpps_value(const long long unsigned int i)
 	{
 		tt = CPPS_TUINTEGER;
 		value.uinteger = i;

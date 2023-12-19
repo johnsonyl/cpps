@@ -35,7 +35,7 @@ namespace cpps
 #ifdef _WIN32
 		cpps_value(const unsigned __int64 i);
 #else
-		cpps_value(const long unsigned int i);
+		cpps_value(const long long unsigned int i);
 #endif
 		cpps_value(char& strv);
 		cpps_value(const bool b);
