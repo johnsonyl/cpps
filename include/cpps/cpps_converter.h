@@ -269,7 +269,7 @@ namespace cpps
 				var = cpps_class_singleton<Type>::instance()->getcls()->create(pc,false);
 				pc->_classvarlock->unlock_shared();
 				var->setclsptr((void*)v);
-
+				
 				//将新创建出来的添加到新生区稍后检测要不要干掉
 				cpps_gc_add_gen0(c, var);
 			}
@@ -297,6 +297,19 @@ namespace cpps
 		static cpps_value apply(C *c, cpps_value value)
 		{
 			return value;
+		}
+	};
+	template<>
+	struct cpps_cpp_to_cpps_converter < cpps_value * >
+	{
+		static bool match(C* c, cpps_value* value)
+		{
+			//检测是否支持
+			return true;
+		}
+		static cpps_value apply(C* c, cpps_value* value)
+		{
+			return *value;
 		}
 	};
 

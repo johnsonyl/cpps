@@ -2907,7 +2907,10 @@ namespace cpps {
 	void cpps_regbase(C* c, cppsbuffer& buffer)
 	{
 		if (!c->isloadbase) {
-			cpps_loadlibrary(c, "base", buffer);
+			try {
+				cpps_loadlibrary(c, "base", buffer);
+			}catch(...){ //no throw...
+			}
 			c->isloadbase = true;
 		}
 	}
@@ -3091,12 +3094,9 @@ namespace cpps {
 		/*有可能里面的让我退出 */
 		size_t count = o->l.size();
 		if (count == 0) return;
-		if (domain == NULL)
-			domain = c->_G;
-		if (root == NULL)
-			root = c->_G;
-		if (o == NULL)
-			o = c->o;
+		if (domain == NULL) domain = c->_G;
+		if (root == NULL) root = c->_G;
+		if (o == NULL) o = c->o;
 		domain->isbreak = false;
 		for (size_t i = 0; i < count && !domain->isbreak && !c->isterminate; i++) {
 			node* d = o->l[i];
@@ -5460,10 +5460,13 @@ namespace cpps {
 		}
 	}
 	void cpps_debug_trace_domain(C*c,int kg,std::string parent,cpps_domain* root) {
+		
 		for (auto var : root->varList)
 		{
 			cpps_value& value = var.second->getval();
 			if (!cpps_isfunction(value)) {
+				if (value.isdomain() && value.value.domain == c->_G) continue;
+
 				for (int i = 0; i < kg; i++)
 					printf(" ");
 

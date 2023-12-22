@@ -66,10 +66,57 @@ namespace cpps
 	};
 
 
+	template<class R,typename CLS>
+	struct cpps_functionfmt_class : public cpps_function
+	{
+		cpps_functionfmt_class(R(CLS::*f)(C* c, cpps::cpps_value args, ...))
+			:f(f)
+		{
+		}
+
+		virtual int8 getparamcount() { return 1; }
+
+		template<typename IsVoid>
+		void call_function(C* c, cpps_domain *domain,cpps_value& vct_value, cpps_value* ret, IsVoid) {
+			if (domain && domain->domainType == cpps_domain_type_classvar)
+			{
+				cpps_classvar<CLS>* cls = (cpps_classvar<CLS> *)domain;
+				R r = (cls->__class->*f)(c, vct_value);
+				if (!cpps_cpp_to_cpps_converter<R>::match(c, r))
+				{
+					throw(cpps_error("0", 0, 0, "%s is not defined to script, conversion failed.", typeid(R).name()));
+				}
+				*ret = cpps_cpp_to_cpps_converter<R>::apply(c, r); //c++的返回值 只有可以转换的才可以
+			}
+		}
+		void call_function(C* c, cpps_domain* domain, cpps_value& vct_value, cpps_value* ret, cpps_is_void<void>) {
+			if (domain && domain->domainType == cpps_domain_type_classvar)
+			{
+				cpps_classvar<CLS>* cls = (cpps_classvar<CLS> *)domain;
+				(cls->__class->*f)(c, vct_value);
+			}
+		}
+
+		virtual void  callfunction(C* c, cpps_value* ret, cpps_domain* domain, cpps_std_vector* o, cpps_stack* stack = NULL, std::vector< cpps_regvar*>* lambdastacklist = NULL)
+		{
+			cpps_vector* vct = NULL; cpps_value vct_value;
+			newclass<cpps_vector>(c, &vct, &vct_value);
+			vct->realvector().assign(o->begin(), o->end());
+			call_function(c,domain, vct_value, ret, cpps_is_void<R>());
+		}
+		R(CLS::*f)(C* c, cpps::cpps_value args, ...);
+	};
+
 	template<class R>
 	cpps_regfunction* make_regfunction(std::string func, R(*f)(C*c,cpps::cpps_value args , ...), bool isasync ,bool isoperator )
 	{
 		return CPPSNEW( cpps_regfunction)(func, CPPSNEW( cpps_functionfmt<R>)(f),isasync, isoperator);
+	}
+	template<class R,typename CLS>
+	cpps_regfunction* make_regfunction2(std::string func, R(CLS::*f)(C*c,cpps::cpps_value args , ...), bool isasync ,bool isoperator )
+	{
+		typedef cpps_functionfmt_class<R, CLS> _Type;
+		return CPPSNEW( cpps_regfunction)(func, CPPSNEW(_Type)(f),isasync, isoperator);
 	}
 }
 #endif

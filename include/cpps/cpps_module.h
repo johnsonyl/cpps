@@ -14,8 +14,9 @@
 
 namespace cpps
 {
-	template<class R>
-	cpps_regfunction* make_regfunction(std::string func, R(*f)(const char* fmt, ...), bool isasync = false,bool isoperator = false);
+	template<class R, class CLS>
+	cpps_regfunction* make_regfunction2(std::string func, R(CLS::* f)(C* c, cpps::cpps_value args, ...), bool isasync, bool isoperator);
+	void cpps_debug_trace_domain(C* c, int kg, std::string parent, cpps_domain* root);
 	struct cpps_reg_class
 	{
 		cpps_reg* f;
@@ -75,8 +76,11 @@ namespace cpps
 	{
 		_class(std::string name)
 		{
+			assert(!cpps_class_singleton<_C*>::instance()->getcls());
+
 			_cls = CPPSNEW( cpps_class<_C>)(name,NULL, cpps_domain_type_class);
 			f = CPPSNEW( cpps_regclass_template<_C>)(name, _cls);
+
 			cpps_class_singleton<_C*>::instance()->setsls(_cls);
 		}
 		template<class F>
@@ -147,6 +151,41 @@ namespace cpps
 		cpps_class<_C> *_cls;
 	};
 
+	struct _class2 : public cpps_reg_class
+	{
+		_class2(std::string name, cpps_class_alloc __alloc, cpps_class_free __free)
+		{
+			_cls = CPPSNEW(cpps_class2)(name, NULL, cpps_domain_type_class, __alloc, __free);
+			f = CPPSNEW(cpps_regclass)(name, _cls);
+			cpps_class_singleton<cpps_class_handler*>::instance()->setsls(_cls);
+		}
+
+		_class2& def_inside(std::string func,  cpps_class_func _f2, bool isasync = false)
+		{
+			cpps_reg* r = make_regfunction2(func, &cpps_class_handler::def_call, isasync,false);
+			r->isneedC = true;
+			_cls->regfunc(r);
+			_cls->bind_func(func, _f2);
+			return *this;
+		}
+
+		_class2& def_operator_inside(std::string func, cpps_class_func _f2)
+		{
+			cpps_reg* r = make_regfunction(func, &cpps_class_handler::def_operator_call, false, true);
+			r->isneedC = true;
+			_cls->regfunc(r);
+			_cls->bind_func(func, _f2);
+			return *this;
+		}
+
+		regxmodule 	operator ,(regxmodule c)
+		{
+			regxmodule(*this).operator,(c);
+			return *this;
+		}
+		cpps_class2* _cls;
+	};
+
 	template<class F>
 	regxmodule def(std::string func, F f, bool isasync = false)
 	{
@@ -195,6 +234,7 @@ namespace cpps
 						domain->regvar(NULL, v); //将自己注册成_G..
 						v->setsource(true);
 					}
+
 					domain = v->getval().value.domain;
 				}
 			}

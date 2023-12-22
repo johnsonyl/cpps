@@ -30,9 +30,11 @@ namespace cpps
 				.def("clear", &cpps_map::clear)
 				.def("size", &cpps_map::size)
 				.def_inside("where", &cpps_map::where)
+				.def_inside("orderby", &cpps_map::orderby)
 				.def_operator("-=", &cpps_map::remove_at_map)
 				.def_operator("+=", &cpps_map::merge)
-				.def_inside("select", &cpps_map::select),
+				.def_inside("select", &cpps_map::select)
+				.def_inside("to_list", &cpps_map::to_list),
 			_class<cpps_set>("set")
 				.def("constructor", &cpps_set::constructor)
 				.def("insert", &cpps_set::insert)
@@ -54,6 +56,8 @@ namespace cpps
 				.def_operator("[]", &cpps_set::has)
 				.def_inside("where", &cpps_set::where)
 				.def_inside("select", &cpps_set::select)
+				.def_inside("orderby", &cpps_set::orderby)
+				.def_inside("to_list", &cpps_set::to_list)
 		];
 	}
 	
@@ -223,7 +227,21 @@ namespace cpps
 		}
 		return ret;
 	}
-
+	cpps_value cpps_map::orderby(C* c, object o) {
+		cpps_value vct = to_list(c);
+		cpps_vector* _vct = cpps_to_cpps_vector(vct);
+		_vct->orderby(c, o);
+		return vct;
+	}
+	cpps_value cpps_map::to_list(C*c) {
+		cpps_vector* vec;
+		cpps_value ret;
+		newclass(c, &vec, &ret);
+		for (auto v : realmap()) {
+			vec->realvector().emplace_back(v.second);
+		}
+		return ret;
+	}
 	cpps_set::~cpps_set()
 	{
 		_set.clear();
@@ -350,7 +368,21 @@ namespace cpps
 	{
 		return _set;
 	}
-
+	cpps_value cpps_set::orderby(C* c, object o) {
+		cpps_value vct = to_list(c);
+		cpps_vector* _vct = cpps_to_cpps_vector(vct);
+		_vct->orderby(c, o);
+		return vct;
+	}
+	cpps_value cpps_set::to_list(C* c) {
+		cpps_vector* vec;
+		cpps_value ret;
+		newclass(c, &vec, &ret);
+		for (auto &v : realset()) {
+			vec->realvector().emplace_back(v);
+		}
+		return ret;
+	}
 	cpps_pair::cpps_pair(object __first, object __second)
 	{
 		_first = __first.getval();

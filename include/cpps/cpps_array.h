@@ -51,7 +51,10 @@ namespace cpps
 		void								shrink_to_fit();
 		cpps_std_vector&					realvector();
 		void								remove_vec(cpps_vector* v);
-
+		cpps_value							orderby_call(C* c, object& func, cpps_value& v);
+		size_t								partition(C* c, cpps_std_vector& v, size_t begin, size_t end, object& func);
+		void								quick_sort(C* c, cpps_std_vector& v, size_t begin, size_t end,object& func);
+		cpps_vector*						orderby(C* c, object o);
 	private:
 		cpps_std_vector						_vec;
 		cpps_std_vector::iterator			_begin;

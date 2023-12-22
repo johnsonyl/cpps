@@ -146,7 +146,16 @@ namespace cpps
 		if (quatoreturn) {
 			funcdomain->funcRet.tt = CPPS_TREF;
 		}
-		cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context, false);
+
+		if (context->l.size() == 1 && context->l[0]->type == CPPS_OEXPRESSION )
+		{
+			cpps_domain* leftdomain = NULL;
+			cpps_calculate_expression(c, funcdomain, funcdomain, context->l[0]->l[0], leftdomain, funcdomain->funcRet);
+			if(funcdomain->funcRet.isref())
+				funcdomain->funcRet = funcdomain->funcRet.real();
+		}
+		else
+			cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context, false);
 
 		if (ret) {
 			*ret = funcdomain->funcRet;//return的值反馈回去

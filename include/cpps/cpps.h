@@ -34,6 +34,7 @@
 #include "cpps_domain.h"
 #include "cpps_node_domain.h"
 #include "cpps_function.h"
+#include "cpps_class_handler.h"
 #include "cpps_classvar.h"
 #include "cpps_class.h"
 #include "cpps_cppsfunction.h"

@@ -510,7 +510,7 @@ namespace cpps
 	{
 		// ±ÜÃâ×Ô¸³Öµ
 		assert(this != &v);
-		v.incruse();
+		v.incruse(); 
 		decruse();
 		tt = v.tt;
 		value = v.value;

@@ -46,6 +46,8 @@ namespace cpps
 
 		cpps_value		where(C* c, object o);
 		cpps_value		select(C* c, object o);
+		cpps_value		to_list(C* c);
+		cpps_value		orderby(C* c, object o);
 		cpps_value& operator [] (cpps_value k)
 		{
 			return _map[k];
@@ -78,6 +80,8 @@ namespace cpps
 		cpps_value		select(C* c, object o);
 		void			remove_at_set(cpps_set* _right);
 		cpps_hash_set&	realset();
+		cpps_value		orderby(C* c, object o);
+		cpps_value		to_list(C* c);
 	private:
 		cpps_hash_set _set;
 		cpps_hash_set::iterator _begin;

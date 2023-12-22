@@ -28,7 +28,7 @@ namespace cpps
 	struct cpps_cppsclass;
 	struct cpps_cpps_value;
 	struct Buffer;
-
+	class cpps_class_handler;
 
 
 	struct cpps_function
@@ -206,6 +206,7 @@ namespace cpps
 	{
 
 	}
+
 
 	template<class C>
 	inline cpps_regclass_template<C>::~cpps_regclass_template() {}

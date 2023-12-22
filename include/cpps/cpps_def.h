@@ -439,6 +439,7 @@ namespace cpps
 #define S_ISSOCK(m)  (false)
 #endif
 #define cpps_export_void extern "C" _declspec(dllexport) void __stdcall
+#define cpps_export_type(type) extern "C" _declspec(dllexport) type __stdcall
 #define cpps_export_finish 
 
 #endif //_WIN32
@@ -465,6 +466,7 @@ typedef void* HMODULE;
 #define _rmdir(p) rmdir(p)
 
 #define  cpps_export_void extern "C" void
+#define  cpps_export_type(type) extern "C" type
 #define cpps_export_finish extern "C" const CPPS_ST_API  LIBAPI = {\
 cpps_attach,\
 cpps_detach,\
@@ -530,10 +532,14 @@ typedef void(__stdcall*cpps_detach_func)(cpps::C *c);
 typedef void(*cpps_attach_func)(cpps::C *c);
 typedef void(*cpps_detach_func)(cpps::C *c);
 #endif
-
+typedef cpps::cpps_value* (*cpps_func)( cpps::C* c, cpps::cpps_value ps,...);
+typedef cpps::cpps_value* (*cpps_class_func)(cpps::cpps_value _cls, cpps::C* c, cpps::cpps_value ps);
+typedef phmap::flat_hash_map<std::string, cpps_class_func> FUNCMAP;
 
 typedef void* (*cpps_alloc_f)(size_t);
 typedef void (*cpps_free_f)(void*);
+typedef void* (*cpps_class_alloc)();
+typedef void (*cpps_class_free)(void*);
 
 //////////////////////////////////////////////////////////////////////////
 

@@ -47,6 +47,7 @@ namespace cpps
 			void										push_back(object v);
 			void										erase(cpps_integer idx);
 			size_t										size();
+			void										clear();
 			object										toobject();
 			object										operator[](const cpps_integer k);
 			cpps_std_vector&							realvector();
@@ -67,6 +68,7 @@ namespace cpps
 			void																	insert(const object& key, const object& value);
 			object																	toobject();
 			size_t																	size();
+			void																	clear();
 			template<class T>
 			bool																	has(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);
@@ -101,6 +103,7 @@ namespace cpps
 			void																	insert(object& key);
 			object																	toobject();
 			size_t																	size();
+			void																	clear();
 			template<class T>
 			bool																	has(const T k) {
 				cpps_value key = cpps_cpp_to_cpps_converter<T>::apply(c, k);

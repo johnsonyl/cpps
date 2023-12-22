@@ -436,6 +436,10 @@ namespace cpps
 	{
 		return realvector().size();
 	}
+	void object::vector::clear()
+	{
+		realvector().clear();
+	}
 
 	cpps::object object::vector::toobject()
 	{
@@ -494,6 +498,11 @@ namespace cpps
 		return realmap().size();
 	}
 
+	void object::map::clear()
+	{
+		_map->realmap().clear();
+	}
+
 	cpps::cpps_hash_map& object::map::realmap()
 	{
 		return _map->realmap();
@@ -542,6 +551,11 @@ namespace cpps
 	size_t object::set::size()
 	{
 		return realset().size();
+	}
+
+	void object::set::clear()
+	{
+		_set->clear();
 	}
 
 	cpps::cpps_hash_set& object::set::realset()

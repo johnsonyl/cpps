@@ -43,6 +43,7 @@ namespace cpps
 				.def_inside("where", &cpps_vector::where)
 				.def_inside("remove", &cpps_vector::remove)
 				.def_inside("select", &cpps_vector::select)
+				.def_inside("orderby", &cpps_vector::orderby)
 				.def("swap", &cpps_vector::swap)
 				.def("shrink_to_fit", &cpps_vector::shrink_to_fit)
 		];
@@ -329,6 +330,44 @@ namespace cpps
 			else
 				++it;
 		}
+	}
+	cpps_value cpps_vector::orderby_call(C* c, object& func, cpps_value& v) {
+		return dofunction(c, func, v).realval();
+	}
+	size_t cpps_vector::partition(C* c, cpps_std_vector& v, size_t begin, size_t end, object& func)
+	{
+		cpps_value pivot = orderby_call(c,func,v[begin]);
+		size_t left = begin + 1;
+		size_t right = end;
+		while (true)
+		{
+			while (left < right && orderby_call(c,func,v[right]) >= pivot)
+				right--;
+			while (left < right && orderby_call(c, func, v[left]) < pivot)
+				left++;
+			if (left == right)
+				break;
+			std::swap(v[left], v[right]);
+		}
+		if (orderby_call(c, func, v[left]) >= pivot)
+			return begin;
+
+		v[begin] = v[left];
+		v[left] = pivot;
+		return left;
+	}
+	void cpps_vector::quick_sort(C* c, cpps_std_vector& v, size_t begin, size_t end, object& func)
+	{
+		if (begin >= end)
+			return;
+		size_t boundary = partition(c,v, begin, end,func);
+		quick_sort(c,v, begin, boundary - 1, func);
+		quick_sort(c,v, boundary + 1, end, func);
+	}
+	cpps_vector* cpps_vector::orderby(C* c, object o)
+	{
+		quick_sort(c, realvector(), 0, realvector().size() - 1,o);
+		return this;
 	}
 
 }

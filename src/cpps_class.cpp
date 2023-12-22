@@ -22,7 +22,7 @@ namespace cpps
 		}
 	}
 
-	cpps::cpps_cppsclassvar* cpps_cppsclass::create(C* c, bool alloc /*= true*/)
+	inline cpps_cppsclassvar* cpps_cppsclass::create(C* c, bool alloc)
 	{
 		return (CPPSNEW(cpps_cppsclassvar)(getclassname(), this, cpps_domain_type_classvar, alloc));
 	}
@@ -65,5 +65,10 @@ namespace cpps
 	C* cpps_cppsclass::getDefaultCState() { return _c; }
 
 	void cpps_cppsclass::setDefaultCState(C* c) { _c = c; }
+
+	cpps_class2::cpps_class2(std::string _classname, cpps_domain* p, char type, cpps_class_alloc __alloc, cpps_class_free __free) :cpps_cppsclass(_classname, NULL, p, type) {
+		_alloc = __alloc;
+		_free = __free;
+	}
 
 }
