@@ -364,7 +364,7 @@ namespace cpps
 	cpps_value::cpps_value(cpps_value* v)
 	{
 		tt = CPPS_TREF;
-		value.value = v;
+		value.value = v->isref() ? v->value.value : v;
 	}
 
 	cpps_value::cpps_value(cpps_cppsclassvar* d)
@@ -619,6 +619,7 @@ namespace cpps
 	}
 	cpps_value	cpps_value::ref()
 	{
+		if (isref()) return *this;
 		return cpps_value(this);
 	}
 

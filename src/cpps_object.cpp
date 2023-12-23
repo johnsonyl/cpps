@@ -30,11 +30,11 @@ namespace cpps
 		case CPPS_TSTRING:
 			return "string";
 		case CPPS_TCLASSVAR: 
-		{
 			return o.realval().value.domain->getdomainname();
-		}
 		case CPPS_TFUNCTION:
 			return "function";
+		case CPPS_TLAMBDAFUNCTION:
+			return "lambda_function";
 		}
 		return "unknow";
 	}

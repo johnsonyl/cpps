@@ -18,7 +18,8 @@ namespace cpps
 		}
 		public static T? ptr_cast<T>(IntPtr this_ptr)
 		{
-			T? _this = (T?)Marshal.PtrToStructure(this_ptr, typeof(T));
+			T? _this = (T?)GCHandle.FromIntPtr(this_ptr).Target;
+			//T? _this = (T?)Marshal.PtrToStructure(this_ptr, typeof(T));
 			if (_this == null) return default;
 			return _this;
 		}
@@ -109,6 +110,12 @@ namespace cpps
 		public static extern void cpps_value_decruse(Value _v);
 		[DllImport("cpps_interface", EntryPoint = "cpps_value_cast")]
 		public static extern IntPtr cpps_value_cast(Value _v);
+		[DllImport("cpps_interface", EntryPoint = "cpps_value_real")]
+		public static extern void cpps_value_real(Value _v,IntPtr _out);
+		[DllImport("cpps_interface", EntryPoint = "cpps_value_ref")]
+		public static extern void cpps_value_ref(Value _v,IntPtr _out);
+		[DllImport("cpps_interface", EntryPoint = "cpps_value_ref_assign")]
+		public static extern void cpps_value_ref_assign(Value _ref,Value _v);
 		//vector
 		[DllImport("cpps_interface",  EntryPoint = "cpps_vector_push_back")]
 		public static extern void cpps_vector_push_back(Value vct,Value v);

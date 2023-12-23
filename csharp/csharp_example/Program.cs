@@ -50,10 +50,11 @@ public class C
 
 		Value _G = Value.globals(c);
 		Value test2 = _G.get("test2");
-        if (test2.isfunction())
-        {
-			Value.call(c, test2, cpps.String.Create(c,"hello world").ToValue());
-        }
+		Console.WriteLine(test2.ToString());
+		test2.assign((Value)20);
+		Console.WriteLine(test2.ToString());
+
+		Value.call(c, "printtest");
 
 		API.close(this.c);
 	}
