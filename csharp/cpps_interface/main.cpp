@@ -37,8 +37,13 @@ extern "C" {
 	//module
 	__declspec(dllexport) cpps_domain* cpps_defmodule(cpps::C* c, char* name)
 	{
+		cpps::cpps_init_cpps_class(c);
 		cpps::cpps_module m = _module(c, name);
 		return m.domain;
+	}
+	__declspec(dllexport) void cpps_unmodule(cpps::C* c, char* name)
+	{
+		_unmodule(c, name);
 	}
 
 
@@ -215,7 +220,6 @@ extern "C" {
 	{
 		cpps_vector* vct = cpps_to_cpps_vector(*_vct);
 		*out = vct->at(idx);
-		printf("idx:%d type:%d\n",idx,out->tt);
 	}
 	__declspec(dllexport) void cpps_vector_clear(cpps_value* _vct)
 	{

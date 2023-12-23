@@ -309,7 +309,10 @@ namespace cpps
 		}
 		static cpps_value apply(C* c, cpps_value* value)
 		{
-			return *value;
+			cpps_value ret;
+			ret.tt = value->tt;
+			ret.value = value->value;
+			return ret;
 		}
 	};
 

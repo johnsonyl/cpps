@@ -12,6 +12,10 @@ namespace cpps
 			m.Module = module(c, name);
 			return m;
 		}
+		public static void _unmodule(IntPtr c, string name)
+		{
+			unmodule(c, name);
+		}
 		public static T? ptr_cast<T>(IntPtr this_ptr)
 		{
 			T? _this = (T?)Marshal.PtrToStructure(this_ptr, typeof(T));
@@ -32,6 +36,8 @@ namespace cpps
 		public static extern void dofile(IntPtr c, string path);
 		[DllImport("cpps_interface", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "cpps_defmodule")]
 		public static extern IntPtr module(IntPtr c, string name);
+		[DllImport("cpps_interface", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "cpps_unmodule")]
+		public static extern IntPtr unmodule(IntPtr c, string name);
 		[DllImport("cpps_interface", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "cpps_module_def")]
 		public static extern void module_def(IntPtr c, IntPtr domain, string name, cpps_func __func);
 		[DllImport("cpps_interface", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, EntryPoint = "cpps_def_class")]

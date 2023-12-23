@@ -14,8 +14,8 @@ public class Class1
             Value p2 = list.At(1);
 
             Console.WriteLine(o.getType());
-            Console.WriteLine(p1.getType());
-            Console.WriteLine(p2.getType());
+            Console.WriteLine(p1.ToInt());
+            Console.WriteLine(p2.ToInt());
 
             return new Value(p1.ToInt() + p2.ToInt() + 50 );
         }
@@ -29,7 +29,7 @@ public class Class1
         [UnmanagedCallersOnly(EntryPoint = "cpps_detach")]
         public static void cpps_detach(IntPtr c)
         {
-
+			API._unmodule(c,"csharp");
         }
     }
 }

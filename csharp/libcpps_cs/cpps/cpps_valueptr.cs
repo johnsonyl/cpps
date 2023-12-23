@@ -4,20 +4,20 @@ namespace cpps
 {
     internal class ValuePtr
     {
-        private IntPtr _p;
+        private readonly IntPtr _p = IntPtr.Zero;
         public ValuePtr()
         {
-            _p = Marshal.AllocHGlobal(Marshal.SizeOf(new Value()));
-
+            Value value = new Value();
+            _p = Marshal.AllocHGlobal(Marshal.SizeOf(value));
+            Marshal.StructureToPtr(value, _p, true);
         }
         public IntPtr getPtr() { return _p; }
         public Value ToValue()
         {
             Value? anotherP = (Value?)Marshal.PtrToStructure(_p, typeof(Value));
             if (anotherP == null) return Value.nil;
-            Value ret = anotherP.clone();
-            Marshal.FreeHGlobal(_p);
-            return ret;
+            Marshal.DestroyStructure<Value>(_p);
+            return anotherP;
         }
     }
 }
