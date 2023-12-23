@@ -916,7 +916,7 @@ namespace cpps
 			if (cpps_io_isfile(file))
 				ret = cpps_io_copy(file, tarfile);
 			else if (cpps_io_isdir(file))
-				cpps_io_mkdir(tarfile);
+				cpps_io_mkdirs(tarfile);
 			else
 				return -1;
 			if (ret < 0) return -1;

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libcpps_cs", "libcpps_cs.csproj", "{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Debug|x64.ActiveCfg = Debug|x64
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Debug|x64.Build.0 = Debug|x64
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Release|x64.ActiveCfg = Release|x64
+		{F07D8CA0-9D9D-46B9-BF34-0F92CE3F6077}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {211CC1DB-3006-4CAB-91A0-894E12F2A96B}
+	EndGlobalSection
+EndGlobal

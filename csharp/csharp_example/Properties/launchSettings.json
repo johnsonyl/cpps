@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "csharp_example": {
+      "commandName": "Project",
+      "workingDirectory": "D:\\work\\code\\local-cpps-svn\\bin",
+      "nativeDebugging": true
+    }
+  }
+}

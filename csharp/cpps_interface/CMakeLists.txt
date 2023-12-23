@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.5)
 
-project(cpps_csharp)
+project(cpps_interface)
 
 # 将源代码添加到此项目的可执行文件。
 message(${PROJECT_SOURCE_DIR})
@@ -37,8 +37,8 @@ ENDIF()
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WINDOWS)
-	target_link_libraries(cpps_csharp libcpps libtcmalloc_minimal)
+	target_link_libraries(cpps_interface libcpps libtcmalloc_minimal)
 	target_link_options(${PROJECT_NAME} PRIVATE /INCLUDE:__tcmalloc)
 ELSE()
-	target_link_libraries(cpps_csharp libcpps -ltcmalloc)
+	target_link_libraries(cpps_interface libcpps -ltcmalloc)
 ENDIF()

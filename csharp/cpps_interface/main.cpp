@@ -215,6 +215,7 @@ extern "C" {
 	{
 		cpps_vector* vct = cpps_to_cpps_vector(*_vct);
 		*out = vct->at(idx);
+		printf("idx:%d type:%d\n",idx,out->tt);
 	}
 	__declspec(dllexport) void cpps_vector_clear(cpps_value* _vct)
 	{

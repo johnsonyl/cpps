@@ -1,0 +1,72 @@
+
+var cwdpath = io.getcwd();
+println(cwdpath);
+
+io.chdir("libcpps_cs")
+system("dotnet publish -a x64 -c Release -p:NativeLib=Shared libcpps_cs.csproj");
+system("dotnet publish -p:NativeLib=Shared -r win-x64 -c Release libcpps_cs8.csproj");
+io.chdir(cwdpath)
+
+
+io.chdir("csharp_example")
+system("dotnet publish -a x64 -c Release");
+io.chdir(cwdpath)
+
+
+io.chdir("csharp_libs/csharp")
+system("dotnet publish -p:NativeLib=Shared -r win-x64 -c Release");
+io.chdir(cwdpath)
+
+io.rmdir("publish");
+io.mkdir("publish");
+
+var sourcepath = io.normpath("csharp_example/bin/Release/net6.0/win-x64/publish");
+var tarpath = io.normpath("publish");
+io.copydir(sourcepath,tarpath);	
+println("copydir {sourcepath} -> {tarpath}");
+
+
+var sourcepath = "csharp_libs/csharp/bin/Release/net8.0/win-x64/publish/csharp.dll";
+var tarpath = "{io.getrealpath()}lib/csharp/csharp.dll";
+io.copy(sourcepath,tarpath);	
+println("copy {sourcepath} -> {tarpath}");
+
+io.mkdir("publish/lib");
+
+
+var sourcepath = "{io.getrealpath()}lib";
+var tarpath = "publish/lib";
+var sourcepathfiles = io.walk(sourcepath,true);
+foreach(var sourcefile : sourcepathfiles)
+{
+	var tartfile = io.normpath(sourcefile);
+	string.pop_back(tartfile,1);
+	string.replace(tartfile,sourcepath,tarpath);
+
+	if(io.isfile(sourcefile)){
+		
+		println("copy {sourcefile} -> {tartfile}");
+		io.copy(sourcefile,tartfile);
+		
+	}
+	else if(io.isdir(sourcefile)){
+		println("mkdir {tartfile}");
+		io.mkdir(tartfile);
+	}
+}
+	
+
+io.copydir(sourcepath,tarpath);	
+println("copydir {sourcepath} -> {tarpath}");
+
+
+var sourcepath = "../bin/cpps_interface.dll";
+var tarpath = "publish/cpps_interface.dll";
+io.copy(sourcepath,tarpath);	
+println("copy {sourcepath} -> {tarpath}");
+
+
+var sourcepath = "../bin/main.cpp";
+var tarpath = "publish/main.cpp";
+io.copy(sourcepath,tarpath);	
+println("copy {sourcepath} -> {tarpath}");
