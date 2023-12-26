@@ -56,6 +56,7 @@ void __check_cpps_package_json(int argc, char** argv) {
 	cpps::close(c);
 }
 #endif
+
 int32 main(int argc,char **argv)
 {
 #ifdef _WIN32
@@ -99,6 +100,9 @@ int32 main(int argc,char **argv)
 			printf("filepath: run a cpps script file.\r\n");
 			return 0;
 		}
+		else if (path == "-script") {
+			path = "lib/@script/main.cpp";
+		}
 		else {
 			printf("Unknow option:%s\r\n", path.c_str());
 			printf("Try 'cpps -h' for more infomation.\r\n");
@@ -128,7 +132,7 @@ int32 main(int argc,char **argv)
 
 
 	cpps_try
-	if(!path.empty()) cpps::dofile(c, path.c_str());
+		if (!path.empty()) cpps::dofile(c, path.c_str());
 	cpps_catch
 
 	cpps::close(c);

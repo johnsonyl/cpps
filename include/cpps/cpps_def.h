@@ -378,7 +378,11 @@ namespace cpps
 #include <sys/mman.h>
 #include <sys/stat.h> 
 #include <unistd.h>
+#ifdef __aarch64__
+#include <sys/uio.h>
+#else
 #include <sys/io.h>
+#endif
 #include <dlfcn.h>
 #include <dirent.h>
 

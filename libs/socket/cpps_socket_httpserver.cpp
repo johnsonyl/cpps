@@ -35,6 +35,14 @@ namespace cpps {
 		http_option.exceptionfunc = opt["exceptionfunc"];
 		http_option.notfoundfunc = opt["notfoundfunc"];
 		server_option.option_ip = http_option.option_ip;
+		server_option.option_ssl = opt["ssl"];
+		server_option.option_certificate_file = opt["certificate_file"];
+		server_option.option_privatekey_file = opt["privatekey_file"];
+		if (server_option.option_ssl.tobool()) {
+			SSL_library_init();
+			OpenSSL_add_all_algorithms();
+			SSL_load_error_strings();
+		}
 		return this;
 	}
 
@@ -518,7 +526,7 @@ namespace cpps {
 		return 0;
 	}
 	
-	void cpps_socket_httpserver::onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf)
+	void cpps_socket_httpserver::onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf)
 	{
 		cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
 		if (nread > 0)

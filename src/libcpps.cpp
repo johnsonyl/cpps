@@ -2908,7 +2908,9 @@ namespace cpps {
 	{
 		if (!c->isloadbase) {
 			try {
-				if(cpps_io_file_exists("lib/base")) cpps_loadlibrary(c, "base", buffer);
+				std::string base_path = "lib/base/main.cpp";
+				base_path = cpps_rebuild_filepath(base_path);
+				if(cpps_io_file_exists(base_path)) cpps_loadlibrary(c, "base", buffer);
 			}catch(...){ //no throw...
 			}
 			c->isloadbase = true;

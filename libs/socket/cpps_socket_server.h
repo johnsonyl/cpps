@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #endif
+#include <openssl/ssl.h>
 
 #include "cpps_socket_event_callback.h"
 
@@ -35,6 +36,9 @@ namespace cpps {
 		cpps::object		option_close;
 		cpps_integer		option_headsize;
 		cpps::object		option_parser;
+		cpps::object		option_ssl;
+		cpps::object		option_certificate_file;
+		cpps::object		option_privatekey_file;
 	};
 
 	class cpps_socket_server_client;
@@ -47,6 +51,7 @@ namespace cpps {
 
 		virtual void							setcstate(cpps::C* cstate);
 		cpps_socket_server*						setoption( cpps::object opt);
+		bool									is_open_ssl();
 		int										get_addrinfo(const struct sockaddr* addr, std::string& ip, cpps::usint16& port);
 		cpps_socket_server*						listen(cpps::C* cstate, cpps::usint16 port);
 		virtual cpps_socket_server_client*		create_server_client();
@@ -61,8 +66,9 @@ namespace cpps {
 		bool									isrunning();
 
 	public:
-		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
+		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf);
 		static  void							onClsoeCallback(uv_handle_t* handle);
+		virtual void							on_error_event(cpps_socket_server_client* client,int type);
 
 	public:
 		static void								stop_cb(uv_handle_t* handle);
@@ -77,6 +83,8 @@ namespace cpps {
 		socket_list								server_client_list;
 		cpps_integer							inc_socket_index;
 		bool									sever_running;
+		SSL_CTX*								ctx;
+
 	};
 }
 

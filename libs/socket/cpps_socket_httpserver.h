@@ -34,6 +34,9 @@ namespace cpps {
 		std::string			option_ip;
 		cpps::object		exceptionfunc;
 		cpps::object		notfoundfunc;
+		cpps::object		option_ssl;
+		cpps::object		option_certificate_file;
+		cpps::object		option_privatekey_file;
 	};
 	class cpps_socket_httpserver_session;
 	class cpps_socket_httpserver_cachefile;
@@ -70,7 +73,7 @@ namespace cpps {
 
 		cpps_socket_httpserver_cachefile*		create_cachefile(std::string &filepath,std::string &content, cpps_integer last_write_time);
 		cpps_socket_httpserver_cachefile*		get_cachefile(std::string filepath);
-		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
+		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf);
 		std::string								getwwwroot();
 		void									setwwwroot(std::string wwwroot);
 	public:

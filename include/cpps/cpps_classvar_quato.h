@@ -1,5 +1,5 @@
-#ifndef CPPS_CLASSVAR_QUATO_CPPS_HEAD_
-#define CPPS_CLASSVAR_QUATO_CPPS_HEAD_
+#ifndef CPPSCLSLASSVAR_QUATOCLSPPS_HEAD_
+#define CPPSCLSLASSVAR_QUATOCLSPPS_HEAD_
 
 //===================================
 //@Author		:	Johnson
@@ -29,30 +29,30 @@ namespace cpps
 		cpps_cppsclass* _cls;
 	};
 
-	template<class _C>
+	template<class CLS>
 	struct cpps_classvar_quato_template : public cpps_classvar_quato
 	{
 
-		cpps_classvar_quato_template(std::string name, object _C::* _v) { setvarname(name); v = _v; }
+		cpps_classvar_quato_template(std::string name, object CLS::* _v) { setvarname(name); v = _v; }
 		virtual ~cpps_classvar_quato_template() {}
 		virtual void setvalue(cpps_domain* domain, cpps_value _v) {
-			cpps_classvar<_C>* cls = static_cast<cpps_classvar<_C>*>(domain);
+			cpps_classvar<CLS>* cls = static_cast<cpps_classvar<CLS>*>(domain);
 			object& val = (cls->__class->*v);
 			val = _v.real();
 		}
 		virtual cpps_value getvalue(cpps_domain* domain) {
-			cpps_classvar<_C>* cls = static_cast<cpps_classvar<_C>*>(domain);
+			cpps_classvar<CLS>* cls = static_cast<cpps_classvar<CLS>*>(domain);
 			object& val = (cls->__class->*v);
 			return val.ref();
 		}
 		virtual void release() { CPPSDELETE(this); }
 
-		object _C::* v;
+		object CLS::* v;
 	};
-	template<typename _C>
-	cpps_reg_class_var* make_regclassvar(std::string name, object _C::* v)
+	template<typename CLS>
+	cpps_reg_class_var* make_regclassvar(std::string name, object CLS::* v)
 	{
-		return CPPSNEW(cpps_reg_class_var)(name, CPPSNEW(cpps_classvar_quato_template<_C>)(name, v));
+		return CPPSNEW(cpps_reg_class_var)(name, CPPSNEW(cpps_classvar_quato_template<CLS>)(name, v));
 	}
 }
 #endif

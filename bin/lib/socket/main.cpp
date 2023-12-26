@@ -8,6 +8,9 @@ class ServerOption
 	var close;
 	var parser;
 	var headersize;
+	var ssl;
+	var certificate_file;
+	var privatekey_file;
 }
 class ClientOption
 {
@@ -16,12 +19,16 @@ class ClientOption
 	var close;
 	var parser;
 	var headersize;
+	var ssl;
 }
 class HttpServerOption
 {
 	var ip;
 	var exceptionfunc;
 	var notfoundfunc;
+	var ssl;
+	var certificate_file;
+	var privatekey_file;
 }
 class HttpTemplateCache
 {

@@ -800,7 +800,7 @@ namespace cpps
 		if (begin >= end)
 			return;
 		size_t boundary = partition(v, begin, end);
-		quickSort(v, begin, boundary - 1);
+		if (boundary > 0) quickSort(v, begin, boundary - 1);
 		quickSort(v, boundary + 1, end);
 	}
 	void cpps_base_sort(object v)
@@ -990,7 +990,8 @@ namespace cpps
 			//def_inside("loadlibrary", cpps_loadlibrary),
 			//def_inside("freelibrary", cpps_freelibrary),
 			def_inside("getargs", cpps_getargs),
-			def_inside("execmd",cpps_base_execmd)
+			def_inside("execmd",cpps_base_execmd),
+			def_inside("g_dostring",dostring)
 		];
 		cpps::_module(c, "ot")[
 			defvar(c,"int", CPPS_TINTEGER),

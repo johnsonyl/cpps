@@ -32,7 +32,14 @@ namespace cpps
 		client_option.option_data = opt["data"];
 		client_option.option_close = opt["close"];
 		client_option.option_parser = opt["parser"];
+		client_option.option_ssl = opt["ssl"];
 		if (cpps::type(opt["headersize"]) == CPPS_TINTEGER || cpps::type(opt["headersize"]) == CPPS_TUINTEGER) client_option.option_headsize = object_cast<cpps_integer>(opt["headersize"]);
+		if (client_option.option_ssl.tobool()) {
+			SSL_library_init();
+			OpenSSL_add_all_algorithms();
+			SSL_load_error_strings();
+			
+		}
 		return this;
 	}
 
@@ -45,7 +52,6 @@ namespace cpps
 		dest_ip = ip;
 		dest_port = port;
 
-	
 
 		uv_tcp_t* fd = CPPSNEW( uv_tcp_t)();
 		uv_tcp_init(uv_loop, fd);
@@ -83,6 +89,14 @@ namespace cpps
 #endif
 		create(fd);
 		ressave = res;
+
+		if (client_option.option_ssl.tobool()) {
+			ctx = SSL_CTX_new(SSLv23_client_method());
+			if (ctx == NULL) {
+				return NULL;
+			}
+		}
+
 		
 		//尝试绑定端口
 		while (res != NULL) {
@@ -103,6 +117,8 @@ namespace cpps
 			return false;
 		}
 
+	
+
 		set_event_callback(this);
 		return true;
 	}
@@ -118,6 +134,7 @@ namespace cpps
 	{
 		if (!client_connection) return;
 		cpps_socket::close("normal close.", onClsoeCallback);
+
 	}
 
 	void cpps_socket_client::closesocket()
@@ -130,7 +147,7 @@ namespace cpps
 		return client_connection;
 	}
 
-	void cpps_socket_client::onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf)
+	void cpps_socket_client::onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf)
 	{
 		if (nread > 0)
 		{
@@ -222,6 +239,22 @@ namespace cpps
 		client->closed();
 		uv_tcp_t* fd = (struct uv_tcp_s*)handle;
 		CPPSDELETE( fd);
+		SSL_CTX_free(client->ctx);
+	}
+	void cpps_socket_client::on_connect_do_cb()
+	{
+		client_connection = true;
+		if (cpps::type(client_option.option_connected) == CPPS_TFUNCTION)
+		{
+			cpps::dofunction(c, client_option.option_connected, this);
+		}
+	}
+
+	void cpps_socket_client::ssl_connect()
+	{
+		SSL_set_connect_state(ssl);     // 这是个客户端连接
+		int ret = SSL_connect(ssl);
+		ssl_continue_wantwait(ret);
 	}
 
 	void cpps_socket_client::on_connect(uv_connect_t* req, int status)
@@ -231,11 +264,23 @@ namespace cpps
 			client->close();
 			return ;
 		}
-		client->client_connection = true;
-		if (cpps::type(client->client_option.option_connected) == CPPS_TFUNCTION)
-		{
-			cpps::dofunction(client->c, client->client_option.option_connected, client);
+		if (client->is_open_ssl()) {
+			client->ssl_connect();
 		}
+
+		client->on_connect_do_cb();
+		
 	}
+
+	void cpps_socket_client::on_error_event(int type)
+	{
+		cpps_socket::close("server closed the connection.", onClsoeCallback);
+	}
+
+	int cpps_socket_client::ssl_continue()
+	{
+		return SSL_connect(ssl);
+	}
+
 
 }

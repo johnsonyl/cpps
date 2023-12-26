@@ -21,6 +21,7 @@ namespace cpps {
 		cpps::object		option_close;
 		cpps_integer		option_headsize;
 		cpps::object		option_parser;
+		cpps::object		option_ssl;
 	};
 
 	class cpps_socket_client : public cpps_socket , public cpps_socket_event_callback
@@ -39,11 +40,15 @@ namespace cpps {
 		void									closed();
 		void									setuserdata(cpps::object userdata);
 		cpps_value								getuserdata();
+		void									on_connect_do_cb();
+		void									ssl_connect();
 
 	public:
-		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf);
+		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf);
 		static  void							onClsoeCallback(uv_handle_t* handle);
 		static  void							on_connect(uv_connect_t* req, int status);
+		virtual void							on_error_event(int type);
+		virtual int								ssl_continue();
 	public:
 
 		cpps::usint16							dest_port;

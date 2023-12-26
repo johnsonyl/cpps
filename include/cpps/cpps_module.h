@@ -71,20 +71,20 @@ namespace cpps
 		cpps_domain* _enum_domain;
 		C* c;
 	};
-	template< class _C>
+	template< class CLS>
 	struct _class : public cpps_reg_class
 	{
 		_class(std::string name)
 		{
-			assert(!cpps_class_singleton<_C*>::instance()->getcls());
+			//assert(!cpps_class_singleton<CLS*>::instance()->getcls());
 
-			_cls = CPPSNEW( cpps_class<_C>)(name,NULL, cpps_domain_type_class);
-			f = CPPSNEW( cpps_regclass_template<_C>)(name, _cls);
+			_cls = CPPSNEW( cpps_class<CLS>)(name,NULL, cpps_domain_type_class);
+			f = CPPSNEW( cpps_regclass_template<CLS>)(name, _cls);
 
-			cpps_class_singleton<_C*>::instance()->setsls(_cls);
+			cpps_class_singleton<CLS*>::instance()->setsls(_cls);
 		}
 		template<class F>
-		_class<_C>& base()
+		_class<CLS>& base()
 		{
 			assert(cpps_class_singleton<F*>::instance()->getcls());
 
@@ -94,7 +94,7 @@ namespace cpps
 			return *this;
 		}
 		template<class F>
-		_class<_C>& 	def(std::string func, F _f, bool isasync = false)
+		_class<CLS>& 	def(std::string func, F _f, bool isasync = false)
 		{
 			cpps_reg* r = make_regfunction(func, _f,isasync);
 			r->isneedC = false;
@@ -103,14 +103,14 @@ namespace cpps
 		}
 
 		template<class F>
-		_class<_C>&  defvar(C *c, std::string name, F v)
+		_class<CLS>&  defvar(C *c, std::string name, F v)
 		{
 			cpps_reg* r = make_regvar(name, cpps_cpp_to_cpps_converter<F>::apply(c, v));
 			r->isneedC = false;
 			_cls->regfunc(r);
 			return *this;
 		}
-		_class<_C>& def_classvar( std::string name, object _C::* v)
+		_class<CLS>& def_classvar( std::string name, object CLS::* v)
 		{
 			cpps_reg* r = make_regclassvar(name,v);
 			_cls->regfunc(r);
@@ -118,7 +118,7 @@ namespace cpps
 		}
 
 		template<class F>
-		_class<_C>& 	def_inside(std::string func, F _f, bool isasync = false)
+		_class<CLS>& 	def_inside(std::string func, F _f, bool isasync = false)
 		{
 			cpps_reg* r = make_regfunction(func, _f,isasync);
 			r->isneedC = true;
@@ -127,7 +127,7 @@ namespace cpps
 		}
 
 		template<class F>
-		_class<_C>& def_operator(std::string func, F _f)
+		_class<CLS>& def_operator(std::string func, F _f)
 		{
 			cpps_reg* r = make_regfunction(func, _f, false,true);
 			r->isneedC = false;
@@ -135,7 +135,7 @@ namespace cpps
 			return *this;
 		}
 		template<class F>
-		_class<_C>& def_operator_inside(std::string func, F _f)
+		_class<CLS>& def_operator_inside(std::string func, F _f)
 		{
 			cpps_reg* r = make_regfunction(func, _f, false, true);
 			r->isneedC = true;
@@ -148,7 +148,7 @@ namespace cpps
 			regxmodule(*this).operator,(c);
 			return *this;
 		}
-		cpps_class<_C> *_cls;
+		cpps_class<CLS> *_cls;
 	};
 
 	struct _class2 : public cpps_reg_class

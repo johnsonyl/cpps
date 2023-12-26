@@ -11,7 +11,7 @@ namespace cpps {
 		sever_running = false;
 		uv_loop = CPPSNEW( uv_loop_t)();
 		uv_loop_init(uv_loop);
-
+		ctx = NULL;
 	}
 
 	cpps_socket_server::~cpps_socket_server()
@@ -40,8 +40,22 @@ namespace cpps {
 		server_option.option_data = opt["data"];
 		server_option.option_close = opt["close"];
 		server_option.option_parser = opt["parser"];
+		server_option.option_ssl = opt["ssl"];
+		server_option.option_certificate_file = opt["certificate_file"];
+		server_option.option_privatekey_file = opt["privatekey_file"];
 		if (cpps::type(opt["headersize"]) == CPPS_TINTEGER || cpps::type(opt["headersize"]) == CPPS_TUINTEGER) server_option.option_headsize = object_cast<cpps_integer>(opt["headersize"]);
+		if (server_option.option_ssl.tobool()) {
+			SSL_library_init();
+			OpenSSL_add_all_algorithms();
+			SSL_load_error_strings();
+		}
+		
 		return this;
+	}
+
+	bool cpps_socket_server::is_open_ssl()
+	{
+		return ctx != NULL;
 	}
 
 	int cpps_socket_server::get_addrinfo(const struct sockaddr* addr, std::string& ip, cpps::usint16& port)
@@ -133,6 +147,24 @@ namespace cpps {
 // 		async_send_msg.data = (void*)this;
 // 		uv_async_init(uv_loop, &async_send_msg, write_task_cb);
 
+		if (server_option.option_ssl.tobool()) {
+			ctx = SSL_CTX_new(SSLv23_server_method());
+			if (ctx == NULL) {
+				return NULL;
+			}
+			/* 载入用户的数字证书， 此证书用来发送给客户端。 证书里包含有公钥 */
+			if (SSL_CTX_use_certificate_file(ctx, server_option.option_certificate_file.tostring().c_str(), SSL_FILETYPE_PEM) <= 0) {
+				return NULL;
+			}
+			/* 载入用户私钥 */
+			if (SSL_CTX_use_PrivateKey_file(ctx, server_option.option_privatekey_file.tostring().c_str(), SSL_FILETYPE_PEM) <= 0) {
+				return NULL;
+			}
+			/* 检查用户私钥是否正确 */
+			if (!SSL_CTX_check_private_key(ctx)) {
+				return NULL;
+			}
+		}
 
 		sever_running = true;
 		return this;
@@ -151,6 +183,7 @@ namespace cpps {
 		uv_tcp_init(srv->uv_loop, fd);
 		fd->data = (void*)client;
 		client->create(fd);
+		client->ctx = srv->ctx;
 		if (uv_accept(server, (uv_stream_t*)fd) != 0) {
 			client->close("server accept error.", onClsoeCallback);
 			return;
@@ -169,9 +202,13 @@ namespace cpps {
 			client->close("client create faild.", onClsoeCallback);
 			return;
 		}
-		
-		
+
 		client->set_client_info(ip, port);
+
+		if (client->is_open_ssl()) {
+			client->ssl_accept(fd->socket);
+		}
+		
 
 		if (cpps::type(srv->server_option.option_accept) == CPPS_TFUNCTION)
 		{
@@ -260,12 +297,12 @@ namespace cpps {
 	}
 
 
-	void cpps_socket_server::onReadCallback(cpps_socket* sock, ssize_t nread, const uv_buf_t* buf)
+	void cpps_socket_server::onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf)
 	{
 		cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
 		if (nread > 0)
 		{
-			client->readbuffer( buf, nread);
+			client->readbuffer(buf, nread);
 			cpps_integer packetsize = (cpps_integer)client->get_buffer_length();
 			cpps_create_class_var(cpps::Buffer, c, buffer_var, buffer_ptr);
 			if (server_option.option_headsize == 0)
@@ -338,5 +375,9 @@ namespace cpps {
 
 		CPPSDELETE(source);
 		client->server->free_server_client(client);
+	}
+	void cpps_socket_server::on_error_event(cpps_socket_server_client* client,int type)
+	{
+		client->close("client error_event.", onClsoeCallback);
 	}
 }
