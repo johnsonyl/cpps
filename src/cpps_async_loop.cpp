@@ -31,7 +31,7 @@ namespace cpps {
 		_tasks.clear(); /*说明用户自己启用协程列表,不由默认*/
 		cpps_value ret;
 		cpps_async_task* roottask = NULL;
-		if (task.isdomain() && task.value.domain->domainname == "ASYNC_OBJECT") {
+		if (task.isdomain() && task.is_kindof<cpps_async_object>()) {
 			cpps_async_object* vobj = cpps_converter<cpps_async_object*>::apply(task);
 			if (vobj->get_task() == NULL) {
 				ret = create_task(c, vobj, &roottask);
@@ -43,18 +43,18 @@ namespace cpps {
 				ret = task.getval();
 			}
 		}
-		else if (task.isdomain() && task.value.domain->domainname == "ASYNC_TASK") {
+		else if (task.isdomain() && task.is_kindof<cpps_async_task>()) {
 			roottask = cpps_converter<cpps_async_task*>::apply(task);
 			ret = task;
 			if (roottask->state())  throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "the task state is running. "));
 			push_task(c, ret);
 		}
-		else if (task.isdomain() && task.value.domain->domainname == "vector"){
+		else if (task.isdomain() && task.is_kindof<cpps_vector>()){
 			cpps_vector* retvec;
 			newclass<cpps_vector>(c, &retvec,&ret);
 			cpps_vector* vec = cpps_converter<cpps_vector*>::apply(task);
 			for (auto v : vec->realvector()) {
-				if (v.isdomain() && v.value.domain->domainname == "ASYNC_OBJECT") {
+				if (v.isdomain() && v.is_kindof<cpps_async_object>()) {
 					cpps_async_object* vobj = cpps_converter<cpps_async_object*>::apply(v);
 					cpps_value vtask_value;
 					cpps_async_task* vtask;
@@ -69,7 +69,7 @@ namespace cpps {
 					}
 					retvec->push_back(vtask_value);
 				}
-				else if (v.isdomain() && task.value.domain->domainname == "ASYNC_TASK") {
+				else if (v.isdomain() && task.is_kindof<cpps_async_task>()) {
 					cpps_async_task* vtask = cpps_converter<cpps_async_task*>::apply(v);
 					if (vtask->state())  throw(cpps_error(c->curnode->filename, c->curnode->line, cpps_error_asyncerror, "the task state is running."));
 					push_task(c,v);

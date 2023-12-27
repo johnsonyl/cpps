@@ -65,6 +65,15 @@ namespace cpps
 		const cpps_value&	real() const;
 		cpps_value&			real();
 		cpps_value			ref();
+		template<typename T>
+		bool				is_kindof() const{
+			if (cpps_isclassvar(*this)) {
+				cpps_cppsclass *_cls = cpps_class_singleton<T*>::instance()->getcls();
+				cpps_cppsclassvar *_clsvar = cpps_to_cpps_cppsclassvar(*this);
+				return _clsvar->getcppsclass() == _cls;
+			}
+			return false;
+		}
 
 		struct hash
 		{	

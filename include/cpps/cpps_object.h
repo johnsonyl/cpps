@@ -252,6 +252,10 @@ namespace cpps
 		object(long double v) { value = cpps_value((cpps_number)v); }
 		object(double v) { value = cpps_value((cpps_number)v); }
 		object(float v) { value = cpps_value((cpps_number)v); }
+		template<typename T>
+		const bool				is_kindof() const {
+			return value.is_kindof<T>();
+		}
 
 		cpps_value	value;
 	};

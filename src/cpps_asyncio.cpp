@@ -20,7 +20,7 @@ namespace cpps {
 		cpps_async_task* vtask = NULL;
 		cpps_value ret;
 		cpps_async_loop* loop = cpps_async_get_event_loop(c);
-		if (var.isdomain() && var.value.domain->domainname == "ASYNC_OBJECT") {
+		if (var.isdomain() && var.is_kindof<cpps_async_object>()) {
 			cpps_async_object* obj = cpps_converter<cpps_async_object*>::apply(var);
 			if (obj->get_task() == NULL) {
 				ret = loop->create_task(c, obj, &vtask);
@@ -32,7 +32,7 @@ namespace cpps {
 				ret = task.getval();
 			}
 		}
-		else if (var.isdomain() && var.value.domain->domainname == "ASYNC_TASK") {
+		else if (var.isdomain() && var.is_kindof<cpps_async_task>()) {
 			vtask = cpps_converter<cpps_async_task*>::apply(var);
 			ret = var;
 		}
@@ -50,7 +50,7 @@ namespace cpps {
 		cpps_async_task* task = NULL;
 		cpps_value ret;
 		cpps_async_loop* loop = cpps_async_get_event_loop(c);
-		if (var.isdomain() && var.value.domain->domainname == "ASYNC_OBJECT") {
+		if (var.isdomain() && var.is_kindof<cpps_async_object>()) {
 			cpps_async_object* obj = cpps_converter<cpps_async_object*>::apply(var);
 			if (obj->get_task() == NULL) {
 				ret = loop->create_task(c, cpps_converter<cpps_async_object*>::apply(var), &task);
@@ -62,7 +62,7 @@ namespace cpps {
 				ret = task.getval();
 			}
 		}
-		else if (var.isdomain() && var.value.domain->domainname == "ASYNC_TASK") {
+		else if (var.isdomain() && var.is_kindof<cpps_async_task>()) {
 			task = cpps_converter<cpps_async_task*>::apply(var);
 			ret = var;
 		}

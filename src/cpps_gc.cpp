@@ -55,7 +55,7 @@ namespace cpps
 			if (isCheck.find((cpps_cppsclassvar*)v.value.domain) != isCheck.end()) return;//ÒÑ¾­check¹ý
 			isCheck.insert((cpps_cppsclassvar*)v.value.domain);
 
-			if (v.value.domain->getdomainname() == "vector")
+			if (v.is_kindof<cpps_vector>())
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_vector *pVector = (cpps_vector*)pClsVar->getclsptr();
@@ -75,7 +75,7 @@ namespace cpps
 				}
 
 			}
-			else if (v.value.domain->getdomainname() == "map" )
+			else if (v.is_kindof<cpps_map>())
 			{
 				cpps_cppsclassvar *pClsVar = (cpps_cppsclassvar *)v.value.domain;
 				cpps_map *pMap = (cpps_map*)pClsVar->getclsptr();

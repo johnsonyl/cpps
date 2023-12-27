@@ -36,17 +36,17 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TCLASSVAR)
 		{
-			if (b.value.value.domain->domainname == "vector")
+			if (b.is_kindof<cpps_vector>())
 			{
 				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
 				ret = (cpps_integer)v->size();
 			}
-			else if (b.value.value.domain->domainname == "map")
+			else if (b.is_kindof<cpps_map>())
 			{
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
 				ret = (cpps_integer)v->size();
 			}
-			else if (b.value.value.domain->domainname == "set")
+			else if (b.is_kindof<cpps_set>())
 			{
 				cpps_set* v = cpps_converter<cpps_set*>::apply(b.value);
 				ret = (cpps_integer)v->size();
@@ -107,7 +107,7 @@ namespace cpps
 		}
 		else if (type(b) == CPPS_TCLASSVAR)
 		{
-			if (b.getclassname() == "vector")
+			if (b.is_kindof<cpps_vector>())
 			{
 				cout << "[";
 				cpps_vector* v = cpps_converter<cpps_vector*>::apply(b.value);
@@ -126,7 +126,7 @@ namespace cpps
 				}
 				cout << "]";
 			}
-			else if (b.getclassname() == "set")
+			else if (b.is_kindof<cpps_set>())
 			{
 				cout << "[";
 				bool first = true;
@@ -145,7 +145,7 @@ namespace cpps
 				}
 				cout << "]";
 			}
-			else if (b.getclassname() == "map")
+			else if (b.is_kindof<cpps_map>())
 			{
 				cout << "{ ";
 				cpps_map* v = cpps_converter<cpps_map*>::apply(b.value);
@@ -169,7 +169,7 @@ namespace cpps
 				}
 				cout << " }";
 			}
-			else if (b.value.value.domain->domainname == "pair") {
+			else if (b.is_kindof<cpps_pair>()) {
 
 				cpps_pair* v = cpps_converter<cpps_pair*>::apply(b.value);
 				cout << "(";
@@ -252,6 +252,10 @@ namespace cpps
 	cpps_uinteger cpps_base_touinteger(cpps_value v)
 	{
 		return cpps_to_uinteger(v);
+	}
+	bool cpps_base_tobool(cpps_value v)
+	{
+		return cpps::object_cast<bool>(v);
 	}
 	std::string cpps_base_tostring(cpps_value v)
 	{
@@ -954,6 +958,7 @@ namespace cpps
 			def("touint", cpps_base_touinteger),
 			def("int", cpps_base_tointeger),
 			def("uint", cpps_base_touinteger),
+			def("bool", cpps_base_tobool),
 			def("tostring", cpps_base_tostring),
 			def("str", cpps_base_tostring),
 			def("isstring", cpps_base_isstring),

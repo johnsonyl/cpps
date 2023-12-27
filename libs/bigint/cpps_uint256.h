@@ -1,12 +1,12 @@
 #pragma once
-#include "Integer.hpp"
 #include <cpps/cpps.h>
 
-using uint256_t = JIO::Integer<32, false>;
+#include "BigInt.h"
+
+using uint256_t = BigInt;
 class cpps_uint256
 {
 public:
-
 	cpps_uint256() {
 	}
 	// +
@@ -19,14 +19,6 @@ public:
 	cpps_uint256 * _mul(cpps::C* c, cpps::object _right);
 	// /
 	cpps_uint256 * _div(cpps::C* c, cpps::object _right);
-	// &
-	cpps_uint256 * _add2(cpps::C* c, cpps::object _right);
-	// &=
-	cpps_uint256 * _add2andassignment(cpps::C* c, cpps::object _right);
-	// |=
-	cpps_uint256 * _add3andassignment(cpps::C* c, cpps::object _right);
-	// |
-	cpps_uint256 * _add3(cpps::C* c, cpps::object _right);
 	// %
 	cpps_uint256 * _quyu(cpps::C* c, cpps::object _right);
 	// =
@@ -49,16 +41,8 @@ public:
 	cpps_uint256 * _leftautoincrease(cpps::C* c);
 	// --left
 	cpps_uint256 * _leftautodecrease(cpps::C* c);
-	// ^
-	cpps_uint256 * _add4(cpps::C* c, cpps::object _right);
-	// ^=
-	cpps_uint256 * _add4andassignment(cpps::C* c, cpps::object _right);
 	// !=
 	bool			_notequel(cpps::C* c, cpps::object _right);
-	// <<=
-	cpps_uint256 * _add5andassignment(cpps::C* c, cpps::object _right);
-	// >>=
-	cpps_uint256 * _add6andassignment(cpps::C* c, cpps::object _right);
 	// *=
 	cpps_uint256 * _mulandassignment(cpps::C* c, cpps::object _right);
 	// /=
@@ -67,10 +51,6 @@ public:
 	cpps_uint256 * _addandassignment(cpps::C* c, cpps::object _right);
 	// -= 
 	cpps_uint256 * _subandassignment(cpps::C* c, cpps::object _right);
-	// <<
-	cpps_uint256 * _add5(cpps::C* c, cpps::object _right);
-	// >>
-	cpps_uint256 * _add6(cpps::C* c, cpps::object _right);
 	// -left
 	cpps_uint256 * _minus(cpps::C* c);
 	// +left

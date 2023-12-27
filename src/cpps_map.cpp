@@ -13,7 +13,8 @@ namespace cpps
 				.def("first", &cpps_pair::first)
 				.def("second", &cpps_pair::second)
 				.def_operator("==", &cpps_pair::equalfunc)
-				.def_operator("[]", &cpps_pair::getobject),
+				.def_operator("[]", &cpps_pair::getobject)
+				.def_operator("->", &cpps_pair::second),
 			_class<cpps_map>("map")
 				.def("insert", &cpps_map::insert)
 				.def("find", &cpps_map::find)

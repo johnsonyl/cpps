@@ -1,10 +1,10 @@
 #import "bigint"
 
 var U256(var v){
-	return new bigint::uint256(v);
+	return new bigint::Integer(v);
 }
 
-var a = new bigint::uint256();
+var a = new bigint::Integer();
 a = 1;
 a = U256(100) + a;
 

@@ -3558,7 +3558,7 @@ namespace cpps {
 		foreachdomain->regvar(c, var);
 		if (v.tt == CPPS_TNIL)
 			return;
-		if (v.isdomain() && v.value.domain->domainname == "vector") {
+		if (v.isdomain() && v.is_kindof<cpps_vector>()) {
 			cpps_vector* vec = cpps_converter<cpps_vector*>::apply(v);
 			if (vec) {
 				cpps_domain* execdomain = c->domain_alloc();
@@ -3582,7 +3582,7 @@ namespace cpps {
 				c->domain_free(execdomain);
 			}
 		}
-		else if (v.isdomain() && v.value.domain->domainname == "set") {
+		else if (v.isdomain() && v.is_kindof<cpps_set>()) {
 			cpps_set* vec = cpps_converter<cpps_set*>::apply(v);
 			if (vec) {
 				cpps_domain* execdomain = c->domain_alloc();
@@ -3609,7 +3609,7 @@ namespace cpps {
 				c->domain_free(execdomain);
 			}
 		}
-		else if (v.isdomain() && v.value.domain->domainname == "map") {
+		else if (v.is_kindof<cpps_map>()) {
 			cpps_pair* mapnode;
 			cpps_value	ret;
 			newclass<cpps_pair>(c, &mapnode,&ret);
@@ -3640,7 +3640,7 @@ namespace cpps {
 				c->domain_free(execdomain);
 			}
 		}
-		else if (v.isdomain() && v.value.domain->domainname == "RANGE") {
+		else if (v.isdomain() && v.is_kindof<cpps_range>()) {
 			cpps_range* range = cpps_converter<cpps_range*>::apply(v);
 			if (range) {
 				if (for1_v)
@@ -4503,7 +4503,7 @@ namespace cpps {
 		if (d->type == CPPS_QUOTEGETCHIILD) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
+				if (v->getval().tt == CPPS_TCLASSVAR && !v->getval().is_kindof<cpps_map>() && !v->getval().is_kindof<cpps_vector>()) {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -4511,7 +4511,7 @@ namespace cpps {
 		else if (d->type == CPPS_QUOTEGETOBJECT) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
+				if (v->getval().tt == CPPS_TCLASSVAR && !v->getval().is_kindof<cpps_map>() && !v->getval().is_kindof<cpps_vector>()) {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -4519,7 +4519,7 @@ namespace cpps {
 		else if (d->type == CPPS_OGETOBJECT) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR) && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
+				if ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR) && !v->getval().is_kindof<cpps_map>() && !v->getval().is_kindof<cpps_vector>()) {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -4527,7 +4527,7 @@ namespace cpps {
 		else if (d->type == CPPS_OGETCHIILD) {
 			v = cpps_node_to_regver(domain, d->getleft());
 			if (v && ((v->getval().tt == CPPS_TDOMAIN || v->getval().tt == CPPS_TCLASSVAR)) && isgetRight) {
-				if (v->getval().tt == CPPS_TCLASSVAR && v->getval().value.domain->getdomainname() != "map" && v->getval().value.domain->getdomainname() != "vector") {
+				if (v->getval().tt == CPPS_TCLASSVAR && !v->getval().is_kindof<cpps_map>() && !v->getval().is_kindof<cpps_vector>()) {
 					v = getregvar(v->getval().value.domain, d->getright());
 				}
 			}
@@ -4994,7 +4994,7 @@ namespace cpps {
 		if (left.tt != CPPS_TNIL) {
 			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TTUPLE) {
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
-				if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "vector") {
+				if (d->getright()->type != CPPS_FUNCNAME && left.is_kindof<cpps_vector>()) {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_vector* pVec = (cpps_vector*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
@@ -5015,7 +5015,7 @@ namespace cpps {
 					}
 					cpps_calculate_expression_quote_real(NULL,pVec->cpps_at(idx), ret, false);
 				}
-				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "map") {
+				else if (d->getright()->type != CPPS_FUNCNAME && left.is_kindof<cpps_map>()) {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_map* pMap = (cpps_map*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
@@ -5104,7 +5104,7 @@ namespace cpps {
 		if (left.tt != CPPS_TNIL) {
 			if (left.tt == CPPS_TCLASSVAR || left.tt == CPPS_TTUPLE) {
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)left.value.domain->parent[0];
-				if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "vector") {
+				if (d->getright()->type != CPPS_FUNCNAME && left.is_kindof<cpps_vector>()) {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_vector* pVec = (cpps_vector*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
@@ -5125,7 +5125,7 @@ namespace cpps {
 					}
 					cpps_calculate_expression_quote_real(NULL,pVec->cpps_at(idx), ret, false);
 				}
-				else if (d->getright()->type != CPPS_FUNCNAME && cppsclass->getclassname() == "map") {
+				else if (d->getright()->type != CPPS_FUNCNAME && left.is_kindof<cpps_map>()) {
 					cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)left.value.domain;
 					cpps_map* pMap = (cpps_map*)cppsclassvar->getclsptr();
 					cpps_domain* takedomain = leftdomain;
@@ -5197,7 +5197,7 @@ namespace cpps {
 					object leftobject = object(left);
 					cpps_cppsclassvar* cppsclassvar = cpps_to_cpps_cppsclassvar(left);
 					cpps_cppsclass* cppsclass = cppsclassvar->getcppsclass();
-					if (cppsclass->classname == "map") {
+					if (left.is_kindof<cpps_map>()) {
 						cpps_map* vmap = cpps_converter<cpps_map*>::apply(left);
 
 						cpps_calculate_expression_quote_real( NULL, vmap->cpps_find(cpps_value(c, d->getright()->s)), ret, false);

@@ -13,24 +13,24 @@ namespace cpps {
 	}
 	bool cpps_isvector(const cpps_value &v)
 	{
-		return (v.isdomain() && v.value.domain->domainname == "vector");
+		return v.is_kindof<cpps_vector>();
 	}
 	bool cpps_isrange(const cpps_value &v)
 	{
-		return (v.isdomain() && v.value.domain->domainname == "RANGE");
+		return v.is_kindof<cpps_range>();
 	}
 
 	bool cpps_ismap(const cpps_value &v)
 	{
-		return (v.isdomain() && (v.value.domain->domainname == "map"));
+		return v.is_kindof<cpps_map>();
 	}
 	bool cpps_ispair(const cpps_value &v)
 	{
-		return (v.isdomain() && (v.value.domain->domainname == "pair"));
+		return v.is_kindof<cpps_pair>();
 	}
 	bool cpps_isset(const cpps_value &v)
 	{
-		return (v.isdomain() && (v.value.domain->domainname == "set"));
+		return v.is_kindof<cpps_set>();
 	}
 	bool cpps_isint(const cpps_value &v)
 	{

@@ -29,7 +29,7 @@ namespace cpps
 				throw(cpps_error(__FILE__, __LINE__, 0, "cppsvalue can't convert to %s, cppsvalue type is %s , conversion failed.", typeid(R).name() , cpps_base_type(obj).c_str()));
 
 			if (obj.tt == CPPS_TNIL) return (R)static_cast<cpps_integer>(NULL);
-			if (obj.tt == CPPS_TUSERDATA) return (R)(cpps_integer(obj.value.p));
+			if (obj.tt == CPPS_TUSERDATA) return (R)(cpps_uinteger(obj.value.p));
 			cpps_cppsclassvar *clsvar = (cpps_cppsclassvar *)obj.value.domain;
 			return static_cast<R>(clsvar->getclsptr());
 		}
@@ -201,12 +201,15 @@ namespace cpps
 			case CPPS_TNIL:
 				return false;
 			case CPPS_TFUNCTION:
+			case CPPS_TLAMBDAFUNCTION:
 				return true;
 			case CPPS_TDOMAIN:
 				return true;
 			case CPPS_TREF:
 				return true;
 			case CPPS_TCLASS:
+				return true;
+			case CPPS_TUSERDATA:
 				return true;
 			default:
 				return false;
