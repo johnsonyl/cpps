@@ -47,7 +47,7 @@ var drawcheckboard()
             else
                 print(" ┼ ");
         }
-        endl();
+        println();
     }
 }
 var put()

@@ -255,20 +255,13 @@ namespace cpps {
 			bool b = cpps_io_file_exists(filepath);
 			if (b)
 			{
-				std::string mime_type = httpserver->get_type(ext);
+				const std::string& mime_type = httpserver->get_type_ref(ext);
 				if (!mime_type.empty()) {
-					std::string content_type = "Content-Type";
-					std::string Server = "Server";
-					std::string ServerName = "Cpps Server";
-					std::string cache_control = "Cache-Control";
-					std::string cache_control_maxage = "max-age=2592000, public";
-					std::string Connection = "Connection";
-					std::string ConnectionType = "close";
 
-					cpps_request_ptr->real_addheader(cache_control, cache_control_maxage);
-					cpps_request_ptr->real_addheader(content_type, mime_type);
-					cpps_request_ptr->real_addheader(Server, ServerName);
-					cpps_request_ptr->real_addheader(Connection, ConnectionType);
+					cpps_request_ptr->real_addheader(CACHE_CONTROL, "max-age=2592000, public");
+					cpps_request_ptr->real_addheader(CONTENT_TYPE, mime_type.c_str());
+					cpps_request_ptr->real_addheader(SERVER_HEADER, "Cpps Server");
+					cpps_request_ptr->real_addheader(CONNECTION, "close");
 
 					cpps_integer last_write_time = cpps_io_last_write_time(filepath);
 					auto cachefile = httpserver->get_cachefile(cpps_request_ptr->path);
@@ -392,6 +385,10 @@ namespace cpps {
 		mime_types.insert(http_mime_type::value_type(ext, mime));
 	}
 
+	const std::string& cpps_socket_httpserver::get_type_ref(std::string& ext)
+	{
+		return mime_types[ext];
+	}
 	std::string cpps_socket_httpserver::get_type(std::string ext)
 	{
 		return mime_types[ext];

@@ -27,15 +27,3 @@ println(encode);
 
 var decode = rsa.pri_decrypt(encode,prikey);    //rsa(pkcs1) prikey decrypt.
 println(decode);
-
-var generateKeys(var bits = 1024) {
-    return rsa.generate_rsakey(bits);
-}
-
-var encryptText (var publicKey, var plaintext) {
-    return rsa.pub_encrypt(publicKey, plaintext);
-}
-
-var decryptText(var privateKey,var ciphertext) {
-    return rsa.pri_decrypt(privateKey, ciphertext);
-}

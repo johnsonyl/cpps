@@ -20,7 +20,7 @@ namespace cpps {
 		virtual ~cpps_socket_httpserver_request();
 
 	public:
-		void		real_addheader(std::string& k, std::string& v);
+		void		real_addheader(std::string& k, const char*  v);
 		void		addheader(cpps::object list);
 		void		append(std::string s);
 		void		send(cpps_integer n,std::string msg);

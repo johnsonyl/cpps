@@ -10,6 +10,10 @@
 
 namespace cpps {
 	typedef phmap::flat_hash_map<std::string, std::string> http_request_header;
+	static std::string CACHE_CONTROL = "Cache-Control";
+	static std::string  CONTENT_TYPE = "Content-Type";
+	static std::string  SERVER_HEADER = "Server";
+	static std::string  CONNECTION = "Connection";
 	struct http_request {
 		std::string path;
 		std::string uri;
@@ -63,6 +67,7 @@ namespace cpps {
 
 		void									stop();
 		void									add_type(std::string mime, std::string ext);
+		const std::string&						get_type_ref(std::string& ext);
 		std::string								get_type(std::string ext);
 
 		cpps::object							gethandlefunc(std::string path);

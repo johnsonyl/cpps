@@ -17,7 +17,7 @@ namespace cpps {
 		filedataslist.clear();
 	}
 
-	void cpps_socket_httpserver_request::real_addheader(std::string& k, std::string& v)
+	void cpps_socket_httpserver_request::real_addheader(std::string& k, const char* v)
 	{
 		output_headerslist += k + ": " + v + "\r\n";
 	}
@@ -29,7 +29,7 @@ namespace cpps {
 		{
 			std::string *k = cpps_get_string(header.first);
 			std::string *v = cpps_get_string(header.second);
-			real_addheader(*k, *v);
+			real_addheader(*k, v->c_str());
 		}
 	}
 
@@ -193,7 +193,7 @@ namespace cpps {
 			set_cookie_value += "; max-age=" + max_age.tostring();
 		}
 		std::string set_cookie = "Set-Cookie";
-		real_addheader(set_cookie, set_cookie_value);
+		real_addheader(set_cookie, set_cookie_value.c_str());
 	}
 	bool cpps_socket_httpserver_request::isformdata()
 	{
