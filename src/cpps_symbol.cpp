@@ -2553,14 +2553,23 @@ namespace cpps
 		return ret;
 	}
 
-	
-
+	inline
+		void cpps_calculate_expression_quoteoffset(node* d, C* c, cpps_value& ret, cpps_domain* root, cpps_domain*& leftdomain);
 	void cpps_symbol_handle(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_value& ret)
 	{
 		cpps_domain* leftdomain = NULL;
 		cpps_value a;
-		cpps_calculate_expression(c, domain,root, d->l[0], leftdomain,a);
-		leftdomain = NULL;
+	/*	if (d->value.val != NULL) {
+			a = d->value.val;
+		}
+		else {*/
+			cpps_calculate_expression(c, domain, root, d->l[0], leftdomain, a);
+			leftdomain = NULL;
+		/*	if (a.isref()) {
+				d->value.val = &a.real();
+			}
+		}*/
+		
 
 		if ((cpps_isclassvar(a) || (a.tt == CPPS_TREF  && cpps_isclassvar(*a.value.value)))) {
 
@@ -2617,11 +2626,29 @@ namespace cpps
 		}
 		case CPPS_SYMBOL_TYPE_RIGHTAUTOINCREASE:
 		{
+			/*
+			* 这里可以尝试优化，如果左值为整数，增合并成一条++语句
+			* 强制修改d.node
+			* 测试一下
+			*/
+			/*d->cpps_release();
+			d->type = CPPS_OVARAUTOINC;
+			d->value.val = &a.real();*/
+
 			cpps_rightautoincrease(a, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE:
 		{
+			/*
+			* 这里可以尝试优化，如果左值为整数，增合并成一条++语句
+			* 强制修改d.node
+			* 测试一下
+			*/
+			/*d->cpps_release();
+			d->type = CPPS_OVARAUTODEC;
+			d->value.val = &a.real();*/
+
 			cpps_rightautodecrease(a, ret);
 			break;
 		}

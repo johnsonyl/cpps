@@ -22,16 +22,21 @@ ELSEIF(MACOS)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/include /usr/local/opt/curl/include )
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/lib /usr/lib/ /usr/local/opt/curl/lib)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
+	
+	
 ELSEIF(LINUX)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/local/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/lib)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
+	
+	
 ENDIF()
 
 file(GLOB_RECURSE CURRENT_HEADERS  *.h)
 source_group("Include" FILES ${CURRENT_HEADERS}) 
 
 AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
+
 
 
 

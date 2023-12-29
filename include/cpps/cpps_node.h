@@ -47,7 +47,7 @@ namespace cpps
 		void unregnode(std::string& s);
 		node* getnode(std::string& s, bool b = false);
 		void cpps_release();
-		bool empty();
+		inline bool empty() { return l.empty(); }
 		std::string s;
 		std::vector<node*> l;
 		int32 type;

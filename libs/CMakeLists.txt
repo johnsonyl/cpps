@@ -13,6 +13,7 @@ elseif (CMAKE_HOST_UNIX)
     set(LINUX 1)
 endif ()
 
+
 if (WINDOWS)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	set(CMAKE_CXX_STANDARD 11)
@@ -35,6 +36,10 @@ elseif (MACOS)
 		add_definitions(-D__APPLE__ -D_GLIBCXX_USE_CXX11_ABI=1 -D_FILE_OFFSET_BITS=64 -DDEBUG)
 		message("debug build")
 	endif()
+	
+	set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+	set(CMAKE_C_VISIBILITY_PRESET hidden)
+	set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 elseif (LINUX)
 	#default release.
 	set(CMAKE_CXX_STANDARD 11)
@@ -55,6 +60,9 @@ elseif (LINUX)
 		message("debug build")
 	endif()
 	
+	set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+	set(CMAKE_C_VISIBILITY_PRESET hidden)
+	set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 ENDIF()
 
 

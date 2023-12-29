@@ -25,6 +25,7 @@ namespace cpps
 	struct cpps_classvar_quato;
 	struct cpps_set;
 	struct cpps_pair;
+	template <class T> struct cpps_class_singleton;
 #pragma pack(1)
 	struct cpps_value
 	{
@@ -45,6 +46,7 @@ namespace cpps
 		cpps_value(cpps_cppsclass* d);
 		cpps_value(cpps_cppsclassvar* d);
 		cpps_value(cpps_value* v);
+		cpps_value(void* v);
 		cpps_value(C*c, const char* s);
 		cpps_value(C*c,const std::string& s);
 		cpps_value(C* c, const std::string&& s);
@@ -65,12 +67,14 @@ namespace cpps
 		const cpps_value&	real() const;
 		cpps_value&			real();
 		cpps_value			ref();
+		bool				_iskindof(cpps_cppsclass* _cls, cpps_cppsclassvar* _clsvar) const;
+
 		template<typename T>
 		bool				is_kindof() const{
-			if (cpps_isclassvar(*this)) {
+			if (tt == CPPS_TCLASSVAR) {
 				cpps_cppsclass *_cls = cpps_class_singleton<T*>::instance()->getcls();
-				cpps_cppsclassvar *_clsvar = cpps_to_cpps_cppsclassvar(*this);
-				return _clsvar->getcppsclass() == _cls;
+				cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)value.domain;
+				return _iskindof(_cls,cppsclassvar);
 			}
 			return false;
 		}

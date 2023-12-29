@@ -24,10 +24,14 @@ ELSEIF(MACOS)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/include /usr/local/opt/re2/include )
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/lib /usr/lib /usr/local/opt/re2/lib)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
+	
+	
 ELSEIF(LINUX)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/local/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/lib /usr/local/lib /usr/local/lib64 /usr/lib64)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
+	
+	
 ENDIF()
 
 file(GLOB_RECURSE CURRENT_HEADERS  *.h)

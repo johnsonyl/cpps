@@ -95,8 +95,8 @@ void _ffi_fill_value(ffi_type* _type,void *__value_ptr,object __v) {
 		
 	}
 	else if (_type == &ffi_type_pointer) {
-		void* p = (void*)__value_ptr;
-		p = (void*)__v.touint();
+		size_t* p = (size_t*)__value_ptr;
+		*p = (size_t)__v.touint();
 	}
 
 }
@@ -147,7 +147,7 @@ object ffi_return_cast(C*c, ffi_type* _type,void * __value_ptr)
 	}
 	else if (_type == &ffi_type_pointer) {
 		void* p = (void*)__value_ptr;
-		return p;
+		return cpps_value(p);
 	}
 	return nil;
 }
@@ -177,7 +177,8 @@ object	ffi_call_function(C*c,
 
 	ffi_type** ffi_arg_types = (ffi_type **)malloc(sizeof(ffi_type*) * _arg_count);
 	void** ffi_args = (void**)malloc(sizeof(void*) * _arg_types.size());
-	ffi_type* ffi_return_type = _ffi_s_to_type(return_arg_types.tostring());
+	std::string __type = return_arg_types.tostring();
+	ffi_type* ffi_return_type = _ffi_s_to_type(__type);
 	void* return_ptr = NULL;
 	if (ffi_return_type->size) {
 		return_ptr = malloc(ffi_return_type->size);
@@ -216,11 +217,17 @@ cpps_uinteger ffi_dlopen(C* c, std::string path)
 #ifdef _WIN32
 		HMODULE __module = ::LoadLibraryA(path.c_str());
 #else
-		HMODULE __module = dlopen(fpath.c_str(), RTLD_LAZY);
+		HMODULE __module = dlopen(path.c_str(), RTLD_LAZY );
+		char* error = dlerror();
+		if (error != NULL) {
+			cpps::error(c, "%s", error);
+			return 0;
+		}
 #endif
 		if (__module == NULL) {
 			return 0;
 		}
+
 
 		return (cpps_uinteger)__module;
 	}
@@ -232,7 +239,12 @@ cpps_uinteger ffi_dlsym(C* c, cpps_uinteger __module,std::string func)
 #ifdef _WIN32
 	FARPROC __func = GetProcAddress((HMODULE)__module, func.c_str());
 #else
-	void* __func = dlsym((HMODULE)__module, func);
+	void* __func = dlsym((HMODULE)__module, func.c_str());
+	char* error = dlerror();
+	if (error != NULL) {
+		cpps::error(c, "%s", error);
+		return 0;
+	}
 #endif
 	if (__func == NULL) {
 		return 0;

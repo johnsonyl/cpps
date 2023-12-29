@@ -459,13 +459,13 @@ namespace cpps
 
 		if (c->modulelist.find(libname) != c->modulelist.end()) return true;
 		bool sv = false;
+		std::string libfuncname = "cpps_attach";
 #ifdef _WIN32
 
 		fpath = cpps_rebuild_filepath(path + (libname + ".dll"));
 		if (!fpath.empty())
 		{
 			HMODULE module = ::LoadLibraryA(fpath.c_str());
-			std::string libfuncname = "cpps_attach";
 			if (module == NULL)
 			{
 				printf("Load module [%s] : %d faild.\r\n", libname.c_str(),GetLastError());
@@ -496,25 +496,41 @@ namespace cpps
 #endif
 		if (!fpath.empty())
 		{
-			HMODULE mod = dlopen(fpath.c_str(), RTLD_LAZY);
+			HMODULE mod = dlopen(fpath.c_str(), RTLD_LAZY );
 			if (mod == NULL)
 			{
 				printf("dlopen [%s]:%s faild\r\n", libname.c_str(), dlerror());
 				return false;
 			}
 			dlerror();
-			CPPS_ST_API* api = (CPPS_ST_API*)dlsym(mod, "LIBAPI");
+
+			cpps_attach_func cpps_attach = NULL;
+			*(void**)(&cpps_attach) = dlsym(mod, libfuncname.c_str());
+			if (cpps_attach == NULL)
+			{
+				dlclose(mod);
+				printf("dlsym [cpps_attach] faild\r\n");
+				return false;
+			}
+			char *error = dlerror();
+			if (error != NULL) {
+				cpps::error(c, "%s", error);
+				return false;
+			}
+
+		/*	CPPS_ST_API* api = (CPPS_ST_API*)dlsym(mod, "LIBAPI");
 			if (api == NULL)
 			{
 				dlclose(mod);
 				printf("dlsym [LIBAPI] faild\r\n");
 				return false;
-			}
+			}*/
 
 			c->modulelist.insert(phmap::flat_hash_map<std::string, HMODULE>::value_type(libname, mod));
 			sv = true;
 
-			api->cpps_attach(c);
+			//api->cpps_attach(c);
+			(*cpps_attach)(c);
 			bexits = true;
 
 
@@ -550,8 +566,8 @@ namespace cpps
 	{
 		//printf("cpps_detach_library -> %s\r\n", libname.c_str());
 		if (module == NULL) return;
-#ifdef _WIN32
 		std::string libfuncname = "cpps_detach";
+#ifdef _WIN32
 
 		cpps_detach_func cpps_detach = (cpps_detach_func)GetProcAddress(module, libfuncname.c_str());
 		if (cpps_detach == NULL)
@@ -565,7 +581,25 @@ namespace cpps
 		}
 #else
 		dlerror();
-		CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
+		cpps_detach_func cpps_detach = NULL;
+		*(void **) (&cpps_detach) = dlsym(module, libfuncname.c_str());
+		if (cpps_detach == NULL)
+		{
+			char* error = dlerror();
+			if (error != NULL) {
+				cpps::error(c, "%s", error);
+				return;
+			}
+		}
+		else
+		{
+			(* cpps_detach)(c);
+#if defined LINUX
+			dlclose(module);
+#endif
+		}
+
+		/*CPPS_ST_API* api = (CPPS_ST_API*)dlsym(module, "LIBAPI");
 		if (api == NULL)
 		{
 			printf("dlsym [LIBAPI] %s faild\r\n", libname.c_str());
@@ -576,7 +610,7 @@ namespace cpps
 #if defined LINUX
 			dlclose(module);
 #endif
-		}
+		}*/
 #endif
 	}
 
@@ -693,6 +727,14 @@ namespace cpps
 		pclose(fp);
 		return strRetTmp;
 #endif
+	}
+	bool cpps_base_isprime(cpps_integer n)
+	{
+		for (cpps_integer i = 2; i < n - 1; i++) {
+			if (n % i == 0)
+				return false;
+		}
+		return true;
 	}
 	void cpps_base_environ_set(std::string k,::string v)
 	{
@@ -996,7 +1038,8 @@ namespace cpps
 			//def_inside("freelibrary", cpps_freelibrary),
 			def_inside("getargs", cpps_getargs),
 			def_inside("execmd",cpps_base_execmd),
-			def_inside("g_dostring",dostring)
+			def_inside("g_dostring",dostring),
+			def("isprime",cpps_base_isprime)
 		];
 		cpps::_module(c, "ot")[
 			defvar(c,"int", CPPS_TINTEGER),

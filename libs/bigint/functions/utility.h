@@ -9,8 +9,10 @@
 
 #include <tuple>
 
+#ifdef _WIN32
 #define or ||
 #define and &&
+#endif
 /*
     is_valid_number
     ---------------

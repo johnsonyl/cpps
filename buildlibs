@@ -146,6 +146,7 @@ checkdepsfile("zlib-1.2.11.tar.gz");
 checkdepsfile("hiredis-1.0.0.tar.gz");
 checkdepsfile("re2-2020-11-01.tar.gz");
 checkdepsfile("libpng-1.6.40.tar.gz");
+checkdepsfile("libffi-3.4.4.tar.gz");
 
 var depspath = "{io.getrealpath()}../deps";
 depspath = io.normpath(depspath);
@@ -163,6 +164,7 @@ uncompress(depspath,"zlib-1.2.11.tar.gz");
 uncompress(depspath,"hiredis-1.0.0.tar.gz");
 uncompress(depspath,"re2-2020-11-01.tar.gz");
 uncompress(depspath,"libpng-1.6.40.tar.gz");
+uncompress(depspath,"libffi-3.4.4.tar.gz");
 
 
 if(sys.os != "macos")

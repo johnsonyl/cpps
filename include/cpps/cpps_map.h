@@ -119,7 +119,6 @@ namespace cpps
 		static bool	match(cpps_value obj)
 		{
 			if (obj.tt != CPPS_TCLASSVAR) return false;
-			cpps::cpps_cppsclass *cls = (cpps::cpps_cppsclass *)obj.value.domain->parent[0];
 			if (!obj.is_kindof<cpps_map>()) return false;
 
 			return true;
@@ -138,7 +137,6 @@ namespace cpps
 		static bool	match(cpps_value obj)
 		{
 			if (obj.tt != CPPS_TCLASSVAR) return false;
-			cpps::cpps_cppsclass* cls = (cpps::cpps_cppsclass*)obj.value.domain->parent[0];
 			if (obj.is_kindof<cpps_set>()) return false;
 
 			return true;

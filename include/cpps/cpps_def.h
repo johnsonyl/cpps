@@ -165,6 +165,9 @@
 #define CPPS_MULITPARAMS		224 //多参数
 #define CPPS_OUINTEGER			225 //数字（正整数）
 #define CPPS_OGLOBAL			226 //_G
+#define	CPPS_OVARAUTOINC		227	//value++
+#define	CPPS_OVARAUTODEC		228	//value--
+#define	CPPS_OVARPTR			229	//value--
 
 
 
@@ -442,8 +445,8 @@ namespace cpps
 #define S_ISLNK(m)  (false)
 #define S_ISSOCK(m)  (false)
 #endif
-#define cpps_export_void extern "C" _declspec(dllexport) void __stdcall
-#define cpps_export_type(type) extern "C" _declspec(dllexport) type __stdcall
+#define cpps_export_type(type) extern "C" _declspec(dllexport) type
+#define cpps_export_void cpps_export_type(void)
 #define cpps_export_finish 
 
 #endif //_WIN32
@@ -469,13 +472,13 @@ typedef void* HMODULE;
 #define _mkdir(p) mkdir(p,S_IRWXU)
 #define _rmdir(p) rmdir(p)
 
-#define  cpps_export_void extern "C" void
-#define  cpps_export_type(type) extern "C" type
-#define cpps_export_finish extern "C" const CPPS_ST_API  LIBAPI = {\
+#define  cpps_export_type(type) extern "C" __attribute__((visibility ("default"))) type
+#define  cpps_export_void cpps_export_type(void)
+/*#define cpps_export_finish extern "C" const CPPS_ST_API  LIBAPI = {\
 cpps_attach,\
 cpps_detach,\
-};
-
+};*/
+#define cpps_export_finish
 
 namespace cpps { struct C; }
 
@@ -530,8 +533,8 @@ typedef intptr_t ssize_t;
 
 
 #ifdef _WIN32
-typedef void(__stdcall*cpps_attach_func)(cpps::C *c);
-typedef void(__stdcall*cpps_detach_func)(cpps::C *c);
+typedef void(__cdecl*cpps_attach_func)(cpps::C *c);
+typedef void(__cdecl*cpps_detach_func)(cpps::C *c);
 #else
 typedef void(*cpps_attach_func)(cpps::C *c);
 typedef void(*cpps_detach_func)(cpps::C *c);

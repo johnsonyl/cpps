@@ -4,8 +4,8 @@ namespace cpps
 {
 
 	//ÄÚ²¿
-	void					cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
-	void					cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
+	void				cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
+	void				cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
 	void					make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_std_vector& params);
 	void					cpps_gc_add_barrier(C* c, cpps_regvar* v);
 	void					cpps_gc_remove_barrier(C* c, cpps_regvar* v);

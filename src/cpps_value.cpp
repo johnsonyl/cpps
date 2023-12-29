@@ -367,6 +367,12 @@ namespace cpps
 		value.value = v->isref() ? v->value.value : v;
 	}
 
+	cpps_value::cpps_value(void* v)
+	{
+		tt = CPPS_TUSERDATA;
+		value.p = v;
+	}
+
 	cpps_value::cpps_value(cpps_cppsclassvar* d)
 	{
 		tt = CPPS_TCLASSVAR;
@@ -621,6 +627,11 @@ namespace cpps
 	{
 		if (isref()) return *this;
 		return cpps_value(this);
+	}
+
+	bool cpps_value::_iskindof(cpps_cppsclass* _cls, cpps_cppsclassvar* _clsvar) const
+	{
+		return _clsvar->getcppsclass() == _cls;
 	}
 
 

@@ -10,9 +10,10 @@
 
 #include <iostream>
 
-
+#ifdef _WIN32
 #define or ||
 #define and &&
+#endif
 
 class BigInt {
     std::string value;

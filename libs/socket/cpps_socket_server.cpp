@@ -194,7 +194,7 @@ namespace cpps {
 
 
 		std::string ip;
-		cpps::usint16 port;
+		cpps::usint16 port = 9999;
 		srv->get_addrinfo((struct sockaddr*) &peername, ip, port);
 
 		if (client == NULL) return;
@@ -206,7 +206,7 @@ namespace cpps {
 		client->set_client_info(ip, port);
 
 		if (client->is_open_ssl()) {
-			client->ssl_accept(fd->socket);
+			client->ssl_accept();
 		}
 		
 

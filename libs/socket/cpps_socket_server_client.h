@@ -12,7 +12,7 @@ namespace cpps {
 		virtual ~cpps_socket_server_client();
 
 		void								setServerHandle(cpps_socket_server* srv);
-		void								ssl_accept(SOCKET fd);
+		void								ssl_accept();
 	public:
 		void								set_client_info(std::string ip, cpps::usint16 port);
 		void								on_error_event(int type);

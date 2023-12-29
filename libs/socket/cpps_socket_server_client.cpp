@@ -27,11 +27,11 @@ namespace cpps
 		set_event_callback(server);
 	}
 
-	void cpps_socket_server_client::ssl_accept(SOCKET fd)
+	void cpps_socket_server_client::ssl_accept()
 	{
 		SSL_set_accept_state(ssl);  
-		int ret = 0;
-		if (ret = SSL_accept(ssl) != 1 && SSL_get_error(ssl, ret) != SSL_ERROR_WANT_READ) {
+		int ret = SSL_accept(ssl);
+		if (ret != 1 && SSL_get_error(ssl, ret) != SSL_ERROR_WANT_READ) {
 			on_error_event(-1);
 			return;
 		}
