@@ -445,7 +445,7 @@ namespace cpps
 #define S_ISLNK(m)  (false)
 #define S_ISSOCK(m)  (false)
 #endif
-#define cpps_export_type(type) extern "C" _declspec(dllexport) type
+#define cpps_export_type(type) extern "C" _declspec(dllexport) type 
 #define cpps_export_void cpps_export_type(void)
 #define cpps_export_finish 
 
@@ -472,7 +472,7 @@ typedef void* HMODULE;
 #define _mkdir(p) mkdir(p,S_IRWXU)
 #define _rmdir(p) rmdir(p)
 
-#define  cpps_export_type(type) extern "C" __attribute__((visibility ("default"))) type
+#define  cpps_export_type(type) extern "C" __attribute__((visibility ("default"))) type 
 #define  cpps_export_void cpps_export_type(void)
 /*#define cpps_export_finish extern "C" const CPPS_ST_API  LIBAPI = {\
 cpps_attach,\

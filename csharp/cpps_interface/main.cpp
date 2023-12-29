@@ -15,17 +15,17 @@ extern "C" {
 		free(p);
 	}
 	//basic
-	__declspec(dllexport) cpps::C* cpps_create()
+	cpps_export_type( cpps::C*) cpps_create()
 	{
 		return cpps::create(0,NULL, tcmalloc_func, tcfree_func);
 	}
 
-	__declspec(dllexport) void cpps_close(cpps::C * c)
+	cpps_export_type( void )cpps_close(cpps::C * c)
 	{
 		cpps::close(c);
 	}
 
-	__declspec(dllexport) void cpps_dofile(cpps::C * c, char* path)
+	cpps_export_type( void )cpps_dofile(cpps::C * c, char* path)
 	{
 		std::string path2 = cpps_rebuild_filepath(path);
 		cpps_try
@@ -33,190 +33,190 @@ extern "C" {
 		cpps_catch
 	}
 	//module
-	__declspec(dllexport) cpps_domain* cpps_defmodule(cpps::C* c, char* name)
+	cpps_export_type( cpps_domain* )cpps_defmodule(cpps::C* c, char* name)
 	{
 		cpps::cpps_init_cpps_class(c);
 		cpps::cpps_module m = _module(c, name);
 		return m.domain;
 	}
-	__declspec(dllexport) void cpps_unmodule(cpps::C* c, char* name)
+	cpps_export_type( void )cpps_unmodule(cpps::C* c, char* name)
 	{
 		_unmodule(c, name);
 	}
 
 
-	__declspec(dllexport) void cpps_module_def(cpps::C* c, cpps_domain* domain, char* name, cpps_func _f)
+	cpps_export_type( void )cpps_module_def(cpps::C* c, cpps_domain* domain, char* name, cpps_func _f)
 	{
 		regxmodule r = def(name, _f);
 		domain->regfunc(r.f, c);
 	}
 	//def class
-	__declspec(dllexport) _class2* cpps_def_class(cpps::C* c, cpps_domain* domain, char* name, cpps_class_alloc __alloc, cpps_class_free __free)
+	cpps_export_type( _class2* )cpps_def_class(cpps::C* c, cpps_domain* domain, char* name, cpps_class_alloc __alloc, cpps_class_free __free)
 	{
 		_class2 *r = new _class2(name, __alloc, __free);
 		domain->regfunc(r->f, c);
 		return r;
 	}
-	__declspec(dllexport) void cpps_def_class_free(_class2 *_r)
+	cpps_export_type( void )cpps_def_class_free(_class2 *_r)
 	{
 		delete _r;
 	}
-	__declspec(dllexport) void cpps_class_def(cpps::C* c, _class2* r, char* name, cpps_class_func _f)
+	cpps_export_type( void )cpps_class_def(cpps::C* c, _class2* r, char* name, cpps_class_func _f)
 	{
 		r->def_inside(name, _f);
 	}
-	__declspec(dllexport) void cpps_class_def_operator(cpps::C* c, _class2* r, char* name, cpps_class_func _f)
+	cpps_export_type( void )cpps_class_def_operator(cpps::C* c, _class2* r, char* name, cpps_class_func _f)
 	{
 		r->def_operator_inside(name, _f);
 	}
 	//def enum
-	__declspec(dllexport) _enum* cpps_def_enum(cpps::C* c, cpps_domain* domain, char* name)
+	cpps_export_type( _enum* )cpps_def_enum(cpps::C* c, cpps_domain* domain, char* name)
 	{
 		_enum* r = new _enum(c,name);
 		domain->regfunc(r->f, c);
 		return r;
 	}
-	__declspec(dllexport) void cpps_def_enum_free(_enum * _r)
+	cpps_export_type( void )cpps_def_enum_free(_enum * _r)
 	{
 		delete _r;
 	}
-	__declspec(dllexport) void cpps_enum_def(cpps::C* c, _enum* r, char* name, cpps_integer i)
+	cpps_export_type( void )cpps_enum_def(cpps::C* c, _enum* r, char* name, cpps_integer i)
 	{
 		r->value(name, i);
 	}
 	//cpps_value api function
-	__declspec(dllexport) bool cpps_value_ispair(cpps_value* v)
+	cpps_export_type( bool )cpps_value_ispair(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_ispair(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isset(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isset(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isset(_v);
 	}
-	__declspec(dllexport) bool cpps_value_ismap(cpps_value* v)
+	cpps_export_type( bool )cpps_value_ismap(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_ismap(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isbasevar(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isbasevar(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isbasevar(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isstring(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isstring(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isstring(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isvector(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isvector(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isvector(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isrange(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isrange(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isrange(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isint(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isint(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isint(_v);
 	}
-	__declspec(dllexport) bool cpps_value_ischar(cpps_value* v)
+	cpps_export_type( bool )cpps_value_ischar(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_ischar(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isuint(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isuint(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isuint(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isbool(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isbool(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isbool(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isnumber(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isnumber(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isnumber(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isnull(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isnull(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isnull(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isfunction(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isfunction(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isfunction(_v);
 	}	
-	__declspec(dllexport) bool cpps_value_isclassvar(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isclassvar(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isclassvar(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isclass(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isclass(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isclass(_v);
 	}
-	__declspec(dllexport) bool cpps_value_isellipsis(cpps_value* v)
+	cpps_export_type( bool )cpps_value_isellipsis(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_isellipsis(_v);
 	}
-	__declspec(dllexport) bool cpps_value_istuple(cpps_value* v)
+	cpps_export_type( bool )cpps_value_istuple(cpps_value* v)
 	{
 		ptr_cast(v);
 		return cpps_istuple(_v);
 	}
-	__declspec(dllexport) void cpps_value_getclassname(cpps_value* v,char *_out)
+	cpps_export_type( void )cpps_value_getclassname(cpps_value* v,char *_out)
 	{
 		ptr_cast(v);
 		strcpy(_out,cpps_getclassname(_v).c_str());
 	}
-	__declspec(dllexport) void cpps_value_global(C*c,cpps_value *out)
+	cpps_export_type( void )cpps_value_global(C*c,cpps_value *out)
 	{
 		*out = cpps_value(c->_G);
 	}
-	__declspec(dllexport) void cpps_value_get_by_name(cpps_value *obj,char *name,cpps_value *out)
+	cpps_export_type(void) cpps_value_get_by_name(cpps_value *obj,char *name,cpps_value *out)
 	{
 		*out = object(*obj)[name].getval();
 	}
-	__declspec(dllexport) void cpps_value_get_by_idx(cpps_value *obj,int idx,cpps_value *out)
+	cpps_export_type( void )cpps_value_get_by_idx(cpps_value *obj,int idx,cpps_value *out)
 	{
 		*out = object(*obj)[idx].getval();
 	}
-	__declspec(dllexport) void cpps_value_incruse(cpps_value *obj)
+	cpps_export_type(void)cpps_value_incruse(cpps_value *obj)
 	{
 		obj->incruse();
 	}
-	__declspec(dllexport) void cpps_value_decruse(cpps_value *obj)
+	cpps_export_type( void )cpps_value_decruse(cpps_value *obj)
 	{
 		obj->decruse();
 	}
-	__declspec(dllexport) void* cpps_value_cast(cpps_value *obj)
+	cpps_export_type( void* )cpps_value_cast(cpps_value *obj)
 	{
 		ptr_cast(obj);
 		if (!cpps_isclassvar(_obj)) return NULL;
 		cpps_class_handler* handler = object_cast<cpps_class_handler*>(_obj);
 		return handler->get_ptr();
 	}
-	__declspec(dllexport) void cpps_value_real(cpps_value* obj, cpps_value* out)
+	cpps_export_type( void )cpps_value_real(cpps_value* obj, cpps_value* out)
 	{
 		ptr_cast(obj);
 		*out = _obj.real();
 	}
-	__declspec(dllexport) void cpps_value_ref(cpps_value* obj, cpps_value* out)
+	cpps_export_type(void )cpps_value_ref(cpps_value* obj, cpps_value* out)
 	{
 		*out = obj->ref();
 	}
-	__declspec(dllexport) void cpps_value_ref_assign(cpps_value* _ref, cpps_value *v)
+	cpps_export_type( void )cpps_value_ref_assign(cpps_value* _ref, cpps_value *v)
 	{
 		ptr_cast(_ref);
 		ptr_cast(v);
@@ -235,44 +235,44 @@ extern "C" {
 	//	CPPSDELETE( v);
 	//}
 	//vector
-	__declspec(dllexport) void cpps_vector_push_back(cpps_value* _vct,cpps_value* _v)
+	cpps_export_type( void )cpps_vector_push_back(cpps_value* _vct,cpps_value* _v)
 	{
 		ptr_cast(_vct);
 		ptr_cast(_v);
 		cpps_vector* vct = cpps_to_cpps_vector(__vct);
 		vct->push_back(__v);
 	}
-	__declspec(dllexport) int cpps_vector_size(cpps_value* _vct)
+	cpps_export_type( int )cpps_vector_size(cpps_value* _vct)
 	{
 		ptr_cast(_vct);
 		cpps_vector* vct = cpps_to_cpps_vector(+_vct);
 		return (int)vct->size();
 	}
-	__declspec(dllexport) void cpps_vector_erase(cpps_value* _vct,int idx)
+	cpps_export_type( void )cpps_vector_erase(cpps_value* _vct,int idx)
 	{
 		ptr_cast(_vct);
 		cpps_vector* vct = cpps_to_cpps_vector(+_vct);
 		vct->erase(idx);
 	}
-	__declspec(dllexport) void cpps_vector_at(cpps_value* _vct,int idx,cpps_value* out)
+	cpps_export_type( void )cpps_vector_at(cpps_value* _vct,int idx,cpps_value* out)
 	{
 		ptr_cast(_vct);
 		cpps_vector* vct = cpps_to_cpps_vector(__vct);
 		*out = vct->at(idx);
 	}
-	__declspec(dllexport) void cpps_vector_clear(cpps_value* _vct)
+	cpps_export_type( void )cpps_vector_clear(cpps_value* _vct)
 	{
 		ptr_cast(_vct);
 		cpps_vector* vct = cpps_to_cpps_vector(__vct);
 		vct->clear();
 	}
-	__declspec(dllexport) void cpps_vector_create(C*c,cpps_value *out)
+	cpps_export_type( void )cpps_vector_create(C*c,cpps_value *out)
 	{
 		cpps_create_class_var(cpps_vector, c, vct_value, vct_ptr);
 		*out = vct_value;
 	}
 	//map
-	__declspec(dllexport) void cpps_map_insert(cpps_value* _map, cpps_value* _key,cpps_value* _value)
+	cpps_export_type( void )cpps_map_insert(cpps_value* _map, cpps_value* _key,cpps_value* _value)
 	{
 		ptr_cast(_map);
 		ptr_cast(_key);
@@ -280,45 +280,45 @@ extern "C" {
 		cpps_map* m = cpps_to_cpps_map(__map);
 		m->insert(__key, __value);
 	}
-	__declspec(dllexport) int cpps_map_size(cpps_value* _map)
+	cpps_export_type( int )cpps_map_size(cpps_value* _map)
 	{
 		ptr_cast(_map);
 		cpps_map* m = cpps_to_cpps_map(__map);
 		return (int)m->size();
 	}
-	__declspec(dllexport) void cpps_map_clear(cpps_value* _map)
+	cpps_export_type( void )cpps_map_clear(cpps_value* _map)
 	{
 		ptr_cast(_map);
 		cpps_map* m = cpps_to_cpps_map(__map);
 		m->clear();
 	}
-	__declspec(dllexport) void cpps_map_erase(cpps_value* _map,cpps_value* _key)
+	cpps_export_type( void )cpps_map_erase(cpps_value* _map,cpps_value* _key)
 	{
 		ptr_cast(_map);
 		cpps_map* m = cpps_to_cpps_map(__map);
 		m->erase(*_key);
 	}
-	__declspec(dllexport) void cpps_map_find(cpps_value* _map,cpps_value* _key,cpps_value *out)
+	cpps_export_type( void )cpps_map_find(cpps_value* _map,cpps_value* _key,cpps_value *out)
 	{
 		ptr_cast(_map);
 		ptr_cast(_key);
 		cpps_map* m = cpps_to_cpps_map(__map);
 		*out = m->find(__key);
 	}
-	__declspec(dllexport) void cpps_map_create(C*c, cpps_value* out)
+	cpps_export_type( void )cpps_map_create(C*c, cpps_value* out)
 	{
 		cpps_create_class_var(cpps_map, c, map_value, map_ptr);
 		*out = map_value;
 	}
 	//function
-	__declspec(dllexport) void cpps_function_call(C* c, cpps_value* func,cpps_value *ps,cpps_value *out)
+	cpps_export_type( void )cpps_function_call(C* c, cpps_value* func,cpps_value *ps,cpps_value *out)
 	{
 		ptr_cast(func);
 		ptr_cast(ps);
 		object ret = function_caller(c, _func, cpps_to_cpps_vector(_ps)->realvector());
 		*out = ret.realval();
 	}
-	__declspec(dllexport) void cpps_function_class_call(C* c, cpps_value* _class, cpps_value* func,cpps_value *ps,cpps_value *out)
+	cpps_export_type( void )cpps_function_class_call(C* c, cpps_value* _class, cpps_value* func,cpps_value *ps,cpps_value *out)
 	{
 		ptr_cast(_class);
 		ptr_cast(func);
@@ -327,36 +327,36 @@ extern "C" {
 	}
 	//string
 
-	__declspec(dllexport) int cpps_string_size( cpps_value* _str)
+	cpps_export_type( int )cpps_string_size( cpps_value* _str)
 	{
 		ptr_cast(_str);
 		std::string* s = cpps_get_string(__str);
 		return (int)s->size();
 	}
-	__declspec(dllexport) void cpps_string_append( cpps_value* _str, char* out, int count)
+	cpps_export_type( void )cpps_string_append( cpps_value* _str, char* out, int count)
 	{
 		ptr_cast(_str);
 		std::string* s = cpps_get_string(__str);
 		s->append(out, (size_t)count);
 	}
-	__declspec(dllexport) void cpps_string_strcopy( cpps_value* _str,char *out)
+	cpps_export_type( void )cpps_string_strcopy( cpps_value* _str,char *out)
 	{
 		ptr_cast(_str);
 		std::string* s = cpps_get_string(__str);
 		memcpy(out, s->c_str(), s->size());
 	}
-	__declspec(dllexport) void cpps_string_assignment(cpps_value* _str,char *out,int count)
+	cpps_export_type( void )cpps_string_assignment(cpps_value* _str,char *out,int count)
 	{
 		ptr_cast(_str);
 		std::string* s = cpps_get_string(__str);
 		s->assign(out, (size_t)count);
 	}
-	__declspec(dllexport) void cpps_string_create(C*c,cpps_value* _out)
+	cpps_export_type( void )cpps_string_create(C*c,cpps_value* _out)
 	{
 		*_out = cpps_value(c, "");
 	}
 	//classvar
-	__declspec(dllexport) void cpps_classvar_create(C* c, cpps_value* _class,cpps_value* _out)
+	cpps_export_type( void )cpps_classvar_create(C* c, cpps_value* _class,cpps_value* _out)
 	{
 		ptr_cast(_class);
 		if (!cpps_isclass(__class)) return;

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<PublishAot>true</PublishAot>
+	<Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="libcpps_cs8">
+      <HintPath>..\..\libcpps_cs\bin\Release\net8.0\linux-x64\publish\libcpps_cs8.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

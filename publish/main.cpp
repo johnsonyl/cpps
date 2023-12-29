@@ -16,7 +16,7 @@ if(args.size() == 3)
 	io.rmdir("{publishpath}bin");
 	io.mkdir("{publishpath}bin");
 
-	var binfiles = ["cpps.exe","libmariadb.dll","uv.dll","libcrypto-1_1-x64.dll","libcurl.dll","libmysql.dll","libssl-1_1-x64.dll","msvcp140.dll","vcruntime140.dll","vcruntime140_1.dll","zlib1.dll"];
+	var binfiles = ["cpps.exe","cpps_interface.dll","libmariadb.dll","uv.dll","libcrypto-1_1-x64.dll","libcurl.dll","libmysql.dll","libssl-1_1-x64.dll","msvcp140.dll","vcruntime140.dll","vcruntime140_1.dll","zlib1.dll"];
 	foreach(var filename: binfiles)
 	{
 		var sourcepath = io.normpath("{cppspath}bin/{filename}");

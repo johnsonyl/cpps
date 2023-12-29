@@ -4,30 +4,46 @@ println(cwdpath);
 
 io.chdir("libcpps_cs")
 system("dotnet publish -a x64 -c Release -p:NativeLib=Shared libcpps_cs.csproj");
-system("dotnet publish -p:NativeLib=Shared -r win-x64 -c Release libcpps_cs8.csproj");
+system("dotnet publish -p:NativeLib=Shared -a x64 -c Release libcpps_cs8.csproj");
 io.chdir(cwdpath)
 
 
 io.chdir("csharp_example")
-system("dotnet publish -a x64 -c Release");
+if(sys.os == "linux")
+	system("dotnet publish -a x64 -c Release csharp_example_linux.csproj");
+else if(sys.os == "windows")
+	system("dotnet publish -a x64 -c Release csharp_example.csproj");
 io.chdir(cwdpath)
 
 
 io.chdir("csharp_libs/csharp")
-system("dotnet publish -p:NativeLib=Shared -r win-x64 -c Release");
+if(sys.os == "linux")
+	system("dotnet publish -p:NativeLib=Shared -a x64 -c Release csharp_linux.csproj");
+else if(sys.os == "windows")
+	system("dotnet publish -p:NativeLib=Shared -a x64 -c Release csharp.csproj");
 io.chdir(cwdpath)
 
 io.rmdir("publish");
 io.mkdir("publish");
 
-var sourcepath = io.normpath("csharp_example/bin/Release/net6.0/win-x64/publish");
+var osname = "win";
+if(sys.os == "linux")
+	osname = "linux";
+
+var sourcepath = io.normpath("csharp_example/bin/Release/net6.0/{osname}-x64/publish");
 var tarpath = io.normpath("publish");
 io.copydir(sourcepath,tarpath);	
 println("copydir {sourcepath} -> {tarpath}");
 
+var csharp_name = "csharp.dll";
+if(sys.os == "linux")
+	csharp_name = "csharp_linux.dll";
+else if(sys.os == "macos")
+	csharp_name = "csharp_macos.dll";
+	
 
-var sourcepath = "csharp_libs/csharp/bin/Release/net8.0/win-x64/publish/csharp.dll";
-var tarpath = "{io.getrealpath()}lib/csharp/csharp.dll";
+var sourcepath = "csharp_libs/csharp/bin/Release/net8.0/{osname}-x64/publish/{csharp_name}";
+var tarpath = "{io.getrealpath()}lib/csharp/{csharp_name}";
 io.copy(sourcepath,tarpath);	
 println("copy {sourcepath} -> {tarpath}");
 
@@ -59,9 +75,14 @@ foreach(var sourcefile : sourcepathfiles)
 io.copydir(sourcepath,tarpath);	
 println("copydir {sourcepath} -> {tarpath}");
 
-
-var sourcepath = "../bin/cpps_interface.dll";
-var tarpath = "publish/cpps_interface.dll";
+var interface_name = "cpps_interface.dll";
+if(sys.os == "linux")
+	interface_name = "libcpps_interface.so";
+else if(sys.os == "macos")
+	interface_name = "libcpps_interface.dylib";
+	
+var sourcepath = "../bin/{interface_name}";
+var tarpath = "publish/{interface_name}";
 io.copy(sourcepath,tarpath);	
 println("copy {sourcepath} -> {tarpath}");
 
@@ -70,3 +91,6 @@ var sourcepath = "../bin/main.cpp";
 var tarpath = "publish/main.cpp";
 io.copy(sourcepath,tarpath);	
 println("copy {sourcepath} -> {tarpath}");
+
+if(sys.os == "linux")
+	system("chmod 777 publish/csharp_example_linux");
