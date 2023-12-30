@@ -19,6 +19,7 @@ namespace cpps
 	struct cpps_node_domain;
 	typedef phmap::flat_hash_map<std::string, node*> var_list_type;
 	struct cpps_value;
+	struct Buffer;
 	enum node_var_type
 	{
 		node_var_type_var,
@@ -48,6 +49,9 @@ namespace cpps
 		node* getnode(std::string& s, bool b = false);
 		void cpps_release();
 		inline bool empty() { return l.empty(); }
+		void write(cpps::Buffer* _buffer);
+		void read(cpps::Buffer* _buffer);
+		void swap(node* _n);
 		std::string s;
 		std::vector<node*> l;
 		int32 type;

@@ -15,6 +15,8 @@ namespace cpps
 	bool cpps_io_isdir(std::string p);
 	void cpps_debug_trace_domain(C* c, int kg, std::string parent, cpps_domain* root);
 	std::string cpps_io_getfilepath(std::string str);
+	std::string cpps_io_readfile(std::string filepath);
+	std::string cpps_getcwd();
 	bool cpps_base_isdebug() {
 #ifdef _DEBUG
 		return true;
@@ -911,6 +913,54 @@ namespace cpps
 
 		return ret;
 	}
+	cpps_value cpps_base_compile(C* c, cpps_value src_path) {
+		
+		if (!cpps_isstring(src_path)) return nil;
+
+		std::string* _src_path = cpps_get_string(src_path);
+		std::string _src_content = cpps_io_readfile(*_src_path);
+
+		std::string _old_work_path = cpps_getcwd();
+
+#ifdef WIN32
+		if (SetCurrentDirectoryA(cpps_io_getfilepath(*_src_path).c_str())) {}
+#else
+		if (chdir(cpps_io_getfilepath(*_src_path).c_str())) {}
+#endif
+
+
+		C* _c = cpps::create(c);
+
+		_c->buildoffset = false;
+		try {
+			node* o = loadbuffer(_c, _c->_G, _src_content, _src_path->c_str(), CPPS_RUN_COMPILE);
+#ifdef WIN32
+			if (SetCurrentDirectoryA(_old_work_path.c_str())) {}
+#else
+			if (chdir(_old_work_path.c_str())) {}
+#endif
+
+			cpps_newclass(c,Buffer, _out_buffer,cpps_value, _out_buffer_value) ;
+
+			o->write(_out_buffer);
+			
+			cpps_destory_node(o); o->release(); o = NULL;
+			cpps::close(_c);
+
+			return _out_buffer_value;
+
+		}
+		catch (...) {
+			cpps::close(_c);
+#ifdef WIN32
+			if (SetCurrentDirectoryA(_old_work_path.c_str())) {}
+#else
+			if (chdir(_old_work_path.c_str())) {}
+#endif
+			throw;
+		}
+		return nil;
+	}
 	std::string base_BinToHex(std::string strBin)
 	{
 		std::string strHex;
@@ -982,6 +1032,7 @@ namespace cpps
 			_class<node>("cpps_node")
 				.def("release",&node::cpps_release),
 			def_inside("parse", cpps_base_parse),
+			def_inside("__compile", cpps_base_compile),
 			def("printf", cpps_base_printf_new),
 			def("print", cpps_base_printf_new),
 			def("printfln", cpps_base_printfln_new),

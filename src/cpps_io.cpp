@@ -188,7 +188,7 @@ namespace cpps
 	}
 	std::string cpps_io_getfileext(std::string str)
 	{
-		size_t pos = str.find_last_of(".");
+		size_t pos = str.find(".");
 		if (pos != std::string::npos)
 		{
 			return str.substr(pos + 1);
@@ -223,7 +223,7 @@ namespace cpps
 	std::string getfilenamenotext(std::string str)
 	{
 		str = cpps_io_getfilename(str);
-		size_t pos = str.find_last_of(".");
+		size_t pos = str.find(".");
 		if (pos != std::string::npos)
 		{
 			return str.substr(0,pos);
@@ -477,11 +477,17 @@ namespace cpps
 	std::string cpps_io_normpath(std::string path)
 	{
 
+#ifdef _WIN32
 		const char* sep = "\\";
 		const char* altsep = "/";
+		const char* special_prefixes[2] = { "\\\\.\\" ,"\\\\?\\" };
+#else
+		const char* sep = "/";
+		const char* altsep = "\\";
+		const char* special_prefixes[2] = { "//./" ,"//?/" };
+#endif
 		const char* curdir = ".";
 		const char* pardir = "..";
-		const char* special_prefixes[2] = { "\\\\.\\" ,"\\\\?\\" };
 
 		for (int i = 0; i < 2; i++) {
 
@@ -517,7 +523,7 @@ namespace cpps
 			{
 				if (i != realvct.begin() && (*(i - 1)) != pardir)
 					i = realvct.erase(i - 1, i+1);
-				else if (i == realvct.begin() && prefix[prefix.size() - 1] == '\\')
+				else if (i == realvct.begin() && prefix[prefix.size() - 1] == sep[0])
 					i = realvct.erase(i);
 				else
 					++i;
@@ -619,7 +625,7 @@ namespace cpps
 		}
 #endif
 	}
-	bool cpps_io_real_filename_filter(char const* needle, char const* haystack) {
+	bool cpps_io_real_filename_filter(char const* haystack, char const* needle) {
 		for (; *needle != '\0'; ++needle) {
 			switch (*needle) {
 			case '?':
@@ -637,7 +643,7 @@ namespace cpps
 					return true;
 				size_t max = strlen(haystack);
 				for (size_t i = 0; i < max; i++)
-					if (cpps_io_real_filename_filter(needle + 1, haystack + i))
+					if (cpps_io_real_filename_filter(haystack + i, needle + 1))
 						return true;
 				return false;
 			}
@@ -1038,6 +1044,10 @@ namespace cpps
 				.def("readInt16", &Buffer::readint16)
 				.def("readInt32", &Buffer::readint32)
 				.def("readInt", &Buffer::readint)
+				.def("readUInt8", &Buffer::readuint8)
+				.def("readUInt16", &Buffer::readuint16)
+				.def("readUInt32", &Buffer::readuint32)
+				.def("readUInt", &Buffer::readuint)
 				.def("readNumber", &Buffer::readnumber)
 				.def("readFloat", &Buffer::readfloat)
 				.def("readString", &Buffer::readstring)
@@ -1046,6 +1056,10 @@ namespace cpps
 				.def("writeInt16", &Buffer::writeint16)
 				.def("writeInt32", &Buffer::writeint32)
 				.def("writeInt", &Buffer::writeint)
+				.def("writeUInt8", &Buffer::writeuint8)
+				.def("writeUInt16", &Buffer::writeuint16)
+				.def("writeUInt32", &Buffer::writeuint32)
+				.def("writeUInt", &Buffer::writeuint)
 				.def("writeNumber", &Buffer::writenumber)
 				.def("writeFloat", &Buffer::writefloat)
 				.def("writeString", &Buffer::writestring)
@@ -1053,6 +1067,7 @@ namespace cpps
 				.def("seek", &Buffer::seek)
 				.def("clear", &Buffer::clear)
 				.def("endian", &Buffer::endian)
+				.def("writefile", &Buffer::writefile)
 				.def("length", &Buffer::length),
 			_enum(c,"BUFFERENDIAN")
 				.value("LITTLE_ENDIAN",0)
@@ -1086,6 +1101,7 @@ namespace cpps
 		offset = 0;
 		buffsize = 0;
 		_endian = 0;
+		_length = 0;
 	}
 
 	Buffer::~Buffer()
@@ -1112,7 +1128,7 @@ namespace cpps
 
 	char* Buffer::_read(char* out, cpps_integer len)
 	{
-		if (length() + len > buffsize) return NULL;
+		if (length() + len > _length) return NULL;
 
 		char* ret = getbuffer() + length();
 		if (out)
@@ -1145,7 +1161,7 @@ namespace cpps
 	std::string Buffer::tostring()
 	{
 		std::string ret;
-		ret.append(getbuffer(),(size_t) buffsize);
+		ret.append(getbuffer(),(size_t)_length);
 		return ret;
 	}
 
@@ -1193,6 +1209,34 @@ namespace cpps
 		return ret;
 	}
 
+	cpps_uinteger Buffer::readuint8()
+	{
+		unsigned char ret = 0;
+		_read((char*)&ret, sizeof(unsigned char));
+		return ret;
+	}
+
+	cpps_uinteger Buffer::readuint16()
+	{
+		usint16 ret = 0;
+		_read((char*)&ret, sizeof(usint16));
+		return ret;
+	}
+
+	cpps_uinteger Buffer::readuint32()
+	{
+		usint32 ret = 0;
+		_read((char*)&ret, sizeof(usint32));
+		return ret;
+	}
+
+	cpps_uinteger Buffer::readuint()
+	{
+		cpps_uinteger ret = 0;
+		_read((char*)&ret, sizeof(cpps_uinteger));
+		return ret;
+	}
+
 	cpps_number Buffer::readnumber()
 	{
 		cpps_number ret = 0;
@@ -1225,13 +1269,13 @@ namespace cpps
 		return ret;
 	}
 
-	cpps::Buffer* Buffer::writeint8(signed char i)
+	cpps::Buffer* Buffer::writeint8(int8 i)
 	{
-		_write((char*)&i, sizeof(signed char));
+		_write((char*)&i, sizeof(int8));
 		return this;
 	}
 
-	cpps::Buffer* Buffer::writeint16(short i)
+	cpps::Buffer* Buffer::writeint16(int16 i)
 	{
 		_write((char*)&i, sizeof(short));
 		return this;
@@ -1246,6 +1290,30 @@ namespace cpps
 	cpps::Buffer* Buffer::writeint(cpps_integer i)
 	{
 		_write((char*)&i, sizeof(cpps_integer));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writeuint8(usint8 i)
+	{
+		_write((char*)&i, sizeof(usint8));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writeuint16(usint16 i)
+	{
+		_write((char*)&i, sizeof(usint16));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writeuint32(usint32 i)
+	{
+		_write((char*)&i, sizeof(usint32));
+		return this;
+	}
+
+	cpps::Buffer* Buffer::writeuint(cpps_uinteger i)
+	{
+		_write((char*)&i, sizeof(cpps_uinteger));
 		return this;
 	}
 
@@ -1309,12 +1377,12 @@ namespace cpps
 
 	void Buffer::realloc(cpps_integer s)
 	{
+		_length = s;
 		if (buffsize >= s)
 		{
-			buffsize = s;
 			return;
 		}
-		size_t newsize = static_cast<size_t>(s);
+		size_t newsize = buffsize == 0 ? static_cast<size_t>(s) : static_cast<size_t>(max(buffsize,s)*2);
 		char* newbuff = (char*) CPPSMALLOC(newsize + 1);
 		memset(newbuff, 0, (size_t)newsize + 1);
 
@@ -1325,9 +1393,16 @@ namespace cpps
 		}
 
 		buff = newbuff;
-		buffsize = s;
+		buffsize = newsize;
 	}
 
-	
+	void Buffer::writefile( std::string path)
+	{
+		FILE* _f = fopen(path.c_str(), "wb+");
+		if (_f) {
 
+			fwrite(getbuffer(), length(), 1, _f);
+			fclose(_f);
+		}
+	}
 }

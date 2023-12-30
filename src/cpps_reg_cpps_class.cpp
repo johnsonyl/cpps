@@ -2,9 +2,6 @@
 
 void cpps::cpps_init_cpps_class(cpps::C* c)
 {
-	if (CPPSMEMORYHANDLER() != NULL) return;
-
-	CPPSMEMORYSETHANDLER(c->memory_handler); //init handler;
 	cpps::cpps_reg_cpps_class<cpps::string>(c, "String", "_G");
 	cpps::cpps_reg_cpps_class<cpps_vector>(c, "vector", "_G");
 	cpps::cpps_reg_cpps_class<Buffer>(c, "Buffer", "_G");
@@ -22,5 +19,10 @@ void cpps::cpps_init_cpps_class(cpps::C* c)
 	cpps::cpps_reg_cpps_class<cpps_thread>(c, "thread", "_G");
 	cpps::cpps_reg_cpps_class<cpps_lock>(c, "mutex", "_G");
 	cpps::cpps_reg_cpps_class<cpps_random>(c, "Random", "_G");
+
+	if (CPPSMEMORYHANDLER() != NULL) return;
+
+	CPPSMEMORYSETHANDLER(c->memory_handler); //init handler;
+	
 
 }

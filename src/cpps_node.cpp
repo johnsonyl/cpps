@@ -1,4 +1,5 @@
 #include "cpps/cpps.h"
+#include "..\include\cpps\cpps_node.h"
 
 
 namespace cpps {
@@ -106,7 +107,7 @@ namespace cpps {
 	void node::add(node* o)
 	{
 		o->setparent(this);
-		l.push_back(o);
+		l.emplace_back(o);
 	}
 
 	void node::clone(node* v)
@@ -118,7 +119,7 @@ namespace cpps {
 			if (n != NULL) {
 				node* cpyn = CPPSNEW(node)();
 				cpyn->clone(n);
-				l.push_back(cpyn);
+				l.emplace_back(cpyn);
 			}
 			else {
 				l.push_back(NULL);//ռλ
@@ -288,5 +289,68 @@ namespace cpps {
 		cpps_destory_node(this);
 	}
 
+	void node::write(cpps::Buffer* _buffer)
+	{
 
+		_buffer->writeuint8((usint8)s.size());
+		if (!s.empty())
+			_buffer->writestring(s);
+
+		_buffer->writeint32(type);
+
+
+		_buffer->writeuint16((usint8)filename.size());
+		if (!filename.empty())
+			_buffer->writestring(filename);
+
+		_buffer->writeint32(line);
+		_buffer->writebool(closure);
+		_buffer->writebool(quote);
+
+		_buffer->writeuint32((usint32)l.size());
+		for (auto& _n : l) {
+			if (_n == NULL) {
+				_buffer->writeuint8(0); //ռλ
+			}
+			else {
+				_buffer->writeuint8(1);
+				_n->write(_buffer);
+			}
+		}
+	}
+
+	void node::read(cpps::Buffer* _buffer)
+	{
+		cpps_integer _size = _buffer->readuint8();
+		if (_size > 0)
+			s = _buffer->readstring(_size);
+
+		type = (int32)_buffer->readint32();
+
+		_size = _buffer->readuint16();
+		if (_size > 0)
+			filename = _buffer->readstring(_size);
+
+		line = (int32)_buffer->readint32();
+		closure = _buffer->readbool();
+		quote = _buffer->readbool();
+
+		_size = _buffer->readuint32();
+		for (cpps_integer i = 0; i < _size; i++) {
+			cpps_integer _ = _buffer->readuint8();
+			if (_ == 0)
+				l.push_back(NULL);
+			else {
+				node* _n = CPPSNEW(node)();
+				add(_n);
+				_n->read(_buffer);
+			}
+		}
+	}
+	void node::swap(node* _n)
+	{
+		for (auto& _cn : l) {
+			_n->add(_cn);
+		}
+	}
 }

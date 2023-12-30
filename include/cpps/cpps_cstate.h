@@ -33,9 +33,9 @@ namespace cpps
 		void						init(const char* pf, int32 pl, const char *pfunc);
 		cpps_std_vector *			createparams();
 		cpps_value *				create_cpps_value();
-		char		 f[4096];
-		char		 func[128];
-		int32			l;
+		char						f[4096];
+		char						func[128];
+		int32						l;
 	};
 	namespace coroutine {struct Ordinator;}
 #ifdef _DEBUG
@@ -72,16 +72,20 @@ namespace cpps
 		void																		stack_free(cpps::cpps_stack* stack);
 		void																		setmoduledata(std::string modulename, cpps_module_data* data);
 		cpps_module_data*															getmoduledata(std::string modulename);
+		void																		clone(C* clone_c);
+		void																		set_cxo_handle_func(cpps_cxo_func __func);
+
 		node* o;
 		cpps_domain*																_G;	//根节点
 		std::vector<cpps_stack*>													*_callstack; //堆栈
 		phmap::flat_hash_set<cpps_regvar*>											barrierList; //分界List
-		CLASSVARSET									gen0; //分界List
-		CLASSVARSET									gen1; //分界List
+		CLASSVARSET																	gen0; //分界List
+		CLASSVARSET																	gen1; //分界List
 		size_t																		gen0size;//新生代当前占内存大小（字节）
 		size_t																		gen1size;//老生代当前占内存大小（字节）
 		size_t																		lastgensize;
-		std::string																	(*func)(std::string &);
+		cpps_chartrans_func															func;
+		cpps_cxo_func																_cxo_func;
 		phmap::flat_hash_map<std::string, HMODULE>									modulelist;
 #ifdef _DEBUG
 		std::map<void*, cpps_cppsclassvar*>											_class_map_classvar;
@@ -109,7 +113,6 @@ namespace cpps
 		cpps_lock																	*_classvarlock;
 		cpps_lock																	*_gen0lock;
 		int32																		_lambdanum;
-		void clone(C* clone_c);
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

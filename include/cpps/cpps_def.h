@@ -206,6 +206,7 @@
 #define CPPS_NOT_DONTDELETEEND	16 //不需要移除;
 #define CPPS_NOT_DEFCLASS		32 //不要定义类
 #define CPPS_NOT_DEFSYSTEM		64 //不允许使用#
+#define CPPS_RUN_COMPILE		128 //COMPILE - 不执行import offset禁用 用于运行时优化
 
 //regvatlist
 #define CPPS_OFFSET_TYPE_GLOBAL 0		//_G 
@@ -358,7 +359,7 @@ typedef long long unsigned int cpps_uinteger;
 #endif
 namespace cpps
 {
-	typedef char				int8;
+	typedef signed char			int8;
 	typedef unsigned char		usint8;
 	typedef short				int16;
 	typedef unsigned short		usint16;
@@ -547,6 +548,8 @@ typedef void* (*cpps_alloc_f)(size_t);
 typedef void (*cpps_free_f)(void*);
 typedef void* (*cpps_class_alloc)();
 typedef void (*cpps_class_free)(void*);
+typedef std::string(*cpps_cxo_func)(cpps::C*c,std::string&);
+typedef std::string(*cpps_chartrans_func)(std::string&);
 
 //////////////////////////////////////////////////////////////////////////
 

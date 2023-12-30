@@ -19,7 +19,7 @@ namespace cpps
 		}
 		leftdomain = NULL;
 		cpps::cpps_regvar* var = root->getvar(classname, leftdomain, false);
-		cpps_cppsclass* cls = (cpps_cppsclass*)var->getval().value.domain;
+		cpps_cppsclass* cls = (cpps_cppsclass*)var->getval().real().value.domain;
 		cpps_class_singleton<T*>::instance()->setsls(cls);
 		return true;
 	}

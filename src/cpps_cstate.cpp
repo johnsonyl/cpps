@@ -156,6 +156,17 @@ namespace cpps
 		_gen0lock = new cpps_lock();
 		_classvarlock = clone_c->_classvarlock;
 		isloadbase = true;
+		leftsymbolmap = clone_c->leftsymbolmap;
+		symbolmap = clone_c->symbolmap;
+		for (int i = 0; i < MAXSYMBOLPRIO; i++) {
+			symbolleftasso[i] = clone_c->symbolleftasso[i];
+		}
+		savemoduledatas = clone_c->savemoduledatas;
+	}
+
+	void C::set_cxo_handle_func(cpps_cxo_func __func)
+	{
+		_cxo_func = __func;
 	}
 
 	cpps_value * cpps_stack::create_cpps_value()

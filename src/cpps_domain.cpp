@@ -387,7 +387,7 @@ namespace cpps
 
 	void cpps_domain::clone(cpps_domain* clone_domain)
 	{
-		if (!clone_domain->stacklist->empty()) {
+		if (clone_domain->stacklist && !clone_domain->stacklist->empty()) {
 			resize((usint16)clone_domain->stacklist->size());
 			for (size_t i = 0; i < clone_domain->stacklist->size(); i++)
 				(* stacklist)[i] = (*clone_domain->stacklist)[i];

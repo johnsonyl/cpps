@@ -17,7 +17,7 @@ namespace cpps
 	struct				object;
 	C*					create(C* _parent);
 	C*					create(int argc = 0, char** argv = NULL, cpps_alloc_f alloc_func = NULL, cpps_free_f free_func = NULL);
-	node* 				loadbuffer(C *c, cpps_domain* parent_domain,std::string &str, std::string filename);
+	node* 				loadbuffer(C *c, cpps_domain* parent_domain,std::string &str, std::string filename,int32 limit = 0);
 	int32				dostring(C *c, std::string str);
 	int32				loadfile(C *c, const char* path);
 	int32				dofile(C *c, const char* path);

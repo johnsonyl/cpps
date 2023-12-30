@@ -59,14 +59,22 @@ namespace cpps
 		cpps_integer	readint16();
 		cpps_integer	readint32();
 		cpps_integer	readint();
+		cpps_uinteger	readuint8();
+		cpps_uinteger	readuint16();
+		cpps_uinteger	readuint32();
+		cpps_uinteger	readuint();
 		cpps_number		readnumber();
 		cpps_number		readfloat();
 		std::string		readstring(cpps_integer len);
 		bool			readbool();
-		Buffer*			writeint8(signed char i);
-		Buffer*			writeint16(short i);
+		Buffer*			writeint8(int8  i);
+		Buffer*			writeint16(int16  i);
 		Buffer*			writeint32(int32 i);
 		Buffer*			writeint(cpps_integer i);
+		Buffer*			writeuint8(usint8 i);
+		Buffer*			writeuint16(usint16 i);
+		Buffer*			writeuint32(usint32 i);
+		Buffer*			writeuint(cpps_uinteger i);
 		Buffer*			writenumber(cpps_number i);
 		Buffer*			writefloat(cpps_number i);
 		Buffer*			writestring(std::string s);
@@ -77,10 +85,12 @@ namespace cpps
 		void			clear();
 		void			endian(cpps::object v);
 		void			realloc(cpps_integer s);
+		void			writefile(std::string path);
 	public:
 		cpps_integer	offset;
 		char*			buff;
 		cpps_integer	buffsize; //最大size
+		cpps_integer	_length; //实际length
 		char			_endian;
 	};
 

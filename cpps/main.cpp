@@ -57,6 +57,23 @@ void __check_cpps_package_json(int argc, char** argv) {
 }
 #endif
 
+std::string _cxo_handle_func(C*c,std::string& content)
+{
+	C* _c = cpps::create(c);
+	cpps_init_cpps_class(_c);
+	std::string path = cpps_rebuild_filepath("lib/cpps_compile/cxo.cpp");
+	std::string __out_content;
+	cpps_try
+	if (!path.empty()) cpps::dofile(_c, path.c_str());
+	object func = object::globals(_c)["__cxo_to_buffer"];
+	object ret = cpps::dofunction(_c, func, content);
+	__out_content = ret.tostring();
+	cpps_catch
+	
+	cpps::close(_c);
+	return __out_content;
+}
+
 int32 main(int argc,char **argv)
 {
 #ifdef _WIN32
@@ -129,7 +146,7 @@ int32 main(int argc,char **argv)
 	C* c = cpps::create(argc,argv);
 #endif
 
-
+	c->set_cxo_handle_func(_cxo_handle_func);
 
 	cpps_try
 		if (!path.empty()) cpps::dofile(c, path.c_str());
