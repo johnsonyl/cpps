@@ -217,27 +217,29 @@ namespace cpps {
 		case CPPS_ODEFVAR: {
 			node* r = cpps_get_root_node(_node->parent);
 			node* str = _node->l[0];
-			node* lambda = str->l[0];
-			if (lambda->type == CPPS_ODEFVAR_LAMBDA_FUNC) {
+			if (!str->l.empty()) {
+				node* lambda = str->l[0];
+				if (lambda->type == CPPS_ODEFVAR_LAMBDA_FUNC) {
 
-				if (c->buildoffset) {
-					str->offset = r->size++;
-					str->offsettype = CPPS_OFFSET_TYPE_GLOBAL;
+					if (c->buildoffset) {
+						str->offset = r->size++;
+						str->offsettype = CPPS_OFFSET_TYPE_GLOBAL;
+					}
+
+					node* lastopnode = _node->parent;
+					node* lambdaparam = lastopnode->l[1];
+
+					if (__root->type == CPPS_ODEFVAR_LAMBDA_FUNC || __root->type == CPPS_ODEFVAR_FUNC) {
+						lambda->size = __root->size;/*为了兼容闭包*/
+					}
+					usint16 takesize = lambda->size;
+
+					if (c->buildoffset) {
+						lambdaparam->offset = str->offset;
+						lambdaparam->offsettype = str->offsettype;
+					}
+					lambdaparam->size = takesize;/*记录当时使用时它父类长度.*/
 				}
-
-				node* lastopnode = _node->parent;
-				node* lambdaparam = lastopnode->l[1];
-
-				if (__root->type == CPPS_ODEFVAR_LAMBDA_FUNC || __root->type == CPPS_ODEFVAR_FUNC) {
-					lambda->size = __root->size;/*为了兼容闭包*/
-				}
-				usint16 takesize = lambda->size;
-
-				if (c->buildoffset) {
-					lambdaparam->offset = str->offset;
-					lambdaparam->offsettype = str->offsettype;
-				}
-				lambdaparam->size = takesize;/*记录当时使用时它父类长度.*/
 			}
 			break;
 		}

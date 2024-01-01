@@ -8,7 +8,7 @@ namespace cpps
 		//do nothing...
 		domainType = 0;
 		hasVar = false;
-		isbreak = false;
+		isbreak = cpps_step_check_none;
 		parent[0] = NULL;
 		parent[1] = NULL;
 		funcRet.tt = CPPS_TNIL;
@@ -42,7 +42,7 @@ namespace cpps
 	{
 		parent[0] = p;
 		domainType = type;
-		isbreak = false;
+		isbreak = cpps_step_check_none;
 		parent[1] = NULL;
 		domainname = name;
 		funcRet.tt = CPPS_TNIL;
@@ -57,7 +57,7 @@ namespace cpps
 	{
 		parent[0] = p;
 		domainType = type;
-		isbreak = false;
+		isbreak = cpps_step_check_none;
 		parent[1] = NULL;
 		funcRet.tt = CPPS_TNIL;
 		hasVar = false;
@@ -293,14 +293,14 @@ namespace cpps
 			CPPSDELETE(stacklist);
 			stacklist = NULL;
 		}
-		isbreak = false;
+		isbreak = cpps_step_check_none;
 	}
 	void cpps_domain::destory(C* c,bool isclose)
 	{
 		clear_var(c, isclose);
 		funcRet.decruse();
 		funcRet.tt = CPPS_TNIL;
-		isbreak = false;
+		isbreak = cpps_step_check_none;
 		parent[0] = NULL;
 		parent[1] = NULL;
 	}

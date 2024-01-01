@@ -53,7 +53,7 @@ namespace cpps
 		char												domainType;
 		phmap::flat_hash_map<std::string, cpps_regvar*>		varList;
 		cpps_value											funcRet;//当他是一个func域的时候作为返回值用的 将来或许还有别的用途 暂时起名为funcRet
-		bool												isbreak;//有可能其他地方让我这个执行集退出执行
+		int8												isbreak;//有可能其他地方让我这个执行集退出执行
 		std::string											domainname; //域名字
 		bool												hasVar;
 		std::vector< cpps_regvar*>							*stacklist;

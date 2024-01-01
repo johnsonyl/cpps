@@ -241,6 +241,9 @@ enum
 #define cpps_def_regenum				5
 #define cpps_def_regclassvar			6
 
+#define cpps_step_check_none			0
+#define cpps_step_check_break			1
+#define cpps_step_check_continue		2
 
 #define MAXSYMBOLPRIO 10 // ²»µÃ³¬¹ý16
 

@@ -3182,8 +3182,8 @@ namespace cpps {
 		if (domain == NULL) domain = c->_G;
 		if (root == NULL) root = c->_G;
 		if (o == NULL) o = c->o;
-		domain->isbreak = false;
-		for (size_t i = 0; i < count && !domain->isbreak && !c->isterminate; i++) {
+		domain->isbreak = cpps_step_check_none;
+		for (size_t i = 0; i < count && domain->isbreak == cpps_step_check_none && !c->isterminate; i++) {
 			node* d = o->l[i];
 			cpps_step(c, domain, root, d);
 			if (releasenode) {
@@ -3449,12 +3449,12 @@ namespace cpps {
 
 			cpps_domain* cpps_func_domain = domain;
 			while (cpps_func_domain && cpps_func_domain->domainType != cpps_domain_type_trycatch) {
-				cpps_func_domain->isbreak = true;
+				cpps_func_domain->isbreak = cpps_step_check_break;
 				cpps_func_domain = cpps_func_domain->parent[1];
 			}
 			if (cpps_func_domain && cpps_func_domain->domainType == cpps_domain_type_trycatch) {
 				/* 设置回去 */
-				cpps_func_domain->isbreak = true;
+				cpps_func_domain->isbreak = cpps_step_check_break;
 				cpps_func_domain->funcRet = ret_value;
 			}
 			else {
@@ -3483,12 +3483,12 @@ namespace cpps {
 		}
 		cpps_domain* cpps_func_domain = domain;
 		while (cpps_func_domain && cpps_func_domain != c->_G && cpps_func_domain->parent[0]->domainType != cpps_domain_type_func) {
-			cpps_func_domain->isbreak = true;
+			cpps_func_domain->isbreak = cpps_step_check_break;
 			cpps_func_domain = cpps_func_domain->parent[1];
 		}
 		if (cpps_func_domain && cpps_func_domain != c->_G && cpps_func_domain->parent[0]->domainType == cpps_domain_type_func) {
 			/* 设置回去 */
-			cpps_func_domain->isbreak = true;
+			cpps_func_domain->isbreak = cpps_step_check_break;
 			if (cpps_func_domain->funcRet.tt == CPPS_TREF)
 				cpps_func_domain->funcRet = ret_value;
 			else if(ret_value.tt == CPPS_TREF)
@@ -3517,22 +3517,35 @@ namespace cpps {
 	void cpps_step_break(C* c, cpps_domain* domain, node* d) {
 		cpps_domain* cpps_func_domain = domain;
 		while (cpps_func_domain && !cpps_step_can_break(c, cpps_func_domain)) {
-			cpps_func_domain->isbreak = true;
+			cpps_func_domain->isbreak = cpps_step_check_break;
 			cpps_func_domain = cpps_func_domain->parent[1];
 		}
 		if (cpps_func_domain && cpps_step_can_break(c, cpps_func_domain)) {
 			/* 设置回去 */
-			cpps_func_domain->isbreak = true;
+			cpps_func_domain->isbreak = cpps_step_check_break;
 		}
 		else {
 			throw(cpps_error(d->filename, d->line, cpps_error_deffuncrror, "Illegal break. please define in while or for."));
 		}
 	}
+	bool cpps_step_continue_check(cpps_domain* domain) {
+		return (domain->domainType != cpps_domain_type_while &&
+			domain->domainType != cpps_domain_type_foreach &&
+			domain->domainType != cpps_domain_type_for);
+	}
 	void cpps_step_continue(C* c, cpps_domain* domain, node* d) {
 		cpps_domain* cpps_func_domain = domain;
-		while (cpps_func_domain && cpps_func_domain->parent[0] && (cpps_func_domain->parent[0]->domainType != cpps_domain_type_while && cpps_func_domain->parent[0]->domainType != cpps_domain_type_foreach && cpps_func_domain->parent[0]->domainType != cpps_domain_type_for)) {
-			cpps_func_domain->isbreak = true;
+		while (	cpps_func_domain &&
+				cpps_func_domain->parent[0] && 
+					cpps_step_continue_check(cpps_func_domain->parent[0])
+			) {
+			cpps_func_domain->isbreak = cpps_step_check_break;
 			cpps_func_domain = cpps_func_domain->parent[1];
+		}
+		if (cpps_func_domain &&
+			cpps_func_domain->parent[0] &&
+			!cpps_step_continue_check(cpps_func_domain->parent[0])) {
+			cpps_func_domain->isbreak = cpps_step_check_continue;
 		}
 	}
 	void cpps_step_yield(C* c, cpps_domain* domain, node* d) {
@@ -3582,7 +3595,7 @@ namespace cpps {
 		node* for2 = d->l[1];
 		node* for3 = d->l[2];
 		node* for4 = d->l[3];
-		fordomain->isbreak = false;
+		fordomain->isbreak = cpps_step_check_none;
 		if(!for1->l.empty()) cpps_step_all(c, CPPS_MUNITRET, fordomain, root, for1, false);
 		cpps_domain* execdomain = c->domain_alloc();
 
@@ -3602,7 +3615,7 @@ namespace cpps {
 			bool		b = cpps_converter<bool>::apply(canwhile);
 			if (b == false)
 				break;
-			bool isbreak = false;
+			int8 isbreak = cpps_step_check_none;
 			if (!for4->l.empty())
 			{
 
@@ -3612,7 +3625,7 @@ namespace cpps {
 
 				execdomain->clear_var(c);
 
-				if (isbreak)
+				if (isbreak == cpps_step_check_break)
 					break;
 
 			}
@@ -3639,7 +3652,7 @@ namespace cpps {
 		node* for1 = d->l[0];
 		node* for2 = d->l[1];
 		node* for4 = d->l[2];
-		foreachdomain->isbreak = false;
+		foreachdomain->isbreak = cpps_step_check_none;
 		cpps_domain* leftdomain = NULL;
 		cpps_step_all(c, CPPS_MUNITRET,foreachdomain, root, for1, false);
 		cpps_regvar* for1_v = foreachdomain->varList.empty() ? NULL : foreachdomain->varList.begin()->second;
@@ -3669,11 +3682,11 @@ namespace cpps {
 					if (!for4->empty()) {
 
 						cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
-						bool isbreak = execdomain->isbreak;
+						int8 isbreak = execdomain->isbreak;
 						execdomain->clear_var(c);
 						cpps_gc_check_step(c);
 
-						if (isbreak || c->isterminate)
+						if (isbreak == cpps_step_check_break || c->isterminate)
 							break;
 					}
 					/* 需要跳出循环 */
@@ -3700,11 +3713,11 @@ namespace cpps {
 						for1_v->setval(*it);
 					if (!for4->l.empty()) {
 						cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
-						bool isbreak = execdomain->isbreak;
+						int8 isbreak = execdomain->isbreak;
 						execdomain->clear_var(c);
 						cpps_gc_check_step(c);
 
-						if (isbreak || c->isterminate)
+						if (isbreak == cpps_step_check_break || c->isterminate)
 							break;
 					}
 					
@@ -3737,10 +3750,10 @@ namespace cpps {
 					if (!for4->l.empty()) {
 
 						cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
-						bool isbreak = execdomain->isbreak;
+						int8 isbreak = execdomain->isbreak;
 						execdomain->clear_var(c);
 						cpps_gc_check_step(c);
-						if (isbreak || c->isterminate)
+						if (isbreak == cpps_step_check_break || c->isterminate)
 							break;
 					}
 					/* 需要跳出循环 */
@@ -3793,11 +3806,11 @@ namespace cpps {
 						//if(for4_node) cpps_step(c, execdomain, root, for4_node);
 						if (!for4->empty()) {
 							cpps_step_all(c, CPPS_MUNITRET, execdomain, root, for4, false);
-							bool isbreak = execdomain->isbreak;
+							int8 isbreak = execdomain->isbreak;
 							//cpps_gc_check_step(c);
 							execdomain->clear_var(c);
 							/* 需要跳出循环 */
-							if (isbreak)
+							if (isbreak == cpps_step_check_break)
 								break;
 						}
 					}
@@ -3819,7 +3832,7 @@ namespace cpps {
 		cpps_domain* whiledomain = c->domain_alloc();
 		whiledomain->init(domain, cpps_domain_type_while);
 		whiledomain->setexecdomain(domain);
-		whiledomain->isbreak = false;
+		whiledomain->isbreak = cpps_step_check_none;
 		node* while1 = d->l[0];
 		node* while2 = d->l[1];
 		cpps_domain* execdomain = c->domain_alloc();
@@ -3841,11 +3854,11 @@ namespace cpps {
 				CPPS_SUBTRY
 					cpps_step_all(c, CPPS_MUNITRET, execdomain, root, while2, false);
 				CPPS_SUBCATCH2
-					bool isbreak = execdomain->isbreak;
+					int8 isbreak = execdomain->isbreak;
 				cpps_gc_check_step(c);
 				execdomain->clear_var(c);
 
-				if (isbreak)
+				if (isbreak == cpps_step_check_break)
 					break;
 				/* 需要跳出循环 */
 			}

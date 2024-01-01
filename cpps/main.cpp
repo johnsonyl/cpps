@@ -4,6 +4,11 @@
 #include "resource.h"
 #endif
 
+#ifdef USE_ZLIB_CPPS
+#include <zlib.h>
+#endif
+
+
 using namespace cpps;
 using namespace std;
 
@@ -57,8 +62,43 @@ void __check_cpps_package_json(int argc, char** argv) {
 }
 #endif
 
+#ifdef USE_ZLIB_CPPS
+std::string zlib_decompress(std::string& data, cpps_integer nbufsize)
+{
+
+	const Bytef* buf = NULL;
+	uLong len = 0;
+
+	buf = (Bytef*)data.c_str();
+	len = (uLong)data.size();
+	
+
+	Bytef* dest = new Bytef[size_t(nbufsize)];
+	uLong destlen = (uLong)nbufsize;
+
+	int32 err = uncompress2(dest, &destlen, buf, &len);
+	if (err != Z_OK) {
+		return "";
+	}
+
+	return std::string((const char*)dest, destlen);
+}
+
+#endif
+
 std::string _cxo_handle_func(C*c,std::string& content)
 {
+#ifdef USE_ZLIB_CPPS
+	Buffer buffer;
+	buffer.writestring(content);
+	buffer.seek(0);
+	
+	cpps_integer _version = buffer.readint();
+	cpps_integer _src_size = buffer.readint();
+	cpps_integer _compress_size = buffer.readint();
+	std::string _compress_content = buffer.readstring(_compress_size);
+	std::string __out_content = zlib_decompress(_compress_content, _src_size);
+#else
 	C* _c = cpps::create(c);
 	cpps_init_cpps_class(_c);
 	std::string path = cpps_rebuild_filepath("lib/cpps_compile/cxo.cpp");
@@ -71,6 +111,7 @@ std::string _cxo_handle_func(C*c,std::string& content)
 	cpps_catch
 	
 	cpps::close(_c);
+#endif
 	return __out_content;
 }
 
@@ -81,7 +122,7 @@ int32 main(int argc,char **argv)
 	HWND  hwnd = GetConsoleWindow();
 	SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 #endif
-	std::string path = "main.cpp";
+	std::string path = "-script";
 
 	if (argc >= 2) {
 		path = argv[1];
@@ -111,8 +152,13 @@ int32 main(int argc,char **argv)
 		{
 			printf("usage: cpps [option or filepath] ... [arg] ...\r\n");
 			printf("Options and arguments:\r\n");
-			printf("-v\t: print the cpps version and exit (also -version)\r\n");
+			printf("-v,-version\t: print the cpps version and exit (also -version)\r\n");
 			printf("-vno\t: print the cpps version number and exit \r\n");
+			printf("-script\t: type scripts in the console. \r\n");
+			printf("-init\t: Initial installation of all modules. \r\n");
+			printf("-i,-install module [-g,-global]\t: install a module in the current project(-g to the global). \r\n");
+			printf("-up,-update module [-g,-global]\t: update a module in the current project(-g to the global). \r\n");
+			printf("-un,-uninstall module [-g,-global]\t: uninstall a module in the current project(-g to the global). \r\n");
 			printf("\r\n---\r\n");
 			printf("filepath: run a cpps script file.\r\n");
 			return 0;
@@ -122,7 +168,7 @@ int32 main(int argc,char **argv)
 		}
 		else {
 			printf("Unknow option:%s\r\n", path.c_str());
-			printf("Try 'cpps -h' for more infomation.\r\n");
+			printf("Try 'cpps -h,-help' for more infomation.\r\n");
 			return 0;
 		}
 

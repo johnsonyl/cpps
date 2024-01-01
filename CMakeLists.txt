@@ -18,6 +18,11 @@ if (NOT CPPS_ENABLE_TCMALLOC)
 	set(CPPS_ENABLE_TCMALLOC "OFF")
 endif()
 
+if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
+	if (NOT CPPS_ENABLE_ZLIB)
+		set(CPPS_ENABLE_ZLIB "ON" CACHE STRING "" FORCE)
+	endif()
+endif()
 
 
 if (WINDOWS)
@@ -72,5 +77,5 @@ ENDIF()
 add_subdirectory ("src")
 add_subdirectory ("cpps")
 add_subdirectory ("example/demo")
-add_subdirectory ("example/test")
 add_subdirectory ("csharp/cpps_interface")
+
