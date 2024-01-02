@@ -31,6 +31,7 @@ namespace cpps
 		char							realcur();
 		char							at(int32 off);
 		int32							offset();
+		std::string						substr(int32 off, int32 len);
 		void							seek(int32 off);
 		bool							isend();
 		int32							line();

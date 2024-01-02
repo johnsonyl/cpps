@@ -134,7 +134,10 @@ namespace cpps
 	{
 		return bufferoffset;
 	}
-
+	std::string cppsbuffer::substr(int32 off, int32 len)
+	{
+		return buffer.substr(off, len);
+	}
 	void cppsbuffer::seek(int32 off)
 	{
 		bufferoffset = off;

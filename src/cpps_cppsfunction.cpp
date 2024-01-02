@@ -48,6 +48,12 @@ namespace cpps
 
 	void cpps_cppsfunction::callfunction(C* c, cpps_value* ret, cpps_domain* prevdomain, cpps_std_vector* o, cpps_stack* stack, std::vector< cpps_regvar*>* lambdastacklist)
 	{
+		//node *_params = CPPSNEW(node)(params->filename, params->line);
+		//_params->clone(params); //克隆出所有列表
+
+		node* _context = CPPSNEW(node)(context->filename, context->line);
+		_context->clone(context); //克隆出所有列表
+
 #ifdef CPPS_JIT_COMPILER
 
 		if (jitbuffer == NULL)
@@ -87,7 +93,7 @@ namespace cpps
 			if (varname->type == CPPS_VARNAME)
 			{
 				cpps_regvar* v = CPPSNEW(cpps_regvar)();
-				v->setvarname(varname->s);
+				//v->setvarname(varname->s);
 				//如果是多参数并且是最后一个参数
 				if (ismulitparams() && i == params->l.size()-1) {
 					
@@ -147,15 +153,15 @@ namespace cpps
 			funcdomain->funcRet.tt = CPPS_TREF;
 		}
 
-		if (context->l.size() == 1 && context->l[0]->type == CPPS_OEXPRESSION )
+		if (_context->l.size() == 1 && _context->l[0]->type == CPPS_OEXPRESSION )
 		{
 			cpps_domain* leftdomain = NULL;
-			cpps_calculate_expression(c, funcdomain, funcdomain, context->l[0]->l[0], leftdomain, funcdomain->funcRet);
+			cpps_calculate_expression(c, funcdomain, funcdomain, _context->l[0]->l[0], leftdomain, funcdomain->funcRet);
 			if(funcdomain->funcRet.isref())
 				funcdomain->funcRet = funcdomain->funcRet.real();
 		}
 		else
-			cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, context, false);
+			cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, _context, false);
 
 		if (ret) {
 			*ret = funcdomain->funcRet;//return的值反馈回去
@@ -170,6 +176,9 @@ namespace cpps
 
 
 		cpps_gc_check_step(c);
+		cpps_destory_node(_context); CPPSDELETE(_context); _context = NULL;
+
+
 	}
 
 	void cpps_cppsfunction::setasync(bool b)

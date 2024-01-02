@@ -165,9 +165,11 @@
 #define CPPS_MULITPARAMS		224 //多参数
 #define CPPS_OUINTEGER			225 //数字（正整数）
 #define CPPS_OGLOBAL			226 //_G
-#define	CPPS_OVARAUTOINC		227	//value++
-#define	CPPS_OVARAUTODEC		228	//value--
-#define	CPPS_OVARPTR			229	//value--
+
+//optimization
+#define	CPPS_OVARAUTOINC		300	//value++
+#define	CPPS_OVARAUTODEC		301	//value--
+#define	CPPS_OVARPTR			302	//value--
 
 
 
@@ -440,6 +442,7 @@ namespace cpps
 #include <direct.h>
 #include <Process.h>
 #include <corecrt_io.h>
+#include <sys/timeb.h>
 #ifdef _WIN32
 #define S_ISDIR(m) (m & S_IFDIR)
 #define S_ISREG(m) (m & S_IFREG)

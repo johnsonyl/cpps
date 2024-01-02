@@ -120,6 +120,18 @@ namespace cpps
 		}
 		return tm2time(&tt);
 	}
+	cpps_uinteger	cpps_time_gettimems()
+	{
+#ifdef _WIN32
+		timeb now;
+		ftime(&now);
+		return cpps_uinteger(now.time * 1000 + now.millitm);
+#else
+		struct timeval tv;
+		gettimeofday(&tv, NULL);    //该函数在sys/time.h头文件中
+		return cpps_uinteger(tv.tv_sec * 1000 + tv.tv_usec / 1000);
+#endif
+	}
 	cpps_integer	cpps_time_gettime()
 	{
 		time_t result = 0;
@@ -278,13 +290,17 @@ namespace cpps
 	{
 		cpps::_module(c)[
 			def("now", cpps_time_gettime),
+			def("now_ms", cpps_time_gettimems),
 			def("tick", cpps_time_gettickcount)
 		];
 		cpps::_module(c, "time")[
+			def("gettime_ms", cpps_time_gettimems),
+			def("getunixtime", cpps_time_gettime),
 			def("gettime", cpps_time_gettime),
 			def("gettimestr", cpps_time_gettimestr),
 			def("maketime", cpps_time_transtime),
 			def("gettickcount", cpps_time_gettickcount),
+			def("tick", cpps_time_gettickcount),
 			def("time2str", cpps_time_time2str),
 			def("str2time", cpps_time_str2time),
 			def("issomeday",cpps_time_issomeday),

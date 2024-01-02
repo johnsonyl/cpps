@@ -100,11 +100,15 @@ namespace cpps {
 		coroutine::wait_for(c->ordinator,std::this_thread::sleep_for<cpps_integer, std::milli>, std::chrono::milliseconds(ms));
 	}
 
-	void cpps_regasyncio(C* c)
+	void cpps_initasyncio(C* c)
 	{
-		cpps_async_loop* loop = CPPSNEW( cpps_async_loop)();
+		cpps_async_loop* loop = CPPSNEW(cpps_async_loop)();
 		loop->setcstate(c);
 		c->setmoduledata("asyncio", (cpps_module_data*)loop);
+	}
+	void cpps_regasyncio(C* c)
+	{
+		cpps_initasyncio(c);
 
 		cpps::_module(c, "asyncio")[
 			_class<cpps_async_object>("ASYNC_OBJECT")

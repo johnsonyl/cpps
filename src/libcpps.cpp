@@ -48,6 +48,7 @@ namespace cpps {
 	node* cpps_parse_getsymbol2node(C* c, node* o, std::string  symbolStr, cppsbuffer& buffer, bool leftsymbol);
 	void cpps_node_build(C* c, node* _root, node* _node, cppsbuffer& buffer);
 	std::string cpps_io_getfileext(std::string str);
+	void cpps_initasyncio(C* c);
 
 	void cpps_load_filebuffer(const char* path, std::string& fileSrc)
 	{
@@ -1404,11 +1405,11 @@ namespace cpps {
 				continue;
 			}
 			if (buffer.cur() != ']')
-				throw(cpps_error(child->filename, buffer.line(), cpps_error_unknow, "']' parsing error"));
 
 			buffer.pop();
 			return;
 		}
+		throw(cpps_error(parent->filename, buffer.line(), cpps_error_unknow, "']' parsing error"));
 	}
 	node* cpps_parse_last_func(C* c, cppsbuffer& buffer, node* o, node* p, cpps_node_domain* domain, node* root) {
 		/*有后续 */
@@ -2759,8 +2760,7 @@ namespace cpps {
 		buffer.pop();
 
 		auto take = buffer.offset();
-		child->s = cpps_parse_other_varname(buffer,')');
-		buffer.seek(take);
+		 
 		/* pop ( */
 		/* 剔除空格 */
 		cpps_parse_rmspaceandenter(buffer);
@@ -2770,6 +2770,9 @@ namespace cpps {
 		if (buffer.cur() != ')') {
 			throw(cpps_error(child->filename, buffer.line(), cpps_error_iferror, "Missing ')' after assert"));
 		}
+
+		auto _len = buffer.offset() - take;
+		child->s = buffer.substr(take, _len);
 		buffer.pop();
 		/* pop ) */
 	}
@@ -3052,6 +3055,7 @@ namespace cpps {
 		cpps_init_memory(c);
 		cpps_create_root_G(c);
 		c->clone(_parent->_parentCState ? _parent->_parentCState : _parent);
+		cpps_initasyncio(c);
 		return c;
 	}
 	cpps::C* create(int argc, char** argv, cpps_alloc_f alloc_func, cpps_free_f free_func) {
@@ -5445,10 +5449,15 @@ namespace cpps {
 		ret = cpps::object::globals(c).getval();
 	}
 
-	void cpps_rightautoincrease(cpps_value& a, cpps_value& ret);
-	void cpps_rightautodecrease(cpps_value& a, cpps_value& ret);
+	/*inline void cpps_rightautoincrease(cpps_value& a, cpps_value& ret);
+	inline void cpps_rightautodecrease(cpps_value& a, cpps_value& ret);*/
 	void cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain,cpps_value &ret) {
 		switch (d->type) {
+	/*	case CPPS_OVARAUTOINC:
+		{
+			cpps_rightautoincrease(cpps_value(d->value.val),ret);
+			break;
+		}*/
 		case CPPS_OVARPTR: {
 			ret = d->value.val;
 			break;
@@ -5728,9 +5737,9 @@ namespace cpps {
 			
 			/* 需要一个函数，但是他不是！！！！ */
 			if (d->getleft()->l.size() == 2)
-				printf("cpps warring: [%s] is not function  line:%d , file:%s \n", d->getleft()->getright()->s.c_str(), d->line, d->filename.c_str()); 
+				printf("Warning: [%s] is not function  line:%d , file:%s \n", d->getleft()->getright()->s.c_str(), d->line, d->filename.c_str()); 
 			else
-				printf("cpps warring: [%s] is not function  line:%d , file:%s \n", d->getleft()->s.c_str(), d->line, d->filename.c_str());
+				printf("Warning: [%s] is not function  line:%d , file:%s \n", d->getleft()->s.c_str(), d->line, d->filename.c_str());
 		}
 		leftdomain = _tmp;
 		return(ret);

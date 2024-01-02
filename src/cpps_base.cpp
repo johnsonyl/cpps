@@ -711,6 +711,15 @@ namespace cpps
 		return strRetTmp;
 	}
 #endif
+	void cpps_base_dostring(C* c, std::string str) {
+		c->disabled_non_def_var = true;
+		node* o = loadbuffer(c, c->_G, str, "<ScriptIO>");
+		if (o)
+			cpps_step_all(c, CPPS_MUNITRET, 0, 0, o, false);
+		if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
+		cpps_gc_check_step(c);
+		c->disabled_non_def_var = false;
+	}
 	std::string cpps_base_execmd(C* c, std::string cmd)
 	{
 #if defined _WIN32
@@ -1089,7 +1098,7 @@ namespace cpps
 			//def_inside("freelibrary", cpps_freelibrary),
 			def_inside("getargs", cpps_getargs),
 			def_inside("execmd",cpps_base_execmd),
-			def_inside("g_dostring",dostring),
+			def_inside("g_dostring", cpps_base_dostring),
 			def("isprime",cpps_base_isprime)
 		];
 		cpps::_module(c, "ot")[

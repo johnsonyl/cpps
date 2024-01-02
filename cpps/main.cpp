@@ -80,8 +80,11 @@ std::string zlib_decompress(std::string& data, cpps_integer nbufsize)
 	if (err != Z_OK) {
 		return "";
 	}
-
-	return std::string((const char*)dest, destlen);
+	std::string ret;
+	ret.append((const char*)dest, destlen);
+	delete[]dest;
+	dest = NULL;
+	return ret;
 }
 
 #endif
