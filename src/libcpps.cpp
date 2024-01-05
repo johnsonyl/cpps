@@ -4619,7 +4619,7 @@ namespace cpps {
 		return(v);
 	}
 	void make_values(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_std_vector& params) {
-		char	index = 65;
+		//char	index = 65;
 		size_t	size = d->l.size();
 		params.reserve(size);
 		/* for (std::vector<Node*>::iterator it = d->l.begin(); it != d->l.end(); ++it) */
@@ -4628,7 +4628,7 @@ namespace cpps {
 			cpps_value	value;
 			cpps_calculate_expression(c, domain, root, d->l[i], leftdomain,value);
 			params.emplace_back(value);
-			index++;
+			//index++;
 		}
 	}
 	cpps_regvar* cpps_node_to_regver(cpps_domain* domain, node* d, bool isgetRight = true) {

@@ -13,7 +13,7 @@ if(WINDOWS)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../lib ${PROJECT_SOURCE_DIR}/../deps/deps/lib)
 ELSEIF(MACOS)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../include /usr/include /usr/local/include /usr/local/opt/zlib/include)
-	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../lib  /lib /usr/lib /usr/local/lib /usr/lib64 /usr/local/lib64)
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../lib  /lib /usr/lib /usr/local/lib /usr/lib64 )
 elseif(LINUX)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../include /usr/local/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../lib /lib /usr/lib)
@@ -69,13 +69,16 @@ if(CPPS_ENABLE_TCMALLOC STREQUAL "ON" )
 endif()
 
 if(WINDOWS)
-else()
+elseif(LINUX)
 	add_custom_command(TARGET cpps
 	  POST_BUILD 
 	  COMMAND rm -rf /usr/local/bin/cpps
 	  COMMAND ln -s ${PROJECT_SOURCE_DIR}/../bin/cpps /usr/local/bin/cpps
 	 )
-#	不在安装 cppsc 到系统目录,需要手动建立软连接.
-# 	install(TARGETS cppsc
-#	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/local/bin/)
+elseif(MACOS)
+	add_custom_command(TARGET cpps
+	  POST_BUILD 
+	  COMMAND rm -rf /usr/bin/cpps
+	  COMMAND ln -s ${PROJECT_SOURCE_DIR}/../bin/cpps /usr/bin/cpps
+	 )
 endif()

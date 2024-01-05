@@ -96,7 +96,7 @@ std::string _cxo_handle_func(C*c,std::string& content)
 	buffer.writestring(content);
 	buffer.seek(0);
 	
-	cpps_integer _version = buffer.readint();
+	/*cpps_integer _version = */buffer.readint();
 	cpps_integer _src_size = buffer.readint();
 	cpps_integer _compress_size = buffer.readint();
 	std::string _compress_content = buffer.readstring(_compress_size);

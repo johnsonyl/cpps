@@ -180,7 +180,6 @@ namespace cpps {
 
 				//parents
 				node* parents = _node->l[0];
-				node* vars = _node->l[1];
 				std::set<node*> parentset;
 				std::set<cpps_cppsclass*> parentset_class;
 
