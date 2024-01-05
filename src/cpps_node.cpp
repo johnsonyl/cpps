@@ -1,6 +1,4 @@
 #include "cpps/cpps.h"
-#include "..\include\cpps\cpps_node.h"
-
 
 namespace cpps {
 

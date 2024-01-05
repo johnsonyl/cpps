@@ -1013,15 +1013,15 @@ namespace cpps
 				char cCur = strHex[2 * i + j];
 				if (cCur >= '0' && cCur <= '9')
 				{
-					cTemp = (cTemp << 4) + (cCur - '0');
+					cTemp = uint8_t((cTemp << 4) + (cCur - '0'));
 				}
 				else if (cCur >= 'a' && cCur <= 'f')
 				{
-					cTemp = (cTemp << 4) + (cCur - 'a' + 10);
+					cTemp = uint8_t((cTemp << 4) + (cCur - 'a' + 10));
 				}
 				else if (cCur >= 'A' && cCur <= 'F')
 				{
-					cTemp = (cTemp << 4) + (cCur - 'A' + 10);
+					cTemp = uint8_t((cTemp << 4) + (cCur - 'A' + 10));
 				}
 				else
 				{

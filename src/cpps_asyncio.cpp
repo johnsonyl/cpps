@@ -58,8 +58,8 @@ namespace cpps {
 			}
 			else {
 				task = obj->get_task();
-				object task(c, task);
-				ret = task.getval();
+				object _task(c, task);
+				ret = _task.getval();
 			}
 		}
 		else if (var.isdomain() && var.is_kindof<cpps_async_task>()) {
