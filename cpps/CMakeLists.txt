@@ -78,7 +78,7 @@ elseif(LINUX)
 elseif(MACOS)
 	add_custom_command(TARGET cpps
 	  POST_BUILD 
-	  COMMAND rm -rf /usr/bin/cpps
-	  COMMAND ln -s ${PROJECT_SOURCE_DIR}/../bin/cpps /usr/bin/cpps
+	  COMMAND sudo rm -rf /usr/bin/cpps
+	  COMMAND sudo ln -s ${PROJECT_SOURCE_DIR}/../bin/cpps /usr/bin/cpps
 	 )
 endif()
