@@ -113,6 +113,7 @@ namespace cpps
 		cpps_lock																	*_classvarlock;
 		cpps_lock																	*_gen0lock;
 		int32																		_lambdanum;
+		node*																		_emptynode;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

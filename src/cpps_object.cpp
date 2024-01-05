@@ -119,6 +119,10 @@ namespace cpps
 	{
 		return cpps_isint(value.real());
 	}
+	bool object::isuint()
+	{
+		return cpps_isuint(value.real());
+	}
 
 	bool object::ischar()
 	{

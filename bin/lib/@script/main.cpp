@@ -20,5 +20,16 @@ while(true){
 		help();
 		continue;
 	}
-	g_dostring(_line);
+	try{
+		g_dostring(_line);
+	}
+	catch(var e){
+		println(e);
+		
+		if(e.what() == "Unexpected end"){
+			g_dostring("if(isvalid({_line})) echo {_line}; else echo nil;");
+		}else{
+			println("{e.what()}");	
+		}
+	}
 }

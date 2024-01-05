@@ -3186,6 +3186,7 @@ namespace cpps {
 		if (domain == NULL) domain = c->_G;
 		if (root == NULL) root = c->_G;
 		if (o == NULL) o = c->o;
+		node* _take_node = c->curnode;
 		domain->isbreak = cpps_step_check_none;
 		for (size_t i = 0; i < count && domain->isbreak == cpps_step_check_none && !c->isterminate; i++) {
 			node* d = o->l[i];
@@ -3198,6 +3199,8 @@ namespace cpps {
 		}
 		if (releasenode)
 			o->l.clear();
+
+		c->curnode = _take_node;
 	}
 
 	cpps_regvar* cpps_step_def_var_createvar( cpps_domain* domain, node* varName, C* c, cpps_domain* root, node_var_type isasync)
@@ -3553,8 +3556,7 @@ namespace cpps {
 		}
 	}
 	void cpps_step_yield(C* c, cpps_domain* domain, node* d) {
-		cpps_async_loop* loop = (cpps_async_loop*)c->getmoduledata("asyncio");
-		cpps::coroutine::yield(*loop->ordinator);
+		asyncio::yield(c);
 	}
 	void cpps_step_if(C* c, cpps_domain* domain, cpps_domain* root, node* d) {
 		cpps_domain* leftdomain = NULL;

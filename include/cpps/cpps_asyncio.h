@@ -25,7 +25,7 @@ namespace cpps
 	//cpps::asyncio::wait_for
 	namespace asyncio {
 
-		static void			yield(C* c);
+		inline void			yield(C* c) { coroutine::yield(*c->ordinator); }
 		CPPS_WAITFOR_HEADER	wait_for(C* c, Function&& func, _ArgTypes&&... _Args) { return coroutine::wait_for(c->ordinator, func, _Args...); }
 	}
 }

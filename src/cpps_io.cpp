@@ -1382,7 +1382,8 @@ namespace cpps
 		{
 			return;
 		}
-		size_t newsize = buffsize == 0 ? static_cast<size_t>(s) : static_cast<size_t>(max(buffsize,s)*2);
+
+		size_t newsize = buffsize == 0 ? static_cast<size_t>(s) : static_cast<size_t>(fmax(buffsize,s)*2);
 		char* newbuff = (char*) CPPSMALLOC(newsize + 1);
 		memset(newbuff, 0, (size_t)newsize + 1);
 

@@ -97,7 +97,7 @@ namespace cpps {
 		return ret;
 	}
 	void	cpps_async_sleep(C*c,cpps_integer ms) {
-		coroutine::wait_for(c->ordinator,std::this_thread::sleep_for<cpps_integer, std::milli>, std::chrono::milliseconds(ms));
+		asyncio::wait_for(c,std::this_thread::sleep_for<cpps_integer, std::milli>, std::chrono::milliseconds(ms));
 	}
 
 	void cpps_initasyncio(C* c)
@@ -155,4 +155,3 @@ namespace cpps {
 
 }
 
-void cpps::asyncio::yield(C* c) { coroutine::yield(*c->ordinator); }

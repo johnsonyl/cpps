@@ -164,7 +164,7 @@ namespace cpps
 				cpps_domain* execdomain = domain.value.value.domain;
 
 				cpps_stack* stack = c->stack_alloc();
-				stack->init("", 0, f->funcname.c_str());
+				stack->init(c->curnode->filename.c_str(), c->curnode->line, f->funcname.c_str());
 				c->push_stack(stack);
 
 				f->callfunction(c, &ret, execdomain, &paramlist);

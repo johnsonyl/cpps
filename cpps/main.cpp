@@ -168,6 +168,12 @@ int32 main(int argc,char **argv)
 		}
 		else if (path == "-script") {
 			path = "lib/@script/main.cpp";
+			path = cpps_rebuild_filepath(path);
+#ifdef WIN32
+			if (SetCurrentDirectoryA(cpps_real_path().c_str())) {}
+#else
+			if (chdir(cpps_real_path().c_str())) {}
+#endif
 		}
 		else {
 			printf("Unknow option:%s\r\n", path.c_str());

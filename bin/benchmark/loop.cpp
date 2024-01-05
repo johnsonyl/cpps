@@ -1,4 +1,4 @@
-var t = time.gettickcount();
+var t = tick();
 var loop(var n){
 	var count = 0;
 
@@ -7,5 +7,5 @@ var loop(var n){
 	}
 	return count;
 }
-var a = loop(10 * 10000000)
-println(a,time.gettickcount()-t);
+println(loop(10 * 10000000),tick()-t);
+

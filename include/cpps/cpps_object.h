@@ -181,6 +181,7 @@ namespace cpps
 		bool					istuple();
 		bool					isellipsis();
 		bool					isint();
+		bool					isuint();
 		bool					ischar();
 		bool					isnumber();
 		bool					isnull();
@@ -212,6 +213,11 @@ namespace cpps
 			object func = (*this)[funcname];
 			if (!func.isfunction()) return cpps::nil;
 			return function_caller(c, *this, func, vec);
+		}
+		template<class... _ArgTypes>
+		object					operator () (C* c, _ArgTypes&&... _Args) {
+			if (!isfunction()) return cpps::nil;
+			return dofunction(c, *this, _Args...);
 		}
 
 		//vector ,map ,string .

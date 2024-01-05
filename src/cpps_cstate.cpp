@@ -105,7 +105,10 @@ namespace cpps
 		disabled_non_def_var = false;
 		o = NULL;
 		_G = NULL;
-		curnode = NULL;
+		_emptynode = CPPSNEW(node)();
+		_emptynode->filename = "None";
+		_emptynode->line = 1;
+		curnode = _emptynode;
 		gen0size = 0;
 		gen1size = 0;
 		lastgensize = 0;
@@ -124,7 +127,10 @@ namespace cpps
 
 	C::~C()
 	{
-		CPPSDELETE( _callstack);
+		if(_callstack) CPPSDELETE(_callstack); 
+		_callstack = NULL;
+		if (_emptynode) CPPSDELETE(_emptynode);
+		_emptynode = NULL;
 	}
 
 	void C::debugopen()
