@@ -96,7 +96,7 @@ else
 
 if(sys.os == "macos"){
 	print("-- CHECK for mysql-connector-c - ");
-	var result = io.file_exists("/usr/local/opt/mysql/include/mysql/mysql.h")
+	var result = io.file_exists("/opt/homebrew/opt/mysql-client/include/mysql/mysql.h")
 	if(result == false)
 	{
 		println_color("not found",RED);
@@ -125,7 +125,7 @@ else if(sys.os == "linux")
 if(sys.os == "macos")
 {
 	print("-- CHECK for curl - ");
-	var result = io.file_exists("/usr/local/opt/curl/include/curl/curl.h")
+	var result = io.file_exists("/opt/homebrew/opt/curl/include/curl/curl.h")
 	if(result == false)
 	{
 		println_color("not found",RED);
