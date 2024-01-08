@@ -93,7 +93,7 @@ namespace cpps
 			if (varname->type == CPPS_VARNAME)
 			{
 				cpps_regvar* v = CPPSNEW(cpps_regvar)();
-				//v->setvarname(varname->s);
+				v->setvarname(varname->s);
 				//如果是多参数并且是最后一个参数
 				if (ismulitparams() && i == params->l.size()-1) {
 					
