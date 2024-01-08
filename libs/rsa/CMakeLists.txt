@@ -19,8 +19,8 @@ IF(WINDOWS)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
 ELSEIF(MACOS)
-	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/include  )
-	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/lib /usr/lib/ )
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/include /opt/homebrew/opt/openssl/include )
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/lib /usr/lib/  /opt/homebrew/opt/openssl/lib)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
 	
 	

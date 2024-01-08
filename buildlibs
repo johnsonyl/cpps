@@ -156,8 +156,8 @@ println("-- Entered the directory: {depspath}");
 io.chdir(depspath);
 uncompress(depspath,"curl-7.74.0.tar.gz");
 uncompress(depspath,"libuuid-1.0.3.tar.gz");
-if(sys.os != "macos")
-	uncompress(depspath,"libuv-1.40.0.tar.gz");
+
+uncompress(depspath,"libuv-1.40.0.tar.gz");
 uncompress(depspath,"mariadb-connector-c-3.1.11-src.tar.gz");
 uncompress(depspath,"openssl-1.1.1h.tar.gz");
 uncompress(depspath,"zlib-1.2.11.tar.gz");
@@ -183,8 +183,8 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("./configure");
-system("make");
+system("sudo ./configure");
+system("sudo make");
 system("sudo make install");
 
 
@@ -194,8 +194,8 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("./config -fPIC shared zlib");
-system("make");
+system("sudo ./config -fPIC shared zlib");
+system("sudo make");
 system("sudo make install");
 
 //build curl-7.74.0
@@ -205,8 +205,8 @@ if(sys.os != "macos"){
 	println("-- Entered the directory: {buildpath}");
 	println("-- Building for : {buildname}");
 	io.chdir(buildpath);
-	system("./configure --enable-static --with-ssl --with-zlib --enable-ipv6");
-	system("make");
+	system("sudo ./configure --enable-static --with-ssl --with-zlib --enable-ipv6");
+	system("sudo make");
 	system("sudo make install");
 }
 
@@ -217,8 +217,8 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("cmake .");
-system("make");
+system("sudo cmake .");
+system("sudo make");
 system("sudo make install");
 
 //build libuuid-1.0.3
@@ -227,8 +227,8 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("./configure");
-system("make");
+system("sudo ./configure");
+system("sudo make");
 system("sudo make install");
 
 //build re2-2020-11-01
@@ -237,7 +237,7 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("make");
+system("sudo make");
 system("sudo make install");
 
 //build libuv-1.40.0
@@ -246,8 +246,8 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("cmake .");
-system("make");
+system("sudo cmake .");
+system("sudo make");
 system("sudo make install");
 
 //build mariadb-connector-c-3.1.11-src
@@ -256,8 +256,8 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("cmake .");
-system("make");
+system("sudo cmake .");
+system("sudo make");
 system("sudo make install");
 
 //build libpng-1.6.40
@@ -266,8 +266,8 @@ var buildpath = "{depspath}/{buildname}";
 println("-- Entered the directory: {buildpath}");
 println("-- Building for : {buildname}");
 io.chdir(buildpath);
-system("./configure");
-system("make");
+system("sudo ./configure");
+system("sudo make");
 system("sudo make install");
 
 println("-- Leaved the directory: {depspath}");
@@ -283,8 +283,8 @@ libspath.pop_back();
 println("-- Entered the directory: {libspath}");
 io.chdir(libspath);
 
-system("cmake .");
-system("make");
+system("sudo cmake .");
+system("sudo make");
 
 println("-- Leaved the directory: {libspath}");
 io.chdir(io.getrealpath());

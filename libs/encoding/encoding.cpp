@@ -53,6 +53,8 @@ bool cpps_check_utf8(char* str, size_t length)
 }
 #define CPPS_ENCODING_UTF8 0
 #define CPPS_ENCODING_GBK 1
+#define CPPS_ENCODING_UTF16 2
+#define CPPS_ENCODING_UTF32 3
 
 std::string  encode(cpps::cpps_value src, cpps::usint8 encoding)
 {
@@ -85,6 +87,13 @@ std::string  encode(cpps::cpps_value src, cpps::usint8 encoding)
 		utf8_to_gbk(s->c_str(), (unsigned int)s->size(), &gbkbuffer, (unsigned int*)&gbkbuffer_len);
 		ret = gbkbuffer;
 		free(gbkbuffer);
+
+	}
+	else if (encoding == CPPS_ENCODING_UTF16) {
+
+	
+	}
+	else if (encoding == CPPS_ENCODING_UTF32) {
 
 	}
 	return ret;
@@ -352,7 +361,9 @@ cpps_export_void cpps_attach(cpps::C* c)
 		def("codepoint_to_utf8", codepoint_to_utf8),
 		def("unescape", utf8_unescape),
 		defvar(c,"UTF8", CPPS_ENCODING_UTF8),
-		defvar(c,"GBK", CPPS_ENCODING_GBK)
+		defvar(c,"GBK", CPPS_ENCODING_GBK),
+		defvar(c,"UTF16", CPPS_ENCODING_UTF16),
+		defvar(c,"UTF32", CPPS_ENCODING_UTF32)
 	];
 
 

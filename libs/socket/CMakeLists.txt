@@ -25,8 +25,8 @@ IF(WINDOWS)
 
 
 ELSEIF(MACOS)
-	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/include /usr/local/opt/libuv/include )
-	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/lib /usr/local/lib)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/include /usr/local/opt/libuv/include  /opt/homebrew/opt/openssl/include )
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/lib /opt/homebrew/opt/openssl/lib)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
 	
 	
