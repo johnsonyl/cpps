@@ -21,8 +21,8 @@ IF(WINDOWS)
 
 	
 ELSEIF(MACOS)
-	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/opt/mysql-client/include /opt/homebrew/opt/mysql-client/include )
-	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/opt/mysql-client/lib /opt/homebrew/opt/mysql-client/lib)
+	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include /usr/include /usr/local/opt/mysql-client/include /opt/homebrew/opt/mysql-client/include /opt/homebrew/opt/openssl/include )
+	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib  /lib /usr/local/opt/mysql-client/lib /opt/homebrew/opt/mysql-client/lib  /opt/homebrew/opt/openssl/lib)
 	SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME}) 
 	
 	
