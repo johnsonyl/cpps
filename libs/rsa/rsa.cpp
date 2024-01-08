@@ -282,7 +282,7 @@ std::string rsa_pri_to_pkcs1(std::string priKey)
 	if (evp_pkey == NULL) {
 		return "";
 	}
-	RSA* rsa = EVP_PKEY_get0_RSA(evp_pkey);
+	RSA* rsa = (RSA*)EVP_PKEY_get0_RSA(evp_pkey);
 	if (!rsa)
 	{
 #ifdef _DEBUG
@@ -366,7 +366,7 @@ std::string rsa_pub_to_pkcs1(std::string pubKey)
 	if (evp_pkey == NULL) {
 		return "";
 	}
-	RSA* rsa = EVP_PKEY_get0_RSA(evp_pkey);
+	RSA* rsa = (RSA*)EVP_PKEY_get0_RSA(evp_pkey);
 	if (!rsa)
 	{
 #ifdef _DEBUG
