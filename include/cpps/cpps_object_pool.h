@@ -43,7 +43,7 @@ namespace cpps
 		void	free(T* v)
 		{
 			_lock.lock();
-			_object_list.insert(_object_list.end(), v);
+			_object_list.emplace_back(v);
 			_lock.unlock();
 		}
 		void	freeall()

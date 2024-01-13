@@ -783,7 +783,8 @@ namespace cpps
 		else if(serializer_type == 2){
 			cpps_map* m;
 			newclass<cpps_map>(c, &m,&ret);
-			for (auto var : classvar->varList)
+			if(classvar->hasVar)
+				for (auto var : *classvar->varList)
 					m->insert(cpps_value(c,var.first),var.second->getval());
 		}
 		return ret;

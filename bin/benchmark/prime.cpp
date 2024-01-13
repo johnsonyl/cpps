@@ -3,8 +3,7 @@
 var t1 = time.gettickcount()
 
 var _isprime(var n){
-    var nn = n - 1
-    for (var i : xrange(2,nn))
+    for (var i : xrange(2,n - 1))
         if (n % i == 0)
             return false
     return true

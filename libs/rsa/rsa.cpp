@@ -5,6 +5,7 @@
 #include <fstream>
 
 
+
 #include <openssl/err.h>
 #include <openssl/ossl_typ.h>
 #include <openssl/engine.h>
@@ -17,6 +18,21 @@
 #include <openssl/rand.h>
 #include <openssl/conf.h>
 #include <openssl/conf_api.h>
+
+#define ALLOW_SSL_ERROR_PRINTF (0)
+#if ALLOW_SSL_ERROR_PRINTF
+SSL_load_error_strings();
+#endif
+
+
+#if ALLOW_SSL_ERROR_PRINTF
+ERR_print_errors_fp(stderr);
+#endif
+
+
+#if ALLOW_SSL_ERROR_PRINTF
+ERR_free_strings();
+#endif
 
 using namespace cpps;
 using namespace std;

@@ -48,9 +48,6 @@ namespace cpps
 
 	void cpps_cppsfunction::callfunction(C* c, cpps_value* ret, cpps_domain* prevdomain, cpps_std_vector* o, cpps_stack* stack, std::vector< cpps_regvar*>* lambdastacklist)
 	{
-		//node *_params = CPPSNEW(node)(params->filename, params->line);
-		//_params->clone(params); //克隆出所有列表
-
 		node* _context = CPPSNEW(node)(context->filename, context->line);
 		_context->clone(context); //克隆出所有列表
 
@@ -66,19 +63,19 @@ namespace cpps
 #endif // CPPS_JIT_COMPILER
 
 		//todo 先delete指针
-		cpps_domain* funcdomain = c->domain_alloc();
-		funcdomain->init(domain, cpps_domain_type_exec);
-		funcdomain->setexecdomain(prevdomain);
-		funcdomain->resize((usint16)varcount);
+		cpps_domain funcdomain;// c->domain_alloc();
+		funcdomain.init(domain, cpps_domain_type_exec);
+		funcdomain.setexecdomain(prevdomain);
+		funcdomain.resize((usint16)varcount);
 		if (lambdastacklist) {
-			assert(funcdomain->stacklist->size() >= lambdastacklist->size());
-			if (funcdomain->stacklist->size() >= lambdastacklist->size()) {
+			assert(funcdomain.stacklist->size() >= lambdastacklist->size());
+			if (funcdomain.stacklist->size() >= lambdastacklist->size()) {
 				for (size_t i = 0; i < lambdastacklist->size(); i++) {
 					cpps_regvar* regvar = (*(lambdastacklist))[i];
-					(*(funcdomain->stacklist))[i] = (*(lambdastacklist))[i];
+					(*(funcdomain.stacklist))[i] = (*(lambdastacklist))[i];
 					if (regvar)
 					{
-						funcdomain->regvar(c, regvar);
+						funcdomain.regvar(c, regvar);
 					}
 				}
 			}
@@ -131,13 +128,13 @@ namespace cpps
 					}
 				}
 				
-				funcdomain->regvar(c, v);
+				funcdomain.regvar(c, v);
 				if (varname->offsettype == CPPS_OFFSET_TYPE_SELF)
 				{
 					v->offset = varname->offset;
 					v->offsettype = varname->offsettype;
 					v->closeure = varname->closure;
-					funcdomain->regidxvar(varname->offset, v);
+					funcdomain.regidxvar(varname->offset, v);
 				}
 			}
 		}
@@ -150,27 +147,27 @@ namespace cpps
 
 #else
 		if (quatoreturn) {
-			funcdomain->funcRet.tt = CPPS_TREF;
+			funcdomain.funcRet.tt = CPPS_TREF;
 		}
 
 		if (_context->l.size() == 1 && _context->l[0]->type == CPPS_OEXPRESSION )
 		{
 			cpps_domain* leftdomain = NULL;
-			cpps_calculate_expression(c, funcdomain, funcdomain, _context->l[0]->l[0], leftdomain, funcdomain->funcRet);
-			if(funcdomain->funcRet.isref())
-				funcdomain->funcRet = funcdomain->funcRet.real();
+			cpps_calculate_expression(c, &funcdomain, &funcdomain, _context->l[0]->l[0], leftdomain, funcdomain.funcRet);
+			if(funcdomain.funcRet.isref())
+				funcdomain.funcRet = funcdomain.funcRet.real();
 		}
 		else
-			cpps_step_all(c, CPPS_MUNITRET, funcdomain, funcdomain, _context, false);
+			cpps_step_all(c, CPPS_MUNITRET, &funcdomain, &funcdomain, _context, false);
 
 		if (ret) {
-			*ret = funcdomain->funcRet;//return的值反馈回去
+			*ret = funcdomain.funcRet;//return的值反馈回去
 		}
 #endif
 
 			/*是否闭包*/
-		funcdomain->destory(c);
-		c->domain_free(funcdomain);
+		funcdomain.destory(c);
+		//c->domain_free(funcdomain);
 
 
 

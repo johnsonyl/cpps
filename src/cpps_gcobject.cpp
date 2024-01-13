@@ -6,7 +6,7 @@ namespace cpps
 	
 	cpps_gcobject::cpps_gcobject()
 	{
-		gclevel = 0;
+		//gclevel = 0;
 		gc_usecount = 0;
 	}
 
@@ -15,15 +15,15 @@ namespace cpps
 
 	}
 
-	void cpps_gcobject::setgcLevel(char l)
-	{
-		gclevel = l;
-	}
+	//void cpps_gcobject::setgcLevel(char l)
+	//{
+	//	gclevel = l;
+	//}
 
-	char cpps_gcobject::getgcLevel()
-	{
-		return gclevel;
-	}
+	//char cpps_gcobject::getgcLevel()
+	//{
+	//	return gclevel;
+	//}
 
 	void cpps_gcobject::incruse()
 	{

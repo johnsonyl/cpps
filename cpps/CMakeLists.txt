@@ -64,7 +64,7 @@ if(CPPS_ENABLE_TCMALLOC STREQUAL "ON" )
 		target_link_libraries(${PROJECT_NAME} libtcmalloc_minimal)
 		target_link_options(${PROJECT_NAME} PRIVATE /INCLUDE:__tcmalloc)
 	else()
-		target_link_libraries(${PROJECT_NAME} -ltcmalloc)
+		target_link_libraries(${PROJECT_NAME} -ltcmalloc_minimal)
 	endif()
 endif()
 
@@ -76,9 +76,6 @@ elseif(LINUX)
 	  COMMAND ln -s ${PROJECT_SOURCE_DIR}/../bin/cpps /usr/local/bin/cpps
 	 )
 elseif(MACOS)
-	add_custom_command(TARGET cpps
-	  POST_BUILD 
-	  COMMAND sudo rm -rf /usr/bin/cpps
-	  COMMAND sudo ln -s ${PROJECT_SOURCE_DIR}/../bin/cpps /usr/bin/cpps
-	 )
+	install(TARGETS cpps
+    ARCHIVE DESTINATION bin)
 endif()

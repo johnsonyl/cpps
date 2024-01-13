@@ -37,8 +37,10 @@ namespace cpps
 	}
 	void cpps_gc_check_gen_value(C*c, const cpps_value &v, bool checkchild, CLASSVARSET *oldgen, CLASSVARSET *newgen, size_t &size, CLASSVARSET &isCheck);
 	void cpps_gc_check_child(const cpps_value &v, C* c, bool checkchild, CLASSVARSET * oldgen, CLASSVARSET * newgen, size_t &size, CLASSVARSET &isCheck)
-	{
-		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList.begin(); it != v.value.domain->varList.end(); ++it)
+	{	
+		if (!v.value.domain->hasVar) return;
+
+		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList->begin(); it != v.value.domain->varList->end(); ++it)
 		{
 			cpps_regvar *var = it->second;
 			if (var->getval().tt == CPPS_TCLASSVAR|| var->getval().tt == CPPS_TSTRING)
@@ -71,7 +73,7 @@ namespace cpps
 					oldgen->erase(it);
 					newgen->insert(pClsVar);
 					size += pClsVar->size();
-					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+					//pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 				}
 
 			}
@@ -95,7 +97,7 @@ namespace cpps
 					oldgen->erase(it);
 					newgen->insert(pClsVar);
 					size += pClsVar->size();
-					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+					//pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 				}
 			}
 			else if (v.tt == CPPS_TCLASSVAR)
@@ -107,7 +109,7 @@ namespace cpps
 					oldgen->erase(it);
 					newgen->insert(pClsVar);
 					size += pClsVar->size();
-					pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+					//pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 					
 				}
 				if (checkchild )
@@ -125,7 +127,7 @@ namespace cpps
 				oldgen->erase(it);
 				newgen->insert(pClsVar);
 				size += pClsVar->size();
-				pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
+				//pClsVar->setgcLevel(1);//设置成老生代 哪怕也是老生代了 也设置一下
 			}
 		}
 	}

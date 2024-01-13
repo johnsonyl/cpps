@@ -9,7 +9,7 @@ namespace cpps
 
 	void C::push_stack(cpps_stack* stack)
 	{
-		_callstack->push_back(stack);
+		_callstack->emplace_back(stack);
 	}
 
 	void C::pop_stack()
@@ -34,25 +34,7 @@ namespace cpps
 		return ret;
 	}
 
-	cpps::cpps_domain* C::domain_alloc()
-	{
-		return domain_pool.alloc();
-	}
 
-	void C::domain_free(cpps::cpps_domain* domain)
-	{
-		domain_pool.free(domain);
-	}
-
-	cpps::cpps_stack* C::stack_alloc()
-	{
-		return stack_pool.alloc();
-	}
-
-	void C::stack_free(cpps::cpps_stack* stack)
-	{
-		stack_pool.free(stack);
-	}
 
 	void C::setmoduledata(std::string modulename, cpps_module_data* data)
 	{

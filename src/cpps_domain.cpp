@@ -13,6 +13,7 @@ namespace cpps
 		parent[1] = NULL;
 		funcRet.tt = CPPS_TNIL;
 		stacklist = NULL;
+		varList = NULL;
 		offset = -1;
 		offsettype = -1;
 		parentclassoffset = NULL;
@@ -31,6 +32,9 @@ namespace cpps
 		if (parentclassoffset) {
 			CPPSDELETE( parentclassoffset);
 		}
+		if (varList) {
+			CPPSDELETE(varList);
+		}
 	}
 
 	cpps::cpps_cppsclassvar* cpps_domain::create(C* c, bool alloc /*= true*/)
@@ -44,13 +48,14 @@ namespace cpps
 		domainType = type;
 		isbreak = cpps_step_check_none;
 		parent[1] = NULL;
-		domainname = name;
+		strcpy(domainname, name.c_str());
 		funcRet.tt = CPPS_TNIL;
 		hasVar = false;
 		stacklist = NULL;
 		offset = -1;
 		offsettype = -1;
 		parentclassoffset = NULL;
+		varList = NULL;
 	}
 
 	void cpps_domain::init(cpps_domain* p, char type)
@@ -64,6 +69,7 @@ namespace cpps
 		stacklist = NULL;
 		offset = -1;
 		offsettype = -1;
+		varList = NULL;
 		parentclassoffset = NULL;
 	}
 
@@ -74,6 +80,8 @@ namespace cpps
 
 	void cpps_domain::regfunc(cpps_reg* f,cpps::C* c)
 	{
+		if (varList == NULL) varList = CPPSNEW(VARLIST)();
+
 		hasVar = true;
 		do
 		{
@@ -86,7 +94,7 @@ namespace cpps
 					var->setvarname(f->varname);
 					var->setconst(true);
 
-					varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(var->varName, var));
+					varList->insert(VARLIST::value_type(var->varName, var));
 				}
 			}
 			if (f->type == cpps_def_regfunction)
@@ -125,21 +133,24 @@ namespace cpps
 				cpps_regparentclass* _regparentclass = (cpps_regparentclass*)f;
 				cpps_cppsclass* _parent = _regparentclass->__cppsclass;
 
-				for (auto _var : _parent->varList) {
-					auto __var = _var.second;
+				if (_parent->varList != NULL) {
+					for (auto _var : *_parent->varList) {
+						auto __var = _var.second;
 
-					leftdomain = NULL;
-					auto __self_var = getvar(__var->getvarname(), leftdomain, true, false);
-					if (!__self_var) {
-						__self_var = CPPSNEW (cpps_regvar)();
-						__self_var->setvarname(__var->getvarname());
+						leftdomain = NULL;
+						auto __self_var = getvar(__var->getvarname(), leftdomain, true, false);
+						if (!__self_var) {
+							__self_var = CPPSNEW(cpps_regvar)();
+							__self_var->setvarname(__var->getvarname());
+							__self_var->setsource(false);
+							__self_var->setconst(true);
+							varList->insert(VARLIST::value_type(__var->getvarname(), __self_var));
+						}
 						__self_var->setsource(false);
-						__self_var->setconst(true);
-						varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(__var->getvarname(), __self_var));
+						__self_var->setval(__var->getval());
 					}
-					__self_var->setsource(false);
-					__self_var->setval(__var->getval());
 				}
+				
 				cpps_cppsclass* cppsclass = (cpps_cppsclass*)this;
 
 				//注册父类的operator.
@@ -171,10 +182,11 @@ namespace cpps
 
 	cpps::cpps_regvar* cpps_domain::getvar(std::string s, cpps_domain*& leftdomain, bool findparent /*= true*/, bool filterroot)
 	{
+
 		cpps_regvar* ret = NULL;
 		if (hasVar) {
-			phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.find(s);
-			if (it != varList.end())
+			VARLIST::iterator it = varList->find(s);
+			if (it != varList->end())
 			{
 				ret = it->second;
 				return ret;
@@ -211,9 +223,10 @@ namespace cpps
 
 	void cpps_domain::regvar(C* c, cpps_regvar* v)
 	{
+		if (varList == NULL) varList = CPPSNEW(VARLIST)();
 		hasVar = true;
 		lock();
-		varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(v->varName, v));
+		varList->insert(VARLIST::value_type(v->varName, v));
 		unlock();
 		if (c != NULL && this != c->_G) cpps_gc_add_barrier(c, v);
 	}
@@ -221,7 +234,7 @@ namespace cpps
 	void cpps_domain::unregvar(C* c, cpps_regvar* v)
 	{
 		lock();
-		varList.erase(v->varName);
+		varList->erase(v->varName);
 		unlock();
 		cpps_gc_remove_barrier(c, v);
 	}
@@ -232,13 +245,16 @@ namespace cpps
 	}
 	void cpps_domain::cleanup()
 	{
-		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
-		{
-			cpps_regvar* v = it->second;
-			v->release();
+		if (hasVar) {
+			for (VARLIST::iterator it = varList->begin(); it != varList->end(); ++it)
+			{
+				cpps_regvar* v = it->second;
+				v->release();
+			}
+			hasVar = false;
+			varList->clear();
 		}
-		varList.clear();
-		hasVar = false;
+		
 		if (stacklist != NULL)
 		{
 			stacklist->clear();
@@ -248,8 +264,8 @@ namespace cpps
 	}
 	void cpps_domain::clear_var(C* c, bool isclose)
 	{
-		if (hasVar || isclose) {
-			for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = varList.begin(); it != varList.end(); ++it)
+		if (hasVar || (isclose && varList)) {
+			for (VARLIST::iterator it = varList->begin(); it != varList->end(); ++it)
 			{
 				cpps_regvar* v = it->second;
 				if ((!v->closeure || v->closeureusecount <= 0) || isclose) { /*闭包不删除,但是必须有人使用*/
@@ -284,7 +300,7 @@ namespace cpps
 					v->release();
 				}
 			}
-			varList.clear();
+			varList->clear();
 			hasVar = false;
 		}
 		if (stacklist != NULL)
@@ -393,18 +409,23 @@ namespace cpps
 				(* stacklist)[i] = (*clone_domain->stacklist)[i];
 		}
 		clone_domain->lock_shared();
-		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = clone_domain->varList.begin(); it != clone_domain->varList.end(); ++it)
-		{
-			cpps_regvar* v = it->second;
-			const std::string &name = it->first;
-			if (name != "_G") {
-				cpps_regvar* v2 = CPPSNEW(cpps_regvar)();
-				v2->ref(v);
-				if (v2->offset != -1) regidxvar(v2->offset, v2);
-				varList.insert(phmap::flat_hash_map<std::string, cpps_regvar*>::value_type(name, v2));
-				hasVar = true;
+		if (clone_domain->varList != NULL) {
+			if (varList == NULL) varList = CPPSNEW(VARLIST)();
+
+			for (VARLIST::iterator it = clone_domain->varList->begin(); it != clone_domain->varList->end(); ++it)
+			{
+				cpps_regvar* v = it->second;
+				const std::string& name = it->first;
+				if (name != "_G") {
+					cpps_regvar* v2 = CPPSNEW(cpps_regvar)();
+					v2->ref(v);
+					if (v2->offset != -1) regidxvar(v2->offset, v2);
+					varList->insert(VARLIST::value_type(name, v2));
+					hasVar = true;
+				}
 			}
 		}
+		
 		clone_domain->unlock_shared();
 	}
 }

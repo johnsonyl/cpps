@@ -579,43 +579,28 @@ namespace cpps
 
 	void cpps_value::decruse()
 	{
-		if (tt == CPPS_TINTEGER) return;
-		if (tt == CPPS_TUINTEGER) return;
-		if (tt == CPPS_TNIL) return;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->decruse();
 	}
 	void cpps_value::decruse() const
 	{
-		if (tt == CPPS_TINTEGER) return;
-		if (tt == CPPS_TUINTEGER) return;
-		if (tt == CPPS_TNIL) return;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->decruse();
 	}
 
 	 void cpps_value::incruse()
 	{
-		 if (tt == CPPS_TINTEGER) return;
-		 if (tt == CPPS_TUINTEGER) return;
-		 if (tt == CPPS_TNIL) return;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			value.domain->incruse();
 	 }
 	 void cpps_value::incruse()const
 	 {
-		 if (tt == CPPS_TINTEGER) return;
-		 if (tt == CPPS_TUINTEGER) return;
-		 if (tt == CPPS_TNIL) return;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			 value.domain->incruse();
 	 }
 
 	bool cpps_value::isdomain() const
 	{
-		if (tt == CPPS_TINTEGER) return false;
-		if (tt == CPPS_TUINTEGER) return false;
-		if (tt == CPPS_TNIL) return false;
 		return tt == CPPS_TDOMAIN || tt == CPPS_TCLASS || tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TTUPLE;
 	}
 

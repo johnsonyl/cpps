@@ -66,10 +66,7 @@ namespace cpps
 		std::vector<cpps_stack*>*													getcallstack();
 		void																		setcallstack(std::vector<cpps_stack*>* ret);
 		phmap::flat_hash_set<cpps_regvar*>*											getbarrierlist();
-		cpps::cpps_domain*															domain_alloc();
-		void																		domain_free(cpps::cpps_domain* domain);
-		cpps::cpps_stack*															stack_alloc();
-		void																		stack_free(cpps::cpps_stack* stack);
+		
 		void																		setmoduledata(std::string modulename, cpps_module_data* data);
 		cpps_module_data*															getmoduledata(std::string modulename);
 		void																		clone(C* clone_c);

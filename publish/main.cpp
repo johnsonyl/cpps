@@ -5,7 +5,7 @@ if(args.size() == 3)
 {
 	var arch = args[2];
 	var cppspath = io.normpath("{io.getrealpath()}../");
-	var publishpath = io.normpath("{io.getcwd()}/windows/{arch}/");
+	var publishpath = io.normpath("{io.getcwd()}/{sys.os}/{arch}/");
 
 	//bin
 
@@ -17,6 +17,11 @@ if(args.size() == 3)
 	io.mkdir("{publishpath}bin");
 
 	var binfiles = ["cpps.exe","cpps_interface.dll","libmariadb.dll","uv.dll","libcrypto-1_1-x64.dll","libcurl.dll","libmysql.dll","libssl-1_1-x64.dll","msvcp140.dll","vcruntime140.dll","vcruntime140_1.dll","zlib1.dll"];
+	if(sys.os == "linux")
+		binfiles = ["cpps","cpps_interface.so"];
+	else if(sys.os == "macos")
+		binfiles = ["cpps","cpps_interface.dylib"];
+		
 	foreach(var filename: binfiles)
 	{
 		var sourcepath = io.normpath("{cppspath}bin/{filename}");
