@@ -2325,8 +2325,16 @@ namespace cpps
 	{
 		ret.tt = CPPS_TBOOLEAN;
 		ret.value.b = false;
-		if (a.tt == b.tt) {
+		if (a.tt == CPPS_TINTEGER && CPPS_TINTEGER ==  b.tt) {
 			ret.value.b = a.value.integer == b.value.integer;
+			return;
+		}
+		if (a.tt == CPPS_TUINTEGER && CPPS_TUINTEGER == b.tt) {
+			ret.value.b = a.value.uinteger == b.value.uinteger;
+			return;
+		}
+		if (a.tt == CPPS_TNUMBER && CPPS_TNUMBER == b.tt) {
+			ret.value.b = a.value.number == b.value.number;
 			return;
 		}
 		
