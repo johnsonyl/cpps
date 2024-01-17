@@ -39,7 +39,14 @@ namespace cpps
 		virtual void										destory(C* c, bool isclose = false);
 		void												regidxvar(int32 offset, cpps_regvar* v);
 		void												removeidxvar(int32 offset);
-		cpps_regvar* 										getregidxvar(int32 offset);
+		inline cpps_regvar*									getregidxvar(int32 offset)
+		{
+			cpps_regvar* it = NULL;
+			if (stacklist != NULL) {
+				 it = (* stacklist)[offset];
+			}
+			return it;
+		}
 		int32												getidxoffset(cpps_domain* parentclass);
 		void												setidxoffset(cpps_domain* parentclass, int32 off);
 		void												resize(usint16 size);

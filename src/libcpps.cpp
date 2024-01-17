@@ -4710,7 +4710,7 @@ namespace cpps {
 			}
 		}
 	}
-	 
+	inline
 	void cpps_calculate_expression_quote_real(cpps_domain *left,cpps_value& src, cpps_value& tar, bool isconst)
 	{
 		if (src.tt == CPPS_TQUOTECLASSVAR) {
@@ -4718,14 +4718,22 @@ namespace cpps {
 			tar = f->getvalue(left);
 		}
 		else if (src.tt == CPPS_TREF) {
-			//cpps_value tmp = *src.value.value;
-			//tar = cpps_value(isconst ? (tmp) : (&*src.value.value));
-			tar = isconst ? *src.value.value : cpps_value(&*src.value.value);
+			if (isconst) {
+				tar = *src.value.value;
+			}
+			else {
+				tar.tt = CPPS_TREF;
+				tar.value.value = src.value.value;
+			}
 		}
 		else {
-			//cpps_value tmp = src;
-			//tar = cpps_value(isconst ? (tmp) : (&src));
-			tar = isconst ? src : cpps_value(&src);
+			if (isconst) {
+				tar = src;
+			}
+			else {
+				tar.tt = CPPS_TREF;
+				tar.value.value = &src;
+			}
 		}
 	}
 	inline
@@ -4737,7 +4745,7 @@ namespace cpps {
 
 		return cpps_calculate_expression_offset_getclassvar(root->parent[1]);
 	}
-	
+	inline 
 	void cpps_calculate_expression_quoteoffset(node* d, C* c, cpps_value& ret, cpps_domain* root, cpps_domain*& leftdomain) {
 		/*if (d->value.val != NULL)
 		{
@@ -4755,7 +4763,15 @@ namespace cpps {
 		else if (d->offsettype == CPPS_OFFSET_TYPE_SELF) {
 			cpps_regvar* var = root->getregidxvar(d->offset);
 			if (var) {
-				cpps_calculate_expression_quote_real( root, var->getval(), ret, var->isconst());
+				if (var->isconst()) {
+					ret = var->getval().isref() ? var->getval().real() : var->getval();
+				}
+				else {
+					ret.tt = CPPS_TREF;
+					ret.value.value = var->getval().isref() ? &var->getval().real() : &var->getval();
+				}
+
+				//cpps_calculate_expression_quote_real( root, var->getval(), ret, var->isconst());
 			}
 		}
 		else if (d->offsettype == CPPS_OFFSET_TYPE_LEFTCLASS) {
@@ -4779,16 +4795,17 @@ namespace cpps {
 				cpps_calculate_expression_quote_real( _classvarroot->parent[1],var->getval(), ret, var->isconst());
 			}
 		}
-
-		if (ret.isref()) {
+		//这种优化真的不正确。
+		/*if (ret.isref()) {
 			
-			if (d->value.val == &ret.real()){
+			if (d->value.val == &ret.real() && d->size >= 5){
 				d->type = CPPS_OVARPTR;
 			}
 			else {
 				d->value.val = &ret.real();
+				d->size++;
 			}
-		}
+		}*/
 	}
 	void cpps_calculate_expression_dofunction(C* c, cpps_domain* domain, cpps_domain* root, node* d, cpps_domain*& leftdomain, cpps_value& ret) {
 		cpps_value var;
@@ -5457,17 +5474,18 @@ namespace cpps {
 			ret.value.value = d->value.val;
 			break;
 		}
-		case CPPS_OOFFSET:
-		{
-			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
-			break;
-		}
 		case CPPS_FUNCNAME: {
 			cpps_symbol_handle(c, domain, root, d, ret);
 			break;
 		}
+		case CPPS_OOFFSET:
 		case CPPS_QUOTEOFFSET: {
-			cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
+			if (d->offsettype == CPPS_OFFSET_TYPE_SELF) {
+				cpps_regvar* var = root->getregidxvar(d->offset);
+				if (var)  if (var->isconst()) ret = var->getval().isref() ? var->getval().real() : var->getval(); else {ret.tt = CPPS_TREF;ret.value.value = var->getval().isref() ? &var->getval().real() : &var->getval();}
+			}
+			else 
+				cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);
 			break;
 		}
 		case CPPS_VARNAME: {

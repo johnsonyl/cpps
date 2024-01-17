@@ -13,7 +13,7 @@ namespace cpps {
 		varsize = -1;
 		offset = -1;
 		offsettype = -1;
-		size = -1;
+		size = 0;
 		varlist = NULL;
 		value.uinteger = 0;
 		needdelete = false;
@@ -32,7 +32,7 @@ namespace cpps {
 		varsize = -1;
 		offset = -1;
 		offsettype = -1;
-		size = -1;
+		size = 0;
 		varlist = NULL;
 		value.uinteger = 0;
 		closure = false;
@@ -52,7 +52,7 @@ namespace cpps {
 		varsize = -1;
 		offset = -1;
 		offsettype = -1;
-		size = -1;
+		size = 0;
 		varlist = NULL;
 		value.uinteger = 0;
 		closure = false;
@@ -72,7 +72,7 @@ namespace cpps {
 		varsize = -1;
 		offset = -1;
 		offsettype = -1;
-		size = -1;
+		size = 0;
 		varlist = NULL;
 		value.uinteger = 0;
 		closure = false;

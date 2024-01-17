@@ -343,15 +343,6 @@ namespace cpps
 		(*stacklist)[offset] = NULL;
 	}
 
-	cpps::cpps_regvar* cpps_domain::getregidxvar(int32 offset)
-	{
-		if (stacklist == NULL){
-			return NULL;
-		}
-		auto it = stacklist->at(offset);
-		return it;
-	}
-
 	cpps::int32 cpps_domain::getidxoffset(cpps_domain* parentclass)
 	{
 		if (this == parentclass) return 0;
