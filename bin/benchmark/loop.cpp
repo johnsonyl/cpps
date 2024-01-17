@@ -7,5 +7,5 @@ var loop(var n){
 	}
 	return count;
 }
-println(loop(10 * 10000000),tick()-t);
+println(loop(100000000),tick()-t);
 

@@ -7,8 +7,8 @@ var loop(var n){
     var last = "";
 
     for (var i : xrange(2, n)){
-        ret = last.."ret"..i;
-        last = "last"..i;
+        ret = "{last}ret{i}";
+        last = "last{i}";	
 	}
     return ret
 }
