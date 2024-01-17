@@ -17,6 +17,9 @@ namespace cpps
 	std::string cpps_io_getfilepath(std::string str);
 	std::string cpps_io_readfile(std::string filepath);
 	std::string cpps_getcwd();
+
+	void				cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
+	void				cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
 	bool cpps_base_isdebug() {
 #ifdef _DEBUG
 		return true;

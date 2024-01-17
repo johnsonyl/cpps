@@ -13,7 +13,7 @@ namespace cpps {
 	inline void cpps_calculate_expression(C* c, cpps_domain* domain, cpps_domain* root, node* o, cpps_domain*& leftdomain, cpps_value& ret);
 	inline void cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
 	cpps_value cpps_step_callfunction(C* c, cpps_domain* domain, cpps_domain* root, cpps_value func, node* d, cpps_domain* leftdomain);
-	inline void cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
+	void cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
 	void cpps_parse_dofunction(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer);
 	void cpps_parse_expression(C* c, cpps_node_domain* domain, node* o, node* root, cppsbuffer& buffer);
 	int32 cpps_parse_expression_step(C* c, cpps_node_domain* domain, node* param, node*& lastOpNode, node* root, cppsbuffer& buffer);
@@ -3179,7 +3179,7 @@ namespace cpps {
 		return(0);
 	}
 
-	inline void  cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o,bool releasenode) {
+	void  cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o,bool releasenode) {
 		/*有可能里面的让我退出 */
 		const size_t count = o->l.size();
 		if (count == 0) return;
@@ -5584,7 +5584,14 @@ namespace cpps {
 		else if (d->type == CPPS_OOFFSET || d->type == CPPS_QUOTEOFFSET) {
 			if (d->offsettype == CPPS_OFFSET_TYPE_SELF) {
 				cpps_regvar* var = root->getregidxvar(d->offset);
-				if (var)  if (var->isconst()) ret = var->getval().isref() ? var->getval().real() : var->getval(); else { ret.tt = CPPS_TREF; ret.value.value = var->getval().isref() ? &var->getval().real() : &var->getval(); }
+				if (var) {
+					if (var->isconst())
+						ret = var->getval().isref() ? var->getval().real() : var->getval();
+					else {
+						ret.tt = CPPS_TREF;
+						ret.value.value = var->getval().isref() ? &var->getval().real() : &var->getval();
+					}
+				}
 			}
 			else
 				cpps_calculate_expression_quoteoffset(d, c, ret, root, leftdomain);

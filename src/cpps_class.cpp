@@ -22,11 +22,6 @@ namespace cpps
 		}
 	}
 
-	inline cpps_cppsclassvar* cpps_cppsclass::create(C* c, bool alloc)
-	{
-		return (CPPSNEW(cpps_cppsclassvar)(getclassname_c_str(), this, cpps_domain_type_classvar, alloc));
-	}
-
 	bool cpps_cppsclass::iscppsclass()
 	{
 		return true;

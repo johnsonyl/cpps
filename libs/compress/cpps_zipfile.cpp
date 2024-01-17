@@ -217,7 +217,7 @@ namespace cpps
 			std::string* s = cpps_get_string(member);
 			info = getinfo(*s);
 		}
-		else if (member.isdomain() && member.value.domain->domainname == "zipfile_info") {
+		else if (member.isdomain() && member.is_kindof<cpps_zipfile_info>()) {
 			info = cpps_converter< cpps_zipfile_info*>::apply(member);
 		}
 		if (info == NULL) return false;
@@ -243,7 +243,7 @@ namespace cpps
 		}
 		std::string spath = path.tt == CPPS_TSTRING ? cpps_to_string(path) : "";
 		cpps_vector* vec = NULL;
-		if (members.isdomain() && members.value.domain->domainname == "vector") {
+		if (members.isdomain() && members.is_kindof<cpps_vector>()) {
 			vec = cpps_to_cpps_vector(members);
 		}
 
@@ -304,7 +304,7 @@ namespace cpps
 			std::string* s = cpps_get_string(member);
 			info = getinfo(*s);
 		}
-		else if (member.isdomain() && member.value.domain->domainname == "zipfile_info") {
+		else if (member.isdomain() && member.is_kindof<cpps_zipfile_info>()) {
 			info = cpps_converter< cpps_zipfile_info*>::apply(member);
 		}
 		if (info == NULL) return false;

@@ -23,7 +23,10 @@ namespace cpps
 	{
 		cpps_cppsclass(std::string _classname, node *_o, cpps_domain* p, char type);
 		virtual ~cpps_cppsclass();
-		inline virtual cpps_cppsclassvar*	create(C* c, bool alloc = true);
+		inline virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
+		{
+			return (CPPSNEW(cpps_cppsclassvar)(getclassname_c_str(), this, cpps_domain_type_classvar, alloc));
+		}
 		virtual bool						iscppsclass();
 		std::string							getclassname();
 		const char*							getclassname_c_str();

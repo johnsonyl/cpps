@@ -3,6 +3,8 @@
 namespace cpps
 {
 
+	void				cpps_step(C* c, cpps_domain* domain, cpps_domain* root, node* d);
+	void				cpps_step_all(C* c, int32 retType, cpps_domain* domain, cpps_domain* root, node* o, bool);
 	object dofunction(C *c, object func)
 	{
 		cpps_value ret;

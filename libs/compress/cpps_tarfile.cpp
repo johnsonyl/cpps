@@ -168,7 +168,7 @@ namespace cpps {
 		bool bnumeric_owner = numeric_owner.tt == CPPS_TBOOLEAN ? numeric_owner.value.b : false;
 		std::string spath = path.tt == CPPS_TSTRING ? cpps_to_string(path) : "";
 		cpps_vector* vec = NULL;
-		if (members.isdomain() && members.value.domain->domainname == "vector") {
+		if (members.isdomain() && members.is_kindof<cpps_vector>()) {
 			vec = cpps_to_cpps_vector(members);
 		}
 		if (vec) {
@@ -214,7 +214,7 @@ namespace cpps {
 			std::string* s = cpps_get_string(member);
 			info = getmember(*s);
 		}
-		else if (member.isdomain() && member.value.domain->domainname == "tarfile_info"){
+		else if (member.isdomain() && member.is_kindof<cpps_tarfile_info>()){
 			info = cpps_converter< cpps_tarfile_info*>::apply(member);
 		}
 		if (info == NULL) return;

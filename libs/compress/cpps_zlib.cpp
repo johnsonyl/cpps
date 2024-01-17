@@ -13,7 +13,7 @@ namespace cpps {
 			buf = (Bytef*)str->c_str();
 			len = (uLong)str->size();
 		}
-		else if (data.isdomain() && data.value.domain->domainname == "Buffer")
+		else if (data.isdomain() && data.is_kindof<Buffer>())
 		{
 			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)data.value.domain;
 			Buffer* buffer = (Buffer*)cppsclassvar->getclsptr();
@@ -58,7 +58,7 @@ namespace cpps {
 			buf = (Bytef*)str->c_str();
 			len = (uLong)str->size();
 		}
-		else if (data.isdomain() && data.value.domain->domainname == "Buffer")
+		else if (data.isdomain() && data.is_kindof<Buffer>())
 		{
 			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)data.value.domain;
 			Buffer* buffer = (Buffer*)cppsclassvar->getclsptr();
@@ -98,7 +98,7 @@ namespace cpps {
 			buf = (Bytef*)str->c_str();
 			len = (uLong)str->size();
 		}
-		else if (data.isdomain() && data.value.domain->domainname == "Buffer")
+		else if (data.isdomain() && data.is_kindof<Buffer>())
 		{
 			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)data.value.domain;
 			Buffer* buffer = (Buffer*)cppsclassvar->getclsptr();
@@ -122,7 +122,7 @@ namespace cpps {
 			buf = (Bytef*)str->c_str();
 			len = (uLong)str->size();
 		}
-		else if (data.isdomain() && data.value.domain->domainname == "Buffer")
+		else if (data.isdomain() && data.is_kindof<Buffer>())
 		{
 			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)data.value.domain;
 			Buffer* buffer = (Buffer*)cppsclassvar->getclsptr();

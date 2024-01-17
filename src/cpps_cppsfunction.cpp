@@ -48,8 +48,7 @@ namespace cpps
 
 	void cpps_cppsfunction::callfunction(C* c, cpps_value* ret, cpps_domain* prevdomain, cpps_std_vector* o, cpps_stack* stack, std::vector< cpps_regvar*>* lambdastacklist)
 	{
-		node* _context = CPPSNEW(node)(context->filename, context->line);
-		_context->clone(context); //克隆出所有列表
+		//node* context = CPPSNEW(node)(context->filename, context->line);
 
 #ifdef CPPS_JIT_COMPILER
 
@@ -150,15 +149,15 @@ namespace cpps
 			funcdomain.funcRet.tt = CPPS_TREF;
 		}
 
-		if (_context->l.size() == 1 && _context->l[0]->type == CPPS_OEXPRESSION )
+		if (context->l.size() == 1 && context->l[0]->type == CPPS_OEXPRESSION )
 		{
 			cpps_domain* leftdomain = NULL;
-			cpps_calculate_expression(c, &funcdomain, &funcdomain, _context->l[0]->l[0], leftdomain, funcdomain.funcRet);
+			cpps_calculate_expression(c, &funcdomain, &funcdomain, context->l[0]->l[0], leftdomain, funcdomain.funcRet);
 			if(funcdomain.funcRet.isref())
 				funcdomain.funcRet = funcdomain.funcRet.real();
 		}
 		else
-			cpps_step_all(c, CPPS_MUNITRET, &funcdomain, &funcdomain, _context, false);
+			cpps_step_all(c, CPPS_MUNITRET, &funcdomain, &funcdomain, context, false);
 
 		if (ret) {
 			*ret = funcdomain.funcRet;//return的值反馈回去
@@ -172,7 +171,6 @@ namespace cpps
 
 
 
-		cpps_destory_node(_context); CPPSDELETE(_context); _context = NULL;
 
 
 	}
