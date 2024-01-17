@@ -16,7 +16,7 @@ namespace cpps
 {
 	struct cpps_cppsclassvar : public cpps_domain
 	{
-		cpps_cppsclassvar(std::string clsname, cpps_domain* p, char type, bool alloc);
+		cpps_cppsclassvar(const char* clsname, cpps_domain* p, char type, bool alloc);
 		virtual ~cpps_cppsclassvar(){}
 		virtual void* getclsptr();
 		virtual void setclsptr(void* p);
@@ -30,7 +30,7 @@ namespace cpps
 	template<class CLS>
 	struct cpps_classvar : public cpps_cppsclassvar
 	{
-		cpps_classvar(std::string clsname,cpps_domain* p, char type, bool alloc)
+		cpps_classvar(const char* clsname,cpps_domain* p, char type, bool alloc)
 			:cpps_cppsclassvar(clsname,p, type, alloc)
 		{
 			__class = NULL;

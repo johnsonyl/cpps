@@ -717,7 +717,7 @@ namespace cpps
 		if (o)
 			cpps_step_all(c, CPPS_MUNITRET, 0, 0, o, false);
 		if (o) { cpps_destory_node(o); CPPSDELETE(o); o = NULL; }
-		cpps_gc_check_step(c);
+		
 		c->disabled_non_def_var = false;
 	}
 	std::string cpps_base_execmd(C* c, std::string cmd)

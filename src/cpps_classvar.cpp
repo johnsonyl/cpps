@@ -1,6 +1,6 @@
 #include "cpps/cpps.h"
 
-cpps::cpps_cppsclassvar::cpps_cppsclassvar(std::string clsname, cpps_domain* p, char type, bool alloc)
+cpps::cpps_cppsclassvar::cpps_cppsclassvar(const char* clsname, cpps_domain* p, char type, bool alloc)
 	:cpps_domain(p, type, clsname), isalloc(alloc) {
 	usecount = 0;
 }

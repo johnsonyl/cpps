@@ -23,9 +23,10 @@ namespace cpps
 	{
 		cpps_cppsclass(std::string _classname, node *_o, cpps_domain* p, char type);
 		virtual ~cpps_cppsclass();
-		virtual cpps_cppsclassvar* create(C* c, bool alloc = true);
+		inline virtual cpps_cppsclassvar*	create(C* c, bool alloc = true);
 		virtual bool						iscppsclass();
 		std::string							getclassname();
+		const char*							getclassname_c_str();
 		std::vector<cpps_cppsclass*>&		parentclasslist();
 		virtual void						release();
 		virtual void						operatorreg(std::string symbolname, cpps_function* func);
@@ -49,9 +50,9 @@ namespace cpps
 		virtual ~cpps_class(){}
 		virtual bool					iscppsclass() { return false; }
 		virtual void					release() { CPPSDELETE( this); }
-		virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
+		inline virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
 		{
-			cpps_classvar<T>* v = CPPSNEW( cpps_classvar<T>)(getclassname(), this, cpps_domain_type_classvar, alloc);
+			cpps_classvar<T>* v = CPPSNEW( cpps_classvar<T>)(getclassname_c_str(), this, cpps_domain_type_classvar, alloc);
 			if (alloc){
 				cpps_cppsclassvar* class_var = (cpps_cppsclassvar* )v;
 				
@@ -77,9 +78,9 @@ namespace cpps
 		{
 			cpps_class_func.insert(FUNCMAP::value_type(name, func));
 		}
-		virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
+		inline virtual cpps_cppsclassvar* create(C* c, bool alloc = true)
 		{
-			cpps_classvar<cpps_class_handler>* v = CPPSNEW(cpps_classvar<cpps_class_handler>)(getclassname(), this, cpps_domain_type_classvar, alloc);
+			cpps_classvar<cpps_class_handler>* v = CPPSNEW(cpps_classvar<cpps_class_handler>)(getclassname_c_str(), this, cpps_domain_type_classvar, alloc);
 
 			if (alloc) {
 				v->__class->__ptr = _alloc();

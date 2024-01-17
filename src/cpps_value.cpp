@@ -516,6 +516,7 @@ namespace cpps
 	{
 		// ±ÜÃâ×Ô¸³Öµ
 		assert(this != &v);
+		if (this == &v) return *this;
 		v.incruse(); 
 		decruse();
 		tt = v.tt;

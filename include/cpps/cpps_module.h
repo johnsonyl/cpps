@@ -64,7 +64,7 @@ namespace cpps
 		_enum(C*cstate,std::string name)
 		{
 			c = cstate;
-			_enum_domain = CPPSNEW(cpps_domain)(NULL, cpps_domain_type_enum, name);
+			_enum_domain = CPPSNEW(cpps_domain)(NULL, cpps_domain_type_enum, name.c_str());
 			f = CPPSNEW(cpps_regenum)(name, _enum_domain);
 		}
 		_enum& value(std::string varname, cpps_integer v);

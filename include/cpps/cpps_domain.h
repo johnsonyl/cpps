@@ -23,10 +23,10 @@ namespace cpps
 	struct cpps_domain : public cpps_gcobject
 	{
 		cpps_domain();
-		cpps_domain(cpps_domain* p, char type, std::string name);
+		cpps_domain(cpps_domain* p, char type, const char* name);
 		virtual ~cpps_domain();
 		virtual cpps_cppsclassvar *							create(C* c, bool alloc = true);
-		void												init(cpps_domain* p, char type, std::string name);
+		void												init(cpps_domain* p, char type, const char* name);
 		void												init(cpps_domain* p, char type);
 		std::string											getdomainname();
 		void												regfunc( cpps_reg* f, cpps::C* c = NULL);
@@ -35,7 +35,20 @@ namespace cpps
 		void												unregvar(C *c, cpps_regvar * v);
 		void												setexecdomain(cpps_domain *exec);
 		void												cleanup();
-		virtual void										clear_var(C* c, bool isclose = false);
+		void												clear_var_real(C* c, bool isclose);
+		inline void											clear_var(C* c, bool isclose = false)
+		{
+			if (hasVar || (isclose && varList)) {
+				clear_var_real(c, isclose);
+			}
+			if (stacklist != NULL)
+			{
+				stacklist->clear();
+				CPPSDELETE(stacklist);
+				stacklist = NULL;
+			}
+			isbreak = cpps_step_check_none;
+		}
 		virtual void										destory(C* c, bool isclose = false);
 		void												regidxvar(int32 offset, cpps_regvar* v);
 		void												removeidxvar(int32 offset);

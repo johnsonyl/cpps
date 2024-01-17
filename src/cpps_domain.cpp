@@ -19,7 +19,7 @@ namespace cpps
 		parentclassoffset = NULL;
 	}
 
-	cpps_domain::cpps_domain(cpps_domain* p, char type, std::string name) :cpps_gcobject()
+	cpps_domain::cpps_domain(cpps_domain* p, char type, const char* name) :cpps_gcobject()
 	{
 		init(p, type, name);
 	}
@@ -42,13 +42,13 @@ namespace cpps
 		return NULL;
 	}
 
-	void cpps_domain::init(cpps_domain* p, char type, std::string name)
+	void cpps_domain::init(cpps_domain* p, char type, const char* name)
 	{
 		parent[0] = p;
 		domainType = type;
 		isbreak = cpps_step_check_none;
 		parent[1] = NULL;
-		strcpy(domainname, name.c_str());
+		strcpy(domainname, name);
 		funcRet.tt = CPPS_TNIL;
 		hasVar = false;
 		stacklist = NULL;
@@ -262,54 +262,45 @@ namespace cpps
 			stacklist = NULL;
 		}
 	}
-	void cpps_domain::clear_var(C* c, bool isclose)
+	void cpps_domain::clear_var_real(C* c, bool isclose)
 	{
-		if (hasVar || (isclose && varList)) {
-			for (VARLIST::iterator it = varList->begin(); it != varList->end(); ++it)
-			{
-				cpps_regvar* v = it->second;
-				if ((!v->closeure || v->closeureusecount <= 0) || isclose) { /*闭包不删除,但是必须有人使用*/
-					cpps_gc_remove_barrier(c, v);
-					if (!isclose && v->stackdomain && v->offset != -1) {
-						v->stackdomain->removeidxvar(v->offset);
-					}
-					if (v->issource() && v->getval().tt == CPPS_TCLASS) {
-						cpps_cppsclass* _cls = cpps_to_cpps_cppsclass(v->getval());
-						_cls->destory(c, isclose);
-						_cls->release();//class 会随着变量消失而删除.
-					}
-					else if (v->issource() && v->getval().tt == CPPS_TFUNCTION)
-					{
-						cpps_function* func = (cpps_function*)v->getval().value.func;
-						if (domainType == cpps_domain_type_class && func->getclass()) { //判断是否是继承来的 cpp 注册进来的类不需要判断 删就完了.
-							cpps_cppsclass* pclsthis = (cpps_cppsclass*)this;
-							if (pclsthis == func->getclass()) {
-								func->release();//类里面的函数也要被清理
-							}
-						}
-						else {
-							func->release();
-						}
-					}
-					else if (isclose && v->issource() && v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this && v->getval().value.domain != c->_G)
-					{
-						cpps_domain* domain = v->getval().value.domain;
-						domain->destory(c, isclose);
-						domain->release();
-					}
-					v->release();
-				}
-			}
-			varList->clear();
-			hasVar = false;
-		}
-		if (stacklist != NULL)
+		for (VARLIST::iterator it = varList->begin(); it != varList->end(); ++it)
 		{
-			stacklist->clear();
-			CPPSDELETE(stacklist);
-			stacklist = NULL;
+			cpps_regvar* v = it->second;
+			if ((!v->closeure || v->closeureusecount <= 0) || isclose) { /*闭包不删除,但是必须有人使用*/
+				cpps_gc_remove_barrier(c, v);
+				if (!isclose && v->stackdomain && v->offset != -1) {
+					v->stackdomain->removeidxvar(v->offset);
+				}
+				if (v->issource() && v->getval().tt == CPPS_TCLASS) {
+					cpps_cppsclass* _cls = cpps_to_cpps_cppsclass(v->getval());
+					_cls->destory(c, isclose);
+					_cls->release();//class 会随着变量消失而删除.
+				}
+				else if (v->issource() && v->getval().tt == CPPS_TFUNCTION)
+				{
+					cpps_function* func = (cpps_function*)v->getval().value.func;
+					if (domainType == cpps_domain_type_class && func->getclass()) { //判断是否是继承来的 cpp 注册进来的类不需要判断 删就完了.
+						cpps_cppsclass* pclsthis = (cpps_cppsclass*)this;
+						if (pclsthis == func->getclass()) {
+							func->release();//类里面的函数也要被清理
+						}
+					}
+					else {
+						func->release();
+					}
+				}
+				else if (isclose && v->issource() && v->getval().tt == CPPS_TDOMAIN && v->getval().value.domain != this && v->getval().value.domain != c->_G)
+				{
+					cpps_domain* domain = v->getval().value.domain;
+					domain->destory(c, isclose);
+					domain->release();
+				}
+				v->release();
+			}
 		}
-		isbreak = cpps_step_check_none;
+		varList->clear();
+		hasVar = false;
 	}
 	void cpps_domain::destory(C* c,bool isclose)
 	{

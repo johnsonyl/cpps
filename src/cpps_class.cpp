@@ -4,7 +4,7 @@
 namespace cpps
 {
 	
-	cpps_cppsclass::cpps_cppsclass(std::string _classname, node* _o, cpps_domain* p, char type) :cpps_domain(p, type, _classname)
+	cpps_cppsclass::cpps_cppsclass(std::string _classname, node* _o, cpps_domain* p, char type) :cpps_domain(p, type, _classname.c_str())
 	{
 		if (_o) { o = CPPSNEW(node)(); o->clone(_o); }
 		else o = NULL;
@@ -24,7 +24,7 @@ namespace cpps
 
 	inline cpps_cppsclassvar* cpps_cppsclass::create(C* c, bool alloc)
 	{
-		return (CPPSNEW(cpps_cppsclassvar)(getclassname(), this, cpps_domain_type_classvar, alloc));
+		return (CPPSNEW(cpps_cppsclassvar)(getclassname_c_str(), this, cpps_domain_type_classvar, alloc));
 	}
 
 	bool cpps_cppsclass::iscppsclass()
@@ -32,6 +32,10 @@ namespace cpps
 		return true;
 	}
 
+	const char* cpps_cppsclass::getclassname_c_str()
+	{
+		return classname.c_str();
+	}
 	std::string cpps_cppsclass::getclassname()
 	{
 		return classname;

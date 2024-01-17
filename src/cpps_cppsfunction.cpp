@@ -172,7 +172,6 @@ namespace cpps
 
 
 
-		cpps_gc_check_step(c);
 		cpps_destory_node(_context); CPPSDELETE(_context); _context = NULL;
 
 

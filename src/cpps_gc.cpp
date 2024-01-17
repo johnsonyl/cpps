@@ -23,6 +23,9 @@ namespace cpps
 	}
 	void cpps_gc_add_gen0(C*c, cpps_cppsclassvar *p)
 	{
+		//分配了内存时检测是否需要释放内存
+		cpps_gc_check_step(c);
+
 		c->_gen0lock->lock();
 		c->setgen0size(c->getgen0size() + p->size());
 		//新增到新生代
