@@ -212,6 +212,20 @@ namespace cpps
 		return value.real();
 	}
 
+	cpps_function* object::tofunction() {
+		
+		if (value.real().tt == CPPS_TLAMBDAFUNCTION) {
+			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)value.real().value.domain;
+			cpps_lambda_function* pfunc = (cpps_lambda_function*)cppsclassvar->getclsptr();
+			return pfunc;
+		}
+		if (value.real().tt == CPPS_TFUNCTION)
+		{
+			return value.real().value.func;
+		}
+		return NULL;
+	}
+
 	void object::clear()
 	{
 
@@ -425,6 +439,19 @@ namespace cpps
 	{
 		return _vec->realvector().end();
 	}
+	object object::vector::begin_obj(C* c)
+	{
+		cpps_create_class_var(cpps_std_vector::iterator, c, cpps_value_vector_iterator, cpps_vector_iterator_ptr);
+		*cpps_vector_iterator_ptr = _vec->realvector().begin();
+		return static_cast<object>(cpps_value_vector_iterator);
+	}
+
+	object object::vector::end_obj(C* c)
+	{
+		cpps_create_class_var(cpps_std_vector::iterator, c, cpps_value_vector_iterator, cpps_vector_iterator_ptr);
+		*cpps_vector_iterator_ptr = _vec->realvector().end();
+		return static_cast<object>(cpps_value_vector_iterator);
+	}
 
 	void object::vector::push_back(object v)
 	{
@@ -482,6 +509,19 @@ namespace cpps
 	cpps_hash_map::iterator object::map::end()
 	{
 		return _map->realmap().end();
+	}
+	object object::map::begin_obj(C* c)
+	{
+		cpps_create_class_var(cpps_hash_map::iterator, c, cpps_value_iterator, cpps_iterator_ptr);
+		*cpps_iterator_ptr = _map->realmap().begin();
+		return static_cast<object>(cpps_iterator_ptr);
+	}
+
+	object object::map::end_obj(C* c)
+	{
+		cpps_create_class_var(cpps_hash_map::iterator, c, cpps_value_iterator, cpps_iterator_ptr);
+		*cpps_iterator_ptr = _map->realmap().end();
+		return static_cast<object>(cpps_iterator_ptr);
 	}
 
 	
@@ -542,6 +582,19 @@ namespace cpps
 		return _set->realset().end();
 	}
 
+	object	object::set::begin_obj(C* c)
+	{
+		cpps_create_class_var(cpps_hash_set::iterator, c, cpps_value_iterator, cpps_iterator_ptr);
+		*cpps_iterator_ptr = _set->realset().begin();
+		return static_cast<object>(cpps_iterator_ptr);
+
+	}
+	object	object::set::end_obj(C* c)
+	{
+		cpps_create_class_var(cpps_hash_set::iterator, c, cpps_value_iterator, cpps_iterator_ptr);
+		*cpps_iterator_ptr = _set->realset().end();
+		return static_cast<object>(cpps_iterator_ptr);
+	}
 	void object::set::insert(object& key)
 	{
 		_set->insert(key.realval());

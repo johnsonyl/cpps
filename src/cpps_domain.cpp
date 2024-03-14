@@ -19,7 +19,7 @@ namespace cpps
 		parentclassoffset = NULL;
 	}
 
-	cpps_domain::cpps_domain(cpps_domain* p, char type, const char* name) :cpps_gcobject()
+	cpps_domain::cpps_domain(cpps_domain* p, char type, const char* name) 
 	{
 		init(p, type, name);
 	}

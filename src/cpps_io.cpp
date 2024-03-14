@@ -151,10 +151,10 @@ namespace cpps
 	std::string cpps_io_getlines(FILE *file)
 	{
 		std::string ret = "";
-		char s[100];
+		char s[sizeof(size_t)];
 		while (true)
 		{
-			memset(s, 0, 100);
+			memset(s, 0, sizeof(size_t));
 			size_t result = fread(s, 1, 1, file);
 			if (result != 1) break;
 			if (s[0] == '\n') break;

@@ -20,7 +20,7 @@ namespace cpps
 	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
 	typedef					phmap::flat_hash_map<std::string, cpps_regvar*>	VARLIST;
 
-	struct cpps_domain : public cpps_gcobject
+	struct cpps_domain 
 	{
 		cpps_domain();
 		cpps_domain(cpps_domain* p, char type, const char* name);
@@ -36,6 +36,9 @@ namespace cpps
 		void												setexecdomain(cpps_domain *exec);
 		void												cleanup();
 		void												clear_var_real(C* c, bool isclose);
+		inline bool											need_clear(bool isclose = false) {
+			return (hasVar || (isclose && varList)) || stacklist != NULL;
+		}
 		inline void											clear_var(C* c, bool isclose = false)
 		{
 			if (hasVar || (isclose && varList)) {
@@ -63,6 +66,7 @@ namespace cpps
 		int32												getidxoffset(cpps_domain* parentclass);
 		void												setidxoffset(cpps_domain* parentclass, int32 off);
 		void												resize(usint16 size);
+		inline usint16										getidxvarcount() { return stacklist ? (usint16)stacklist->size() : 0; }
 		virtual void										release();
 		void												lock();
 		void												unlock();

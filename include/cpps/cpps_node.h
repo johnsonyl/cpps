@@ -39,10 +39,19 @@ namespace cpps
 		void clone(node * v);
 		void setparent(node* p);
 		void addtoleft(node *p);
-		node* getleft();
+		inline node* getleft()
+		{
+			return l.size() >= 1 ? l[0] : NULL;
+		}
 		void addtoright(node *p);
-		node* getright();
-		node* getthird();
+		inline node* getright()
+		{
+			return l.size() >= 2 ? l[1] : NULL;
+		}
+		inline node* getthird()
+		{
+			return l.size() >= 3 ? l[2] : NULL;
+		}
 		void setdomain(cpps_node_domain* d);
 		void regnode(std::string& s, node* n);
 		void unregnode(std::string& s);

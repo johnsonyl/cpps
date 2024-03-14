@@ -119,7 +119,6 @@ namespace cpps
 	object function_caller(C* c, object func, cpps_std_vector& paramlist)
 	{
 		cpps_value ret;
-
 		if (func.value.tt == CPPS_TLAMBDAFUNCTION) {
 			cpps_cppsclassvar* cppsclassvar = (cpps_cppsclassvar*)func.value.value.domain;
 			cpps_lambda_function* pfunc = (cpps_lambda_function*)cppsclassvar->getclsptr();

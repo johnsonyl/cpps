@@ -174,8 +174,14 @@ namespace cpps
 			def("log", cpps_math_log),
 			def("max", cpps_math_max),
 			defvar(c, "maxinteger", MAXINT64),
+			defvar(c, "maxuinteger", MAXUINT64),
+			defvar(c, "MAXINT", MAXINT64),
+			defvar(c, "MAXUINT", MAXUINT64),
 			def("min", cpps_math_min),
 			defvar(c, "mininteger", MININT64),
+			defvar(c, "MININT", MININT64),
+			defvar(c, "minuinteger", 0),
+			defvar(c, "MINUINT", 0),
 			defvar(c, "pi", M_PI),
 			def("sin", cpps_math_sin),
 			def("sqrt", cpps_math_sqrt),
@@ -184,8 +190,6 @@ namespace cpps
 
 		];
 		cpps::_module(c)[
-			def("max", cpps_math_max),
-			def("min", cpps_math_min),
 			def_inside("byte2str", byte2str)
 		];
 

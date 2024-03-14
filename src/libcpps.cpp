@@ -3058,6 +3058,66 @@ namespace cpps {
 		cpps_initasyncio(c);
 		return c;
 	}
+	void cpps_regjit(C* c) {
+
+#ifdef _WIN32
+		if (_access("cppsjit.dll",0) == -1) return;
+		HMODULE __module = ::LoadLibraryA("cppsjit.dll");
+		if (__module) {
+			c->cpps_jit_compile = (cpps_jit_compile_func)GetProcAddress(__module, "cpps_jit_compile");
+			if (c->cpps_jit_compile == NULL)
+			{
+				FreeLibrary(__module);
+				printf("Load module [%s] faild\r\n", "cpps_jit_compile");
+				return;
+			}
+			c->cpps_jit_run = (cpps_jit_run_func)GetProcAddress(__module, "cpps_jit_run");
+			if (c->cpps_jit_run == NULL)
+			{
+				FreeLibrary(__module);
+				printf("Load module [%s] faild\r\n", "cpps_jit_run");
+				return;
+			}
+		}
+#else
+#ifdef LINUX
+		if (access("cppsjit.so", 0) == -1) return;
+		HMODULE mod = dlopen("cppsjit.so", RTLD_LAZY);
+
+#else
+		if (access("cppsjit.dylib", 0) == -1) return;
+		HMODULE mod = dlopen("cppsjit.dylib", RTLD_LAZY);
+
+#endif
+		if (mod) {
+			dlerror();
+			*(void**)(&c->cpps_jit_compile) = dlsym(mod, "cpps_jit_compile");
+			if (c->cpps_jit_compile == NULL)
+			{
+				dlclose(mod);
+				printf("dlsym [cpps_jit_compile] faild\r\n");
+				return;
+			}
+			char* error = dlerror();
+			if (error != NULL) {
+				cpps::error(c, "%s", error);
+				return;
+			}
+			*(void**)(&c->cpps_jit_run) = dlsym(mod, "cpps_jit_run");
+			if (c->cpps_jit_run == NULL)
+			{
+				dlclose(mod);
+				printf("dlsym [cpps_jit_run] faild\r\n");
+				return;
+			}
+			error = dlerror();
+			if (error != NULL) {
+				cpps::error(c, "%s", error);
+				return;
+			}
+		}
+#endif
+	}
 	cpps::C* create(int argc, char** argv, cpps_alloc_f alloc_func, cpps_free_f free_func) {
 		CPPSMEMORYINIT(alloc_func, free_func);
 		C* c = new cpps::C(argc, argv);
@@ -3081,6 +3141,7 @@ namespace cpps {
 		cpps_reglambdafunction(c);
 		cpps_regasyncio(c);
 		cpps_regthread(c);
+		//cpps_regjit(c);
 
 		return(c);
 	}
@@ -3640,7 +3701,7 @@ namespace cpps {
 				isbreak = execdomain.isbreak;
 				
 
-				execdomain.clear_var(c);
+				if (execdomain.need_clear()) execdomain.clear_var(c);
 
 				if (isbreak == cpps_step_check_break)
 					break;
@@ -3700,7 +3761,7 @@ namespace cpps {
 
 						cpps_step_all(c, CPPS_MUNITRET, &execdomain, root, for4, false);
 						int8 isbreak = execdomain.isbreak;
-						execdomain.clear_var(c);
+						if (execdomain.need_clear()) execdomain.clear_var(c);
 						
 
 						if (isbreak == cpps_step_check_break || c->isterminate)
@@ -3731,7 +3792,7 @@ namespace cpps {
 					if (!for4->l.empty()) {
 						cpps_step_all(c, CPPS_MUNITRET, &execdomain, root, for4, false);
 						int8 isbreak = execdomain.isbreak;
-						execdomain.clear_var(c);
+						if (execdomain.need_clear()) execdomain.clear_var(c);
 						
 
 						if (isbreak == cpps_step_check_break || c->isterminate)
@@ -3768,7 +3829,7 @@ namespace cpps {
 
 						cpps_step_all(c, CPPS_MUNITRET, &execdomain, root, for4, false);
 						int8 isbreak = execdomain.isbreak;
-						execdomain.clear_var(c);
+						if (execdomain.need_clear()) execdomain.clear_var(c);
 						
 						if (isbreak == cpps_step_check_break || c->isterminate)
 							break;
@@ -3816,21 +3877,32 @@ namespace cpps {
 				//else {
 					execdomain.init(&foreachdomain, cpps_domain_type_exec);
 					execdomain.setexecdomain(&foreachdomain);
-					node* for4_node = for4->l[0];
 					for (cpps_integer begin = range->begin; begin < range->end; begin += range->inc) {
 						if (for1_v)
 							for1_v->getval().value.integer = begin;
 						
 						//if(for4_node) cpps_step(c, execdomain, root, for4_node);
 						if (!for4->empty()) {
+							node* for4_node = for4->l[0];
+
 							//cpps_step_all(c, CPPS_MUNITRET, &execdomain, root, for4, false);
-							if (for4->l.size() == 1)
-								cpps_step(c, &execdomain, root, for4_node);
-							else
+							if (for4->l.size() == 1) {
+								if (for4_node->type == CPPS_OEXPRESSION && for4_node->l[0]->type == CPPS_FUNCNAME) {
+									node* sub_for4_node = for4_node->l[0];
+									cpps_value ret;
+									cpps_symbol_handle(c, domain, root, sub_for4_node, ret);
+								}
+								else {
+									cpps_step(c, &execdomain, root, for4_node);
+								}
+
+							}
+							else 
 								cpps_easy_step_all(c, &execdomain, root, for4);
 							int8 isbreak = execdomain.isbreak;
 							
-							execdomain.clear_var(c);
+							if(execdomain.need_clear())
+								execdomain.clear_var(c);
 							/* 需要跳出循环 */
 							if (isbreak == cpps_step_check_break)
 								break;
@@ -3878,7 +3950,7 @@ namespace cpps {
 				CPPS_SUBCATCH2
 					int8 isbreak = execdomain.isbreak;
 				
-				execdomain.clear_var(c);
+				if (execdomain.need_clear()) execdomain.clear_var(c);
 
 				if (isbreak == cpps_step_check_break)
 					break;

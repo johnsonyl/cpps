@@ -14,7 +14,7 @@
 namespace cpps
 {
 	template<class T>
-	static T object_cast(object o)
+	static T object_cast(const object &o)
 	{
 		if (o.value.tt == CPPS_TREF) {
 			typedef cpps_converter<T> converter;

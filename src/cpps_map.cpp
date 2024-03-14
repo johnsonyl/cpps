@@ -15,6 +15,7 @@ namespace cpps
 				.def_operator("==", &cpps_pair::equalfunc)
 				.def_operator("[]", &cpps_pair::getobject)
 				.def_operator("->", &cpps_pair::second),
+			_class<cpps_hash_map::iterator>("map_iterator"),
 			_class<cpps_map>("map")
 				.def("insert", &cpps_map::insert)
 				.def("find", &cpps_map::find)
@@ -36,6 +37,7 @@ namespace cpps
 				.def_operator("+=", &cpps_map::merge)
 				.def_inside("select", &cpps_map::select)
 				.def_inside("to_list", &cpps_map::to_list),
+			_class<cpps_hash_set::iterator>("set_iterator"),
 			_class<cpps_set>("set")
 				.def("constructor", &cpps_set::constructor)
 				.def("insert", &cpps_set::insert)

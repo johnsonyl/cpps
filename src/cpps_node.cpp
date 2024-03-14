@@ -95,6 +95,7 @@ namespace cpps {
 			value.val = NULL;
 			needdelete = false;
 		}
+		cpps_destory_node(this);
 	}
 
 	void node::release()
@@ -190,15 +191,6 @@ namespace cpps {
 		p->setparent(this);
 	}
 
-	cpps::node* node::getleft()
-	{
-		if (l.size() >= 1)
-		{
-			return l[0];
-		}
-		return NULL;
-	}
-
 	void node::addtoright(node* p)
 	{
 		if (l.size() < 2)
@@ -223,24 +215,6 @@ namespace cpps {
 		}
 		l[1] = p;
 		p->setparent(this);
-	}
-
-	cpps::node* node::getright()
-	{
-		if (l.size() >= 2)
-		{
-			return l[1];
-		}
-		return NULL;
-	}
-
-	cpps::node* node::getthird()
-	{
-		if (l.size() >= 3)
-		{
-			return l[2];
-		}
-		return NULL;
 	}
 
 	void node::setdomain(cpps_node_domain* d)

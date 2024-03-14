@@ -105,6 +105,8 @@ namespace cpps
 		_callstack = CPPSNEW( std::vector<cpps_stack*>)();
 		_parentCState = NULL;
 		_lambdanum = 0;
+		cpps_jit_compile = NULL;
+		cpps_jit_run = NULL;
 	}
 
 	C::~C()
@@ -150,6 +152,8 @@ namespace cpps
 			symbolleftasso[i] = clone_c->symbolleftasso[i];
 		}
 		savemoduledatas = clone_c->savemoduledatas;
+		cpps_jit_compile = clone_c->cpps_jit_compile;
+		cpps_jit_run = clone_c->cpps_jit_run;
 	}
 
 	void C::set_cxo_handle_func(cpps_cxo_func __func)

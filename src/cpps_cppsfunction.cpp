@@ -29,7 +29,9 @@ namespace cpps
 		jitbuffer = NULL;
 		jitbufferSize = 0;
 #endif // CPPS_JIT_COMPILER
-
+#ifdef ENABLE_CPPS_JIT
+		_cpps_jit_context = NULL;
+#endif
 		domain = d;
 	}
 
@@ -60,6 +62,8 @@ namespace cpps
 		}
 
 #endif // CPPS_JIT_COMPILER
+
+
 
 		//todo 先delete指针
 		cpps_domain funcdomain;// c->domain_alloc();
@@ -138,12 +142,19 @@ namespace cpps
 			}
 		}
 
-#ifdef CPPS_JIT_COMPILER
+#ifdef ENABLE_CPPS_JIT
+		if (c->cpps_jit_compile && _cpps_jit_context == NULL) {
+			_cpps_jit_context = c->cpps_jit_compile(c, &funcdomain, params, context);
+		}
 
-		call_native_func((usint64)jitbuffer, c, domain, stack);
-		// 			if (ret)
-		// 				*ret = stack->funcRet;//return的值反馈回去
+		c->cpps_jit_run(c, &funcdomain, stack, _cpps_jit_context);
 
+//#ifdef CPPS_JIT_COMPILER
+//
+//		call_native_func((usint64)jitbuffer, c, funcdomain, stack);
+//		// 			if (ret)
+//		// 				*ret = stack->funcRet;//return的值反馈回去
+//
 #else
 		if (quatoreturn) {
 			funcdomain.funcRet.tt = CPPS_TREF;

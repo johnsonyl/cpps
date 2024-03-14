@@ -14,7 +14,7 @@
 
 namespace cpps
 {
-	struct cpps_cppsclassvar : public cpps_domain
+	struct cpps_cppsclassvar : public cpps_domain , public cpps_gcobject
 	{
 		cpps_cppsclassvar(const char* clsname, cpps_domain* p, char type, bool alloc);
 		virtual ~cpps_cppsclassvar(){}

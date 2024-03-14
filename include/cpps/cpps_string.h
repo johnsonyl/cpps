@@ -123,7 +123,7 @@ namespace cpps
 			pc->_classvarlock->unlock_shared();
 
 			ret.value.domain = var;
-			ret.value.domain->incruse();
+			var->incruse();
 
 			return ret;
 

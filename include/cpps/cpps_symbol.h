@@ -89,5 +89,47 @@ namespace cpps
 	cpps_symbol*	cpps_parse_getsymbol(C*c,std::string& symbolstr, bool leftsymbol);
 	void			cpps_regsymbols(C * c);
 
+	void cpps_add(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_add2(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_add3(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_add4(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_add5(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_add6(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_subtract(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_mul(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_quyu(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_divide(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_strcat(C* c, cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_strcatassignment(C* c, cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_rightautoincrease(cpps_value& a, cpps_value& ret);
+	void cpps_leftautoincrease(cpps_value& a, cpps_value& ret);
+	void cpps_rightautodecrease(cpps_value& a, cpps_value& ret);
+	void cpps_leftautodecrease(cpps_value& a, cpps_value& ret);
+	void cpps_plus(cpps_value& a, cpps_value& _result);
+	void cpps_minus(cpps_value& a, cpps_value& _result);
+	void cpps_assignment(C* c, cpps_value& a, cpps_value& b, cpps::cpps_value& ret);
+	void cpps_addandassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_add3andassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_add4andassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_add2andassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_add5andassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_add6andassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_symbol_pow(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_symbol_powandassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_symbol_floordivision(cpps_value& a, cpps_value& b, cpps_value& _result);
+	void cpps_symbol_floordivisionandassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_subtractandassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_mulandassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_divideandassignment(cpps_value& a, cpps_value& b, cpps::cpps_value& _result);
+	void cpps_bigger(cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_less(cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_biggerorequel(cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_lessorequel(cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_equel(cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_notequel(cpps_value& a, cpps_value& b, cpps_value& ret);
+	void cpps_not(cpps_value a, cpps_value& ret);
+	void cpps_not2(cpps_value a, cpps_value& ret);
+
+
 }
 #endif // CPPS_CAST_CPPS_HEAD_

@@ -51,6 +51,9 @@ namespace cpps
 		char*		jitbuffer; //JIT»º´æ
 		size_t		jitbufferSize;
 #endif
+#ifdef ENABLE_CPPS_JIT
+		cpps_jit_context* _cpps_jit_context;
+#endif
 	};
 
 }

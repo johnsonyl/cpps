@@ -6,7 +6,7 @@ namespace cpps
 	
 
 
-	inline void cpps_add(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_add(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -72,7 +72,7 @@ namespace cpps
 			break;
 		}
 	}
-	inline void cpps_add2(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_add2(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -139,7 +139,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_add3(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_add3(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -206,7 +206,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_add4(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_add4(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -273,7 +273,7 @@ namespace cpps
 		}
 	}
 	
-	inline void cpps_add5(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_add5(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -340,7 +340,7 @@ namespace cpps
 		}
 	}
 	
-	inline void cpps_add6(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_add6(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -407,7 +407,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_subtract(cpps_value& a, cpps_value &b, cpps_value &_result)
+	void cpps_subtract(cpps_value& a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -474,7 +474,7 @@ namespace cpps
 		}
 	}
 	
-	inline void cpps_mul(cpps_value& a, cpps_value &b, cpps_value &_result)
+	void cpps_mul(cpps_value& a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -541,7 +541,7 @@ namespace cpps
 		}
 	}
 	
-	inline void cpps_quyu(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_quyu(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -574,7 +574,7 @@ namespace cpps
 			break;
 		}
 	}
-	inline void cpps_divide(cpps_value &a, cpps_value &b, cpps_value &_result)
+	void cpps_divide(cpps_value &a, cpps_value &b, cpps_value &_result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -602,7 +602,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_strcat(C*c,cpps_value &a, cpps_value &b, cpps_value &ret)
+	void cpps_strcat(C*c,cpps_value &a, cpps_value &b, cpps_value &ret)
 	{
 		if (a.isref()) {
 			std::string* str;
@@ -623,7 +623,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_strcatassignment(C*c,cpps_value &a, cpps_value &b,cpps_value &ret)
+	void cpps_strcatassignment(C*c,cpps_value &a, cpps_value &b,cpps_value &ret)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -662,7 +662,7 @@ namespace cpps
 		}
 	}
 	
-	inline void cpps_rightautoincrease(cpps_value& a, cpps_value &ret)
+	void cpps_rightautoincrease(cpps_value& a, cpps_value &ret)
 	{
 		if (a.tt == CPPS_TREF) {
 			cpps_value& v = *(a.value.value);
@@ -712,7 +712,7 @@ namespace cpps
 		
 	}
 
-	inline void cpps_leftautoincrease(cpps_value& a,cpps_value &ret)
+	void cpps_leftautoincrease(cpps_value& a,cpps_value &ret)
 	{
 		if (a.tt == CPPS_TREF) {
 
@@ -742,7 +742,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_rightautodecrease(cpps_value& a, cpps_value& ret)
+	void cpps_rightautodecrease(cpps_value& a, cpps_value& ret)
 	{
 		if (a.tt == CPPS_TREF) {
 
@@ -772,7 +772,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_leftautodecrease(cpps_value& a, cpps_value& ret)
+	void cpps_leftautodecrease(cpps_value& a, cpps_value& ret)
 	{
 		if (a.tt == CPPS_TREF) {
 
@@ -802,8 +802,8 @@ namespace cpps
 		}
 	}
 
-	//ÕýºÅ
-	inline void cpps_plus(cpps_value& a, cpps_value &_result)
+	
+	void cpps_plus(cpps_value& a, cpps_value &_result)
 	{
 		
 		_result.tt = CPPS_TNIL;
@@ -828,7 +828,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_minus(cpps_value& a, cpps_value &_result)
+	void cpps_minus(cpps_value& a, cpps_value &_result)
 	{
 		
 		_result.tt = CPPS_TNIL;
@@ -853,7 +853,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_assignment(C*c,cpps_value& a,cpps_value &b,cpps::cpps_value &ret)
+	void cpps_assignment(C*c,cpps_value& a,cpps_value &b,cpps::cpps_value &ret)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -932,7 +932,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_addandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_addandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1015,7 +1015,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add3andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_add3andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1098,7 +1098,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add4andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_add4andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1181,7 +1181,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add2andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_add2andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1265,7 +1265,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add5andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_add5andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1349,7 +1349,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_add6andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_add6andassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1434,7 +1434,7 @@ namespace cpps
 
 	}
 
-	inline void cpps_symbol_pow(cpps_value& a, cpps_value &b, cpps_value& _result)
+	void cpps_symbol_pow(cpps_value& a, cpps_value &b, cpps_value& _result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -1499,7 +1499,7 @@ namespace cpps
 			break;
 		}
 	}
-	inline void cpps_symbol_powandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_symbol_powandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1583,7 +1583,7 @@ namespace cpps
 
 	}
 	
-	inline void cpps_symbol_floordivision(cpps_value& a, cpps_value &b, cpps_value& _result)
+	void cpps_symbol_floordivision(cpps_value& a, cpps_value &b, cpps_value& _result)
 	{
 		if (a.tt == CPPS_TBOOLEAN || b.tt == CPPS_TBOOLEAN)
 		{
@@ -1627,7 +1627,7 @@ namespace cpps
 			break;
 		}
 	}
-	inline void cpps_symbol_floordivisionandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_symbol_floordivisionandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1689,7 +1689,7 @@ namespace cpps
 		}
 
 	}
-	inline void cpps_subtractandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_subtractandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1773,7 +1773,7 @@ namespace cpps
 
 	}
 
-	inline void cpps_mulandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_mulandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1855,7 +1855,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_divideandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
+	void cpps_divideandassignment(cpps_value& a, cpps_value &b, cpps::cpps_value& _result)
 	{
 		if (a.tt == CPPS_TNIL)
 		{
@@ -1937,7 +1937,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_bigger(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_bigger(cpps_value& a, cpps_value &b, cpps_value &ret)
 	{
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
@@ -2038,7 +2038,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_less(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_less(cpps_value& a, cpps_value &b, cpps_value &ret)
 	{
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
@@ -2139,7 +2139,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_biggerorequel(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_biggerorequel(cpps_value& a, cpps_value &b, cpps_value &ret)
 	{
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
@@ -2240,7 +2240,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_lessorequel(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_lessorequel(cpps_value& a, cpps_value &b, cpps_value &ret)
 	{
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
@@ -2341,7 +2341,7 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_equel(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_equel(cpps_value& a, cpps_value &b, cpps_value &ret)
 	{
 		ret.tt = CPPS_TBOOLEAN;
 		ret.value.b = false;
@@ -2474,20 +2474,20 @@ namespace cpps
 		}
 	}
 
-	inline void cpps_notequel(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_notequel(cpps_value& a, cpps_value &b, cpps_value &ret)
 	{
 		cpps_equel(a, b, ret);
 		ret.value.b = !ret.value.b;
 	}
 
-	inline void cpps_not(cpps_value a, cpps_value &ret)
+	void cpps_not(cpps_value a, cpps_value &ret)
 	{
 		ret.tt = CPPS_TBOOLEAN;
 		typedef cpps_converter<bool> converter;
 		bool b = converter::apply(a);
 		ret.value.b = !b;
 	}
-	inline void cpps_not2(cpps_value a, cpps_value &ret)
+	void cpps_not2(cpps_value a, cpps_value &ret)
 	{
 		ret.tt = CPPS_TINTEGER;
 		typedef cpps_converter<cpps_integer> converter;
@@ -2600,8 +2600,10 @@ namespace cpps
 		node* _tmp2 = d->l.size() > 1 ? d->l[1] : NULL;
 		if (_tmp->offsettype == CPPS_OFFSET_TYPE_SELF) {
 			cpps_regvar* var = root->getregidxvar(_tmp->offset);
-			if (var) a = var->getval().ref();
-			
+			if (var) {
+				a.value.value = &var->getval();
+				a.tt = CPPS_TREF;
+			}
 		}
 		else
 			cpps_calculate_expression(c, domain, root, _tmp, leftdomain, a);
@@ -2663,8 +2665,52 @@ namespace cpps
 		}
 		case CPPS_SYMBOL_TYPE_RIGHTAUTOINCREASE:
 		{
+			if (a.tt == CPPS_TREF) {
+				cpps_value& v = *(a.value.value);
+				ret = v;
+				switch (v.tt)
+				{
+				case CPPS_TNUMBER:
+					v.value.number++;
+					break;
+				case CPPS_TINTEGER:
+					v.value.integer++;
+					break;
+				case CPPS_TUINTEGER:
+					v.value.uinteger++;
+					break;
+				default:
 
-			cpps_rightautoincrease(a, ret);
+					break;
+				}
+			}
+			else if (a.tt == CPPS_TSTRINGV)
+			{
+				char& strv = *(a.value.strv);
+				ret = (cpps_integer)strv;
+				strv++;
+			}
+			else
+			{
+				ret = a;
+				switch (a.tt)
+				{
+				case CPPS_TNUMBER:
+					a.value.number++;
+					break;
+				case CPPS_TINTEGER:
+					a.value.integer++;
+					break;
+				case CPPS_TUINTEGER:
+					a.value.uinteger++;
+					break;
+				default:
+
+					break;
+				}
+			}
+
+			//cpps_rightautoincrease(a, ret);
 			break;
 		}
 		case CPPS_SYMBOL_TYPE_RIGHTAUTODECREASE:

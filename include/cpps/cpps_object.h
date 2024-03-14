@@ -44,6 +44,8 @@ namespace cpps
 			vector(object& obj);
 			cpps_std_vector::iterator					begin();
 			cpps_std_vector::iterator					end();
+			object										begin_obj(C*c);
+			object										end_obj(C* c);
 			void										push_back(object v);
 			void										erase(cpps_integer idx);
 			size_t										size();
@@ -65,6 +67,8 @@ namespace cpps
 			map(C* cstate, object& obj);
 			cpps_hash_map::iterator													begin();
 			cpps_hash_map::iterator													end();
+			object																	begin_obj(C* c);
+			object																	end_obj(C* c);
 			void																	insert(const object& key, const object& value);
 			object																	toobject();
 			size_t																	size();
@@ -100,6 +104,8 @@ namespace cpps
 			set(C* cstate, object& obj);
 			cpps_hash_set::iterator													begin();
 			cpps_hash_set::iterator													end();
+			object																	begin_obj(C* c);
+			object																	end_obj(C* c);
 			void																	insert(object& key);
 			object																	toobject();
 			size_t																	size();
@@ -201,7 +207,7 @@ namespace cpps
 		cpps_value				ref();
 		cpps_value				&realval();
 		const cpps_value		&realval() const;
-
+		cpps_function*			tofunction();
 		//class func
 		template<class... _ArgTypes>
 		object					call(C* c, std::string funcname, _ArgTypes&&... _Args) {
@@ -247,6 +253,7 @@ namespace cpps
 
 			value = cpps_cpp_to_cpps_converter<Type>::apply(c, v);
 		}
+		object(bool v) { value = cpps_value((bool)v); }
 		object(int64 v) { value = cpps_value((cpps_integer)v); }
 		object(int32 v) { value = cpps_value((cpps_integer)v); }
 		object(int16 v) { value = cpps_value((cpps_integer)v); }

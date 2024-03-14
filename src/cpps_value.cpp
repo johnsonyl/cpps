@@ -515,7 +515,7 @@ namespace cpps
 	cpps::cpps_value& cpps_value::operator=(const cpps_value& v)
 	{
 		// ±ÜÃâ×Ô¸³Öµ
-		assert(this != &v);
+		//assert(this != &v);
 		if (this == &v) return *this;
 		v.incruse(); 
 		decruse();
@@ -580,24 +580,28 @@ namespace cpps
 
 	void cpps_value::decruse()
 	{
+		cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
-			value.domain->decruse();
+			_pclassvar->decruse();
 	}
 	void cpps_value::decruse() const
 	{
+		cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
-			value.domain->decruse();
+			_pclassvar->decruse();
 	}
 
 	 void cpps_value::incruse()
 	{
+		 cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
-			value.domain->incruse();
+			 _pclassvar->incruse();
 	 }
 	 void cpps_value::incruse()const
 	 {
+		 cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
-			 value.domain->incruse();
+			 _pclassvar->incruse();
 	 }
 
 	bool cpps_value::isdomain() const

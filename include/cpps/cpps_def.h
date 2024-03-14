@@ -69,8 +69,8 @@
 #define  CPPS_BUILDER_VERSION ""
 #endif
 
-#define CPPS_VER		"1.0.3 Build 20231207 [" CPPS_BUILDER_VERSION "]"
-#define CPPS_VERN		10003
+#define CPPS_VER		"1.0.4 Build 20240117 [" CPPS_BUILDER_VERSION "]"
+#define CPPS_VERN		10004
 #define CPPS_NAME		"CPPS"
 #ifndef M_PI
 #define M_PI				3.14159265358979323846
@@ -373,7 +373,11 @@ namespace cpps
 	typedef long				long32;
 	typedef unsigned long		uslong32;
 	typedef	long long			int64;
+#ifdef _WIN32
 	typedef	unsigned long long	usint64;
+#else
+	typedef long long unsigned int usint64;
+#endif
 }
 
 
@@ -528,6 +532,9 @@ namespace cpps
 
 	struct cpps_value;
 	typedef std::vector<cpps_value> cpps_std_vector;
+	struct cpps_domain;
+	struct cpps_stack;
+	struct node;
 }
 
 
@@ -538,14 +545,15 @@ typedef intptr_t ssize_t;
 # define _SSIZE_T_DEFINED
 #endif
 
-
-#ifdef _WIN32
-typedef void(__cdecl*cpps_attach_func)(cpps::C *c);
-typedef void(__cdecl*cpps_detach_func)(cpps::C *c);
+#ifdef _WIN32 
+#define __CPPSCDECL __cdecl
 #else
-typedef void(*cpps_attach_func)(cpps::C *c);
-typedef void(*cpps_detach_func)(cpps::C *c);
+#define __CPPSCDECL 
 #endif
+
+
+typedef void(__CPPSCDECL*cpps_attach_func)(cpps::C *c);
+typedef void(__CPPSCDECL*cpps_detach_func)(cpps::C *c);
 typedef cpps::cpps_value* (*cpps_func)( cpps::C* c, cpps::cpps_value ps,...);
 typedef cpps::cpps_value* (*cpps_class_func)(cpps::cpps_value _cls, cpps::C* c, cpps::cpps_value ps);
 typedef phmap::flat_hash_map<std::string, cpps_class_func> FUNCMAP;
@@ -556,6 +564,9 @@ typedef void* (*cpps_class_alloc)();
 typedef void (*cpps_class_free)(void*);
 typedef std::string(*cpps_cxo_func)(cpps::C*c,std::string&);
 typedef std::string(*cpps_chartrans_func)(std::string&);
+struct cpps_jit_context;
+typedef cpps_jit_context*(__CPPSCDECL*cpps_jit_compile_func)(cpps::C*, cpps::cpps_domain*, cpps::node*, cpps::node*);
+typedef void(__CPPSCDECL*cpps_jit_run_func)(cpps::C*, cpps::cpps_domain*, cpps::cpps_stack*, cpps_jit_context*);
 
 //////////////////////////////////////////////////////////////////////////
 

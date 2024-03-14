@@ -10,6 +10,7 @@ namespace cpps
 	void cpps_regarray(C *c)
 	{
 		cpps::_module(c)[
+			_class<cpps_std_vector::iterator>("vector_iterator"),
 			_class<cpps_vector>("vector")
 				.def("constructor",&cpps_vector::constructor)
 				.def("push_back", &cpps_vector::push_back)

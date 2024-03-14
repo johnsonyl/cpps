@@ -111,6 +111,8 @@ namespace cpps
 		cpps_lock																	*_gen0lock;
 		int32																		_lambdanum;
 		node*																		_emptynode;
+		cpps_jit_compile_func														cpps_jit_compile;
+		cpps_jit_run_func															cpps_jit_run;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_
