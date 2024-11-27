@@ -37,7 +37,7 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WINDOWS)
-	target_link_libraries(${PROJECT_NAME} libcpps libcrypto libcurl libssl zdll zlib )
+	target_link_libraries(${PROJECT_NAME} libcpps libcrypto libcurl_a libssl zlibstatic )
 ELSEIF(MACOS)
 	target_link_libraries(${PROJECT_NAME} libcpps -lcurl -lz -lssl -lcrypto -ldl -lm -lpthread)
 ELSEIF(LINUX)

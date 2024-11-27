@@ -44,7 +44,7 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}/minizip SRC_LIST2)
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${SRC_LIST2} ${CURRENT_HEADERS})
 IF(WINDOWS)
-	target_link_libraries(${PROJECT_NAME} libcpps zdll zlib )
+	target_link_libraries(${PROJECT_NAME} libcpps zlibstatic )
 ELSEIF(MACOS)
 	target_link_libraries(${PROJECT_NAME} libcpps -lz -ldl -lm -lpthread)
 ELSEIF(LINUX)

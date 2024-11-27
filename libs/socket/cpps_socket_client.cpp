@@ -30,9 +30,11 @@ namespace cpps
 	{
 		client_option.option_connected = opt["connected"];
 		client_option.option_data = opt["data"];
+		client_option.option_write = opt["write"];
 		client_option.option_close = opt["close"];
 		client_option.option_parser = opt["parser"];
 		client_option.option_ssl = opt["ssl"];
+		client_option.userdata = opt["userdata"];
 		if (cpps::type(opt["headersize"]) == CPPS_TINTEGER || cpps::type(opt["headersize"]) == CPPS_TUINTEGER) client_option.option_headsize = object_cast<cpps_integer>(opt["headersize"]);
 		if (client_option.option_ssl.tobool()) {
 			SSL_library_init();
@@ -91,7 +93,7 @@ namespace cpps
 		ressave = res;
 
 		if (client_option.option_ssl.tobool()) {
-			ctx = SSL_CTX_new(SSLv23_client_method());
+			ctx = SSL_CTX_new(TLSv1_2_client_method());
 			if (ctx == NULL) {
 				return NULL;
 			}
@@ -193,6 +195,7 @@ namespace cpps
 							buffer_ptr->realloc(size);
 							buffer_ptr->seek(0);
 							buffer_remove(buffer_ptr->getbuffer(), size_t(size));
+							recv_count++;
 							if (cpps::type(client_option.option_data) == CPPS_TFUNCTION)
 							{
 								cpps::dofunction(c, client_option.option_data, buffer_var,this);
@@ -213,24 +216,31 @@ namespace cpps
 		}
 	}
 
+	void cpps_socket_client::onWriteCallback(cpps_socket* sock, ssize_t nread, const char* buf)
+	{
+		if (cpps::type(client_option.option_write) == CPPS_TFUNCTION)
+		{
+			std::string _s(buf, nread);
+			cpps::dofunction(c, client_option.option_write, _s, this);
+		}
+	}
+
 	void cpps_socket_client::closed() {
 		client_connection = false;
 		if (cpps::type(client_option.option_close) == CPPS_TFUNCTION)
 		{
 			cpps::dofunction(c, client_option.option_close, 0, closemsg,this);
 		}
-	
-
 	}
 
 	void cpps_socket_client::setuserdata(cpps::object userdata)
 	{
-		user_data = userdata;
+		client_option.userdata = userdata;
 	}
 
 	cpps_value cpps_socket_client::getuserdata()
 	{
-		return user_data.getval();
+		return client_option.userdata.getval();
 	}
 
 	void cpps_socket_client::onClsoeCallback(uv_handle_t* handle)
@@ -252,6 +262,11 @@ namespace cpps
 
 	void cpps_socket_client::ssl_connect()
 	{
+
+		if (ssl == NULL) return;
+		if (write_bio == NULL) return;
+		if (read_bio == NULL) return;
+
 		SSL_set_connect_state(ssl);     // 这是个客户端连接
 		int ret = SSL_connect(ssl);
 		ssl_continue_wantwait(ret);
@@ -279,6 +294,10 @@ namespace cpps
 
 	int cpps_socket_client::ssl_continue()
 	{
+		if (ssl == NULL) return 0;
+		if (write_bio == NULL) return 0;
+		if (read_bio == NULL) return 0;
+
 		return SSL_connect(ssl);
 	}
 

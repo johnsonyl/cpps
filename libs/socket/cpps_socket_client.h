@@ -18,10 +18,12 @@ namespace cpps {
 		}
 		cpps::object		option_connected;
 		cpps::object		option_data;
+		cpps::object		option_write;
 		cpps::object		option_close;
 		cpps_integer		option_headsize;
 		cpps::object		option_parser;
 		cpps::object		option_ssl;
+		cpps::object		userdata;
 	};
 
 	class cpps_socket_client : public cpps_socket , public cpps_socket_event_callback
@@ -45,6 +47,7 @@ namespace cpps {
 
 	public:
 		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf);
+		virtual void							onWriteCallback(cpps_socket* sock, ssize_t nread, const char* buf);
 		static  void							onClsoeCallback(uv_handle_t* handle);
 		static  void							on_connect(uv_connect_t* req, int status);
 		virtual void							on_error_event(int type);

@@ -129,11 +129,7 @@ namespace cpps
 
 	void C::resume()
 	{
-		for (size_t i = 0; i < _callstack->size(); i++)
-		{
-			cpps_stack* stack = (*_callstack)[i];
-			CPPSDELETE( stack);
-		}
+		if (_callstack == NULL) return;
 		_callstack->clear();
 	}
 

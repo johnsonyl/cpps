@@ -17,10 +17,14 @@ namespace cpps {
 		void								set_client_info(std::string ip, cpps::usint16 port);
 		void								on_error_event(int type);
 		virtual int							ssl_continue();
+		static void							on_shutdown_cb(uv_shutdown_t* req, int status);
+		void								shutdown();
+		bool								isShutdown();
 		cpps_integer						socket_index;
 		std::string							socket_ip;
-		cpps::int16							socket_port;
+		cpps::usint16						socket_port;
 		cpps_socket_server*					server;
+		bool								_shutdown;
 	};
 }
 

@@ -37,10 +37,10 @@ var dist(var option){
 	}
 	var idx = 1;
 	foreach(var filename : option["packages"]){
-		var pos = string.find(filename,"./");
+		var pos = filename.find("./");
 		var filename2 = filename;
 		if(pos == 0){
-			filename2 = string.substr(filename,2,string.npos);
+			filename2 = filename.substr(2,string.npos);
 		}
 		pos = string.find(filename2,"dist");
 		if(pos == 0){

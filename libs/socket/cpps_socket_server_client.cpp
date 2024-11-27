@@ -10,6 +10,7 @@ namespace cpps
 		socket_port = 0;
 		socket_index = 0;
 		server = NULL;
+		_shutdown = false;
 	}
 
 	cpps_socket_server_client::~cpps_socket_server_client()
@@ -29,6 +30,10 @@ namespace cpps
 
 	void cpps_socket_server_client::ssl_accept()
 	{
+		if (ssl == NULL) return;
+		if (write_bio == NULL) return;
+		if (read_bio == NULL) return;
+
 		SSL_set_accept_state(ssl);  
 		int ret = SSL_accept(ssl);
 		if (ret != 1 && SSL_get_error(ssl, ret) != SSL_ERROR_WANT_READ) {
@@ -52,6 +57,29 @@ namespace cpps
 	}
 	int cpps_socket_server_client::ssl_continue()
 	{
+		if (ssl == NULL) return 1;
+		if (write_bio == NULL) return 1 ;
+		if (read_bio == NULL) return 0;
+
 		return SSL_accept(ssl);
 	}
-}
+	void	cpps_socket_server_client::on_shutdown_cb(uv_shutdown_t* req, int status)
+	{
+		cpps_socket_server_client* client = (cpps_socket_server_client*)req->data;
+		if (req)
+			free(req);
+		if (client) {
+			client->close("shut down socket", cpps_socket_server::onClsoe);
+		}
+	}
+
+	void	cpps_socket_server_client::shutdown() {
+		if (uv_tcp == NULL) return;
+		_shutdown = true;
+		uv_shutdown_t* req = (uv_shutdown_t*)malloc(sizeof(uv_shutdown_t));
+		req->data = (void*)this;
+		uv_shutdown(req, (uv_stream_t*)uv_tcp, on_shutdown_cb);
+	}
+	bool	cpps_socket_server_client::isShutdown() { return _shutdown; }
+
+}	

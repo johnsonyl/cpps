@@ -43,6 +43,11 @@ namespace cpps
 #else
 	typedef phmap::flat_hash_set<cpps_cppsclassvar*> CLASSVARSET;
 #endif
+#ifdef _DEBUG
+	typedef std::map<void*, cpps_cppsclassvar*> CLASSVARMAP;
+#else
+	typedef phmap::flat_hash_map<void*, cpps_cppsclassvar*>	 CLASSVARMAP;
+#endif
 	struct cpps_module_data {}; //interface 
 	struct C
 	{
@@ -72,6 +77,7 @@ namespace cpps
 		void																		clone(C* clone_c);
 		void																		set_cxo_handle_func(cpps_cxo_func __func);
 
+
 		node* o;
 		cpps_domain*																_G;	//根节点
 		std::vector<cpps_stack*>													*_callstack; //堆栈
@@ -84,11 +90,7 @@ namespace cpps
 		cpps_chartrans_func															func;
 		cpps_cxo_func																_cxo_func;
 		phmap::flat_hash_map<std::string, HMODULE>									modulelist;
-#ifdef _DEBUG
-		std::map<void*, cpps_cppsclassvar*>											_class_map_classvar;
-#else
-		phmap::flat_hash_map<void*, cpps_cppsclassvar*>								_class_map_classvar;
-#endif
+		CLASSVARMAP																	_class_map_classvar;
 		bool																		debug;
 		cpps_object_pool<cpps::cpps_domain>											domain_pool;
 		cpps_object_pool<cpps::cpps_stack>											stack_pool;
@@ -109,10 +111,12 @@ namespace cpps
 		C*																			_parentCState;//父类CState
 		cpps_lock																	*_classvarlock;
 		cpps_lock																	*_gen0lock;
+		cpps_lock																	_globalstring_lock;
 		int32																		_lambdanum;
 		node*																		_emptynode;
 		cpps_jit_compile_func														cpps_jit_compile;
 		cpps_jit_run_func															cpps_jit_run;
+		std::vector<cpps_value*>													global_string;
 	};
 }
 #endif // CPPS_CSTATE_CPPS_HEAD_

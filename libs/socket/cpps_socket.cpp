@@ -6,6 +6,12 @@ namespace cpps {
 		socket_event_callback = NULL;
 		uv_tcp = NULL;
 		ctx = NULL;
+		send_count = 0;
+		recv_count = 0;
+		write_count = 0;
+		ssl = NULL;
+		read_bio = NULL;
+		write_bio = NULL;
 	}
 
 	cpps_socket::~cpps_socket()
@@ -59,28 +65,39 @@ namespace cpps {
 		if (is_open_ssl()) {
 			SSL_shutdown(ssl);
 			SSL_free(ssl);
+
+			//BIO_free(read_bio);
+			//BIO_free(write_bio); //这个不需要释放吗？
+
+			ssl = NULL;
+			read_bio = NULL;
+			write_bio = NULL;
 		}
 	}
 	typedef struct {
 		uv_write_t req;
 		uv_buf_t buf;
+		cpps_socket* sock;
 	} write_req_t;
 	void cpps_socket::send_write_real(const char* buffer, size_t size)
 	{
-
+		if (uv_tcp == NULL) return;
 		write_req_t* req = (write_req_t*)malloc(sizeof(write_req_t));
 
 		req->buf = uv_buf_init((char*)malloc(size), (usint32)size);
 		req->req.data = req->buf.base;
+		req->sock = this;
 		memcpy(req->buf.base, buffer, size);
 		int err = uv_write(&req->req, (uv_stream_t*)uv_tcp, &req->buf, 1, on_write_cb);
 		if (err)
 		{
+			
 			on_error_event(-1);
 		}
 	}
 	void cpps_socket::send_write(const char *buffer,size_t size)
 	{
+		send_count++;
 		if (is_open_ssl()) {
 			queue_push_back(buffer, size);
 			send_data_after_handshake();
@@ -131,8 +148,16 @@ namespace cpps {
 	void cpps_socket::on_read_do_cb(ssize_t nread, const char* buf) {
 		if (socket_event_callback) socket_event_callback->onReadCallback(this, nread, buf);
 	}
+	void cpps_socket::on_write_do_cb(ssize_t nread, const char* buf) {
+		if (socket_event_callback) socket_event_callback->onWriteCallback(this, nread, buf);
+	}
 	bool cpps_socket::ssl_continue_wantwait(int status) {
+
+		if (ssl == NULL) return true;
+		if (write_bio == NULL) return true;
+		if (read_bio == NULL) return true;
 		if (status == 1) return true;
+
 		write_bio_to_socket();
 		int err = SSL_get_error(ssl, status);
 		if (err == SSL_ERROR_WANT_READ) {
@@ -145,6 +170,10 @@ namespace cpps {
 	}
 	void cpps_socket::ssl_read_cb(ssize_t nread, const uv_buf_t* buf)
 	{
+		if (ssl == NULL) return;
+		if (write_bio == NULL) return;
+		if (read_bio == NULL) return;
+
 		BIO_write(read_bio, buf->base, (int)nread);
 		if (!SSL_is_init_finished(ssl)) {
 			// 我们还没有完成ssl的初始化，继续进行握手。
@@ -164,6 +193,7 @@ namespace cpps {
 	}
 	void cpps_socket::on_read_cb(uv_stream_t* client, ssize_t nread, const uv_buf_t* buf)
 	{
+
 		cpps_socket* sock = (cpps_socket*)client->data;
 		if (sock == NULL) return;
 		if (sock->is_open_ssl()) {
@@ -185,9 +215,12 @@ namespace cpps {
 			//fprintf(stderr, "Write error %s\n", uv_strerror(status));
 		}
 		write_req_t* wr;
-
 		/* Free the read/write buffer and the request */
 		wr = (write_req_t*)req;
+		if (wr->sock) {
+			wr->sock->write_count++;
+			wr->sock->on_write_do_cb(wr->buf.len, wr->buf.base);
+		}
 		if (wr && wr->buf.base) {
 			free(wr->buf.base);
 			free(wr);
@@ -202,6 +235,10 @@ namespace cpps {
 
 	void cpps_socket::write_bio_to_socket()
 	{
+		if (ssl == NULL) return;
+		if (write_bio == NULL) return;
+		if (read_bio == NULL) return;
+
 		std::string _real_buffer;
 		while (true) {
 			char buf[4096];
@@ -239,9 +276,14 @@ namespace cpps {
 	}
 	void cpps_socket::send_data_after_handshake()
 	{
+		if (ssl == NULL) return;
+		if (write_bio == NULL) return;
+		if (read_bio == NULL) return;
+
 		//还需要一个队列来处理
 		socket_msg_queue_t* t = get_queue_front();
 		if (t == NULL) return;
+		if (ssl == NULL) return;
 
 		int ret = SSL_write(ssl, t->data, (int)t->size);   // data中存放了要发送的数据
 		if (ret > 0) {
@@ -261,14 +303,30 @@ namespace cpps {
 
 	void cpps_socket::read_data_after_handshake()
 	{
+
+		if (ssl == NULL) return;
+		if (write_bio == NULL) return;
+		if (read_bio == NULL) return;
+
+		//printf("read_data_after_handshake\n");
 		std::string _real_buffer;
 		while (true) {
+
+			if (ssl == NULL) return;
+			if (write_bio == NULL) return;
+			if (read_bio == NULL) return;
+
 			char buf[4096];
 			memset(buf, 0, 4096);
 			int ret = SSL_read(ssl, buf, sizeof(buf));
+			//printf("ret:%d\n", ret);
 			if (ret < 0) {
 				ssl_continue_wantwait(ret);
-				return;//??
+				return;//?
+			}
+			else if (ret > 4096) {
+				on_error_event(-1);
+				return;
 			}
 			else if (ret > 0) {
 				_real_buffer.append(buf, ret);

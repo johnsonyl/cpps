@@ -15,7 +15,6 @@ namespace cpps {
 	cpps_integer cpps_io_last_write_time(std::string path);
 	cpps_socket_httpserver::cpps_socket_httpserver()
 	{
-		c = NULL;
 		http_running = false;
 	}
 
@@ -34,10 +33,13 @@ namespace cpps {
 		if (cpps::type(opt["ip"]) == CPPS_TSTRING) http_option.option_ip = object_cast<std::string>(opt["ip"]);
 		http_option.exceptionfunc = opt["exceptionfunc"];
 		http_option.notfoundfunc = opt["notfoundfunc"];
+		http_option.writefunc = opt["writefunc"];
+		http_option.userdata = opt["userdata"];
 		server_option.option_ip = http_option.option_ip;
 		server_option.option_ssl = opt["ssl"];
 		server_option.option_certificate_file = opt["certificate_file"];
 		server_option.option_privatekey_file = opt["privatekey_file"];
+		server_option.option_servername_callback = opt["servername_callback"];
 		if (server_option.option_ssl.tobool()) {
 			SSL_library_init();
 			OpenSSL_add_all_algorithms();
@@ -46,10 +48,10 @@ namespace cpps {
 		return this;
 	}
 
-	cpps_socket_httpserver* cpps_socket_httpserver::listen(cpps::C* cstate, cpps::usint16 port)
+	cpps_socket_httpserver* cpps_socket_httpserver::listen(cpps::C* cstate, cpps::usint16 port, cpps::object _ssl_port)
 	{
 		setcstate(cstate);
-		cpps_socket_server::listen(cstate, port);
+		cpps_socket_server::listen(cstate, port, _ssl_port);
 		if (!sever_running) return this;
 
 		createuuidfunc = cpps::object::globals(c)["__socket_httpserver_createuuid"];
@@ -170,7 +172,11 @@ namespace cpps {
 		cpps_request_ptr->path = req.path;
 		cpps_request_ptr->keepalive = req.keepalive;
 		cpps_request_ptr->support_gzip = req.support_gzip;
-
+		cpps_request_ptr->method = req.method;
+		cpps_request_ptr->ip_address = req.ip_address;
+		cpps_request_ptr->port = (cpps_integer)req.port;
+		
+		httpserver->request_list.insert(http_request_list::value_type(req.socket_index, cpps_request_var));
 
 		if (!req.uri.empty())
 		{
@@ -200,14 +206,19 @@ namespace cpps {
 					cpps_request_ptr->paramslist[item.first] = item.second;
 			}
 		}
+		ibsize = req.header_len;
+		if (ibsize > 0) {
+			cpps_request_ptr->header_buffer.append(req.header_buf, req.header_len);
+		}
 		cpps_stack* takestack = httpserver->c->getcallstack()->empty() ? NULL : httpserver->c->getcallstack()->at(httpserver->c->getcallstack()->size() - 1);
 
 
 		try
 		{
 			//1.先找路由
-			cpps_string_real_tolower(cpps_request_ptr->path);
-			cpps::object func = httpserver->gethandlefunc(cpps_request_ptr->path);
+			std::string path = cpps_request_ptr->path;
+			cpps_string_real_tolower(path);
+			cpps::object func = httpserver->gethandlefunc(path);
 			if (cpps::type(func) == CPPS_TFUNCTION)
 			{
 				cpps_socket_httpserver_bindsession(httpserver, cpps_request_ptr);
@@ -216,8 +227,8 @@ namespace cpps {
 			}
 			//2.找controller.
 			cpps::object controller_object;
-			const cpps_socket_httpserver_controller controller = cpps_socket_httpserver_parse_controlloer(cpps_request_ptr->path);
-			if (cpps_request_ptr->path == "/") //找默认controller.
+			const cpps_socket_httpserver_controller controller = cpps_socket_httpserver_parse_controlloer(path);
+			if (path == "/") //找默认controller.
 			{
 				controller_object = httpserver->http_default_class_route;
 			}
@@ -246,8 +257,8 @@ namespace cpps {
 				}
 			}
 			//3.找本地文件(cache么?)
-			std::string filepath = cpps_getcwd() + httpserver->getwwwroot() + cpps_request_ptr->path;
-			std::string ext = cpps_io_getfileext(cpps_request_ptr->path);
+			std::string filepath = cpps_getcwd() + httpserver->getwwwroot() + path;
+			std::string ext = cpps_io_getfileext(path);
 			if (ext.empty()) {
 				filepath += "/index.html";
 				ext = "html";
@@ -264,11 +275,11 @@ namespace cpps {
 					cpps_request_ptr->real_addheader(CONNECTION, "close");
 
 					cpps_integer last_write_time = cpps_io_last_write_time(filepath);
-					auto cachefile = httpserver->get_cachefile(cpps_request_ptr->path);
+					auto cachefile = httpserver->get_cachefile(path);
 					if (cachefile == NULL )
 					{
 						std::string content = cpps_io_readfile(filepath);
-						cachefile = httpserver->create_cachefile(cpps_request_ptr->path, content, last_write_time);
+						cachefile = httpserver->create_cachefile(path, content, last_write_time);
 					}
 					if (cachefile->getlast_write_time() != last_write_time) {
 						std::string content = cpps_io_readfile(filepath);
@@ -292,7 +303,7 @@ namespace cpps {
 			}
 
 			//4.没有绑定notfound的话...
-			cpps_request_ptr->append("sorry,not found.\n");
+			cpps_request_ptr->append("Sorry,not found.\n");
 			cpps_request_ptr->send( 404, "NOT FOUND");
 		}
 		catch (cpps_error e)
@@ -321,7 +332,7 @@ namespace cpps {
 
 			//6.没有找到脚本异常的话...
 
-			cpps_request_ptr->append("sorry,not found.\n");
+			cpps_request_ptr->append("Sorry,SERVER ERROR.\n");
 			cpps_request_ptr->send(500, "SERVER ERROR");
 		}
 	}
@@ -508,6 +519,12 @@ namespace cpps {
 		return -1;
 	}
 
+	int message_begin_cb(http_parser* p)
+	{
+		http_request* req = (struct http_request*)p->data;
+		req->method = http_method_str( (http_method)p->method );
+		return 0;
+	}
 	int message_complete_cb(http_parser* p)
 	{
 		return 0;
@@ -533,9 +550,10 @@ namespace cpps {
 			http_parser parser;
 			request.support_gzip = false;
 			request.body_len = 0;
+			request.header_len = 0;
 			parser.data = (void*)&request;
 			http_parser_init(&parser, HTTP_REQUEST);
-			http_parser_settings settings = { nullptr, request_url_cb, nullptr, header_field_cb, header_value_cb,
+			http_parser_settings settings = { message_begin_cb, request_url_cb, nullptr, header_field_cb, header_value_cb,
 				headers_complete_cb, body_cb, message_complete_cb, chunk_header_cb, chunk_complete_cb };
 
 			size_t parsed = http_parser_execute(&parser, &settings, client->buffer.c_str(), client->buffer.size());
@@ -554,15 +572,43 @@ namespace cpps {
 				return;
 			}
 
+			request.header_buf = client->buffer.c_str();
+			request.header_len = parsed + 1;
+
+			request.ip_address = client->socket_ip;
+			request.port = (usint16)client->socket_port;
+
 			//request.body.append(request.body_buf, request.body_len);
 			request.socket_index = client->socket_index;
+			client->recv_count++;
 			generic_handler(request, this);
 			client->buffer.clear();
 		}
 		else if (nread < 0)
 		{
-			client->close("normal close.", onClsoeCallback);
+			client->close("normal close.", onClsoe);
 		}
+	}
+
+	void cpps_socket_httpserver::onWriteCallback(cpps_socket* sock, ssize_t nread, const char* buf)
+	{
+		if (cpps::type(http_option.writefunc) == CPPS_TFUNCTION)
+		{
+			cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
+			std::string _s(buf, nread);
+			cpps::dofunction(c, http_option.writefunc, _s, this, client->socket_index);
+
+			//close
+			/*if (client->isShutdown() && client->get_send_count() == client->get_write_count()) {
+				closesocket(client->socket_index);
+			}*/
+		}
+	}
+
+	void cpps_socket_httpserver::onClsoeCallback(cpps_socket* sock)
+	{
+		cpps_socket_server_client* client = (cpps_socket_server_client*)sock;
+		request_list.erase(client->socket_index);
 	}
 
 	void cpps_socket_httpserver::update_session()
@@ -612,4 +658,22 @@ namespace cpps {
 		_wwwroot = wwwroot + "/";
 	}
 
+	void cpps_socket_httpserver::setuserdata(cpps::object userdata)
+	{
+		http_option.userdata = userdata;
+	}
+
+	cpps_value cpps_socket_httpserver::getuserdata()
+	{
+		return http_option.userdata.getval();
+	}
+	cpps_value cpps_socket_httpserver::get_request(cpps_integer socket_index)
+	{
+		cpps_value ret;
+		http_request_list::iterator it = request_list.find(socket_index);
+		if (it != request_list.end()) {
+			ret = it->second;
+		}
+		return ret;
+	}
 }

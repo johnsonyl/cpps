@@ -32,12 +32,14 @@ cpps_export_void cpps_attach(cpps::C* c)
             .def("setproxy",&cpps_http_request::setproxy)
             .def("setproxyaccount",&cpps_http_request::setproxyaccount)
             .def("addheaders",&cpps_http_request::addheaders)
-            .def("post",&cpps_http_request::post)
-            .def("get",&cpps_http_request::get)
-            .def("call",&cpps_http_request::call)
+            .def_inside("post",&cpps_http_request::post)
+            .def_inside("get",&cpps_http_request::get)
+            .def_inside("call",&cpps_http_request::call)
             .def("getcookies",&cpps_http_request::getcookies)
             .def("getheaders",&cpps_http_request::getheaders)
             .def("settimeout",&cpps_http_request::settimeout)
+            .def("setheaderfunc",&cpps_http_request::setHeaderFunc)
+            .def("setbodyfunc",&cpps_http_request::setBodyFunc)
             .def("followlocation",&cpps_http_request::followlocation),
         def("urlencode",urlencode),
         def("urldecode",urldecode),

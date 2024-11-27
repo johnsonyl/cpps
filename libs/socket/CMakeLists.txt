@@ -47,7 +47,7 @@ source_group("Include" FILES ${CURRENT_HEADERS})
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WINDOWS)
-	target_link_libraries(${PROJECT_NAME} ws2_32 winmm wldap32 wsock32 Iphlpapi libcpps libcrypto userenv Psapi uv_a libcrypto libssl zdll zlib)
+	target_link_libraries(${PROJECT_NAME} ws2_32 winmm wldap32 wsock32 Iphlpapi libcpps libcrypto userenv Psapi uv_a libcrypto libssl zlibstatic)
 ELSEIF(MACOS)
 	target_link_libraries(${PROJECT_NAME} libcpps -luv -lz -lssl -lcrypto -ldl -lm -lpthread)
 ELSEIF(LINUX)

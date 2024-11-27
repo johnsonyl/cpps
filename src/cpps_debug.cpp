@@ -23,6 +23,12 @@ namespace cpps
 	{
 
 	}
+	void cpps_debug_dump_memory(C* c)
+	{
+#if defined _DEBUG || RELDEBUG
+		cpps::memory_allocal::instance().gethandler()->dump();
+#endif
+	}
 	void cpps_regdebug(C *c)
 	{
 		cpps::_module(c,"debug")[
@@ -30,7 +36,8 @@ namespace cpps
 			def_inside("close", cpps_debug_close),
 			def_inside("log", cpps_debug_log),
 			def_inside("breakpoint",cpps_debug_breakpoint),
-			def_inside("trace",cpps_debug_trace)
+			def_inside("trace",cpps_debug_trace),
+			def_inside("dump_memory",cpps_debug_dump_memory)
 		];
 		cpps::_module(c)[
 			_class<cpps_trycatch_error>("cpps_trycatch_error")
@@ -42,5 +49,5 @@ namespace cpps
 			.def("callstack", &cpps_trycatch_error::callstack)
 			.def("tostring",&cpps_trycatch_error::tostring)
 		];
-	}
+	}	
 }

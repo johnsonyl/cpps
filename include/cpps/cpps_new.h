@@ -17,7 +17,7 @@
 namespace cpps
 {
 	cpps_integer cpps_this_thread_get_id();
-#ifdef _DEBUG
+#if defined _DEBUG || RELDEBUG
 	struct memory_info
 	{
 		memory_info(size_t _size, const char* _file, unsigned int _line)
@@ -39,7 +39,7 @@ namespace cpps
 		void*						mmalloc(size_t __size,const char *file, unsigned int _line);
 		void						mfree(void* m);
 		void						cpps_set_allocf(cpps_alloc_f _alloc_func, cpps_free_f _free_func);
-#ifdef _DEBUG
+#if defined _DEBUG || RELDEBUG
 		cpps_lock					_lock;
 		size_t						size();
 		void						dump();
@@ -73,8 +73,8 @@ namespace cpps
 #define CPPSMEMORYINIT(_alloc_func, _free_func) cpps::memory_allocal::instance().init(_alloc_func, _free_func)
 #define CPPSMEMORYHANDLER() cpps::memory_allocal::instance().gethandler()
 #define CPPSMEMORYSETHANDLER(_handler) cpps::memory_allocal::instance().sethandler(_handler)
-#ifdef _DEBUG
-#define CPPSALLOCATESIZE cpps::memory::memory_allocal::instance().gethandler()->size()
+#if defined _DEBUG || RELDEBUG
+#define CPPSALLOCATESIZE cpps::memory_allocal::instance().gethandler()->size()
 #endif
 template<typename _Ty>
 static void CPPSDELETE(_Ty* ptr)
@@ -82,7 +82,12 @@ static void CPPSDELETE(_Ty* ptr)
 	if (ptr)
 	{
 		ptr->~_Ty();
-		cpps::memory_allocal::instance().gethandler()->mfree(ptr);
+		try {
+			cpps::memory_allocal::instance().gethandler()->mfree(ptr);
+		}
+		catch (...) {
+			printf("???");
+		}
 	}
 }
 

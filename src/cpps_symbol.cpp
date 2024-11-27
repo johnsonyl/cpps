@@ -1937,8 +1937,10 @@ namespace cpps
 		}
 	}
 
-	void cpps_bigger(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_bigger(cpps_value& a2, cpps_value &b2, cpps_value &ret)
 	{
+		cpps_value a = a2.real();
+		cpps_value b = b2.real();
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
 		{
@@ -2038,8 +2040,10 @@ namespace cpps
 		}
 	}
 
-	void cpps_less(cpps_value& a, cpps_value &b, cpps_value &ret)
+	void cpps_less(cpps_value& a2, cpps_value &b2, cpps_value &ret)
 	{
+		cpps_value a = a2.real();
+		cpps_value b = b2.real();
 		ret.tt = CPPS_TBOOLEAN;
 		switch (a.tt)
 		{

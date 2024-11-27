@@ -14,7 +14,7 @@ cpps::memory_allocal::memory_allocal()
 cpps::memory_allocal::~memory_allocal()
 {
 	if (_real) {
-#ifdef _DEBUG
+#if defined _DEBUG || RELDEBUG
 		handler->dump();
 #endif
 		delete handler;
@@ -61,28 +61,34 @@ cpps::memory_allocal_handler::memory_allocal_handler()
 
 void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, unsigned int _line)
 {
-	if (alloc_func != NULL) return alloc_func(__size);
-#ifdef USE_NEDMALLOC
-	void* ret = nedalloc::nedmalloc(__size);
-#else
-#ifdef _WIN32
-	//__size = (size_t)ceil(__size / 1024.0) * 1024;
-	//void* ret =  (PBYTE)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE);
-	__size++;
-	char* ret = memory_allocal::instance().global() ? (char*)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE) : (char*)malloc( __size) ;
-	ret[0] = memory_allocal::instance().global() ? 1 : 0;
-	ret = ret + 1;
-	//if(memory_allocal::instance().global())
-		//printf("alloc %s memory...\n", memory_allocal::instance().global() ? "global" : "local");
-#else
-	void* ret = malloc(__size);
-#endif
-#endif
-#ifdef _DEBUG
-#ifdef _WIN32
-	if (ret == NULL) {
-		system("pause");
+	char* ret = NULL;
+	if (alloc_func != NULL) {
+		ret = (char *)alloc_func(__size);
 	}
+	else {
+#ifdef USE_NEDMALLOC
+		 ret = (char*)nedalloc::nedmalloc(__size);
+#else
+#ifdef _WIN32
+		//__size = (size_t)ceil(__size / 1024.0) * 1024;
+		//void* ret =  (PBYTE)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE);
+		__size++;
+		ret = memory_allocal::instance().global() ? (char*)VirtualAlloc(NULL, __size, MEM_COMMIT, PAGE_READWRITE) : (char*)malloc(__size);
+		ret[0] = memory_allocal::instance().global() ? 1 : 0;
+		ret = ret + 1;
+		//if(memory_allocal::instance().global())
+			//printf("alloc %s memory...\n", memory_allocal::instance().global() ? "global" : "local");
+#else
+		ret = (char*) malloc(__size);
+#endif
+#endif
+
+	}
+#if defined _DEBUG || RELDEBUG
+#ifdef _WIN32
+		if (ret == NULL) {
+			system("pause");
+		}
 #endif
 
 	_lock.lock();
@@ -95,8 +101,8 @@ void* cpps::memory_allocal_handler::mmalloc(size_t __size, const char* file, uns
 
 void cpps::memory_allocal_handler::mfree(void* m)
 {
-	if (free_func != NULL) { free_func(m); return; }
-#ifdef _DEBUG
+
+#if defined _DEBUG || RELDEBUG
 	_lock.lock();
 	auto it = memorylist.find(m);
 	if (it != memorylist.end()) {
@@ -110,6 +116,10 @@ void cpps::memory_allocal_handler::mfree(void* m)
 		system("pause");
 	}
 #endif
+
+
+	if (free_func != NULL) { free_func(m); return; }
+
 #ifdef USE_NEDMALLOC
 	nedalloc::nedfree(m);
 #else
@@ -134,7 +144,7 @@ void cpps::memory_allocal_handler::cpps_set_allocf(cpps_alloc_f _alloc_func, cpp
 
 
 
-#ifdef _DEBUG
+#if defined _DEBUG || RELDEBUG
 size_t cpps::memory_allocal_handler::size()
 {
 	return _size;
@@ -156,7 +166,9 @@ void cpps::memory_allocal_handler::dump()
 			sprintf(buffer, "file :%s line:%d \r\n", info->file, info->line);
 			fwrite(buffer, strlen(buffer), 1, pFile);
 		}
-
+		char buffer[10240];
+		sprintf(buffer, "_size: %I64d Bytes\r\n", _size);
+		fwrite(buffer, strlen(buffer), 1, pFile);
 		fclose(pFile);
 	}
 

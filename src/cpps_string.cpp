@@ -20,17 +20,19 @@ namespace cpps
 		return 0;
 	}
 	
-	cpps_integer	cpps_string_find(cpps_value v, std::string v2,cpps_integer off)
+	cpps_integer	cpps_string_find(cpps_value v, std::string v2, object off)
 	{
+		size_t _off = off.isint() ? off.toint() : 0;
 		if (v.tt != CPPS_TSTRING) return std::string::npos;
 		std::string* tmpStr = cpps_get_string(v);
-		return tmpStr->find(v2, size_t(off));
+		return tmpStr->find(v2, size_t(_off));
 	}
-	cpps_integer	cpps_string_rfind(cpps_value v, std::string v2, cpps_integer off)
+	cpps_integer	cpps_string_rfind(cpps_value v, std::string v2, object off)
 	{
+		size_t _off = off.isint() ? off.toint() : std::string::npos;
 		if (v.tt != CPPS_TSTRING) return std::string::npos;
 		std::string* tmpStr = cpps_get_string(v);
-		return tmpStr->rfind(v2, size_t(off));
+		return tmpStr->rfind(v2, size_t(_off));
 	}
 	
 	void	cpps_string_copyto(cpps_value src, cpps_value tar, cpps_value off,cpps_value len ) {
@@ -106,25 +108,36 @@ namespace cpps
 		if (v.empty()) return;
 
 		const char *a = v.c_str(); const char *b;
+		std::string s;
+		size_t a_size = 0, b_size = 0;
 		while (true)
 		{
+			a_size = strlen(a);
+			s.clear();
 			b = strstr(a, v2.c_str());
-
-			if (!b)	b = a + strlen(a);
-
-			std::string s;
-			s.append(a, strlen(a) - strlen(b));
-
-			vec.push_back(s);
-
+			if (!b)	b = a + a_size;
+			b_size = strlen(b);
+			s.append(a, a_size - b_size);
+			vec.emplace_back(s);
 			if (count != -1 && vec.size() >= ncount) break;
 
 			//如果到了结尾那就出去吧。
-			if (strlen(b) == 0 || strlen(b) == 1) break;
+			if (b_size == 0 || b_size == 1) break;
 			else a = b + v2.size();
 
 		}
 	}
+	void split(C* c, const std::string& s, std::vector<cpps_value>& tokens, const char& delim = ' ') {
+		tokens.clear();
+		size_t lastPos = s.find_first_not_of(delim, 0);
+		size_t pos = s.find(delim, lastPos);
+		while (lastPos != std::string::npos) {
+			tokens.emplace_back(cpps_value(c,s.substr(lastPos, pos - lastPos)));
+			lastPos = s.find_first_not_of(delim, pos);
+			pos = s.find(delim, lastPos);
+		}
+	}
+
 	cpps_value cpps_string_split(C *c, cpps_value v, std::string v2,cpps_value count)
 	{
 		if (v.tt != CPPS_TSTRING) return nil;
@@ -137,26 +150,46 @@ namespace cpps
 		std::string* tmpStr = cpps_get_string(v);
 
 		if (tmpStr->empty()) return ret;
-
-		const char *a = tmpStr->c_str(); const char *b;
-		while (true)
-		{
-			b = strstr(a, v2.c_str());
-
-			if (!b)	b = a + strlen(a);
-
-			std::string s;
-			s.append(a, strlen(a) - strlen(b));
-
-			vec->push_back(cpps_value(c,s));
-
-			if (ncount != -1 && vec->size() >= ncount) break;
-
-			//如果到了结尾那就出去吧。
-			if (strlen(b) == 0 || strlen(b) == 1) break;
-			else a = b + v2.size();
-
+		if ( v2.size() == 1) {
+			split(c, *tmpStr, vec->realvector(), v2[0]);
 		}
+		else {
+			const char* a = tmpStr->c_str(); const char* b;
+			std::string s;
+			size_t a_size = 0, b_size = 0;
+			while (true)
+			{
+				a_size = strlen(a);
+				s.clear();
+				b = strstr(a, v2.c_str());
+				if (!b)	b = a + a_size;
+				b_size = strlen(b);
+				s.append(a, a_size - b_size);
+				vec->emplace_back(cpps_value(c, s));
+				if (ncount != -1 && vec->size() >= ncount) break;
+
+				//如果到了结尾那就出去吧。
+				if (b_size == 0 || b_size == 1) break;
+				else a = b + v2.size();
+
+			}
+		}
+		//std::vector<std::string> vec2;
+		//size_t pos = 0;
+		//size_t lastpos = 0;
+		//std::string s;
+		//while ((pos = tmpStr->find(v2,lastpos)) != std::string::npos) {
+		//	//cpps_value v(c, tmpStr->substr(lastpos, pos - lastpos));
+		//	//vec->emplace_back(v);
+		//	vec2.emplace_back(tmpStr->substr(lastpos, pos - lastpos));
+		//	lastpos = pos + v2.size();
+		//	if (lastpos >= tmpStr->size()) break;
+		//}
+		//if (lastpos < tmpStr->size()) {
+		//	cpps_value v(c, tmpStr->substr(lastpos));
+		//	vec->emplace_back(v);
+		//}
+	
 
 		return ret;
 	}
@@ -558,7 +591,7 @@ namespace cpps
 
 	cpps_integer string::cpps_string_rfind(std::string v2, object off)
 	{
-		size_t pos = 0;
+		size_t pos = std::string::npos;
 		if (off.isint()) pos = (size_t)off.toint();
 		return (cpps_integer)__str.rfind(v2, pos);
 	}
@@ -602,26 +635,63 @@ namespace cpps
 
 		if (__str.empty()) return ret;
 
-		const char* a = __str.c_str(); const char* b;
-		while (true)
-		{
-			b = strstr(a, v2.c_str());
+		//const char* a = __str.c_str(); const char* b;
+		//while (true)
+		//{
+		//	b = strstr(a, v2.c_str());
 
-			if (!b)	b = a + strlen(a);
+		//	if (!b)	b = a + strlen(a);
 
-			std::string s;
-			s.append(a, strlen(a) - strlen(b));
+		//	std::string s;
+		//	s.append(a, strlen(a) - strlen(b));
 
-			vec->push_back(cpps_value(c, s));
+		//	vec->push_back(cpps_value(c, s));
 
-			if (nlen != -1 && vec->size() >= nlen) break;
+		//	if (nlen != -1 && vec->size() >= nlen) break;
 
-			//如果到了结尾那就出去吧。
-			if (strlen(b) == 0 || strlen(b) == 1) break;
-			else a = b + v2.size();
+		//	//如果到了结尾那就出去吧。
+		//	if (strlen(b) == 0 || strlen(b) == 1) break;
+		//	else a = b + v2.size();
 
+		//}
+		if ( v2.size() == 1) {
+			split(c, __str, vec->realvector(), v2[0]);
 		}
+		else {
+			const char* a = __str.c_str(); const char* b;
+			std::string s;
+			size_t a_size = 0, b_size = 0;
+			while (true)
+			{
+				a_size = strlen(a);
+				s.clear();
+				b = strstr(a, v2.c_str());
+				if (!b)	b = a + a_size;
+				b_size = strlen(b);
+				s.append(a, a_size - b_size);
+				vec->emplace_back(cpps_value(c, s));
+				if (nlen != -1 && vec->size() >= nlen) break;
 
+				//如果到了结尾那就出去吧。
+				if (b_size == 0 || b_size == 1) break;
+				else a = b + v2.size();
+
+			}
+
+			//size_t pos = 0;
+			//size_t lastpos = 0;
+			//std::string s;
+			//while ((pos = __str.find(v2,lastpos)) != std::string::npos) {
+			//	cpps_value v(c, __str.substr(lastpos, pos - lastpos));
+			//	vec->emplace_back(v);
+			//	lastpos = pos + v2.size();
+			//	if (lastpos >= __str.size()) break;
+			//}
+			//if (lastpos < __str.size()) {
+			//	cpps_value v(c, __str.substr(lastpos));
+			//	vec->emplace_back(v);
+			//}
+		}
 		return ret;
 	}
 

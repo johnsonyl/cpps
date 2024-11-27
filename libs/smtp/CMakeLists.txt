@@ -8,6 +8,7 @@ project(smtp)
 # 将源代码添加到此项目的可执行文件。
 
 IF(WINDOWS)
+	add_definitions(-DCURL_STATICLIB)
 	INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../include ${PROJECT_SOURCE_DIR}/../../deps/deps/include)
 	LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/../../lib ${PROJECT_SOURCE_DIR}/../../deps/deps/lib)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../../bin/lib/${PROJECT_NAME})
@@ -41,7 +42,7 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WINDOWS)
-	target_link_libraries(${PROJECT_NAME} libcpps libcrypto libcurl libssl zdll zlib )
+	target_link_libraries(${PROJECT_NAME} ws2_32 winmm wldap32 wsock32 crypt32 Normaliz Iphlpapi libcpps libcrypto libssl zlibstatic libcurl_a)
 ELSEIF(MACOS)
 	target_link_libraries(${PROJECT_NAME} libcpps -lcurl -lssl -lcrypto -ldl -lm -lpthread)
 ELSEIF(LINUX)

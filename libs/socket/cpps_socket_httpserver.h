@@ -15,6 +15,7 @@ namespace cpps {
 	static std::string  SERVER_HEADER = "Server";
 	static std::string  CONNECTION = "Connection";
 	struct http_request {
+		std::string method;
 		std::string path;
 		std::string uri;
 		bool support_gzip;
@@ -25,8 +26,11 @@ namespace cpps {
 		std::string field;
 		int32 keepalive;
 		const char* body_buf;
+		const char* header_buf;
 		size_t body_len;
-
+		size_t header_len;
+		std::string ip_address;
+		usint16 port;
 	};
 	class cpps_socket_httpserver_option
 	{
@@ -37,6 +41,8 @@ namespace cpps {
 		}
 		std::string			option_ip;
 		cpps::object		exceptionfunc;
+		cpps::object		writefunc;
+		cpps::object		userdata;
 		cpps::object		notfoundfunc;
 		cpps::object		option_ssl;
 		cpps::object		option_certificate_file;
@@ -44,11 +50,12 @@ namespace cpps {
 	};
 	class cpps_socket_httpserver_session;
 	class cpps_socket_httpserver_cachefile;
+	class cpps_socket_httpserver_request;
 	typedef phmap::flat_hash_map<std::string, cpps::object> http_route;
 	typedef phmap::flat_hash_map<std::string, std::string> http_mime_type;
 	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_session*> http_session_list;
 	typedef phmap::flat_hash_map<std::string, cpps_socket_httpserver_cachefile*> http_cachefile_list;
-	class cpps_socket_httpserver_request;
+	typedef phmap::flat_hash_map<cpps_integer, cpps::cpps_value> http_request_list;
 	class cpps_socket_httpserver : public cpps_socket_server
 	{
 	public:
@@ -57,7 +64,7 @@ namespace cpps {
 
 		void									setcstate(cpps::C* cstate);
 		cpps_socket_httpserver*					setoption(cpps::object opt);
-		cpps_socket_httpserver*					listen(cpps::C* cstate, cpps::usint16 port);
+		cpps_socket_httpserver*					listen(cpps::C* cstate, cpps::usint16 port, cpps::object _ssl_port);
 		void									register_handlefunc(std::string path, cpps::object func);
 		void									register_controller(cpps::object cls,cpps_value defaultset); 
 		bool									isrunning();
@@ -79,15 +86,19 @@ namespace cpps {
 		cpps_socket_httpserver_cachefile*		create_cachefile(std::string &filepath,std::string &content, cpps_integer last_write_time);
 		cpps_socket_httpserver_cachefile*		get_cachefile(std::string filepath);
 		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf);
+		virtual void							onWriteCallback(cpps_socket* sock, ssize_t nread, const char* buf);
+		virtual void							onClsoeCallback(cpps_socket* sock);
 		std::string								getwwwroot();
 		void									setwwwroot(std::string wwwroot);
+		void									setuserdata(cpps::object userdata);
+		cpps_value								getuserdata();
+		cpps_value								get_request(cpps_integer socket_index);
 	public:
 		static void								cb_listener(uv_stream_t* server, int status);
 		static void								generic_handler(struct http_request& req, void* handler);
 		static void								cpps_socket_httpserver_bindsession(cpps_socket_httpserver* httpserver, cpps_socket_httpserver_request* cpps_request_ptr, bool create_session=false);
 
 	public:
-		cpps::C*								c;
 		http_route								http_route_list;
 		http_route								http_class_route_list;
 		cpps::object							http_default_class_route;
@@ -96,7 +107,9 @@ namespace cpps {
 		http_mime_type							mime_types;
 		http_session_list						session_list;
 		http_cachefile_list						cachefile_list;
+		http_request_list						request_list;
 		std::string								_wwwroot;
+
 	private:
 		object									createuuidfunc;
 

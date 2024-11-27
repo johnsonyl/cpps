@@ -5,30 +5,38 @@ class ServerOption
 	var ip;
 	var accept;
 	var data;
+	var write;
 	var close;
 	var parser;
 	var headersize;
 	var ssl;
 	var certificate_file;
 	var privatekey_file;
+	var userdata;
+	var servername_callback;
 }
 class ClientOption
 {
 	var connected;
 	var data;
+	var write;
 	var close;
 	var parser;
 	var headersize;
 	var ssl;
+	var userdata;
 }
 class HttpServerOption
 {
 	var ip;
 	var exceptionfunc;
 	var notfoundfunc;
+	var writefunc;
+	var userdata;
 	var ssl;
 	var certificate_file;
 	var privatekey_file;
+	var servername_callback;
 }
 class HttpTemplateCache
 {

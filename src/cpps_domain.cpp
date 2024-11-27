@@ -304,9 +304,9 @@ namespace cpps
 	}
 	void cpps_domain::destory(C* c,bool isclose)
 	{
-		clear_var(c, isclose);
 		funcRet.decruse();
 		funcRet.tt = CPPS_TNIL;
+		clear_var(c, isclose);
 		isbreak = cpps_step_check_none;
 		parent[0] = NULL;
 		parent[1] = NULL;

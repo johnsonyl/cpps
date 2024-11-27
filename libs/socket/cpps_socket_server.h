@@ -33,12 +33,15 @@ namespace cpps {
 		std::string			option_ip;
 		cpps::object		option_accept;
 		cpps::object		option_data;
+		cpps::object		option_write;
 		cpps::object		option_close;
 		cpps_integer		option_headsize;
 		cpps::object		option_parser;
 		cpps::object		option_ssl;
 		cpps::object		option_certificate_file;
 		cpps::object		option_privatekey_file;
+		cpps::object		option_servername_callback;
+		cpps::object		userdata;
 	};
 
 	class cpps_socket_server_client;
@@ -53,7 +56,7 @@ namespace cpps {
 		cpps_socket_server*						setoption( cpps::object opt);
 		bool									is_open_ssl();
 		int										get_addrinfo(const struct sockaddr* addr, std::string& ip, cpps::usint16& port);
-		cpps_socket_server*						listen(cpps::C* cstate, cpps::usint16 port);
+		cpps_socket_server*						listen(cpps::C* cstate, cpps::usint16 port, cpps::object _ssl_port);
 		virtual cpps_socket_server_client*		create_server_client();
 		virtual void							free_server_client(cpps_socket_server_client* client);
 		virtual	void							sends(cpps_integer socketIndex,std::string& buffer);
@@ -61,21 +64,36 @@ namespace cpps {
 		virtual cpps_socket_server_client*		getclient(cpps_integer socketIndex);
 		virtual	void							run();
 		virtual void							closesocket(cpps_integer socketIndex);
+		void									shutdown(cpps_integer socketIndex);
 		virtual	void							stop();
 		void									stoped();
 		bool									isrunning();
 
 	public:
 		virtual void							onReadCallback(cpps_socket* sock, ssize_t nread, const char* buf);
-		static  void							onClsoeCallback(uv_handle_t* handle);
+		virtual void							onWriteCallback(cpps_socket* sock, ssize_t nread, const char* buf);
+		virtual void							onClsoeCallback(cpps_socket* sock);
+		static  void							onClsoe(uv_handle_t* handle);
 		virtual void							on_error_event(cpps_socket_server_client* client,int type);
+
+		void									setuserdata(cpps::object userdata);
+		cpps_value								getuserdata();
 
 	public:
 		static void								stop_cb(uv_handle_t* handle);
 		static void								write_task_cb(uv_async_t* handle);
+		static void								cb_listener_ssl(uv_stream_t* server, int status);
 		static void								cb_listener(uv_stream_t* server, int status);
+
+
+		cpps_integer							get_send_count(cpps_integer socketindex);
+		cpps_integer							get_write_count(cpps_integer socketindex);
+		cpps_integer							get_recv_count(cpps_integer socketindex);
+
+
 	public:
 		uv_tcp_t 								uv_socket;
+		uv_tcp_t 								uv_socket_ssl;
 		uv_async_t								async_send_msg;
 		cpps_socket_server_option				server_option;
 		uv_loop_t*								uv_loop;
@@ -84,7 +102,7 @@ namespace cpps {
 		cpps_integer							inc_socket_index;
 		bool									sever_running;
 		SSL_CTX*								ctx;
-
+		cpps::usint16							ssl_port;
 	};
 }
 

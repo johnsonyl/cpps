@@ -9,7 +9,18 @@
 #include "cpps_socket_event_callback.h"
 
 namespace cpps {
-
+	struct CPPS_SSL_CTX
+	{
+		SSL_CTX* ctx;
+		CPPS_SSL_CTX() {
+			ctx = NULL;
+		}
+		void release() {
+			if(ctx != NULL)
+				SSL_CTX_free(ctx);
+			ctx = NULL;
+		}
+	};
 	struct socket_msg_queue_t {
 		socket_msg_queue_t() {
 			data = NULL;
@@ -24,8 +35,16 @@ namespace cpps {
 				size = _size;
 			}
 			else {
-				release();
-				data = (char*)malloc(_size);
+				//release();
+				char *new_data = (char*)::realloc(data,_size);
+				if (new_data == NULL)
+				{
+					release();
+					data = (char*)malloc(_size);
+				}
+				else {
+					data = new_data;
+				}
 				real_size = _size;
 				size = _size;
 			}
@@ -64,6 +83,7 @@ namespace cpps {
 		virtual	void						buffer_remove(char* out_buffer, size_t size);
 		virtual	void						buffer_copyout(char* out_buffer, size_t size);
 		void								on_read_do_cb(ssize_t nread, const char* buf);
+		void								on_write_do_cb(ssize_t nread, const char* buf);
 		bool								ssl_continue_wantwait(int status);
 		void								ssl_read_cb(ssize_t nread, const uv_buf_t* buf);
 		//ssl
@@ -81,6 +101,9 @@ namespace cpps {
 		static void							on_alloc_cb(uv_handle_t* handle,size_t suggested_size,uv_buf_t* buf);
 		virtual void						on_error_event(int type) = 0;
 		virtual int							ssl_continue() = 0;
+		cpps_integer						get_send_count() { return send_count; }
+		cpps_integer						get_write_count() { return write_count; }
+		cpps_integer						get_recv_count() { return recv_count; }
 
 	public:
 		cpps_socket_event_callback*			socket_event_callback;
@@ -94,6 +117,10 @@ namespace cpps {
 		BIO*								write_bio;
 		std::vector<socket_msg_queue_t*>	msg_queue_list;
 		cpps_object_pool<socket_msg_queue_t> msg_t_pool;
+
+		cpps_integer						send_count;
+		cpps_integer						write_count;
+		cpps_integer						recv_count;
 	};
 }
 

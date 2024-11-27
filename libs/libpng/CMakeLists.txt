@@ -43,7 +43,7 @@ AUX_SOURCE_DIRECTORY(${PROJECT_SOURCE_DIR}  SRC_LIST)
 
 ADD_LIBRARY (${PROJECT_NAME} SHARED ${SRC_LIST} ${CURRENT_HEADERS})
 IF(WINDOWS)
-	target_link_libraries(${PROJECT_NAME} libcpps zdll zlib libpng16_static )
+	target_link_libraries(${PROJECT_NAME} libcpps zlibstatic libpng16_static )
 ELSEIF(MACOS)
 	target_link_libraries(${PROJECT_NAME} libcpps -lz -lpng -ldl -lm -lpthread)
 ELSEIF(LINUX)

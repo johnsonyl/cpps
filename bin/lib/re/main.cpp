@@ -71,12 +71,12 @@ module re
        {
            
            if (isint(pos)) 
-               pos = max(0, min(pos, len(text)));
+               pos = math.max(0, math.min(pos, len(text)));
            else
                pos = 0;
            
            if (isint(endpos)) 
-               endpos = max(0, min(endpos,len(text)));
+               endpos = math.max(0, math.min(endpos,len(text)));
             else
                 endpos = len(text);
                 

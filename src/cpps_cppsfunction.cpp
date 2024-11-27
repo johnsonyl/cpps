@@ -171,10 +171,12 @@ namespace cpps
 			cpps_step_all(c, CPPS_MUNITRET, &funcdomain, &funcdomain, context, false);
 
 		if (ret) {
-			*ret = funcdomain.funcRet;//return的值反馈回去
+			if(quatoreturn)
+				*ret = &funcdomain.funcRet.real();//return的值反馈回去
+			else
+				*ret = funcdomain.funcRet.real();//return的值反馈回去
 		}
 #endif
-
 			/*是否闭包*/
 		funcdomain.destory(c);
 		//c->domain_free(funcdomain);

@@ -1,12 +1,14 @@
 #include "cpps_socket_httpserver_request.h"
 #include "cpps_socket_httpserver_session.h"
 #include "cpps_socket_httpserver.h"
+#include "cpps_socket_server_client.h"
 #include <zlib.h>
 namespace cpps {
 	void cpps_string_real_split(std::vector<std::string>& vec, std::string& v, std::string v2, cpps_integer count);
 	cpps_socket_httpserver_request::cpps_socket_httpserver_request()
 	{
 		session = NULL;
+		_close = false;
 	}
 
 	cpps_socket_httpserver_request::~cpps_socket_httpserver_request()
@@ -37,7 +39,40 @@ namespace cpps {
 	{
 		output_buffer.append(s);
 	}
+	void cpps_socket_httpserver_request::send_header(cpps_integer code, std::string reason,cpps_integer size)
+	{
+		std::string build_buffer;
 
+		//1.code
+		char tmp[4096];
+		sprintf(tmp, "HTTP/1.1 %d %s\r\n", (int32)code, reason.c_str());
+		build_buffer.append(tmp);
+		
+		//3.keepalive
+	/*	if (!keepalive) {
+			build_buffer.append("Connection: close\r\n");
+		}*/
+		//4.Content-Length
+	/*	if (size > 0) {
+			sprintf(tmp, "Content-Length: %d\r\n", (usint32)size);
+			build_buffer.append(tmp);
+			build_buffer.append("Content-Encoding: gzip\r\n");
+		}*/
+
+		//build_buffer.append("Connection: close\r\n");
+		//5. headers
+		build_buffer.append(output_headerslist);
+		build_buffer.append("\r\n");
+
+
+
+		server->sends(socket_index, build_buffer);
+	}
+	void cpps_socket_httpserver_request::send_body(std::string content)
+	{
+		//gzip_compress(content);
+		server->sends(socket_index, content);
+	}
 	void cpps_socket_httpserver_request::send(cpps_integer code, std::string reason)
 	{
 		std::string build_buffer;
@@ -122,6 +157,14 @@ namespace cpps {
 	{
 		return input_headerslist[k];
 	}
+	cpps::cpps_value cpps_socket_httpserver_request::getheaders(C*c)
+	{
+		cpps_create_class_var(cpps::cpps_map, c, cpps_map_var, cpps_map_ptr);
+		for (auto _v : input_headerslist) {
+			cpps_map_ptr->insert(cpps_value(c, _v.first), cpps_value(c, _v.second));
+		}
+		return cpps_map_var;
+	}
 	std::string cpps_socket_httpserver_request::getpath()
 	{
 		return path;
@@ -135,6 +178,9 @@ namespace cpps {
 	std::string cpps_socket_httpserver_request::getbuffer()
 	{
 		return input_buffer;
+	}
+	std::string cpps_socket_httpserver_request::getmethod() {
+		return method;
 	}
 	
 	std::string cpps_socket_httpserver_request::getcookie(std::string key)
@@ -161,9 +207,24 @@ namespace cpps {
 		return ret;
 	}
 
+	std::string cpps_socket_httpserver_request::getheaderdata()
+	{
+		return header_buffer;
+	}
+
 	cpps::cpps_socket_httpserver_session* cpps_socket_httpserver_request::getsession()
 	{
 		return session;
+	}
+	void cpps_socket_httpserver_request::close()
+	{
+		server->closesocket(socket_index);
+	}
+
+	void cpps_socket_httpserver_request::shutdown()
+	{
+		auto client = server->getclient(socket_index);
+		if (client) client->shutdown();
 	}
 
 	void cpps_socket_httpserver_request::setsession(cpps_socket_httpserver_session* sess)

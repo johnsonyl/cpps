@@ -23,7 +23,7 @@ namespace cpps
 	void cpps_http_downloader::setfilepath(std::string f)
 	{
 		filepath = f;
-		remove(filepath.c_str());
+		if(!f.empty()) remove(filepath.c_str());
 	}
 
 	void cpps_http_downloader::setcookiefile(std::string cookie)
@@ -107,9 +107,11 @@ namespace cpps
 			curl_easy_setopt(curl, CURLOPT_TIMEOUT, 0);
 
 			//写入文件吧。
-			file = fopen(filepath.c_str(), "ab+");
-			if (!file)
-				return false;
+			if (!filepath.empty()) {
+				file = fopen(filepath.c_str(), "ab+");
+				if (!file)
+					return false;
+			}
 
 			res = curl_easy_perform(curl);   // 执行
 			if (res != 0) {
@@ -148,10 +150,17 @@ namespace cpps
 	{
 		fileCurrSize += size;
 		
-		if (file) fwrite(page, size, 1, file);
+		if (file) {
+			fwrite(page, size, 1, file);
 
-		if(m_funcCallback.isfunction())
-			cpps::dofunction(m_c, m_funcCallback, (cpps_integer)fileSize, (cpps_integer)size, (cpps_integer)fileCurrSize);
+			if (m_funcCallback.isfunction())
+				cpps::dofunction(m_c, m_funcCallback, (cpps_integer)fileSize, (cpps_integer)size, (cpps_integer)fileCurrSize);
+		}
+		else {
+			std::string data(page, size);
+			if (m_funcCallback.isfunction())
+				cpps::dofunction(m_c, m_funcCallback, (cpps_integer)fileSize, (cpps_integer)size, (cpps_integer)fileCurrSize, data);
+		}
 	}
 
 }

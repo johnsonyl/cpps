@@ -18,7 +18,11 @@ namespace cpps
 
 	void					cpps_gc_remove_barrier(C*c, cpps_regvar *v);
 	void					cpps_gc_add_barrier(C*c, cpps_regvar *v);
-	typedef					phmap::flat_hash_map<std::string, cpps_regvar*>	VARLIST;
+#ifndef _DEBUG
+	typedef std::map<std::string, cpps_regvar*> VARLIST;
+#else
+	typedef phmap::flat_hash_map<std::string, cpps_regvar*>	 VARLIST;
+#endif
 
 	struct cpps_domain 
 	{

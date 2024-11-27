@@ -43,7 +43,7 @@ namespace cpps
 	{	
 		if (!v.value.domain->hasVar) return;
 
-		for (phmap::flat_hash_map<std::string, cpps_regvar*>::iterator it = v.value.domain->varList->begin(); it != v.value.domain->varList->end(); ++it)
+		for (VARLIST::iterator it = v.value.domain->varList->begin(); it != v.value.domain->varList->end(); ++it)
 		{
 			cpps_regvar *var = it->second;
 			if (var->getval().tt == CPPS_TCLASSVAR|| var->getval().tt == CPPS_TSTRING)

@@ -365,6 +365,7 @@ namespace cpps
 	{
 		tt = CPPS_TREF;
 		value.value = v->isref() ? v->value.value : v;
+		incruse();
 	}
 
 	cpps_value::cpps_value(void* v)
@@ -580,26 +581,26 @@ namespace cpps
 
 	void cpps_value::decruse()
 	{
-		cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
+		cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)real().value.domain;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			_pclassvar->decruse();
 	}
 	void cpps_value::decruse() const
 	{
-		cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
+		cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)real().value.domain;
 		if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			_pclassvar->decruse();
 	}
 
 	 void cpps_value::incruse()
 	{
-		 cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
+		 cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)real().value.domain;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			 _pclassvar->incruse();
 	 }
 	 void cpps_value::incruse()const
 	 {
-		 cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)value.domain;
+		 cpps_cppsclassvar* _pclassvar = (cpps_cppsclassvar*)real().value.domain;
 		 if (tt == CPPS_TCLASSVAR || tt == CPPS_TSTRING || tt == CPPS_TLAMBDAFUNCTION || tt == CPPS_TTUPLE)
 			 _pclassvar->incruse();
 	 }
